@@ -1,0 +1,88 @@
+﻿<Page
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MigrationTool.Views"
+      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="MigrationTool.Views.ComponentsSelectPage"
+      mc:Ignorable="d"
+      Title="ComponentsSelectView" Height="436" Width="451">
+
+    <StackPanel x:Name="stackPnl" Margin="10" Height="Auto">
+        <StackPanel.Resources>
+            <Style TargetType="Border" x:Key="RacePitBorderStyle" >
+                <Style.Resources>
+                    <LinearGradientBrush x:Key="BackBrush" StartPoint="0.5,0" EndPoint="0.5,1">
+                        <GradientStop Color="#a6a6a6" Offset="0.1" />
+                        <GradientStop Color="#e6e6e6" Offset="0.9" />
+                    </LinearGradientBrush>
+                </Style.Resources>
+                <Setter Property="Background" Value="{StaticResource BackBrush}"/>
+            </Style>
+            <DataTemplate x:Key="titleText">
+                <Border Style="{StaticResource RacePitBorderStyle}" Height="27">
+                    <TextBlock Text="{Binding}" 
+                        Margin="4 0"
+                        VerticalAlignment="Center"
+                        Foreground="White"
+                        FontSize="15" 
+                        FontWeight="Bold"
+                        Width="{Binding
+                        RelativeSource={RelativeSource
+                        Mode=FindAncestor,
+                        AncestorType={x:Type Expander}},
+                        Path=ActualWidth}"
+                        TextWrapping="Wrap"/>
+                </Border>
+            </DataTemplate>
+
+            <Style TargetType="{x:Type Expander}">
+                <Setter Property="HeaderTemplate" Value="{StaticResource titleText}"/>
+            </Style>
+
+        </StackPanel.Resources>
+        <Expander x:Name="expanderAuth" Height="Auto" Header="Auth" Grid.Column="0" IsExpanded="True" FontSize="16" FontWeight="ExtraBold" >
+            <Grid Height="99" Margin="0,0,8,0">
+                <Border Margin="5"
+                BorderBrush="White"
+                Background="DarkGray"
+                BorderThickness="2,2,2,2"
+                CornerRadius="8,8,8,8">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Gray" Opacity="0.3" />
+                    </Border.Effect>
+                </Border>
+                <xctk:CheckListBox x:Name="AuthCheckList"  Height="79" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top"/>
+            </Grid>
+        </Expander>
+        <Expander x:Name="expanderAsset" Header="Asset" Grid.Column="0" IsExpanded="True" >
+            <Grid Height="99" Margin="0,0,8,0">
+                <Border Margin="5"
+                BorderBrush="White"
+                Background="DarkGray"
+                BorderThickness="2,2,2,2"
+                CornerRadius="8,8,8,8">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Gray" Opacity="0.3" />
+                    </Border.Effect>
+                </Border>
+                <xctk:CheckListBox x:Name="AssetCheckList" Height="79" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top"/>
+            </Grid>
+        </Expander>
+        <Expander x:Name="expanderSearch" Header="Search" Grid.Column="0" IsExpanded="True" >
+            <Grid Height="99" Margin="0,0,8,0">
+                <Border Margin="5"
+                BorderBrush="White"
+                Background="DarkGray"
+                BorderThickness="2,2,2,2"
+                CornerRadius="8,8,8,8">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Gray" Opacity="0.3" />
+                    </Border.Effect>
+                </Border>
+                <xctk:CheckListBox x:Name="SearchCheckList" Height="79" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top"/>
+            </Grid>
+        </Expander>
+    </StackPanel>
+
+</Page>

@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TransformationConfig>
+  <Transformation Name="TASK">
+    <Source>
+      SELECT DISTINCT
+      tc.FUNC_ID as Id,
+      tc.FUNC_NAME Name,
+      tc.FUNC_DESCRIPTION as [Description],
+      tp.MODL_ID as Module_Id,
+      tp.MODL_NAME as Module_Name
+      FROM [COMMON].[USER_FUNCTION] tc
+      INNER JOIN [COMMON].[MODULE] tp ON tc.MODULE_ID = tp.MODL_ID where FUNC_ID>0
+    </Source>
+    <Destination>[Employee].[Task]</Destination>
+    <KeyFormat Format="53_{0}" Keys="Id" />
+  </Transformation>
+  <Transformation Name="AST_DEFN">
+    <Source>
+      SELECT AST.ASST_ID as Id,
+      CONVERT(varchar(100),ASTDFN_OPTN_ORDER) as Sequences,
+      CONVERT(bit,'true') as IsSystemDefined,
+      --------Asset Type -----
+      AST.ASST_ID as AssetType_Id,
+      AST.ASST_NAME as AssetType_Name,
+      Ast.ASST_DESCRIPTION as AssetType_Description,
+      CONVERT(bit,'true') as AssetType_IsRevenueAffecting,
+      CONVERT(bit,'false') as AssetType_IsInline,
+      'Root' as AssetType_Scope,
+      --------Options--------
+      optn.OPTN_ID as Options_Id,
+      optn.OPTN_NAME as Options_Name,
+      optn.OPTN_CODE as Options_Code,
+      optn.OPTN_DESCRIPTION as Options_Description,
+      optn.OPTN_DEFAULT_VAL as Options_DefaultValue,
+      optn.OPTN_MIN_VALUE as Options_MinLength,
+      optn.OPTN_MAX_VALUE as Options_MaxLength,
+      optn.OPTN_EDIT_ENABLED as Options_IsEditEnabled,
+      optn.OPTN_ADD_ENABLED as Options_IsAddEnabled,
+      optn.OPTN_MOVE_ENABLED as Options_IsMoveEnabled,
+      optn.OPTN_MOVE_EDIT_ENABLED as Options_IsMoveEditEnabled,
+      optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
+      optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
+      CONVERT(bit,'true') as Options_IsSearchable
+      FROM GAM.ASSET AS AST
+      LEFT JOIN GAM.ASSET_DEFINITION AS AST_DFN ON AST.ASST_ID = AST_DFN.ASTDFN_ASST_ID
+      LEFT JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AST_DFN.ASTDFN_OPTN_ID
+      --LEFT JOIN GAM.OPTION_ENUMERATION AS ENUM ON OPTN.OPTN_ID=ENUM.OPTEN_OPTN_ID
+      --WHERE AST.ASST_ID = 1
+    </Source>
+    <Destination>ASSET_DEF.ASSETS</Destination>
+      <KeyFormat Format="53_{0}" Keys="Id" />
+  </Transformation>
+  <Transformation Name="EMPLOYEE">
+    <Source>
+      select ACTR_ID as Id,
+      ACTR_FIRST_NAME as FirstName,
+      ACTR_MIDDLE_NAME as MiddleName,
+      ACTR_LAST_NAME as LastName,
+      actr_active_dir_user as UserMatrixId,
+      ACTR_LOGIN as LoginName,
+      --ACTR_USER_ID as SDSLogin,
+      ACTR_IS_DELETED  as IsActive,
+      ACTR_AUTO_SIGN_OFF as IsAutoSigOffEnabled,
+      ACTR_EMAIL_ID as Email,
+      null as Access,
+      null as LevelType,
+      null as OrgLevel,
+      0 as UMVersion from common.user_actor
+    </Source>
+    <Destination>[Employee].[User]</Destination>
+    <KeyFormat Format="52_{0}" Keys="Id" />
+  </Transformation>
+</TransformationConfig>

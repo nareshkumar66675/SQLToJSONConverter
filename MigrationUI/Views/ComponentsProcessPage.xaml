@@ -1,0 +1,88 @@
+﻿<Page
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MigrationTool.Views"
+      xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="MigrationTool.Views.ComponentsProcessPage"
+    xmlns:Primitives="clr-namespace:Xceed.Wpf.Toolkit.Core;assembly=Xceed.Wpf.Toolkit"
+      mc:Ignorable="d"
+      Title="ComponentsProcessPage" Height="441" Width="600">
+
+    <Grid >
+        
+        <Grid.Resources>
+            <!--<Style x:Key="DataGridColumnHeaderStyle" TargetType="{x:Type xmlns:DataGridColumnHeader}">
+                <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                <Setter Property="Foreground" Value="#654b24"></Setter>
+                <Setter Property="FontWeight" Value="bold"></Setter>
+                <Setter Property="Height" Value="30"></Setter>
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#f7f3de" Offset="0.1"/>
+                            <GradientStop Color="#Fcfcfc" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Setter.Value>
+                </Setter>
+            </Style>-->
+            <!--<xcdg:DataGridCollectionViewSource x:Key="cvsOrders" 
+                                               Source="{Binding  Path=table}">
+                <xcdg:DataGridCollectionViewSource.GroupDescriptions>
+                    <PropertyGroupDescription PropertyName="Group" />
+                </xcdg:DataGridCollectionViewSource.GroupDescriptions>
+            </xcdg:DataGridCollectionViewSource>-->
+        </Grid.Resources>
+        <xcdg:DataGridControl 
+                              ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
+                              ScrollViewer.VerticalScrollBarVisibility="Hidden" 
+                              ScrollViewer.CanContentScroll="False" 
+                              x:Name="ProcessGrid" 
+                              HorizontalAlignment="Stretch"  
+                              Margin="15,10,5,0" VerticalAlignment="Top" Height="421" Width="580"  >
+            <!--<DataGridTextColumn Binding="{Binding WhateverIWantToDisplay}" >
+                <DataGridTextColumn.ElementStyle>
+                    <Style TargetType="{x:Type TextBlock}">
+
+                        <Setter Property="Background" Value="Green" />
+
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Status}" Value="NotStarted">
+                                <Setter Property="Foreground" Value="Blue" />
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding Status}" Value="Started">
+                                <Setter Property="Foreground" Value="Red" />
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding Status}" Value="Success">
+                                <Setter Property="Foreground" Value="Yellow" />
+                            </DataTrigger>
+
+                        </Style.Triggers>
+                    </Style>
+                </DataGridTextColumn.ElementStyle>
+            </DataGridTextColumn>-->
+        </xcdg:DataGridControl>
+        <!--<xcdg:DataGridControl x:Name="_dataGrid" 
+                            MaxHeight="400"
+                            ItemsSource="{Binding Source={StaticResource cvsOrders} }" >
+            -->
+        <!--<xcdg:DataGridControl.View>
+                -->
+        <!--<xcdg:TableflowView FixedColumnCount="2" />-->
+        <!--
+            </xcdg:DataGridControl.View>-->
+        <!--
+
+            <xcdg:DataGridControl.Columns>
+                -->
+        <!--Preconfigure the OrderID Column of the grid with CellValidationRule. -->
+        <!--<xcdg:Column FieldName="OrderID"
+                         IsMainColumn="True">
+                </xcdg:Column>-->
+        <!--
+            </xcdg:DataGridControl.Columns>
+        </xcdg:DataGridControl>-->
+    </Grid>
+</Page>
