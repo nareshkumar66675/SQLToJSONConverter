@@ -84,6 +84,9 @@
     <Compile Include="Views\DatabaseSelectModal.xaml.cs">
       <DependentUpon>DatabaseSelectModal.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SiteSelectUserControl.xaml.cs">
+      <DependentUpon>SiteSelectUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Wizard.xaml.cs">
       <DependentUpon>Wizard.xaml</DependentUpon>
     </Compile>
@@ -104,6 +107,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DatabaseSelectModal.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SiteSelectUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
