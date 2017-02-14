@@ -1,2 +1,6 @@
 language: csharp
 solution: Migration Tool.sln
+install:
+  - nuget restore Migration Tool.sln
+script:
+  - xbuild /p:Configuration=Release Migration Tool.sln
