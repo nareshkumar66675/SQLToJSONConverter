@@ -10,6 +10,7 @@ using Migration.ProcessQueue;
 using System.Data;
 using System.Diagnostics;
 using Migration.Configuration;
+using static Migration.Common.Common;
 
 namespace Migration.Persistence.Persistences.SQL
 {
@@ -17,11 +18,21 @@ namespace Migration.Persistence.Persistences.SQL
     {
         public bool Insert(ProcessItem item)
         {
-            //Stopwatch st = new Stopwatch();
-            SqlOperation.ExecuteBulkCopy(ConvertToCommonDataTable(item.Items,Configurator.GetKeyFormat(item.Component.Name)), item.Component.GroupName, Configurator.GetDestinationByComponentName(item.Component.Name));
-            //st.Stop();
-            //Trace.Write(st.Elapsed.ToString());
-            return true;
+            try
+            {
+                SqlOperation.ExecuteBulkCopy(ConvertToCommonDataTable(item.Items, Configurator.GetKeyFormat(item.Component.Name)), item.Component.GroupName, Configurator.GetDestinationByComponentName(item.Component.Name));
+
+                if(AppSettings.IsReportEnabled)
+                    SqlOperation.UpdatePersistReport(item.Component.Name, DateTime.Now, item.Items.Count, item.Component.GroupName,"Success");
+
+                return true;
+            }
+            catch (Exception)
+            {
+                if (AppSettings.IsReportEnabled)
+                    SqlOperation.UpdatePersistReport(item.Component.Name, DateTime.Now, item.Items.Count, item.Component.GroupName,"Failed");
+                return false;
+            }
         }
 
         private DataTable ConvertToCommonDataTable(List<object> items,KeyFormat keyFormat)

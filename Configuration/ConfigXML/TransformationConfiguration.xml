@@ -32,14 +32,14 @@
       optn.OPTN_CODE as Options_Code,
       optn.OPTN_DESCRIPTION as Options_Description,
       optn.OPTN_DEFAULT_VAL as Options_DefaultValue,
-      optn.OPTN_MIN_VALUE as Options_MinLength,
+      optn.OPTN_MIN_VALUE as Options_MinLength, 
       optn.OPTN_MAX_VALUE as Options_MaxLength,
       optn.OPTN_EDIT_ENABLED as Options_IsEditEnabled,
       optn.OPTN_ADD_ENABLED as Options_IsAddEnabled,
       optn.OPTN_MOVE_ENABLED as Options_IsMoveEnabled,
       optn.OPTN_MOVE_EDIT_ENABLED as Options_IsMoveEditEnabled,
       optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
-      optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
+      --optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
       CONVERT(bit,'true') as Options_IsSearchable
       FROM GAM.ASSET AS AST
       LEFT JOIN GAM.ASSET_DEFINITION AS AST_DFN ON AST.ASST_ID = AST_DFN.ASTDFN_ASST_ID

@@ -10,9 +10,9 @@ using static Migration.Common.Common;
 
 namespace Migration.Persistence.Helpers
 {
-    public static class SqlOperation
+    internal static class SqlOperation
     {
-        public static void ExecuteBulkCopy(DataTable data, GroupType type, string destinationTableName)
+        internal static void ExecuteBulkCopy(DataTable data, GroupType type, string destinationTableName)
         {
             using (SqlConnection destinationConnection =
                        new SqlConnection(ConnectionStrings.GetConnectionString(type)))
@@ -38,5 +38,18 @@ namespace Migration.Persistence.Helpers
                 }
             }
         }
-     }
+        internal static void UpdatePersistReport(string componentName, DateTime endTime, int totalInsertedRecordsCount, GroupType type,string Status)
+        {
+            using (var conn = new SqlConnection(ConnectionStrings.GetConnectionString(type)))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(Queries.ReportUpdate, conn);
+                cmd.Parameters.Add(new SqlParameter("@Name", componentName));
+                cmd.Parameters.Add(new SqlParameter("@InsrtdRcrds", totalInsertedRecordsCount));
+                cmd.Parameters.Add(new SqlParameter("@EndTime", endTime)); 
+                cmd.Parameters.Add(new SqlParameter("@Status", Status));
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
  }

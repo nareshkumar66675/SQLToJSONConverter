@@ -12,11 +12,11 @@ namespace Migration.Common
     {
         public static class ConnectionStrings
         {
-            public static string AuthConnectionString = @"Data Source=ws-in1060\SQLExpress;Integrated Security=true;Initial Catalog=Auth";
-            public static string AssetConnectionString = @"Data Source=ws-in1060\SQLExpress;Integrated Security=True;Initial Catalog=Asset";
+            public static string AuthConnectionString = @"Data Source=ws-in1060\SQLServer;Integrated Security=true;Initial Catalog=Auth";
+            public static string AssetConnectionString = @"Data Source=ws-in1060\SQLServer;Integrated Security=True;Initial Catalog=Asset";
             //public static string SourceConnectionString = "Data Source=10.2.108.21\\MSSQLSERVER2K12;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM140NEW";
             //public static string SourceConnectionString = "Data Source=10.2.108.169;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM140NEW";
-            public static string SourceConnectionString = @"Data Source=ws-in1060\SQLExpress;Integrated Security=True;Initial Catalog=Migration";
+            public static string SourceConnectionString = @"Data Source=ws-in1060\SQLServer;Integrated Security=True;Initial Catalog=Migration";
             /// <summary>
             /// Retrieves Connection String based on Group Type
             /// </summary>
@@ -82,7 +82,37 @@ namespace Migration.Common
                 }
                 private set { }
             }
+            public static bool IsReportEnabled
+            {
+                get
+                {
+                    bool isReportEnabled;
+                    return bool.TryParse(ConfigurationManager.AppSettings.Get("IsReportEnabled"), out isReportEnabled) ? isReportEnabled : false;
+                }
+                private set { }
+            }
 
+        }
+
+        public static class Queries
+        {
+            public static string ReportInsert
+            {
+                get
+                {
+                    return @"INSERT INTO [Migration].[Report] ([Component_Name],[Tot_Rcrds_InLegacy],[Tot_Unique_RcrdsInLegacy],[Start_Time],[Status]) 
+                             VALUES (@Name,@TotRecords,@TotUniqRecords,@StartTime,@Status)";
+                }
+                private set { }
+            }
+            public static string ReportUpdate
+            {
+                get
+                {
+                    return @"UPDATE [Migration].[Report] SET [Inserted_Rcrds_InNew]=@InsrtdRcrds,[End_Time]=@EndTime,[Status]=@Status WHERE [Component_Name]=@Name";
+                }
+                private set { }
+            }
         }
     }
 }
