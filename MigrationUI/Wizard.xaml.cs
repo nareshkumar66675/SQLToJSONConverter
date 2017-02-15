@@ -48,14 +48,20 @@ namespace MigrationTool
 
         private void Wiz_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
         {
-            ComponentsSelectUserControl AssetsCompSelectCntrl = new ComponentsSelectUserControl(); 
+            ComponentsSelectUserControl AssetsCompSelectCntrl = new ComponentsSelectUserControl();
+            SiteSelectUserControl AssetSiteCntrl = new SiteSelectUserControl();
+
             Logger.Instance.LogInfo("Navigating From Page - " + Wiz.CurrentPage.Name+" to Next Page. ");
             if (Wiz.CurrentPage == AssetConnectionPage)
             {
                 Grid AssetSiteSelectGrid = new Grid();
-                SiteSelectUserControl AssetSiteCntrl = new SiteSelectUserControl();
+                AssetSiteCntrl.LoadSites(GroupType.ASSET);
                 AssetSiteSelectGrid.Children.Add(AssetSiteCntrl);          
-                AssetSiteSelectionPage.Content = AssetSiteSelectGrid;          
+                AssetSiteSelectionPage.Content = AssetSiteSelectGrid;      
+            }
+            if(Wiz.CurrentPage == AssetSiteSelectionPage)
+            {
+                var t = AssetSiteCntrl.GetSelectedSites();
             }
             //if (Wiz.CurrentPage == ComponentsSelectionPage)
             //{
