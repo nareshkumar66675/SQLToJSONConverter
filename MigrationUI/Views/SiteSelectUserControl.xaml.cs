@@ -25,7 +25,6 @@ namespace MigrationTool.Views
         public SiteSelectUserControl()
         {
             InitializeComponent();
-            srcList=Enumerable.Range(1, 100).ToList();
             srcListBox.ItemsSource = srcList;
             selectedListBox.ItemsSource = selectedList;
         }
@@ -49,9 +48,10 @@ namespace MigrationTool.Views
             srcListBox.Items.Refresh();
         }
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        public void LoadSites()
         {
-            bool t;
+            srcList = Enumerable.Range(1, 100).ToList();
+            srcListBox.Items.Refresh();
         }
     }
 }

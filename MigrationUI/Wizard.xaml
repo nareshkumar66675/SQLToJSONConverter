@@ -66,33 +66,28 @@
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="AssetSiteSelectionPage" PageType="Interior"
-                                   Title="STEP 3 : Asset Database Connection"
-                                   Description="Enter the asset database connection details."
-                                   NextPage="{Binding ElementName=ComponentsSelectionPage}"
+                                   Title="STEP 4 : Asset Sites Selection"
+                                   Description="Select the Sites which needs to be migrated."
+                                   NextPage="{Binding ElementName=AssetsComponentsSelectionPage}"
                                    PreviousPage="{Binding ElementName=AssetConnectionPage}"
                              >
                 <!--CanSelectNextPage="False">-->
-                <xctk:WizardPage.Content>
-                    <Grid >
-                        <controls:SiteSelectUserControl x:Name="AssetSiteSelectCntrl" Margin="10" RenderTransformOrigin="1.023,0.523"></controls:SiteSelectUserControl>
-                    </Grid>
-                </xctk:WizardPage.Content>
             </xctk:WizardPage>
-            <xctk:WizardPage x:Name="ComponentsSelectionPage" PageType="Interior"
-                                   Title="STEP 4 : Components Selection"
+            <xctk:WizardPage x:Name="AssetsComponentsSelectionPage" PageType="Interior"
+                                   Title="STEP 5 : Components Selection"
                                    Description="Select the Components which needs to be migrated."
                                    NextPage="{Binding ElementName=ComponentsProcessPage}"
                                    PreviousPage="{Binding ElementName=AssetConnectionPage}"
                                    CanSelectNextPage="true">
-                <xctk:WizardPage.Content>
+                <!--<xctk:WizardPage.Content>
                     <Frame Source="Views\ComponentsSelectPage.xaml" />
-                </xctk:WizardPage.Content>
+                </xctk:WizardPage.Content>-->
             </xctk:WizardPage>
-            <xctk:WizardPage x:Name="ComponentsProcessPage" PageType="Interior"
-                                   Title="STEP 5 : Migration"
+            <xctk:WizardPage x:Name="AssetsComponentsProcessPage" PageType="Interior"
+                                   Title="STEP 6 : Migration"
                                    Description="Press Start to initiate the migrtaion process."
                                    NextPage="{Binding ElementName=LastPage}"
-                                   PreviousPage="{Binding ElementName=ComponentsSelectionPage}"
+                                   PreviousPage="{Binding ElementName=AssetsComponentsSelectionPage}"
                                    CanSelectNextPage="False"
                                    CanCancel="False">
                 <xctk:WizardPage.Content>

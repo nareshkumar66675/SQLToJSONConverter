@@ -75,8 +75,8 @@
     <Compile Include="Views\ComponentsProcessPage.xaml.cs">
       <DependentUpon>ComponentsProcessPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ComponentsSelectPage.xaml.cs">
-      <DependentUpon>ComponentsSelectPage.xaml</DependentUpon>
+    <Compile Include="Views\ComponentsSelectUserControl.xaml.cs">
+      <DependentUpon>ComponentsSelectUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DatabaseConfigUserControl.xaml.cs">
       <DependentUpon>DatabaseConfigUserControl.xaml</DependentUpon>
@@ -98,7 +98,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ComponentsSelectPage.xaml">
+    <Page Include="Views\ComponentsSelectUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

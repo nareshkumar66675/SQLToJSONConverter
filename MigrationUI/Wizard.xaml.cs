@@ -25,6 +25,7 @@ namespace MigrationTool
     {
         public static event EventHandler<UpdateCompleteEventArgs> UpdateComponents;
         public static event EventHandler StartComponentProcess;
+        
         public class UpdateCompleteEventArgs : EventArgs
         {
             public bool status { get; set; }
@@ -47,23 +48,43 @@ namespace MigrationTool
 
         private void Wiz_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
         {
+            ComponentsSelectUserControl AssetsCompSelectCntrl = new ComponentsSelectUserControl(); 
             Logger.Instance.LogInfo("Navigating From Page - " + Wiz.CurrentPage.Name+" to Next Page. ");
-            if (Wiz.CurrentPage == ComponentsSelectionPage)
+            if (Wiz.CurrentPage == AssetConnectionPage)
             {
-                var update = new UpdateCompleteEventArgs();
-                    UpdateComponents?.Invoke(this, update);
-                if(update.status)
-                {
-                    StartComponentProcess?.Invoke(this, e);
-                    Wiz.CanCancel = false;
-                    Wiz.CanSelectPreviousPage = false;
-                }
-                else
-                {
-                    Xceed.Wpf.Toolkit.MessageBox.Show("Select atleast one components to proceed.", "Compoenents Selection", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Wiz.CurrentPage = AssetConnectionPage;
-                }   
-            }            
+                Grid AssetSiteSelectGrid = new Grid();
+                SiteSelectUserControl AssetSiteCntrl = new SiteSelectUserControl();
+                AssetSiteSelectGrid.Children.Add(AssetSiteCntrl);          
+                AssetSiteSelectionPage.Content = AssetSiteSelectGrid;          
+            }
+            //if (Wiz.CurrentPage == ComponentsSelectionPage)
+            //{
+            //    var update = new UpdateCompleteEventArgs();
+            //        UpdateComponents?.Invoke(this, update);
+            //    if(update.status)
+            //    {
+            //        StartComponentProcess?.Invoke(this, e);
+            //        Wiz.CanCancel = false;
+            //        Wiz.CanSelectPreviousPage = false;
+            //    }
+            //    else
+            //    {
+            //        Xceed.Wpf.Toolkit.MessageBox.Show("Select atleast one components to proceed.", "Compoenents Selection", MessageBoxButton.OK, MessageBoxImage.Error);
+            //        Wiz.CurrentPage = AssetConnectionPage;
+            //    }   
+            //}         
+            if(Wiz.CurrentPage== AssetConnectionPage)
+            {
+                Grid tempGrid = new Grid();
+                AssetsCompSelectCntrl.SrcComponents = Configurator.SourceComponents.Group.Where(t => t.Name == GroupType.ASSET).Select(u => u.Component).FirstOrDefault();
+                AssetsCompSelectCntrl.InitializeData();
+                tempGrid.Children.Add(AssetsCompSelectCntrl);
+                AssetsComponentsSelectionPage.Content = tempGrid;
+            }   
+            if(Wiz.CurrentPage==AssetsComponentsSelectionPage)
+            {
+                var t=AssetsCompSelectCntrl.GetSelectedComponents();
+            }
         }
 
         private void AuthDB_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)

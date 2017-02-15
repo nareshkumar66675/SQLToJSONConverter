@@ -1,12 +1,12 @@
-﻿<Page
+﻿<UserControl
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MigrationTool.Views"
-      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="MigrationTool.Views.ComponentsSelectPage"
+      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="MigrationTool.Views.ComponentsSelectUserControl"
       mc:Ignorable="d"
-      Title="ComponentsSelectView" Height="436" Width="451">
+      Height="436" Width="451">
 
     <StackPanel x:Name="stackPnl" Margin="10" Height="Auto">
         <StackPanel.Resources>
@@ -41,8 +41,8 @@
             </Style>
 
         </StackPanel.Resources>
-        <Expander x:Name="expanderAuth" Height="Auto" Header="Auth" Grid.Column="0" IsExpanded="True" FontSize="16" FontWeight="ExtraBold" >
-            <Grid Height="99" Margin="0,0,8,0">
+        <Expander x:Name="expander" Height="Auto" Header="Auth" Grid.Column="0" IsExpanded="True" FontSize="16" FontWeight="ExtraBold" >
+            <Grid Height="384" Margin="0,0,8,0">
                 <Border Margin="5"
                 BorderBrush="White"
                 Background="DarkGray"
@@ -52,10 +52,10 @@
                         <DropShadowEffect Color="Gray" Opacity="0.3" />
                     </Border.Effect>
                 </Border>
-                <xctk:CheckListBox x:Name="AuthCheckList"  Height="79" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top"/>
+                <xctk:CheckListBox x:Name="ComponentsCheckList"  Height="364" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top" ItemSelectionChanged="ComponentsCheckList_ItemSelectionChanged"/>
             </Grid>
         </Expander>
-        <Expander x:Name="expanderAsset" Header="Asset" Grid.Column="0" IsExpanded="True" >
+        <!--<Expander x:Name="expanderAsset" Header="Asset" Grid.Column="0" IsExpanded="True" >
             <Grid Height="99" Margin="0,0,8,0">
                 <Border Margin="5"
                 BorderBrush="White"
@@ -68,8 +68,8 @@
                 </Border>
                 <xctk:CheckListBox x:Name="AssetCheckList" Height="79" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top"/>
             </Grid>
-        </Expander>
-        <Expander x:Name="expanderSearch" Header="Search" Grid.Column="0" IsExpanded="True" >
+        </Expander>-->
+        <!--<Expander x:Name="expanderSearch" Header="Search" Grid.Column="0" IsExpanded="True" >
             <Grid Height="99" Margin="0,0,8,0">
                 <Border Margin="5"
                 BorderBrush="White"
@@ -82,7 +82,7 @@
                 </Border>
                 <xctk:CheckListBox x:Name="SearchCheckList" Height="79" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top"/>
             </Grid>
-        </Expander>
+        </Expander>-->
     </StackPanel>
 
-</Page>
+</UserControl>
