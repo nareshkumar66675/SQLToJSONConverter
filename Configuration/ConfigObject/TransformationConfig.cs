@@ -18,6 +18,8 @@ namespace Migration.Configuration.ConfigObject
         public string Destination { get; set; }
         [XmlElement(ElementName = "KeyFormat")]
         public KeyFormat KeyFormat { get; set; }
+        [XmlIgnore]
+        public List<string> QueryParams { get; set; }
     }
     [XmlRoot(ElementName = "KeyFormat")]
     public class KeyFormat

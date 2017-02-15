@@ -6,9 +6,9 @@
       xmlns:local="clr-namespace:MigrationTool.Views"
       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="MigrationTool.Views.ComponentsSelectUserControl"
       mc:Ignorable="d"
-      Height="436" Width="451">
+      Height="380" Width="400">
 
-    <StackPanel x:Name="stackPnl" Margin="10" Height="Auto">
+    <StackPanel x:Name="stackPnl" Margin="10,10,10,10" Height="Auto">
         <StackPanel.Resources>
             <Style TargetType="Border" x:Key="RacePitBorderStyle" >
                 <Style.Resources>
@@ -35,15 +35,14 @@
                         TextWrapping="Wrap"/>
                 </Border>
             </DataTemplate>
-
             <Style TargetType="{x:Type Expander}">
                 <Setter Property="HeaderTemplate" Value="{StaticResource titleText}"/>
             </Style>
 
         </StackPanel.Resources>
-        <Expander x:Name="expander" Height="Auto" Header="Auth" Grid.Column="0" IsExpanded="True" FontSize="16" FontWeight="ExtraBold" >
-            <Grid Height="384" Margin="0,0,8,0">
-                <Border Margin="5"
+        <Expander x:Name="expander" Height="363" Header="Auth" Grid.Column="0" IsExpanded="True" FontSize="16" FontWeight="ExtraBold" >
+            <Grid Height="322" Margin="0,0,8,0">
+                <Border Margin="5,5,5,10"
                 BorderBrush="White"
                 Background="DarkGray"
                 BorderThickness="2,2,2,2"
@@ -52,37 +51,9 @@
                         <DropShadowEffect Color="Gray" Opacity="0.3" />
                     </Border.Effect>
                 </Border>
-                <xctk:CheckListBox x:Name="ComponentsCheckList"  Height="364" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top" ItemSelectionChanged="ComponentsCheckList_ItemSelectionChanged"/>
+                <xctk:CheckListBox x:Name="ComponentsCheckList"  Height="295" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top" ItemSelectionChanged="ComponentsCheckList_ItemSelectionChanged"/>
             </Grid>
         </Expander>
-        <!--<Expander x:Name="expanderAsset" Header="Asset" Grid.Column="0" IsExpanded="True" >
-            <Grid Height="99" Margin="0,0,8,0">
-                <Border Margin="5"
-                BorderBrush="White"
-                Background="DarkGray"
-                BorderThickness="2,2,2,2"
-                CornerRadius="8,8,8,8">
-                    <Border.Effect>
-                        <DropShadowEffect Color="Gray" Opacity="0.3" />
-                    </Border.Effect>
-                </Border>
-                <xctk:CheckListBox x:Name="AssetCheckList" Height="79" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top"/>
-            </Grid>
-        </Expander>-->
-        <!--<Expander x:Name="expanderSearch" Header="Search" Grid.Column="0" IsExpanded="True" >
-            <Grid Height="99" Margin="0,0,8,0">
-                <Border Margin="5"
-                BorderBrush="White"
-                Background="DarkGray"
-                BorderThickness="2,2,2,2"
-                CornerRadius="8,8,8,8">
-                    <Border.Effect>
-                        <DropShadowEffect Color="Gray" Opacity="0.3" />
-                    </Border.Effect>
-                </Border>
-                <xctk:CheckListBox x:Name="SearchCheckList" Height="79" FontSize="12" FontWeight="Normal" Margin="10,10,10,0" Padding="5,5,5,5" VerticalAlignment="Top"/>
-            </Grid>
-        </Expander>-->
     </StackPanel>
 
 </UserControl>

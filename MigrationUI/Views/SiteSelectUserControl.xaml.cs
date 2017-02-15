@@ -28,29 +28,20 @@ namespace MigrationTool.Views
         public SiteSelectUserControl()
         {
             InitializeComponent();
-
         }
-
         private void SelectSitesButton_Click(object sender, RoutedEventArgs e)
         {
-            var temp = srcListBox.SelectedItems.Cast<KeyValuePair<string, string>>().ToList();
-            foreach (var item in temp)
-            {
-                SelectedSites.Add(item.Key, item.Value);
-            }
-            temp.ForEach(t => SourceSites.Remove(t.Key));
+            var selectedItems = srcListBox.SelectedItems.Cast<KeyValuePair<string, string>>().ToList();
+            selectedItems.ForEach(item => SelectedSites.Add(item.Key, item.Value));
+            selectedItems.ForEach(t => SourceSites.Remove(t.Key));
             ResetListBoxes();
         }
-
         private void DeSelectSitesButton_Click(object sender, RoutedEventArgs e)
         {
-            var temp = selectedListBox.SelectedItems.Cast<KeyValuePair<string, string>>().ToList();
-            foreach (var item in temp)
-            {
-                SourceSites.Add(item.Key,item.Value);
-            }
+            var selectedItems = selectedListBox.SelectedItems.Cast<KeyValuePair<string, string>>().ToList();
+            selectedItems.ForEach(item => SourceSites.Add(item.Key, item.Value));
             SourceSites.OrderBy(t => t.Value);
-            temp.ForEach(t => SelectedSites.Remove(t.Key));
+            selectedItems.ForEach(t => SelectedSites.Remove(t.Key));
             ResetListBoxes();
         }
         private void ResetListBoxes()
@@ -73,12 +64,10 @@ namespace MigrationTool.Views
         }
         private Dictionary<string, string> GetNotMigratedSites(GroupType group)
         {
-            var all =DatabaseHelper.GetAllSites(ConnectionStrings.SourceConnectionString);
-            var migrated = DatabaseHelper.GetMigratedSites(ConnectionStrings.GetConnectionString(group));
-
-            migrated.ForEach(t => all.Remove(t));
-
-            return all;
+            var allSites = DatabaseHelper.GetAllSites(ConnectionStrings.SourceConnectionString);
+            var migratedSites = DatabaseHelper.GetMigratedSites(ConnectionStrings.GetConnectionString(group));
+            migratedSites.ForEach(t => allSites.Remove(t));
+            return allSites;
         }
     }
 }

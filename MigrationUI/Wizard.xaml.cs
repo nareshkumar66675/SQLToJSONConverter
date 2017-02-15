@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit;
+using Xceed.Wpf.Toolkit.Core;
 
 namespace MigrationTool
 {
@@ -38,7 +39,7 @@ namespace MigrationTool
             AuthConnectCntrl.OnConnectComplete += AuthDB_OnConnectComplete;
             AssetConnectCntrl.OnConnectComplete += AssetDB_OnConnectComplete;
             Wiz.Next += Wiz_Next;
-            Views.ComponentsProcessPage.ProcessCompleted += ComponentsProcessPage_ProcessCompleted;
+            ComponentsProcessPage.ProcessCompleted += ComponentsProcessPage_ProcessCompleted;
         }
 
         private void ComponentsProcessPage_ProcessCompleted(object sender, EventArgs e)
@@ -46,12 +47,13 @@ namespace MigrationTool
             Wiz.CurrentPage.CanSelectNextPage = true;
         }
 
-        private void Wiz_Next(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
+        private void Wiz_Next(object sender, CancelRoutedEventArgs e)
         {
             ComponentsSelectUserControl AssetsCompSelectCntrl = new ComponentsSelectUserControl();
             SiteSelectUserControl AssetSiteCntrl = new SiteSelectUserControl();
 
             Logger.Instance.LogInfo("Navigating From Page - " + Wiz.CurrentPage.Name+" to Next Page. ");
+
             if (Wiz.CurrentPage == AssetConnectionPage)
             {
                 Grid AssetSiteSelectGrid = new Grid();
@@ -61,7 +63,14 @@ namespace MigrationTool
             }
             if(Wiz.CurrentPage == AssetSiteSelectionPage)
             {
-                var t = AssetSiteCntrl.GetSelectedSites();
+                var temp = string.Join(",", AssetSiteCntrl.GetSelectedSites().Select(t => t.Key));
+
+                Grid tempGrid = new Grid();
+                AssetsCompSelectCntrl.SrcComponents = Configurator.SourceComponents.Group.Where(t => t.Name == GroupType.ASSET).Select(u => u.Component).FirstOrDefault();
+                AssetsCompSelectCntrl.InitializeData();
+                tempGrid.Children.Add(AssetsCompSelectCntrl);
+                AssetsComponentsSelectionPage.Content = tempGrid;
+                //Configurator.SetQueryParams()
             }
             //if (Wiz.CurrentPage == ComponentsSelectionPage)
             //{
@@ -78,21 +87,16 @@ namespace MigrationTool
             //        Xceed.Wpf.Toolkit.MessageBox.Show("Select atleast one components to proceed.", "Compoenents Selection", MessageBoxButton.OK, MessageBoxImage.Error);
             //        Wiz.CurrentPage = AssetConnectionPage;
             //    }   
-            //}         
+            //}
             if(Wiz.CurrentPage== AssetConnectionPage)
             {
-                Grid tempGrid = new Grid();
-                AssetsCompSelectCntrl.SrcComponents = Configurator.SourceComponents.Group.Where(t => t.Name == GroupType.ASSET).Select(u => u.Component).FirstOrDefault();
-                AssetsCompSelectCntrl.InitializeData();
-                tempGrid.Children.Add(AssetsCompSelectCntrl);
-                AssetsComponentsSelectionPage.Content = tempGrid;
+
             }   
             if(Wiz.CurrentPage==AssetsComponentsSelectionPage)
             {
                 var t=AssetsCompSelectCntrl.GetSelectedComponents();
             }
         }
-
         private void AuthDB_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
         {
             if (ValidateConnectionString(e.ConnectionString))

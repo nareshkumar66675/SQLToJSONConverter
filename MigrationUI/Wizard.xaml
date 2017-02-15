@@ -12,8 +12,19 @@
         Height="560.108" Width="706.17" WindowStartupLocation="CenterScreen"
         x:Name="WizardWindow">
     <Grid HorizontalAlignment="Left" Height="525" VerticalAlignment="Top" Width="696">
-        <xctk:Wizard x:Name="Wiz" FinishButtonClosesWindow="True" CurrentPage="{Binding ElementName=AssetSiteSelectionPage}" >
-
+        <xctk:Wizard x:Name="Wiz" FinishButtonClosesWindow="True" CurrentPage="{Binding ElementName=AuthConnectionPage}" >
+            <xctk:Wizard.Resources>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" >
+                        <Setter.Value>
+                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                <GradientStop Color="#FFF3F3F3" Offset="0"/>
+                                <GradientStop Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" Offset="0.971"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </xctk:Wizard.Resources>
             <xctk:WizardPage FontSize="14"  x:Name="IntroPage" 
                                    Title="Asset Matrix Data Migrate Tool"
                                    Description="Migrate Existing Data to new structure" 
@@ -49,6 +60,7 @@
                 <xctk:WizardPage.Content>
                     <Grid >
                         <controls:DatabaseConfigUserControl x:Name="AuthConnectCntrl" Margin="116,88,116,87" RenderTransformOrigin="1.023,0.523"></controls:DatabaseConfigUserControl>
+                        <Button x:Name="button" Content="Skip Auth" HorizontalAlignment="Left" Margin="294,346,0,0" VerticalAlignment="Top" Width="75"/>
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
@@ -77,7 +89,7 @@
                                    Title="STEP 5 : Components Selection"
                                    Description="Select the Components which needs to be migrated."
                                    NextPage="{Binding ElementName=ComponentsProcessPage}"
-                                   PreviousPage="{Binding ElementName=AssetConnectionPage}"
+                                   PreviousPage="{Binding ElementName=AssetSiteSelectionPage}"
                                    CanSelectNextPage="true">
                 <!--<xctk:WizardPage.Content>
                     <Frame Source="Views\ComponentsSelectPage.xaml" />

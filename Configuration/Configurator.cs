@@ -22,39 +22,26 @@ namespace Migration.Configuration
         {
             SourceComponents = XMLHelper.Components;
             SelectedComponents = new Components();
-            //MapTransforms();
             SetGroupName();
         }
-
         /// <summary>
         /// Retrieves Source/Query from Transformation XML
         /// </summary>
-        /// <param name="name">Component Name</param>
+        /// <param name="componentName">Component Name</param>
         /// <returns>Source/Query</returns>
-        public static string GetSourceByComponentName(string name)
+        public static string GetSourceByComponentName(string componentName)
         {
-            return XMLHelper.Transforms.Transformation.Where(t => t.Name == name).Select(u => u.Source).FirstOrDefault();
+            return GetTransformationEnumerable(componentName).Select(u => u.Source).FirstOrDefault();
         }
         /// <summary>
         /// Retrieves Destination Table from Transformation XML
         /// </summary>
-        /// <param name="name">Component Name</param>
+        /// <param name="componentName">Component Name</param>
         /// <returns>Destination Table Name</returns>
-        public static string GetDestinationByComponentName(string name)
+        public static string GetDestinationByComponentName(string componentName)
         {
-            return XMLHelper.Transforms.Transformation.Where(t => t.Name == name).Select(u => u.Destination).FirstOrDefault();
+            return GetTransformationEnumerable(componentName).Select(u => u.Destination).FirstOrDefault();
         }
-        private static void SetGroupName()
-        {
-            XMLHelper.Components.Group.ForEach(grp =>
-            {
-                grp.Component.ForEach(component =>
-                {
-                    component.GroupName = grp.Name;
-                });
-            });
-        }
-
         /// <summary>
         /// Sets the Selected Components which will be executed
         /// </summary>
@@ -72,10 +59,20 @@ namespace Migration.Configuration
                 SelectedComponents.Group.Add(new Group(x, grp.Name));
             });
         }
+        /// <summary>
+        /// Gets the KeyFormat From Transformation
+        /// </summary>
+        /// <param name="componentName">Component Name</param>
+        /// <returns>Key Format</returns>
         public static KeyFormat GetKeyFormat(string componentName)
         {
-            return XMLHelper.Transforms.Transformation.Where(t => t.Name == componentName).Select(u => u.KeyFormat).FirstOrDefault();
+            return GetTransformationEnumerable(componentName).Select(u => u.KeyFormat).FirstOrDefault();
         }
+        /// <summary>
+        /// Checks if there are any elemets in Components
+        /// </summary>
+        /// <param name="components">Components</param>
+        /// <returns>True if it has elements or else False</returns>
         public static bool HasElements(this Components components)
         {
             if (components == null || components.Group==null) return false;
@@ -87,6 +84,31 @@ namespace Migration.Configuration
             }
             return false;
         }
+        /// <summary>
+        /// Set Query Params to be used for Source Query
+        /// </summary>
+        /// <param name="componentName">Component Name</param>
+        /// <param name="queryParams">Paramaters Values</param>
+        public static void SetQueryParams(string componentName,List<string> queryParams)
+        {
+            GetTransformationEnumerable(componentName).FirstOrDefault().QueryParams = queryParams;
+        }
+
+        #region PrivateMethods
+        private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)
+        {
+            return XMLHelper.Transforms.Transformation.Where(t => t.Name == componentName);
+        }
+        private static void SetGroupName()
+        {
+            XMLHelper.Components.Group.ForEach(grp =>
+            {
+                grp.Component.ForEach(component =>
+                {
+                    component.GroupName = grp.Name;
+                });
+            });
+        }
         //private static void MapTransforms()
         //{
         //    XMLHelper.Components.Group.ForEach(grp =>
@@ -96,6 +118,7 @@ namespace Migration.Configuration
         //            component.Transformation = XMLHelper.Transforms.Transformation.Where(transfor => transfor.Name == component.Name).FirstOrDefault();
         //        });
         //    });
-        //}
+        //} 
+        #endregion
     }
 }
