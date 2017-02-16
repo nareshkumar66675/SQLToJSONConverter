@@ -85,6 +85,15 @@ namespace Migration.Configuration
             return false;
         }
         /// <summary>
+        /// To Get List Of components By Group Name
+        /// </summary>
+        /// <param name="group">Group Type</param>
+        /// <returns>List Of Component</returns>
+        public static List<Component> GetComponentsByGroup(GroupType group)
+        {
+            return SourceComponents.Group.Where(t => t.Name == group).Select(u => u.Component).FirstOrDefault();
+        }
+        /// <summary>
         /// Set Query Params to be used for Source Query
         /// </summary>
         /// <param name="componentName">Component Name</param>

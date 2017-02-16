@@ -38,6 +38,7 @@ namespace MigrationTool.Views
         public void InitializeData()
         {
             expander.Header = SrcComponents.Select(t => t.GroupName).FirstOrDefault().ToString();
+            Logger.Instance.LogInfo("Initializing Data For Components Selection for Group -" + expander.Header);
             ComponentsCheckList.ItemsSource = SrcComponents;
             ComponentsCheckList.DisplayMemberPath = "DisplayName";
             ComponentsCheckList.ValueMemberPath = "Name";
@@ -92,9 +93,14 @@ namespace MigrationTool.Views
             SelectedComponents = ComponentsCheckList.SelectedItems.Cast<Component>().ToList();
         }
 
-        public List<Component> GetSelectedComponents()
+        public Components GetSelectedComponents()
         {
-            return SelectedComponents;
+            Components components = new Components();
+            Group grp = new Group(SelectedComponents, SelectedComponents.Select(t => t.GroupName).FirstOrDefault());
+            List<Group> grpList = new List<Group>();
+            grpList.Add(grp);
+            components.Group = grpList;
+            return components;
         }
     }
 }

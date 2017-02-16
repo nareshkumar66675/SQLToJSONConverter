@@ -26,7 +26,12 @@ namespace MigrationTool
     {
         public static event EventHandler<UpdateCompleteEventArgs> UpdateComponents;
         public static event EventHandler StartComponentProcess;
-        
+
+        private ComponentsSelectUserControl AssetsCompSelectCntrl = new ComponentsSelectUserControl();
+        private ComponentsSelectUserControl AuthCompSelectCntrl = new ComponentsSelectUserControl();
+        private SiteSelectUserControl AssetSiteCntrl = new SiteSelectUserControl();
+        private ComponentsProcessUserControl AuthCompProcessCntrl = new ComponentsProcessUserControl();
+
         public class UpdateCompleteEventArgs : EventArgs
         {
             public bool status { get; set; }
@@ -39,21 +44,34 @@ namespace MigrationTool
             AuthConnectCntrl.OnConnectComplete += AuthDB_OnConnectComplete;
             AssetConnectCntrl.OnConnectComplete += AssetDB_OnConnectComplete;
             Wiz.Next += Wiz_Next;
-            ComponentsProcessPage.ProcessCompleted += ComponentsProcessPage_ProcessCompleted;
+            AuthCompProcessCntrl.ProcessCompleted += AuthComponents_ProcessCompleted;
         }
 
-        private void ComponentsProcessPage_ProcessCompleted(object sender, EventArgs e)
+        private void AuthComponents_ProcessCompleted(object sender, EventArgs e)
         {
             Wiz.CurrentPage.CanSelectNextPage = true;
         }
 
         private void Wiz_Next(object sender, CancelRoutedEventArgs e)
         {
-            ComponentsSelectUserControl AssetsCompSelectCntrl = new ComponentsSelectUserControl();
-            SiteSelectUserControl AssetSiteCntrl = new SiteSelectUserControl();
-
             Logger.Instance.LogInfo("Navigating From Page - " + Wiz.CurrentPage.Name+" to Next Page. ");
 
+            if(Wiz.CurrentPage==AuthConnectionPage)
+            {
+                Grid tempGrid = new Grid();
+                AuthCompSelectCntrl.SrcComponents = Configurator.GetComponentsByGroup(GroupType.AUTH);
+                AuthCompSelectCntrl.InitializeData();
+                tempGrid.Children.Add(AuthCompSelectCntrl);
+                AuthComponentsSelectionPage.Content = tempGrid;
+            }
+            if(Wiz.CurrentPage==AuthComponentsSelectionPage)
+            {
+                var comp =AuthCompSelectCntrl.GetSelectedComponents();
+                Grid tempGrid = new Grid();
+                tempGrid.Children.Add(AuthCompProcessCntrl);
+                AuthComponentsProcessPage.Content = tempGrid;
+                AuthCompProcessCntrl.StartComponentProcess(comp);
+            }
             if (Wiz.CurrentPage == AssetConnectionPage)
             {
                 Grid AssetSiteSelectGrid = new Grid();
@@ -66,7 +84,7 @@ namespace MigrationTool
                 var temp = string.Join(",", AssetSiteCntrl.GetSelectedSites().Select(t => t.Key));
 
                 Grid tempGrid = new Grid();
-                AssetsCompSelectCntrl.SrcComponents = Configurator.SourceComponents.Group.Where(t => t.Name == GroupType.ASSET).Select(u => u.Component).FirstOrDefault();
+                AssetsCompSelectCntrl.SrcComponents = Configurator.GetComponentsByGroup(GroupType.ASSET);
                 AssetsCompSelectCntrl.InitializeData();
                 tempGrid.Children.Add(AssetsCompSelectCntrl);
                 AssetsComponentsSelectionPage.Content = tempGrid;
@@ -87,11 +105,7 @@ namespace MigrationTool
             //        Xceed.Wpf.Toolkit.MessageBox.Show("Select atleast one components to proceed.", "Compoenents Selection", MessageBoxButton.OK, MessageBoxImage.Error);
             //        Wiz.CurrentPage = AssetConnectionPage;
             //    }   
-            //}
-            if(Wiz.CurrentPage== AssetConnectionPage)
-            {
-
-            }   
+            //}   
             if(Wiz.CurrentPage==AssetsComponentsSelectionPage)
             {
                 var t=AssetsCompSelectCntrl.GetSelectedComponents();
@@ -129,6 +143,16 @@ namespace MigrationTool
                 return true;
             }
             return false;
+        }
+
+        private void SkipAuthButton_Click(object sender, RoutedEventArgs e)
+        {
+            Wiz.CurrentPage = AssetConnectionPage;
+        }
+
+        private void SkipAssetButton_Click(object sender, RoutedEventArgs e)
+        {
+            Wiz.CurrentPage = LastPage;
         }
     }
 }

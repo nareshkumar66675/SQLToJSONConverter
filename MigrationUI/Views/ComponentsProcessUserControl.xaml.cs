@@ -1,5 +1,6 @@
 ﻿using Migration.Common;
 using Migration.Configuration;
+using Migration.Configuration.ConfigObject;
 using Migration.Generate;
 using Migration.Persistence;
 using Migration.ProcessQueue;
@@ -20,16 +21,16 @@ using Xceed.Wpf.DataGrid;
 namespace MigrationTool.Views
 {
     /// <summary>
-    /// Interaction logic for ComponentsProcessPage.xaml
+    /// Interaction logic for ComponentsProcessUserControl.xaml
     /// </summary>
-    public partial class ComponentsProcessPage : Page
+    public partial class ComponentsProcessUserControl : UserControl
     {
         public DataTable table { get; set; }
-        public static event EventHandler ProcessCompleted;
-        public ComponentsProcessPage()
+        public event EventHandler ProcessCompleted;
+        public ComponentsProcessUserControl()
         {
             InitializeComponent();
-            Wizard.StartComponentProcess += Wizard_StartComponentProcess;
+            //Wizard.StartComponentProcess += Wizard_StartComponentProcess;
             InitializeDataGrid();
 
         }
@@ -61,30 +62,53 @@ namespace MigrationTool.Views
             }
         }
 
-        private void Wizard_StartComponentProcess(object sender, EventArgs e)
+        public void StartComponentProcess(Components components)
         {
-            if(table.Rows.Count==0)
+            if (table.Rows.Count == 0)
             {
-                Configurator.SelectedComponents.Group.ForEach(grp =>
+                components.Group.ForEach(grp =>
                 {
                     grp.Component.ForEach(COMP =>
                     {
                         ProgressBar temp = new ProgressBar();
                         temp.Name = COMP.Name + "Progress";
                         temp.Minimum = 0; temp.Maximum = 100;
-                        table.Rows.Add(grp.Name.ToString(), COMP.DisplayName, new ProgressBar(), Status.NotStarted.ToString(),COMP.Name);
+                        table.Rows.Add(grp.Name.ToString(), COMP.DisplayName, new ProgressBar(), Status.NotStarted.ToString(), COMP.Name);
                     });
                 });
-                ProcessGrid.Items.Refresh();                
+                ProcessGrid.Items.Refresh();
                 BackgroundWorker worker = new BackgroundWorker();
                 //worker.WorkerReportsProgress = true;
                 worker.DoWork += Worker_StartProcess;
                 //worker.ProgressChanged += worker_ProgressChanged;
 
-                worker.RunWorkerAsync();
+                worker.RunWorkerAsync(components);
             }
-
         }
+        //private void Wizard_StartComponentProcess(object sender, EventArgs e)
+        //{
+        //    if(table.Rows.Count==0)
+        //    {
+        //        Configurator.SelectedComponents.Group.ForEach(grp =>
+        //        {
+        //            grp.Component.ForEach(COMP =>
+        //            {
+        //                ProgressBar temp = new ProgressBar();
+        //                temp.Name = COMP.Name + "Progress";
+        //                temp.Minimum = 0; temp.Maximum = 100;
+        //                table.Rows.Add(grp.Name.ToString(), COMP.DisplayName, new ProgressBar(), Status.NotStarted.ToString(),COMP.Name);
+        //            });
+        //        });
+        //        ProcessGrid.Items.Refresh();                
+        //        BackgroundWorker worker = new BackgroundWorker();
+        //        //worker.WorkerReportsProgress = true;
+        //        worker.DoWork += Worker_StartProcess;
+        //        //worker.ProgressChanged += worker_ProgressChanged;
+
+        //        worker.RunWorkerAsync();
+        //    }
+
+        //}
 
         private async void Worker_StartProcess(object sender, DoWorkEventArgs e)
         {
@@ -97,7 +121,7 @@ namespace MigrationTool.Views
 
                 //Task t1 = Task.Factory.StartNew(() => gen.Start(Configurator.SelectedComponents, progressGenerate));
                 //Task t2 = Task.Factory.StartNew(() => ps.Start(progressPersist));
-                Task genTask = generate.Start(Configurator.SelectedComponents, progressGenerate);
+                Task genTask = generate.Start(e.Argument as Components, progressGenerate);
                 Task persisTask = persist.Start(progressPersist);
 
                 await genTask;
@@ -108,6 +132,7 @@ namespace MigrationTool.Views
                     ProcessCompleted?.Invoke(sender, e);
                     Xceed.Wpf.Toolkit.MessageBox.Show("Completed", "Process Status", MessageBoxButton.OK, MessageBoxImage.Information);
                     Logger.Instance.LogInfo("Components Processs Completed");
+                    //table.Clear();
                 });
             }
             catch (Exception ex)

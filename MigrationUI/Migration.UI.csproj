@@ -72,8 +72,8 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\DatabaseHelper.cs" />
     <Compile Include="Helpers\Enums.cs" />
-    <Compile Include="Views\ComponentsProcessPage.xaml.cs">
-      <DependentUpon>ComponentsProcessPage.xaml</DependentUpon>
+    <Compile Include="Views\ComponentsProcessUserControl.xaml.cs">
+      <DependentUpon>ComponentsProcessUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ComponentsSelectUserControl.xaml.cs">
       <DependentUpon>ComponentsSelectUserControl.xaml</DependentUpon>
@@ -94,7 +94,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\ComponentsProcessPage.xaml">
+    <Page Include="Views\ComponentsProcessUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
