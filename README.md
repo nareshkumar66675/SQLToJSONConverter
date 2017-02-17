@@ -1,3 +1,4 @@
+[![N|Solid](https://ci.appveyor.com/api/projects/status/sspdgv6l39nexxb4/branch/master?svg=true&retina=true)](https://nodesource.com/products/nsolid)
 ## Welcome to GitHub Pages
 
 You can use the [editor on GitHub](https://github.com/nareshkumar66675/SQLToJSONConverter/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
