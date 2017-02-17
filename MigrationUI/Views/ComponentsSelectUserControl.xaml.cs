@@ -17,9 +17,20 @@ namespace MigrationTool.Views
     /// </summary>
     public partial class ComponentsSelectUserControl : UserControl
     {
+        #region VariablesInitialization
         private static List<Component> SelectedComponents = new List<Component>();
         public List<int> SelectedSiteIDList { get; set; }
         public List<Component> SourceComponents { get; set; }
+        public event EventHandler<ComponentsSelectionChangedEventArgs> OnComponentsSelectionChanged;
+        #endregion
+        public class ComponentsSelectionChangedEventArgs : EventArgs
+        {
+            public ComponentsSelectionChangedEventArgs(bool isEmpty)
+            {
+                this.IsEmpty = isEmpty;
+            }
+            public bool IsEmpty { get; set; }
+        }
         public ComponentsSelectUserControl()
         {
             InitializeComponent();     
@@ -34,45 +45,13 @@ namespace MigrationTool.Views
             ComponentsCheckList.SelectedItemsOverride = SourceComponents.ToList();
             SelectedComponents = SourceComponents.ToList();
         }
-        //private void Wizard_UpdateComponents(object sender, UpdateCompleteEventArgs e)
-        //{
-        //    List<string> authSelectedItems = new List<string>();
-        //    List<string> assetSelectedItems = new List<string>();
-        //    List<string> searchSelectedItems = new List<string>();
-        //    Dictionary<GroupType, List<string>> selectedItems = new Dictionary<GroupType, List<string>>();
-
-        //    foreach (var item in AuthCheckList.SelectedItems)
-        //    {
-        //        authSelectedItems.Add(item as string);
-        //    }
-        //    //foreach (var item in AssetCheckList.SelectedItems)
-        //    //{
-        //    //    assetSelectedItems.Add(item as string);
-        //    //}
-        //    //foreach (var item in SearchCheckList.SelectedItems)
-        //    //{
-        //    //    searchSelectedItems.Add(item as string);
-        //    //}
-        //    selectedItems.Add(GroupType.AUTH, authSelectedItems);
-        //    selectedItems.Add(GroupType.ASSET, assetSelectedItems);
-        //    selectedItems.Add(GroupType.SEARCH, searchSelectedItems);
-        //    Configurator.SetSelectedComponentsByDisplayName(selectedItems);
-        //    if (Configurator.SelectedComponents.HasElements())
-        //    {
-        //        e.status = true;
-        //        Logger.Instance.LogInfo("Selected Auth Components:" + string.Join(",", authSelectedItems));
-        //        Logger.Instance.LogInfo("Selected Asset Components:" + string.Join(",", assetSelectedItems));
-        //        Logger.Instance.LogInfo("Selected Search Components:" + string.Join(",", searchSelectedItems));
-        //    }
-        //    else
-        //        e.status = false;
-        //}
-
         private void ComponentsCheckList_ItemSelectionChanged(object sender, Xceed.Wpf.Toolkit.Primitives.ItemSelectionChangedEventArgs e)
         {
             SelectedComponents = ComponentsCheckList.SelectedItems.Cast<Component>().ToList();
+            var isEmpty = SelectedComponents.Count > 0 ? false : true;
+            ComponentsSelectionChangedEventArgs args = new ComponentsSelectionChangedEventArgs(isEmpty);
+            OnComponentsSelectionChanged?.Invoke(this, args);
         }
-
         public Components GetSelectedComponents()
         {
             Components components = new Components();
