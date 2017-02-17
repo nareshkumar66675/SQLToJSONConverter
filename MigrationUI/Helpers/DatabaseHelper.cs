@@ -62,5 +62,46 @@ namespace MigrationTool.Helpers
             return list;
 
         }
+        public static Dictionary<string, string> GetAllSites(string connectionString)
+        {
+            Dictionary<string, string> SiteList = new Dictionary<string, string>();
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+
+                using (SqlCommand cmd = new SqlCommand("SELECT SITE_NUMBER,Site_Long_Name FROM GAM.VIEW_SITE_INFO order by Site_Long_Name", con))
+                {
+                    using (IDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            SiteList.Add(dr[0].ToString(), dr[1].ToString());
+                        }
+                    }
+                }
+            }
+            return SiteList;
+        }
+        public static List<string> GetMigratedSites(string connectionString)
+        {
+            List<string> SiteList = new List<string>();
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                string query = @"select Distinct SiteID from[Migration].[SiteGroup] grp 
+                                LEFT JOIN[Migration].[Report] rpt on grp.SiteGroupID = rpt.SiteGroupID and rpt.[Status] = 'Success'";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (IDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            SiteList.Add(dr[0].ToString());
+                        }
+                    }
+                }
+            }
+            return SiteList;
+        }
     }
 }

@@ -26,10 +26,10 @@ namespace Migration.Common
 
         private Logger()
         {
-            logWriter = TextWriter.Synchronized(File.AppendText(Path.Combine(AppSettings.LogFilePath,string.Concat(AppSettings.LogFileName,"_", DateTime.Now.ToString(AppSettings.LogFileTimeStampPattern), ".txt"))));
+            string fileName = Path.Combine(AppSettings.LogFilePath, string.Concat(AppSettings.LogFileName, "_", DateTime.Now.ToString(AppSettings.LogFileTimeStampPattern), ".txt"));
+            logWriter = TextWriter.Synchronized(File.AppendText(fileName));
             WriteToFile("********Start Of Log**********");
         }
-
         public void LogInfo(string logMessage)
         {
             try
