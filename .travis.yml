@@ -1,5 +1,4 @@
-language: csharp
-solution: Migration Tool.sln
+language: c
 install:
   - sudo apt-get install mono-devel mono-gmcs
 script:
