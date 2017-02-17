@@ -52,7 +52,7 @@ namespace MigrationTool.Views
                 if (rsltString=="")
                 {
                     Logger.Instance.LogInfo("Cannot Establish a Connection");
-                    Xceed.Wpf.Toolkit.MessageBox.Show("Cannot Establish a Connection", "Database Connection",MessageBoxButton.OK,MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this),"Cannot Establish a Connection", "Database Connection",MessageBoxButton.OK,MessageBoxImage.Error);
                 }
                 else
                 {

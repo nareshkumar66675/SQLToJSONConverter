@@ -74,10 +74,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Auth_Floret\Library\Domain\Auth.Domain.csproj">
-      <Project>{72d12166-348c-49d6-9984-e000a634a45f}</Project>
-      <Name>Auth.Domain</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Configuration\Migration.Configuration.csproj">
       <Project>{c259a426-7959-4deb-b711-29c768c6986e}</Project>
       <Name>Migration.Configuration</Name>

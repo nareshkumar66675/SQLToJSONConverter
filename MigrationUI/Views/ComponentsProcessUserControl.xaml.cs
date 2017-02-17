@@ -105,7 +105,7 @@ namespace MigrationTool.Views
                 Dispatcher.Invoke(() =>
                 {
                     ProcessCompleted?.Invoke(sender, e);
-                    Xceed.Wpf.Toolkit.MessageBox.Show("Completed", "Process Status", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this),"Completed", "Process Status", MessageBoxButton.OK, MessageBoxImage.Information);
                     Logger.Instance.LogInfo("Components Processs Completed");
                     //table.Clear();
                 });
@@ -113,7 +113,7 @@ namespace MigrationTool.Views
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Processing Components Failed for Group -" + components.Group.FirstOrDefault().Name??"", ex);
-                MessageBox.Show("Failed");
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Failed", "Process Status", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -11,8 +11,6 @@ namespace Migration.Generate.Helpers
     {
         public List<T> Map<T>(dynamic resultSet,Type type)
         {
-            Stopwatch st = new Stopwatch();
-            st.Start();
             //var obj = (object)resultSet;
             //List<T> result = new List<T>();
             //var temp =(obj as List<object>).Select((x, i) => new { Index = i, Value = x })
@@ -24,12 +22,8 @@ namespace Migration.Generate.Helpers
             //    var tempResult = Slapper.AutoMapper.MapDynamic(type, item);
             //    result.AddRange(tempResult as IEnumerable<T>);
             //}
-
-            var tempResult = (Slapper.AutoMapper.MapDynamic(type, resultSet,false) as IEnumerable<T>).ToList();
-
-            st.Stop();
-            Trace.Write( st.Elapsed.ToString());
-            return tempResult;
+            var mappedObject = (Slapper.AutoMapper.MapDynamic(type, resultSet,false) as IEnumerable<T>).ToList();
+            return mappedObject;
         }
     }
 }
