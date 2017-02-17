@@ -26,20 +26,24 @@ namespace Migration.Generate
                 {
                     progress.Report(new ProcessStatus(comp.Name, 0, Status.Running));
                     var result =  await StartTask(comp);
-                    //Thread.Sleep(10000);
                     if (result)
+                    {
                         progress.Report(new ProcessStatus(comp.Name, 100, Status.Success));
+                        Logger.Instance.LogInfo(string.Format("Generate task for the component {0} Succeeded.", comp.Name));
+                    }
                     else
+                    {
                         progress.Report(new ProcessStatus(comp.Name, 100, Status.Failed));
+                    }
                 }
             }
             ProcessQueue.ProcessQueue.Processes.CompleteAdding();
+            Logger.Instance.LogInfo("Generate Process Completed for Groups :" +string.Join(",",components.Group.Select(t=>t.Name)));
         }
 
         private async Task<bool> StartTask(Component component)
         {
             bool result = false;
-
             try
             {
                 await Task.Run(() =>

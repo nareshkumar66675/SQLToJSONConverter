@@ -56,10 +56,12 @@ namespace MigrationTool.Views
             SourceSites = GetNotMigratedSites(group);
             srcListBox.DisplayMemberPath = "Value";
             selectedListBox.DisplayMemberPath = "Value";
+            Logger.Instance.LogInfo("Site Selection for Group - "+ group);
             ResetListBoxes();
         }
         public Dictionary<string, string> GetSelectedSites()
         {
+            Logger.Instance.LogInfo("Selected Sites : "+ string.Join(",",SelectedSites.Select(t=>t.Key)));
             return SelectedSites;
         }
         private Dictionary<string, string> GetNotMigratedSites(GroupType group)

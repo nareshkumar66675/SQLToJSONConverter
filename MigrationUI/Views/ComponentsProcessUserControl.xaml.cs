@@ -30,7 +30,6 @@ namespace MigrationTool.Views
         public ComponentsProcessUserControl()
         {
             InitializeComponent();
-            //Wizard.StartComponentProcess += Wizard_StartComponentProcess;
             InitializeDataGrid();
 
         }
@@ -81,37 +80,13 @@ namespace MigrationTool.Views
                 //worker.WorkerReportsProgress = true;
                 worker.DoWork += Worker_StartProcess;
                 //worker.ProgressChanged += worker_ProgressChanged;
-
                 worker.RunWorkerAsync(components);
             }
         }
-        //private void Wizard_StartComponentProcess(object sender, EventArgs e)
-        //{
-        //    if(table.Rows.Count==0)
-        //    {
-        //        Configurator.SelectedComponents.Group.ForEach(grp =>
-        //        {
-        //            grp.Component.ForEach(COMP =>
-        //            {
-        //                ProgressBar temp = new ProgressBar();
-        //                temp.Name = COMP.Name + "Progress";
-        //                temp.Minimum = 0; temp.Maximum = 100;
-        //                table.Rows.Add(grp.Name.ToString(), COMP.DisplayName, new ProgressBar(), Status.NotStarted.ToString(),COMP.Name);
-        //            });
-        //        });
-        //        ProcessGrid.Items.Refresh();                
-        //        BackgroundWorker worker = new BackgroundWorker();
-        //        //worker.WorkerReportsProgress = true;
-        //        worker.DoWork += Worker_StartProcess;
-        //        //worker.ProgressChanged += worker_ProgressChanged;
-
-        //        worker.RunWorkerAsync();
-        //    }
-
-        //}
 
         private async void Worker_StartProcess(object sender, DoWorkEventArgs e)
         {
+            var components = e.Argument as Components;
             try
             {   
                 Generate generate = new Generate();
@@ -121,7 +96,7 @@ namespace MigrationTool.Views
 
                 //Task t1 = Task.Factory.StartNew(() => gen.Start(Configurator.SelectedComponents, progressGenerate));
                 //Task t2 = Task.Factory.StartNew(() => ps.Start(progressPersist));
-                Task genTask = generate.Start(e.Argument as Components, progressGenerate);
+                Task genTask = generate.Start(components, progressGenerate);
                 Task persisTask = persist.Start(progressPersist);
 
                 await genTask;
@@ -137,6 +112,7 @@ namespace MigrationTool.Views
             }
             catch (Exception ex)
             {
+                Logger.Instance.LogError("Processing Components Failed for Group -" + components.Group.FirstOrDefault().Name??"", ex);
                 MessageBox.Show("Failed");
             }
         }

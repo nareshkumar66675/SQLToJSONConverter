@@ -24,18 +24,20 @@ namespace MigrationTool
     /// </summary>
     public partial class Wizard : Window
     {
-        public static event EventHandler<UpdateCompleteEventArgs> UpdateComponents;
-        public static event EventHandler StartComponentProcess;
+        #region VariableInitialization
+        //public static event EventHandler<UpdateCompleteEventArgs> UpdateComponents;
+        //public static event EventHandler StartComponentProcess;
 
-        private ComponentsSelectUserControl AssetsCompSelectCntrl = new ComponentsSelectUserControl();
         private ComponentsSelectUserControl AuthCompSelectCntrl = new ComponentsSelectUserControl();
+        private ComponentsSelectUserControl AssetsCompSelectCntrl = new ComponentsSelectUserControl();
         private SiteSelectUserControl AssetSiteCntrl = new SiteSelectUserControl();
         private ComponentsProcessUserControl AuthCompProcessCntrl = new ComponentsProcessUserControl();
-
-        public class UpdateCompleteEventArgs : EventArgs
-        {
-            public bool status { get; set; }
-        }
+        private ComponentsProcessUserControl AssetCompProcessCntrl = new ComponentsProcessUserControl();
+        //public class UpdateCompleteEventArgs : EventArgs
+        //{
+        //    public bool status { get; set; }
+        //} 
+        #endregion
         public Wizard()
         {
             InitializeComponent();
@@ -45,6 +47,12 @@ namespace MigrationTool
             AssetConnectCntrl.OnConnectComplete += AssetDB_OnConnectComplete;
             Wiz.Next += Wiz_Next;
             AuthCompProcessCntrl.ProcessCompleted += AuthComponents_ProcessCompleted;
+            AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
+        }
+
+        private void AssetCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
+        {
+            Wiz.CurrentPage.CanSelectNextPage = true;
         }
 
         private void AuthComponents_ProcessCompleted(object sender, EventArgs e)
@@ -59,7 +67,7 @@ namespace MigrationTool
             if(Wiz.CurrentPage==AuthConnectionPage)
             {
                 Grid tempGrid = new Grid();
-                AuthCompSelectCntrl.SrcComponents = Configurator.GetComponentsByGroup(GroupType.AUTH);
+                AuthCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.AUTH);
                 AuthCompSelectCntrl.InitializeData();
                 tempGrid.Children.Add(AuthCompSelectCntrl);
                 AuthComponentsSelectionPage.Content = tempGrid;
@@ -84,11 +92,17 @@ namespace MigrationTool
                 var temp = string.Join(",", AssetSiteCntrl.GetSelectedSites().Select(t => t.Key));
 
                 Grid tempGrid = new Grid();
-                AssetsCompSelectCntrl.SrcComponents = Configurator.GetComponentsByGroup(GroupType.ASSET);
+                AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.ASSET);
                 AssetsCompSelectCntrl.InitializeData();
                 tempGrid.Children.Add(AssetsCompSelectCntrl);
                 AssetsComponentsSelectionPage.Content = tempGrid;
                 //Configurator.SetQueryParams()
+            }
+            if(Wiz.CurrentPage==AssetsComponentsSelectionPage)
+            {
+                var comp = AssetsCompSelectCntrl.GetSelectedComponents();
+                AddUserControlToPage(AssetsComponentsProcessPage, AssetCompProcessCntrl);
+                AssetCompProcessCntrl.StartComponentProcess(comp);
             }
             //if (Wiz.CurrentPage == ComponentsSelectionPage)
             //{
@@ -144,15 +158,19 @@ namespace MigrationTool
             }
             return false;
         }
-
         private void SkipAuthButton_Click(object sender, RoutedEventArgs e)
         {
             Wiz.CurrentPage = AssetConnectionPage;
         }
-
         private void SkipAssetButton_Click(object sender, RoutedEventArgs e)
         {
             Wiz.CurrentPage = LastPage;
+        }
+        private void AddUserControlToPage(WizardPage page,UserControl cntrl)
+        {
+            Grid tempGrid = new Grid();
+            tempGrid.Children.Add(cntrl);
+            page.Content = tempGrid;
         }
     }
 }

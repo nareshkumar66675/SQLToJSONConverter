@@ -9,7 +9,7 @@
       tp.MODL_ID as Module_Id,
       tp.MODL_NAME as Module_Name
       FROM [COMMON].[USER_FUNCTION] tc
-      INNER JOIN [COMMON].[MODULE] tp ON tc.MODULE_ID = tp.MODL_ID where FUNC_ID>0
+      LEFT JOIN [COMMON].[MODULE] tp ON tc.MODULE_ID = tp.MODL_ID where FUNC_ID>0
     </Source>
     <Destination>[Employee].[Task]</Destination>
     <KeyFormat Format="53_{0}" Keys="Id" />
