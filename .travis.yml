@@ -2,4 +2,8 @@ language: c
 install:
   - sudo apt-get install mono-devel mono-gmcs
 script:
+<<<<<<< HEAD
   - xbuild /p:Configuration=Release Migration Tool.sln -Verbosity detailed
+=======
+  - xbuild /p:Configuration=Release Migration Tool-WithoutDomains.sln -Verbosity detailed
+>>>>>>> UIReorganize

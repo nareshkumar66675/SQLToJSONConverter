@@ -33,7 +33,7 @@ namespace Migration.Persistence.Helpers
                     catch (Exception ex)
                     {
                         Logger.Instance.LogError("Bulk Copy Failed for table " + destinationTableName, ex);
-                        throw ex;
+                        throw;
                     }
                 }
             }

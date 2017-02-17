@@ -41,23 +41,6 @@ namespace MigrationTool
             AuthCompSelectCntrl.OnComponentsSelectionChanged += AuthCompSelectCntrl_OnComponentsSelectionChanged;
             AssetsCompSelectCntrl.OnComponentsSelectionChanged += AssetsCompSelectCntrl_OnComponentsSelectionChanged;
         }
-
-        private void AssetsCompSelectCntrl_OnComponentsSelectionChanged(object sender, ComponentsSelectionChangedEventArgs e)
-        {
-            AssetsComponentsSelectionPage.CanSelectNextPage = !e.IsEmpty;
-        }
-        private void AuthCompSelectCntrl_OnComponentsSelectionChanged(object sender, ComponentsSelectionChangedEventArgs e)
-        {
-            AuthComponentsSelectionPage.CanSelectNextPage = !e.IsEmpty;
-        }
-        private void AssetCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
-        {
-            Wiz.CurrentPage.CanSelectNextPage = true;
-        }
-        private void AuthComponents_ProcessCompleted(object sender, EventArgs e)
-        {
-            Wiz.CurrentPage.CanSelectNextPage = true;
-        }
         private void Wiz_Next(object sender, CancelRoutedEventArgs e)
         {
             Logger.Instance.LogInfo("Navigating From Page - " + Wiz.CurrentPage.Name +" to Next Page. ");
@@ -93,23 +76,7 @@ namespace MigrationTool
                 var comp = AssetsCompSelectCntrl.GetSelectedComponents();
                 AddUserControlToPage(AssetsComponentsProcessPage, AssetCompProcessCntrl);
                 AssetCompProcessCntrl.StartComponentProcess(comp);
-            }
-            //if (Wiz.CurrentPage == ComponentsSelectionPage)
-            //{
-            //    var update = new UpdateCompleteEventArgs();
-            //        UpdateComponents?.Invoke(this, update);
-            //    if(update.status)
-            //    {
-            //        StartComponentProcess?.Invoke(this, e);
-            //        Wiz.CanCancel = false;
-            //        Wiz.CanSelectPreviousPage = false;
-            //    }
-            //    else
-            //    {
-            //        Xceed.Wpf.Toolkit.MessageBox.Show("Select atleast one components to proceed.", "Compoenents Selection", MessageBoxButton.OK, MessageBoxImage.Error);
-            //        Wiz.CurrentPage = AssetConnectionPage;
-            //    }   
-            //}   
+            }  
             if(Wiz.CurrentPage==AssetsComponentsSelectionPage)
             {
                 var t=AssetsCompSelectCntrl.GetSelectedComponents();
@@ -164,6 +131,22 @@ namespace MigrationTool
                 tempGrid.Children.Add(cntrl);
                 page.Content = tempGrid;
             }
+        }
+        private void AssetsCompSelectCntrl_OnComponentsSelectionChanged(object sender, ComponentsSelectionChangedEventArgs e)
+        {
+            AssetsComponentsSelectionPage.CanSelectNextPage = !e.IsEmpty;
+        }
+        private void AuthCompSelectCntrl_OnComponentsSelectionChanged(object sender, ComponentsSelectionChangedEventArgs e)
+        {
+            AuthComponentsSelectionPage.CanSelectNextPage = !e.IsEmpty;
+        }
+        private void AssetCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
+        {
+            Wiz.CurrentPage.CanSelectNextPage = true;
+        }
+        private void AuthComponents_ProcessCompleted(object sender, EventArgs e)
+        {
+            Wiz.CurrentPage.CanSelectNextPage = true;
         }
     }
 }
