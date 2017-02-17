@@ -1,8 +1,6 @@
 language: csharp
 solution: Migration Tool.sln
 install:
-  - nuget # lets get version number
-  - nuget restore Migration Tool.sln -Verbosity detailed
-  - nuget update Migration Tool.sln -Verbosity detailed
+  - sudo apt-get install mono-devel mono-gmcs
 script:
   - xbuild /p:Configuration=Release Migration Tool.sln -Verbosity detailed
