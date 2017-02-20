@@ -102,7 +102,7 @@ namespace MigrationTool
         {
             if (ValidateConnectionString(e.ConnectionString))
             {
-                Common.ConnectionStrings.SourceConnectionString = e.ConnectionString;
+                Common.ConnectionStrings.LegacyConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Source Database Connection Completed");
             }
         }

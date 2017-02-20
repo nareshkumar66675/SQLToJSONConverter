@@ -21,7 +21,7 @@ namespace Migration.Generate.Helpers
         internal static dynamic ExecuteQueryOnSource(string query)
         {
             dynamic result;
-            using (var conn = new SqlConnection(ConnectionStrings.SourceConnectionString))
+            using (var conn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
             {
                 result = conn.Query<dynamic>(query);
             }

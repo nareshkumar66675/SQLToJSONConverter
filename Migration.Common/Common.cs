@@ -16,7 +16,7 @@ namespace Migration.Common
             public static string AssetConnectionString = @"Data Source=ws-in1060\SQLServer;Integrated Security=True;Initial Catalog=Asset";
             //public static string SourceConnectionString = "Data Source=10.2.108.21\\MSSQLSERVER2K12;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM140NEW";
             //public static string SourceConnectionString = "Data Source=10.2.108.169;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM140NEW";
-            public static string SourceConnectionString = @"Data Source=ws-in1060\SQLServer;Integrated Security=True;Initial Catalog=Migration";
+            public static string LegacyConnectionString = @"Data Source=ws-in1060\SQLServer;Integrated Security=True;Initial Catalog=Migration";
             /// <summary>
             /// Retrieves Connection String based on Group Type
             /// </summary>
