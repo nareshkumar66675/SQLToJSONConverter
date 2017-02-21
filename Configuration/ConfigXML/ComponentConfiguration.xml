@@ -4,13 +4,6 @@
     <Component Name="TASK" DisplayName="Task" DomainType="BallyTech.Library.Domain.Employee.Task,BallyTech.Library.Auth.Domain" GenerateType="Default" PersistType="Default"  ></Component>
     <Component Name="EMPLOYEE" DisplayName="Employee" DomainType="BallyTech.Library.Domain.Employee.Employee,BallyTech.Library.Auth.Domain" GenerateType="Default" PersistType="Default"  ></Component>
     <Component Name="SITE" DisplayName="Sites" DomainType="BallyTech.Library.Domain.Site.Site,BallyTech.Library.Auth.Domain" GenerateType="Default" PersistType="Default"  ></Component>
-    <!--<Component Name="Employee1" DisplayName="Employeee" DomainType="TestApp.Module,TestApp" ></Component>
-    <Component Name="TASK2" DisplayName="Taskdf" DomainType="BallyTech.Library.Domain.Employee.Task,BallyTech.Library.Domain" GenerateType="Default" PersistType="Default"  ></Component>
-    <Component Name="Employee3" DisplayName="Employeeedfb" DomainType="TestApp.Module,TestApp" ></Component>
-    <Component Name="TASK3" DisplayName="Taskb" DomainType="BallyTech.Library.Domain.Employee.Task,BallyTech.Library.Domain" GenerateType="Default" PersistType="Default"  ></Component>
-    <Component Name="Employee4" DisplayName="Employeeegbn" DomainType="TestApp.Module,TestApp" ></Component>
-    <Component Name="TASK4" DisplayName="Taskgb" DomainType="BallyTech.Library.Domain.Employee.Task,BallyTech.Library.Domain" GenerateType="Default" PersistType="Default"  ></Component>
-    <Component Name="Employee5" DisplayName="Employeeebfdgb" DomainType="TestApp.Module,TestApp" ></Component>-->
   </Group>
   <Group Name="ASSET">
     <Component Name="AST_DEFN" DisplayName="Asset Definition"  DomainType="BallyTech.Library.Domain.Asset.AssetDefinition,BallyTech.Library.Asset.Domain" GenerateType="Default" PersistType="Default" ></Component>

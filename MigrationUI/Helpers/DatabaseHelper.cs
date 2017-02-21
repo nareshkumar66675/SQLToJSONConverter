@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Migration.Common;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -102,6 +103,41 @@ namespace MigrationTool.Helpers
                 }
             }
             return SiteList;
+        }
+        public static List<string> GetCompletedComponents(GroupType group,List<string> Sites)
+        {
+            List<string> completedComp = new List<string>();
+            string query = string.Empty;
+            string conString = string.Empty;
+            if (group == GroupType.AUTH)
+            {
+                query = "SELECT DISTINCT Component_Name from Migration.Report where Status = 'Success'";
+                conString = Common.ConnectionStrings.AuthConnectionString;
+            }
+            else if (group == GroupType.ASSET)
+            {
+                query = @"SELECT DISTINCT Component_Name from Migration.Report rpt
+                                Inner join Migration.SiteGroup grp on rpt.SiteGroupID=grp.SiteGroupID
+                                where Status='Success'";
+                conString = Common.ConnectionStrings.AssetConnectionString;
+                if (Sites != null && Sites.Count > 0)
+                    query += query + " and SiteID in (" + string.Join(",", Sites) + ")";
+            }
+            using (SqlConnection con = new SqlConnection(conString))
+            {
+                con.Open();
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    using (IDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            completedComp.Add(dr[0].ToString());
+                        }
+                    }
+                }
+            }
+            return completedComp;
         }
     }
 }
