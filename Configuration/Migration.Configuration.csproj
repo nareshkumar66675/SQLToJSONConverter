@@ -50,6 +50,7 @@
   <ItemGroup>
     <Content Include="ConfigXML\ComponentConfiguration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="ConfigXML\TransformationConfiguration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
