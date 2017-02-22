@@ -12,11 +12,9 @@ namespace Migration.Common
     {
         public static class ConnectionStrings
         {
-            public static string AuthConnectionString = @"Data Source=ws-in1060\SQLServer;Integrated Security=true;Initial Catalog=Auth";
-            public static string AssetConnectionString = @"Data Source=ws-in1060\SQLServer;Integrated Security=True;Initial Catalog=Asset";
-            //public static string SourceConnectionString = "Data Source=10.2.108.21\\MSSQLSERVER2K12;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM140NEW";
-            //public static string SourceConnectionString = "Data Source=10.2.108.169;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM140NEW";
-            public static string SourceConnectionString = @"Data Source=ws-in1060\SQLServer;Integrated Security=True;Initial Catalog=Migration";
+            public static string AuthConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Auth_Migration";
+            public static string AssetConnectionString = @"Data Source=10.2.160.35\MSSQL2016;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM_Migration_Asset";
+            public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=PROD0121_AssetMatrix14";
             /// <summary>
             /// Retrieves Connection String based on Group Type
             /// </summary>
@@ -96,12 +94,30 @@ namespace Migration.Common
 
         public static class Queries
         {
+            public static string ReportInsertOrUpdate
+            {
+                get
+                {
+                    return @"IF EXISTS(SELECT 1 FROM [Migration].[Report] WHERE [Component_Name] = @Name)
+                                BEGIN
+                                    UPDATE [Migration].[Report] SET [Tot_Rcrds_InLegacy]=@TotRecords,[Tot_Unique_RcrdsInLegacy]=@TotUniqRecords,
+                                                                    [Start_Time]=@StartTime,[End_Time]=@EndTime,[Status]=@Status
+	                                        WHERE [Component_Name]=@Name
+                                END
+                             ELSE
+                                BEGIN
+                                    INSERT INTO [Migration].[Report] ([Component_Name],[Tot_Rcrds_InLegacy],[Tot_Unique_RcrdsInLegacy],[Start_Time],[End_Time],[Status]) 
+                                                VALUES (@Name,@TotRecords,@TotUniqRecords,@StartTime,@EndTime,@Status)
+                                END";
+                }
+                private set { }
+            }
             public static string ReportInsert
             {
                 get
                 {
-                    return @"INSERT INTO [Migration].[Report] ([Component_Name],[Tot_Rcrds_InLegacy],[Tot_Unique_RcrdsInLegacy],[Start_Time],[Status]) 
-                             VALUES (@Name,@TotRecords,@TotUniqRecords,@StartTime,@Status)";
+                    return @"INSERT INTO [Migration].[Report] ([Component_Name],[Tot_Rcrds_InLegacy],[Tot_Unique_RcrdsInLegacy],[Start_Time],[End_Time],[Status]) 
+                                                VALUES (@Name,@TotRecords,@TotUniqRecords,@StartTime,@EndTime,@Status)";
                 }
                 private set { }
             }
@@ -109,7 +125,7 @@ namespace Migration.Common
             {
                 get
                 {
-                    return @"UPDATE [Migration].[Report] SET [Inserted_Rcrds_InNew]=@InsrtdRcrds,[End_Time]=@EndTime,[Status]=@Status WHERE [Component_Name]=@Name";
+                    return @"UPDATE [Migration].[Report] SET [Inserted_Rcrds_InNew]=@InsrtdRcrds,[End_Time]=@EndTime,[Status]=@Status WHERE [Component_Name]=@Name and [Status] ='Running'";
                 }
                 private set { }
             }

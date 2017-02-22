@@ -66,7 +66,7 @@ namespace MigrationTool.Views
         }
         private Dictionary<string, string> GetNotMigratedSites(GroupType group)
         {
-            var allSites = DatabaseHelper.GetAllSites(ConnectionStrings.SourceConnectionString);
+            var allSites = DatabaseHelper.GetAllSites(ConnectionStrings.LegacyConnectionString);
             var migratedSites = DatabaseHelper.GetMigratedSites(ConnectionStrings.GetConnectionString(group));
             migratedSites.ForEach(t => allSites.Remove(t));
             return allSites;

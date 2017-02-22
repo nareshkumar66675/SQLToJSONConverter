@@ -21,14 +21,14 @@ namespace Migration.Generate.Helpers
         internal static dynamic ExecuteQueryOnSource(string query)
         {
             dynamic result;
-            using (var conn = new SqlConnection(ConnectionStrings.SourceConnectionString))
+            using (var conn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
             {
                 result = conn.Query<dynamic>(query);
             }
             return result;
         }
 
-        internal static void InsertGenerateReport(string componentName,DateTime startTime, int totalRecordsCount, int totalUniqueRecordsCount,GroupType type,string Status)
+        internal static void InsertGenerateReport(string componentName,DateTime startTime, DateTime endTime, int totalRecordsCount, int totalUniqueRecordsCount,GroupType type,string Status)
         {
             using (var conn = new SqlConnection(ConnectionStrings.GetConnectionString(type)))
             {
@@ -38,6 +38,7 @@ namespace Migration.Generate.Helpers
                 cmd.Parameters.Add(new SqlParameter("@TotRecords", totalRecordsCount));
                 cmd.Parameters.Add(new SqlParameter("@TotUniqRecords", totalUniqueRecordsCount));
                 cmd.Parameters.Add(new SqlParameter("@StartTime", startTime));
+                cmd.Parameters.Add(new SqlParameter("@EndTime", endTime));
                 cmd.Parameters.Add(new SqlParameter("@Status", Status));
                 cmd.ExecuteNonQuery();
             }

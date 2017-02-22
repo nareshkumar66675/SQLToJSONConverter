@@ -15,25 +15,32 @@ namespace Migration.Generate.Generators
         public bool Generate(Component component)
         {
             DateTime startTime = DateTime.Now;
-            var qry = Configuration.Configurator.GetSourceByComponentName(component.Name);
-            dynamic rslt=SqlOperation.ExecuteQueryOnSource(qry);
-
-            Type type = Type.GetType(component.DomainType);
-            
-            Mapper mapper = new Mapper();
-            var resultEntities= mapper.Map<object>(rslt, type);
-            NotifyGenerateStatus(rslt, resultEntities, component, startTime);
-            ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultEntities));
-
-            return true;
+            dynamic rslt = null;
+            List<object> resultEntities = null;
+            try
+            {
+                var qry = Configuration.Configurator.GetSourceByComponentName(component.Name);
+                rslt = SqlOperation.ExecuteQueryOnSource(qry);
+                Type type = Type.GetType(component.DomainType);
+                Mapper mapper = new Mapper();
+                resultEntities = mapper.Map<object>(rslt, type);
+                NotifyGenerateStatus(rslt, resultEntities, component, startTime,"Running");
+                ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultEntities));
+                return true;
+            }
+            catch (Exception)
+            {
+                NotifyGenerateStatus(rslt, resultEntities, component, startTime, "Failed");
+                throw;
+            }
         }
-        private void NotifyGenerateStatus(dynamic src,dynamic mapped ,Component component,DateTime startTime)
+        private void NotifyGenerateStatus(dynamic src,dynamic mapped ,Component component,DateTime startTime,string status)
         {
             if(AppSettings.IsReportEnabled)
             {
-                var totRecordCount = (src as List<object>).Count;
-                var totUniqueRecordCount = (mapped as List<dynamic>).Select(t => t.Id).Distinct().Count();
-                SqlOperation.InsertGenerateReport(component.Name, startTime, totRecordCount, totUniqueRecordCount,component.GroupName,"Running");
+                var totRecordCount = (src as List<object>)?.Count;
+                var totUniqueRecordCount = (mapped as List<dynamic>)?.Select(t => t.Id).Distinct()?.Count();
+                SqlOperation.InsertGenerateReport(component.Name, startTime,DateTime.Now, totRecordCount??0, totUniqueRecordCount??0,component.GroupName, status);
             }
         }
     }

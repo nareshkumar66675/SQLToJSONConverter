@@ -23,13 +23,11 @@ namespace Migration.ProcessQueue
             this.ComponentName = componentName;
             this.PercentCompleted = percentCompleted;
             this.Status = status;
-            this.ProcessDetail = new ProcessReport();
         }
 
         private int _percentCompleted;
         public string ComponentName { get; set; }
         public Status Status { get; set; } = Status.NotStarted;
-        public ProcessReport ProcessDetail { get; set; }
         public int PercentCompleted {
             get
             {
@@ -45,11 +43,5 @@ namespace Migration.ProcessQueue
                     _percentCompleted = value;
             }
         }
-    }
-    public class ProcessReport
-    {
-        public long TotalRecordsInSource { get; set; }
-        public long TotalUniqueRecordsInSource { get; set; }
-        public long InsertedRecordsInDestination { get; set; }
     }
 }

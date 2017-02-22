@@ -70,4 +70,52 @@
     <Destination>[Employee].[User]</Destination>
     <KeyFormat Format="52_{0}" Keys="Id" />
   </Transformation>
+  <Transformation Name="SITE">
+    <Source>
+      select st.SITE_ID as Id,
+      st.SITE_NUMBER as Number,
+      st.SITE_short_NAME as Name,
+      st.SITE_LONG_NAME as [Description],
+      st.SITE_short_NAME as VenueCode,
+      st.SITE_short_NAME as Code,
+      p.PROP_SHORT_NAME as ServiceProviderCode,
+      st.SITE_TIMEZONE_ID as Timezone,
+      sttype.site_type_short_name as SiteType,
+      ''  as LicensedMonitoringOperator,
+      ''  as Licensee,
+      0 as ApprovedMachineCount,
+      CAST(0 as varchar(50)) as GamingLicenseNumber,
+      --123456 as FaxNumber,
+      --123456 as MobileNumber ,
+      cast(0 as bit) as IsActive,
+      cast(0 as bit) as IsDeleted,
+      2 as DepthLevel,
+      '' as ContactInformation_Address,
+      '' as ContactInformation_City,
+      '' as ContactInformation_State,
+      --'' as ContactInformation_Country,
+      '' as ContactInformation_PostalCode,
+      '' as ContactInformation_MailId,
+      '' as ContactInformation_PhoneNumber,
+      '' as ContactInformation_Fax,
+      '' as ContactInformation_MobileNumber ,
+      1 as DataRowVersion,
+      1 as UMDataRowVersion,
+      null as CreatedAt,
+      null as UpdatedAt,
+      substring(sy.SYS_SHORT_NAME,0,4) as Products_ProductCode,
+      im.INS_SYSTEM_IP_ADDRESS as Products_Ip ,
+      CAST(im.INS_SERVICE_PORT as VARCHAR(50)) as Products_Port
+      from gam.SITE as st
+      join gam.SITE_TYPE as stType on st.SITE_TYPE_ID = stType.SITE_TYPE_ID
+      join gam.INSTALLED_SYSTEM_MAP  as iMap on iMap.INSM_SITE_ID = st.site_id
+      join gam.INSTALLED_SYSTEM as im on im.INS_SYS_ID = iMap.INSM_SYS_ID
+      join gam.[SYSTEM] as sy on sy.SYS_ID = im.SYS_ID
+      join gam.PROPERTY as p on p.PROP_ID = st.SITE_PROP_ID
+      where iMap.INSM_IS_SITE_GROUP = 0 and INS_SYSTEM_IP_ADDRESS not in ('0.0.0.0')
+      order by st.site_number
+    </Source>
+    <Destination>[Site].[Site]</Destination>
+    <KeyFormat Format="151_{0}" Keys="Id" />
+  </Transformation>
 </TransformationConfig>
