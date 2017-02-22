@@ -12,11 +12,9 @@ namespace Migration.Common
     {
         public static class ConnectionStrings
         {
-            public static string AuthConnectionString = @"Data Source=10.2.160.35\MSSQL2016;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM_Migration_Auth";
+            public static string AuthConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Auth_Migration";
             public static string AssetConnectionString = @"Data Source=10.2.160.35\MSSQL2016;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM_Migration_Asset";
-            //public static string SourceConnectionString = "Data Source=10.2.108.21\\MSSQLSERVER2K12;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM140NEW";
-            //public static string SourceConnectionString = "Data Source=10.2.108.169;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM140NEW";
-            public static string LegacyConnectionString = @"Data Source=10.2.160.35\MSSQL2016;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM_Migration_Legacy";
+            public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=PROD0121_AssetMatrix14";
             /// <summary>
             /// Retrieves Connection String based on Group Type
             /// </summary>
