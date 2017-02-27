@@ -168,13 +168,17 @@
     <Resource Include="AMLogo.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Asset_Floret\Library\Domain\Asset.Domain.csproj">
-      <Project>{9618db57-4523-48d8-8c46-af62d46484c3}</Project>
-      <Name>Asset.Domain</Name>
+    <ProjectReference Include="..\..\Asset_Floret\Library\Persistence.MSSql\Asset.Persistence.MSSql.csproj">
+      <Project>{d8501ed1-8481-42ad-8247-7079d64f2672}</Project>
+      <Name>Asset.Persistence.MSSql</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Auth_Floret\Library\Domain\Auth.Domain.csproj">
       <Project>{72d12166-348c-49d6-9984-e000a634a45f}</Project>
       <Name>Auth.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Auth_Floret\Library\Persistence.MSSql\Persistence.MSSql.csproj">
+      <Project>{c60971af-425a-462a-8e9c-6be49cb69998}</Project>
+      <Name>Persistence.MSSql</Name>
     </ProjectReference>
     <ProjectReference Include="..\Configuration\Migration.Configuration.csproj">
       <Project>{C259A426-7959-4DEB-B711-29C768C6986E}</Project>

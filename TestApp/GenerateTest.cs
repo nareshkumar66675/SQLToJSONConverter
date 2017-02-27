@@ -61,7 +61,7 @@ namespace Migration.Test.Generate
             GenericGenerator gen = new GenericGenerator();
             Component comp = new Component();
             comp.Name = "GOT";
-            comp.DomainType = "Migration.Test.GOT,Migration.Test";
+            comp.DomainType = "Migration.Test.GOT,Migration.Test"; 
             var result = gen.Generate(comp);
             Assert.IsTrue(result);
             ProcessItem data = null;

@@ -12,7 +12,7 @@
       LEFT JOIN [COMMON].[MODULE] tp ON tc.MODULE_ID = tp.MODL_ID where FUNC_ID>0
     </Source>
     <Destination>[Employee].[Task]</Destination>
-    <KeyFormat Format="53_{0}" Keys="Id" />
+    <KeyFormat Format="53_{0}" Keys="Id"  />
   </Transformation>
   <Transformation Name="AST_DEFN">
     <Source>
@@ -48,17 +48,19 @@
       --WHERE AST.ASST_ID = 1
     </Source>
     <Destination>ASSET_DEF.ASSETS</Destination>
-      <KeyFormat Format="53_{0}" Keys="Id" />
+      <KeyFormat Format="53_{0}" Keys="Id"  />
   </Transformation>
   <Transformation Name="EMPLOYEE">
     <Source>
-      select ACTR_ID as Id,
+      select (ROW_NUMBER() over (ORDER BY Actr_Id) )+1 as  Id,
       ACTR_FIRST_NAME as FirstName,
       ACTR_MIDDLE_NAME as MiddleName,
       ACTR_LAST_NAME as LastName,
-      actr_active_dir_user as UserMatrixId,
+      --actr_active_dir_user as UserMatrixId,
+	    cast(0 as varchar(50)) as UserMatrixId,
       ACTR_LOGIN as LoginName,
       --ACTR_USER_ID as SDSLogin,
+	  cast(10000 as varchar(50)) as SDSLogin,
       ACTR_IS_DELETED  as IsActive,
       ACTR_AUTO_SIGN_OFF as IsAutoSigOffEnabled,
       ACTR_EMAIL_ID as Email,
@@ -66,20 +68,24 @@
       null as LevelType,
       null as OrgLevel,
       0 as UMVersion from common.user_actor
+	  WHERE ACTR_ID NOT IN( 1)
+	  ORDER BY ACTR_ID
     </Source>
     <Destination>[Employee].[User]</Destination>
-    <KeyFormat Format="52_{0}" Keys="Id" />
+    <KeyFormat Format="52_{0}" Keys="Id"  />
   </Transformation>
   <Transformation Name="SITE">
     <Source>
-      select st.SITE_ID as Id,
+      select st.SITE_NUMBER as Id,
       st.SITE_NUMBER as Number,
       st.SITE_short_NAME as Name,
       st.SITE_LONG_NAME as [Description],
       st.SITE_short_NAME as VenueCode,
       st.SITE_short_NAME as Code,
+      'Rot' as ParentCode,
       p.PROP_SHORT_NAME as ServiceProviderCode,
-      st.SITE_TIMEZONE_ID as Timezone,
+      --st.SITE_TIMEZONE_ID as Timezone,
+      'AUS Eastern Standard Time' as Timezone,
       sttype.site_type_short_name as SiteType,
       ''  as LicensedMonitoringOperator,
       ''  as Licensee,
@@ -99,8 +105,8 @@
       '' as ContactInformation_PhoneNumber,
       '' as ContactInformation_Fax,
       '' as ContactInformation_MobileNumber ,
-      1 as DataRowVersion,
-      1 as UMDataRowVersion,
+      0 as DataRowVersion,
+      0 as UMDataRowVersion,
       null as CreatedAt,
       null as UpdatedAt,
       substring(sy.SYS_SHORT_NAME,0,4) as Products_ProductCode,
@@ -112,10 +118,83 @@
       join gam.INSTALLED_SYSTEM as im on im.INS_SYS_ID = iMap.INSM_SYS_ID
       join gam.[SYSTEM] as sy on sy.SYS_ID = im.SYS_ID
       join gam.PROPERTY as p on p.PROP_ID = st.SITE_PROP_ID
-      where iMap.INSM_IS_SITE_GROUP = 0 and INS_SYSTEM_IP_ADDRESS not in ('0.0.0.0')
+      where iMap.INSM_IS_SITE_GROUP = 0 and INS_SYSTEM_IP_ADDRESS NOT IN ('0.0.0.0')
       order by st.site_number
     </Source>
     <Destination>[Site].[Site]</Destination>
-    <KeyFormat Format="151_{0}" Keys="Id" />
+    <KeyFormat Format="151_{0}" Keys="Id"  />
+  </Transformation>
+  <Transformation Name="ROLE">
+    <Source>
+      SELECT CAST(RIGHT(CAST(ROLE_ID AS VARCHAR(50)),8) AS BIGINT) AS Id,
+      ROLE_NAME AS Name,
+      ROLE_CODE AS Code,
+      ROLE_DESCRIPTION AS [Description]
+      FROM [COMMON].[USER_ROLE] WHERE ROLE_IS_DELETED =0 AND ROLE_ID NOT IN (1)
+      ORDER BY Id
+    </Source>
+    <Destination>[Employee].[Role]</Destination>
+    <KeyFormat Format="50_{0}" Keys="Id"  />
+  </Transformation>
+  <Transformation Name="ORG">
+    <Source>
+      select CAST(RIGHT(CAST(PROP_ID AS VARCHAR(50)),5) AS BIGINT)  as Id,
+      PROP_SHORT_NAME as Code,
+      PROP_LONG_NAME as Name,
+      PROP_LONG_NAME as [Description],
+      CONVERT(bit,'true') as IsRoot
+      from GAM.PROPERTY
+      WHERE IS_DELETED=0 and PROP_ID not in (1,550001000000000001)
+    </Source>
+    <Destination>Organization.Organization</Destination>
+    <KeyFormat Format="100_{0}" Keys="Id"  />
+  </Transformation>
+  <Transformation Name="TSKGRP">
+    <Source>
+      SELECT CAST(RIGHT(CAST(FUNCGRP_ID AS VARCHAR(50)),5) AS BIGINT)  as Id,
+      FUNCGRP_NAME as Code,
+      FUNCGRP_NAME as Name,
+      FUNCGRP_DESCRIPTION as [Description]
+      FROM
+      [COMMON].[USER_FUNCTION_GROUP] WHERE FUNCGRP_ID not in (1)
+      ORDER BY FUNCGRP_ID
+    </Source>
+    <Destination>[Employee].[TaskGroup]</Destination>
+    <KeyFormat Format="51_{0}" Keys="Id"  />
+  </Transformation>
+  <Transformation Name="COMPDATA">
+    <Source>
+      SELECT 1 as Id,
+      1 as Component_Id,
+      --COMPONENTS---
+      0 as Component_Components_SiteId,
+      --Component Values---
+      '1_root' as Component_Components_ComponentValues_Id,
+      'Manufacturer' as Component_Components_ComponentValues_Name,
+      'Manufacturer' as Component_Components_ComponentValues_DisplayName,
+      --ChildCompoenents----
+      CAST(Components_Id as VARCHAR(50)) as Component_Components_ComponentValues_ChildComponents_Id,
+      Name as Component_Components_ComponentValues_ChildComponents_Name,
+      DisplayName AS Component_Components_ComponentValues_ChildComponents_DisplayName,
+      ---Options
+      CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'Manufacture Short Name'
+      WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'Manufacture Long Name'
+      WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'Manufacture Code'
+      END AS Component_Components_ComponentValues_ChildComponents_Options_Name,
+      VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value ,
+      ROW_NUMBER() OVER (PARTITION BY MANF_ID ORDER BY MANF_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id
+      FROM
+      (SELECT MANF_ID,MANF_SHORT_NAME as Name, MANF_LONG_NAME as DisplayName,
+      ROW_NUMBER() OVER (ORDER BY MANF_ID ) AS Components_Id,
+      CAST(MANF_SHORT_NAME AS NVARCHAR) AS MANF_SHORT_NAME,
+      CAST(MANF_LONG_NAME AS NVARCHAR) AS MANF_LONG_NAME,
+      CAST(MANF_VEND_CODE AS NVARCHAR) AS MANF_VEND_CODE
+      FROM GAM.MANUFACTURER  WHERE IS_DELETED = 0 ) MFN
+      UNPIVOT
+      ( VALUE FOR VALUE_DESC IN (MANF_SHORT_NAME, MANF_LONG_NAME, MANF_VEND_CODE)
+      ) AS T
+    </Source>
+    <Destination>[COMPONENTS].[ComponentData]</Destination>
+    <KeyFormat Format="57_{0}" Keys="Id" />
   </Transformation>
 </TransformationConfig>

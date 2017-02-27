@@ -43,7 +43,7 @@ namespace Migration.Persistence.Persistences.SQL
 
             items.ForEach((item) => {
                 List<string> arr = new List<string>();
-                keyFormat.Keys.Split(',').ToList().ForEach(col => { arr.Add(item.GetType().GetProperty(col).GetValue(item)+""); });
+                keyFormat.Keys.Split(',').ToList().ForEach(col => { arr.Add(item.GetType().GetProperty(col).GetValue(item)+string.Empty); });
                 dataResult.Rows.Add(string.Format(keyFormat.Format, arr.ToArray()), JSONConverter.SerializeObject(item));
             });
             return dataResult;

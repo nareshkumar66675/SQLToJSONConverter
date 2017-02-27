@@ -10,15 +10,23 @@ namespace Migration.Common
 {
     [Serializable]
     public enum GroupType
-   {
+    {
        [Description("Auth Service")]
        [XmlEnum("AUTH")]
        AUTH,
        [Description("Asset Service")]
-        [XmlEnum("ASSET")]
+       [XmlEnum("ASSET")]
         ASSET,
        [Description("Search Service")]
-        [XmlEnum("SEARCH")]
+       [XmlEnum("SEARCH")]
         SEARCH
-   }
+    }
+    [Serializable]
+    public enum KeyType
+    {
+        [XmlEnum("Column")]
+        COLOUMN,
+        [XmlEnum("Running")]
+        RUNNING
+    }
 }

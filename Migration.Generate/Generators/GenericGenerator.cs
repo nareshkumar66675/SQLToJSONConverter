@@ -23,6 +23,7 @@ namespace Migration.Generate.Generators
                 rslt = SqlOperation.ExecuteQueryOnSource(qry);
                 Type type = Type.GetType(component.DomainType);
                 Mapper mapper = new Mapper();
+                //Slapper.AutoMapper.Configuration.AddIdentifiers(type, new List<string> { "Id","Component.Id", "Component.Components.ComponentValues.Id" });
                 resultEntities = mapper.Map<object>(rslt, type);
                 NotifyGenerateStatus(rslt, resultEntities, component, startTime,"Running");
                 ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultEntities));

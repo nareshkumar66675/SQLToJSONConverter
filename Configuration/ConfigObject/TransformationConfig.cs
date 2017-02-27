@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Migration.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,8 @@ namespace Migration.Configuration.ConfigObject
         public string Format { get; set; }
         [XmlAttribute(AttributeName = "Keys")]
         public string Keys { get; set; }
+        //[XmlAttribute(AttributeName = "KeyType")]
+        //public KeyType KeyType { get; set; }
     }
     [XmlRoot(ElementName = "TransformationConfig")]
     public class Transformations
