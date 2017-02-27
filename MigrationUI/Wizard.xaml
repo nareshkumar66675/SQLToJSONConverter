@@ -20,7 +20,8 @@
         <xctk:Wizard x:Name="Wiz"
                      CurrentPage="{Binding ElementName=AuthConnectionPage}"
                      FinishButtonClosesWindow="True"
-                     Next="Wiz_Next">
+                     Next="Wiz_Next"
+                     Help="Wiz_Help">
             <xctk:Wizard.Resources>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background">
@@ -35,7 +36,7 @@
             </xctk:Wizard.Resources>
             <xctk:WizardPage x:Name="IntroPage"
                              Title="Asset Matrix Data Migrate Tool"
-                             Description="Migrate Existing Data to new structure"
+                             Description="Migrate Legacy Data to New Database"
                              FontSize="14"
                              HeaderImage="AMLoginLogo.png">
                 <xctk:WizardPage.Content>
@@ -45,12 +46,12 @@
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="SourceConnectionPage"
-                             Title="STEP 1 : Exisiting Database Connection"
-                             Description="Enter the existing database connection details."
+                             Title="STEP 1 : Legacy Database Connection"
+                             CanSelectNextPage="False"
+                             Description="Enter the Legacy database connection details."
                              NextPage="{Binding ElementName=AuthConnectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=IntroPage}">
-                <!--  CanSelectNextPage="False">  -->
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="SrcConnectCntrl"
@@ -63,11 +64,11 @@
             <!--  Auth Process Block Start  -->
             <xctk:WizardPage x:Name="AuthConnectionPage"
                              Title="STEP 2 : Auth Database Connection"
+                             CanSelectNextPage="False"
                              Description="Enter the auth database connection details."
                              NextPage="{Binding ElementName=AuthComponentsSelectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=SourceConnectionPage}">
-                <!--  CanSelectNextPage="False">  -->
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="AuthConnectCntrl"
@@ -88,7 +89,7 @@
             <xctk:WizardPage x:Name="AuthComponentsSelectionPage"
                              Title="STEP 3 : Auth Components Selection"
                              CanSelectNextPage="True"
-                             Description="Select the Components which needs to be migrated."
+                             Description="Select the Auth Components that needs to be migrated."
                              NextPage="{Binding ElementName=AuthComponentsProcessPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AuthConnectionPage}" />
@@ -96,7 +97,7 @@
                              Title="STEP 4 : Auth Components Migration"
                              CanCancel="False"
                              CanSelectNextPage="False"
-                             Description="Press Start to initiate the migrtaion process."
+                             Description="Please wait until the Migration is Complete."
                              NextPage="{Binding ElementName=AssetConnectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AuthComponentsSelectionPage}" />
@@ -104,12 +105,12 @@
             <!--  Asset Process Block Start  -->
             <xctk:WizardPage x:Name="AssetConnectionPage"
                              Title="STEP 5 : Asset Database Connection"
+                             CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
                              Description="Enter the asset database connection details."
                              NextPage="{Binding ElementName=AssetSiteSelectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AuthComponentsProcessPage}">
-                <!--  CanSelectNextPage="False">  -->
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="AssetConnectCntrl"

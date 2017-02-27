@@ -21,12 +21,4 @@ namespace Migration.Common
        [XmlEnum("SEARCH")]
         SEARCH
     }
-    [Serializable]
-    public enum KeyType
-    {
-        [XmlEnum("Column")]
-        COLOUMN,
-        [XmlEnum("Running")]
-        RUNNING
-    }
 }

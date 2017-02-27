@@ -7,6 +7,7 @@ using Migration.Configuration.ConfigObject;
 using Migration.Generate.Helpers;
 using Migration.ProcessQueue;
 using static Migration.Common.Common;
+using Migration.Common;
 
 namespace Migration.Generate.Generators
 {

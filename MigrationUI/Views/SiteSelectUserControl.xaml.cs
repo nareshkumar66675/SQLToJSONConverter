@@ -31,18 +31,32 @@ namespace MigrationTool.Views
         }
         private void SelectSitesButton_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItems = srcListBox.SelectedItems.Cast<KeyValuePair<string, string>>().ToList();
-            selectedItems.ForEach(item => SelectedSites.Add(item.Key, item.Value));
-            selectedItems.ForEach(t => SourceSites.Remove(t.Key));
-            ResetListBoxes();
+            try
+            {
+                var selectedItems = srcListBox.SelectedItems.Cast<KeyValuePair<string, string>>().ToList();
+                selectedItems.ForEach(item => SelectedSites.Add(item.Key, item.Value));
+                selectedItems.ForEach(t => SourceSites.Remove(t.Key));
+                ResetListBoxes();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error occurred While Selecting Sites", ex);
+            }
         }
         private void DeSelectSitesButton_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItems = selectedListBox.SelectedItems.Cast<KeyValuePair<string, string>>().ToList();
-            selectedItems.ForEach(item => SourceSites.Add(item.Key, item.Value));
-            SourceSites.OrderBy(t => t.Value);
-            selectedItems.ForEach(t => SelectedSites.Remove(t.Key));
-            ResetListBoxes();
+            try
+            {
+                var selectedItems = selectedListBox.SelectedItems.Cast<KeyValuePair<string, string>>().ToList();
+                selectedItems.ForEach(item => SourceSites.Add(item.Key, item.Value));
+                SourceSites.OrderBy(t => t.Value);
+                selectedItems.ForEach(t => SelectedSites.Remove(t.Key));
+                ResetListBoxes();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error occurred While DeSelecting Sites", ex);
+            }
         }
         private void ResetListBoxes()
         {
@@ -66,9 +80,17 @@ namespace MigrationTool.Views
         }
         private Dictionary<string, string> GetNotMigratedSites(GroupType group)
         {
-            var allSites = DatabaseHelper.GetAllSites(ConnectionStrings.LegacyConnectionString);
-            var migratedSites = DatabaseHelper.GetMigratedSites(ConnectionStrings.GetConnectionString(group));
-            migratedSites.ForEach(t => allSites.Remove(t));
+            var allSites = new Dictionary<string, string>();
+            try
+            {
+                allSites = DatabaseHelper.GetAllSites(ConnectionStrings.LegacyConnectionString);
+                var migratedSites = DatabaseHelper.GetMigratedSites(ConnectionStrings.GetConnectionString(group));
+                migratedSites.ForEach(t => allSites.Remove(t));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error occurred While retrieving not migrated Sites", ex);
+            }
             return allSites;
         }
     }

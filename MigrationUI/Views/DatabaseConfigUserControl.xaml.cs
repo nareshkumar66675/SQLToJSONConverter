@@ -48,30 +48,38 @@ namespace MigrationTool.Views
             };
             worker.RunWorkerCompleted += (o, ea) =>
             {
-                ConnectingIndicator.IsBusy = false;
-                if (rsltString=="")
+                try
                 {
-                    Logger.Instance.LogInfo("Cannot Establish a Connection");
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this),"Cannot Establish a Connection", "Database Connection",MessageBoxButton.OK,MessageBoxImage.Error);
-                }
-                else
-                {
-                    Logger.Instance.LogInfo("Connection to the Database Server Completed.");
-                    DatabaseSelectModal modalWindow = new DatabaseSelectModal();
-                    modalWindow.Owner = Window.GetWindow(this);
-                    modalWindow.ConnectionString = rsltString;
-                    modalWindow.ShowDialog();
-                    if (string.IsNullOrEmpty(modalWindow.DatabaseName))
+                    ConnectingIndicator.IsBusy = false;
+                    if (rsltString == "")
                     {
-                        rsltString = string.Empty;
+                        Logger.Instance.LogInfo("Cannot Establish a Connection");
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Cannot Establish a Connection", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     else
                     {
-                        rsltString = DatabaseHelper.AddDatabaseToConnString(rsltString, modalWindow.DatabaseName);
-                        Logger.Instance.LogInfo("Selected Database - " + modalWindow.DatabaseName);
+                        Logger.Instance.LogInfo("Connection to the Database Server Completed.");
+                        DatabaseSelectModal modalWindow = new DatabaseSelectModal();
+                        modalWindow.Owner = Window.GetWindow(this);
+                        modalWindow.ConnectionString = rsltString;
+                        modalWindow.ShowDialog();
+                        if (string.IsNullOrEmpty(modalWindow.DatabaseName))
+                        {
+                            rsltString = string.Empty;
+                        }
+                        else
+                        {
+                            rsltString = DatabaseHelper.AddDatabaseToConnString(rsltString, modalWindow.DatabaseName);
+                            Logger.Instance.LogInfo("Selected Database - " + modalWindow.DatabaseName);
+                        }
                     }
+                    OnConnectComplete?.Invoke(this, new ConnectionCompleteEventArgs { ConnectionString = rsltString });
                 }
-                OnConnectComplete?.Invoke(this, new ConnectionCompleteEventArgs { ConnectionString = rsltString });
+                catch (Exception ex)
+                {
+                    Logger.Instance.LogError("Error occurred while selecting database", ex);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occurred.Please Check Logs.", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             };
             worker.RunWorkerAsync();
         }

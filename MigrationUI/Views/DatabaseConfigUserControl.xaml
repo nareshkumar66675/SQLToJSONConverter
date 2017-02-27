@@ -130,7 +130,8 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             Click="connectButton_Click"
-                            Content="Connect" />
+                            Content="Connect"
+                            IsDefault="True" />
                     <Button x:Name="cancelButton"
                             Width="75"
                             Margin="266,174,0,0"

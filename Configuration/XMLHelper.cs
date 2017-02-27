@@ -1,4 +1,5 @@
-﻿using Migration.Configuration.ConfigObject;
+﻿using Migration.Common;
+using Migration.Configuration.ConfigObject;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,19 +16,27 @@ namespace Migration.Configuration
         public static Components Components { get; set; }
         static XMLHelper()
         {
-            XmlSerializer serializerTransformations = new XmlSerializer(typeof(Transformations));
-            XmlSerializer serializerComponents = new XmlSerializer(typeof(Components));
-
-            if (File.Exists("ConfigXML/TransformationConfiguration.xml") && File.Exists("ConfigXML/ComponentConfiguration.xml"))
+            try
             {
-                StreamReader readerTransformations = new StreamReader("ConfigXML/TransformationConfiguration.xml");
-                StreamReader readerComponents = new StreamReader("ConfigXML/ComponentConfiguration.xml");
+                XmlSerializer serializerTransformations = new XmlSerializer(typeof(Transformations));
+                XmlSerializer serializerComponents = new XmlSerializer(typeof(Components));
 
-                Transforms = (Transformations)serializerTransformations.Deserialize(readerTransformations);
-                Components = (Components)serializerComponents.Deserialize(readerComponents);
+                if (File.Exists("ConfigXML/TransformationConfiguration.xml") && File.Exists("ConfigXML/ComponentConfiguration.xml"))
+                {
+                    StreamReader readerTransformations = new StreamReader("ConfigXML/TransformationConfiguration.xml");
+                    StreamReader readerComponents = new StreamReader("ConfigXML/ComponentConfiguration.xml");
 
-                readerTransformations.Close();
-                readerComponents.Close();
+                    Transforms = (Transformations)serializerTransformations.Deserialize(readerTransformations);
+                    Components = (Components)serializerComponents.Deserialize(readerComponents);
+
+                    readerTransformations.Close();
+                    readerComponents.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error Occurred While Intializing XML Configurations", ex);
+                throw;
             }
         }
     }
