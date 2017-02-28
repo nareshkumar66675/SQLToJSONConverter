@@ -50,7 +50,7 @@ namespace MigrationTool
                 if (Wiz.CurrentPage == AuthConnectionPage)
                 {
                     AuthCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.AUTH);
-                    AuthCompSelectCntrl.InitializeData();
+                    AuthCompSelectCntrl.InitializeData(GroupType.AUTH);
                     AddUserControlToPage(AuthComponentsSelectionPage, AuthCompSelectCntrl);
                 }
                 if (Wiz.CurrentPage == AuthComponentsSelectionPage)
@@ -69,7 +69,7 @@ namespace MigrationTool
                 {
                     var temp = string.Join(",", AssetSiteCntrl.GetSelectedSites().Select(t => t.Key));
                     AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.ASSET);
-                    AssetsCompSelectCntrl.InitializeData();
+                    AssetsCompSelectCntrl.InitializeData(GroupType.ASSET);
                     AddUserControlToPage(AssetsComponentsSelectionPage, AssetsCompSelectCntrl);
                     //Configurator.SetQueryParams()
                 }

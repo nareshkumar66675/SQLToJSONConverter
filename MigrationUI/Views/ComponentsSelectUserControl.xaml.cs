@@ -36,14 +36,15 @@ namespace MigrationTool.Views
         {
             InitializeComponent();     
         }
-        public void InitializeData()
+        public void InitializeData(GroupType group)
         {
             try
             {
-                var group = SourceComponents.Select(t => t.GroupName).FirstOrDefault();
+                SetDBDetails(group);
                 var completedList = DatabaseHelper.GetCompletedComponents(group, null);
+                completedListBox.ItemsSource = SourceComponents.Where(t=> completedList.Contains(t.Name)).Select(u=>u.DisplayName);
                 completedList.ForEach(item => SourceComponents.RemoveAll(t => t.Name == item));
-                expander.Header = group.ToString();
+                expander.Header = group.GetDescription();
                 Logger.Instance.LogInfo("Initializing Data For Components Selection for Group -" + expander.Header);
                 ComponentsCheckList.ItemsSource = SourceComponents;
                 ComponentsCheckList.DisplayMemberPath = "DisplayName";
@@ -80,6 +81,11 @@ namespace MigrationTool.Views
                 Logger.Instance.LogError("Error Occurred While returning selected components", ex);
             }
             return components;
+        }
+        private void SetDBDetails(GroupType group)
+        {
+            this.databaseTextBlock.Text = DatabaseHelper.GetDatabaseName(Common.ConnectionStrings.GetConnectionString(group));
+            this.serverTextBlock.Text= DatabaseHelper.GetServerName(Common.ConnectionStrings.GetConnectionString(group));
         }
     }
 }

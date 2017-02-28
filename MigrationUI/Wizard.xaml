@@ -18,10 +18,10 @@
           HorizontalAlignment="Left"
           VerticalAlignment="Top">
         <xctk:Wizard x:Name="Wiz"
-                     CurrentPage="{Binding ElementName=AuthConnectionPage}"
+                     CurrentPage="{Binding ElementName=AuthComponentsSelectionPage}"
                      FinishButtonClosesWindow="True"
-                     Next="Wiz_Next"
-                     Help="Wiz_Help">
+                     Help="Wiz_Help"
+                     Next="Wiz_Next">
             <xctk:Wizard.Resources>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background">
@@ -47,11 +47,11 @@
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="SourceConnectionPage"
                              Title="STEP 1 : Legacy Database Connection"
-                             CanSelectNextPage="False"
                              Description="Enter the Legacy database connection details."
                              NextPage="{Binding ElementName=AuthConnectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=IntroPage}">
+                <!--  CanSelectNextPage="False"  -->
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="SrcConnectCntrl"
@@ -64,11 +64,11 @@
             <!--  Auth Process Block Start  -->
             <xctk:WizardPage x:Name="AuthConnectionPage"
                              Title="STEP 2 : Auth Database Connection"
-                             CanSelectNextPage="False"
                              Description="Enter the auth database connection details."
                              NextPage="{Binding ElementName=AuthComponentsSelectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=SourceConnectionPage}">
+                <!--  CanSelectNextPage="False"  -->
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="AuthConnectCntrl"

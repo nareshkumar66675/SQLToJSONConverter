@@ -35,6 +35,14 @@ namespace MigrationTool.Helpers
             }
             
         }
+        public static string GetServerName(string connectionString)
+        {
+            return new SqlConnectionStringBuilder(connectionString).DataSource;
+        }
+        public static string GetDatabaseName(string connectionString)
+        {
+            return new SqlConnectionStringBuilder(connectionString).InitialCatalog;
+        }
         public static string AddDatabaseToConnString(string connectionString,string databaseName)
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString);
