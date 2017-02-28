@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration.UI", "MigrationUI\Migration.UI.csproj", "{8B5983F1-E8DE-466A-B345-D52A2A37AB11}"
-	ProjectSection(ProjectDependencies) = postProject
-		{72D12166-348C-49D6-9984-E000A634A45F} = {72D12166-348C-49D6-9984-E000A634A45F}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration.Test", "TestApp\Migration.Test.csproj", "{D9597B2D-3A8D-4B55-A10C-AF9D83130EB3}"
 EndProject
@@ -28,11 +25,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration.Common", "Migrati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slapper", "Slapper.AutoMapper\Slapper.csproj", "{A3A6ABBF-8C42-4945-BB8B-804123E45B2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence.MSSql", "..\Auth_Floret\Library\Persistence.MSSql\Persistence.MSSql.csproj", "{C60971AF-425A-462A-8E9C-6BE49CB69998}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Persistence.MSSql", "..\Auth_Floret\Library\Persistence.MSSql\Auth.Persistence.MSSql.csproj", "{C60971AF-425A-462A-8E9C-6BE49CB69998}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asset.Persistence.MSSql", "..\Asset_Floret\Library\Persistence.MSSql\Asset.Persistence.MSSql.csproj", "{D8501ED1-8481-42AD-8247-7079D64F2672}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "..\Asset_Floret\Library\Domain\Domain.csproj", "{6C559903-E4D5-4763-8FF0-46303F4A0120}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asset.Domain", "..\Asset_Floret\Library\Domain\Asset.Domain.csproj", "{6C559903-E4D5-4763-8FF0-46303F4A0120}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
