@@ -35,52 +35,67 @@ namespace MigrationTool.Views
         }
         private void InitializeDataGrid()
         {
-            DataTable dataTable = new DataTable();
-            dataTable.Columns.Add(new DataColumn("Group"));
-            dataTable.Columns.Add(new DataColumn("DisplayName"));
-            dataTable.Columns.Add(new DataColumn("Progress", typeof(ProgressBar)));
-            dataTable.Columns.Add(new DataColumn("Status"));
-            dataTable.Columns.Add(new DataColumn("Name"));
-            table = dataTable;
-            ProcessGrid.ItemsSource = dataTable.AsDataView();
-            ProcessGrid.ReadOnly = true;
-            ProcessGrid.Columns[0].Visible = false;
-            ProcessGrid.Columns[4].Visible = false;
-            ProcessGrid.Columns[1].Width = new ColumnWidth(1, ColumnWidthUnitType.Star);
-            ProcessGrid.Columns[2].Width = new ColumnWidth(2, ColumnWidthUnitType.Star);
-            ProcessGrid.Columns[0].AllowSort = false;
-            ProcessGrid.Columns[1].AllowSort = false;
-            ProcessGrid.Columns[2].AllowSort = false;
-            ProcessGrid.Columns[3].AllowSort = false;
-            ProcessGrid.ItemScrollingBehavior = ItemScrollingBehavior.Immediate;
-            ICollectionView cvTasks = CollectionViewSource.GetDefaultView(ProcessGrid.ItemsSource);
-            if (cvTasks != null && cvTasks.CanGroup == true)
+            try
             {
-                cvTasks.GroupDescriptions.Clear();
-                cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+                DataTable dataTable = new DataTable();
+                dataTable.Columns.Add(new DataColumn("Group"));
+                dataTable.Columns.Add(new DataColumn("DisplayName"));
+                dataTable.Columns.Add(new DataColumn("Progress", typeof(ProgressBar)));
+                dataTable.Columns.Add(new DataColumn("Status"));
+                dataTable.Columns.Add(new DataColumn("Name"));
+                table = dataTable;
+                ProcessGrid.ItemsSource = dataTable.AsDataView();
+                ProcessGrid.ReadOnly = true;
+                ProcessGrid.Columns[0].Visible = false;
+                ProcessGrid.Columns[4].Visible = false;
+                ProcessGrid.Columns[1].Width = new ColumnWidth(1, ColumnWidthUnitType.Star);
+                ProcessGrid.Columns[2].Width = new ColumnWidth(2, ColumnWidthUnitType.Star);
+                ProcessGrid.Columns[0].AllowSort = false;
+                ProcessGrid.Columns[1].AllowSort = false;
+                ProcessGrid.Columns[2].AllowSort = false;
+                ProcessGrid.Columns[3].AllowSort = false;
+                ProcessGrid.ItemScrollingBehavior = ItemScrollingBehavior.Immediate;
+                ICollectionView cvTasks = CollectionViewSource.GetDefaultView(ProcessGrid.ItemsSource);
+                if (cvTasks != null && cvTasks.CanGroup == true)
+                {
+                    cvTasks.GroupDescriptions.Clear();
+                    cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error While Initializing DataGrid For Components Process",ex);
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occured. Please Check Logs", "Process Status", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         public void StartComponentProcess(Components components)
         {
-            if (table.Rows.Count == 0)
+            try
             {
-                components.Group.ForEach(grp =>
+                if (table.Rows.Count == 0)
                 {
-                    grp.Component.ForEach(COMP =>
+                    components.Group.ForEach(grp =>
                     {
-                        ProgressBar temp = new ProgressBar();
-                        temp.Name = COMP.Name + "Progress";
-                        temp.Minimum = 0; temp.Maximum = 100;
-                        table.Rows.Add(grp.Name.ToString(), COMP.DisplayName, new ProgressBar(), Status.NotStarted.ToString(), COMP.Name);
+                        grp.Component.ForEach(COMP =>
+                        {
+                            ProgressBar temp = new ProgressBar();
+                            temp.Name = COMP.Name + "Progress";
+                            temp.Minimum = 0; temp.Maximum = 100;
+                            table.Rows.Add(grp.Name.ToString(), COMP.DisplayName, new ProgressBar(), Status.NotStarted.ToString(), COMP.Name);
+                        });
                     });
-                });
-                ProcessGrid.Items.Refresh();
-                BackgroundWorker worker = new BackgroundWorker();
-                //worker.WorkerReportsProgress = true;
-                worker.DoWork += Worker_StartProcess;
-                //worker.ProgressChanged += worker_ProgressChanged;
-                worker.RunWorkerAsync(components);
+                    ProcessGrid.Items.Refresh();
+                    BackgroundWorker worker = new BackgroundWorker();
+                    //worker.WorkerReportsProgress = true;
+                    worker.DoWork += Worker_StartProcess;
+                    //worker.ProgressChanged += worker_ProgressChanged;
+                    worker.RunWorkerAsync(components);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -94,8 +109,6 @@ namespace MigrationTool.Views
                 var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
                 var progressPersist = new Progress<ProcessStatus>(PersistProgress);
 
-                //Task t1 = Task.Factory.StartNew(() => gen.Start(Configurator.SelectedComponents, progressGenerate));
-                //Task t2 = Task.Factory.StartNew(() => ps.Start(progressPersist));
                 Task genTask = generate.Start(components, progressGenerate);
                 Task persisTask = persist.Start(progressPersist);
 
@@ -119,38 +132,60 @@ namespace MigrationTool.Views
 
         private void PersistProgress(ProcessStatus processStatus)
         {
-            var rcrd = table.AsEnumerable().Where(t => (t.Field<string>("Name") == processStatus.ComponentName)).Single();
-            Dispatcher.Invoke(() =>
+            try
             {
-                rcrd.Field<ProgressBar>("Progress").Value += processStatus.PercentCompleted / 2;
-                rcrd.SetField("Status", processStatus.Status.ToString());
-                ProcessGrid.Items.Refresh();
+                var rcrd = table.AsEnumerable().Where(t => (t.Field<string>("Name") == processStatus.ComponentName)).Single();
+                Dispatcher.Invoke(() =>
+                {
+                    var progressBar = rcrd.Field<ProgressBar>("Progress");
+                    progressBar.Value += processStatus.PercentCompleted / 2;
+                    if (processStatus.Status == Status.Failed)
+                    {
+                        rcrd.SetField("Status", processStatus.Status.ToString());
+                        progressBar.Value = 100;
+                        progressBar.Foreground = Brushes.Red;
+                    }
+                    else
+                    {
+                        rcrd.SetField("Status", processStatus.Status.ToString());
+                    }
+                    ProcessGrid.Items.Refresh();
+                }
+                );
             }
-            );
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error Occurred While Updating Persist Progress Bars", ex);
+            }
         }
 
         private void GenerateProgress(ProcessStatus processStatus)
         {
-            var rcrd = table.AsEnumerable().Where(t=> (t.Field<string>("Name")==processStatus.ComponentName)).Single();
-            Dispatcher.Invoke(() =>
+            try
             {
-                var progressBar = rcrd.Field<ProgressBar>("Progress");
-                progressBar.Value += processStatus.PercentCompleted /2;
-                if(processStatus.Status==Status.Failed)
+                var rcrd = table.AsEnumerable().Where(t => (t.Field<string>("Name") == processStatus.ComponentName)).Single();
+                Dispatcher.Invoke(() =>
                 {
-                    rcrd.SetField("Status", processStatus.Status.ToString());  
-                    progressBar.Value = 100;
-                    progressBar.Foreground = Brushes.Red;
+                    var progressBar = rcrd.Field<ProgressBar>("Progress");
+                    progressBar.Value += processStatus.PercentCompleted / 2;
+                    if (processStatus.Status == Status.Failed)
+                    {
+                        rcrd.SetField("Status", processStatus.Status.ToString());
+                        progressBar.Value = 100;
+                        progressBar.Foreground = Brushes.Red;
+                    }
+                    if (!(processStatus.Status == Status.Success))
+                    {
+                        rcrd.SetField("Status", processStatus.Status.ToString());
+                    }
+                    ProcessGrid.Items.Refresh();
                 }
-                if(!(processStatus.Status == Status.Success))
-                {
-                    rcrd.SetField("Status", processStatus.Status.ToString());
-                }
-                //else
-                //    ProcessGrid.Columns[3]
-                ProcessGrid.Items.Refresh();
+                );
             }
-            );
+            catch (Exception ex) 
+            {
+                Logger.Instance.LogError("Error Occured While Updating Generate Progress Bars", ex);
+            }
         }
     }
 }

@@ -43,43 +43,51 @@ namespace MigrationTool
         }
         private void Wiz_Next(object sender, CancelRoutedEventArgs e)
         {
-            Logger.Instance.LogInfo("Navigating From Page - " + Wiz.CurrentPage.Name +" to Next Page. ");
+            try
+            {
+                Logger.Instance.LogInfo("Navigating From Page - " + Wiz.CurrentPage.Name + " to Next Page. ");
 
-            if(Wiz.CurrentPage==AuthConnectionPage)
-            {
-                AuthCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.AUTH);
-                AuthCompSelectCntrl.InitializeData();
-                AddUserControlToPage(AuthComponentsSelectionPage, AuthCompSelectCntrl);
+                if (Wiz.CurrentPage == AuthConnectionPage)
+                {
+                    AuthCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.AUTH);
+                    AuthCompSelectCntrl.InitializeData();
+                    AddUserControlToPage(AuthComponentsSelectionPage, AuthCompSelectCntrl);
+                }
+                if (Wiz.CurrentPage == AuthComponentsSelectionPage)
+                {
+                    var comp = AuthCompSelectCntrl.GetSelectedComponents();
+                    AddUserControlToPage(AuthComponentsProcessPage, AuthCompProcessCntrl);
+                    AuthCompProcessCntrl.StartComponentProcess(comp);
+                }
+                if (Wiz.CurrentPage == AssetConnectionPage)
+                {
+                    Grid AssetSiteSelectGrid = new Grid();
+                    AssetSiteCntrl.LoadSites(GroupType.ASSET);
+                    AddUserControlToPage(AssetSiteSelectionPage, AssetSiteCntrl);
+                }
+                if (Wiz.CurrentPage == AssetSiteSelectionPage)
+                {
+                    var temp = string.Join(",", AssetSiteCntrl.GetSelectedSites().Select(t => t.Key));
+                    AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.ASSET);
+                    AssetsCompSelectCntrl.InitializeData();
+                    AddUserControlToPage(AssetsComponentsSelectionPage, AssetsCompSelectCntrl);
+                    //Configurator.SetQueryParams()
+                }
+                if (Wiz.CurrentPage == AssetsComponentsSelectionPage)
+                {
+                    var comp = AssetsCompSelectCntrl.GetSelectedComponents();
+                    AddUserControlToPage(AssetsComponentsProcessPage, AssetCompProcessCntrl);
+                    AssetCompProcessCntrl.StartComponentProcess(comp);
+                }
+                if (Wiz.CurrentPage == AssetsComponentsSelectionPage)
+                {
+                    var t = AssetsCompSelectCntrl.GetSelectedComponents();
+                }
             }
-            if(Wiz.CurrentPage==AuthComponentsSelectionPage)
+            catch (Exception ex)
             {
-                var comp =AuthCompSelectCntrl.GetSelectedComponents();
-                AddUserControlToPage(AuthComponentsProcessPage, AuthCompProcessCntrl);
-                AuthCompProcessCntrl.StartComponentProcess(comp);
-            }
-            if (Wiz.CurrentPage == AssetConnectionPage)
-            {
-                Grid AssetSiteSelectGrid = new Grid();
-                AssetSiteCntrl.LoadSites(GroupType.ASSET);     
-                AddUserControlToPage(AssetSiteSelectionPage, AssetSiteCntrl);
-            }
-            if(Wiz.CurrentPage == AssetSiteSelectionPage)
-            {
-                var temp = string.Join(",", AssetSiteCntrl.GetSelectedSites().Select(t => t.Key));
-                AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.ASSET);
-                AssetsCompSelectCntrl.InitializeData();
-                AddUserControlToPage(AssetsComponentsSelectionPage, AssetsCompSelectCntrl);
-                //Configurator.SetQueryParams()
-            }
-            if(Wiz.CurrentPage==AssetsComponentsSelectionPage)
-            {
-                var comp = AssetsCompSelectCntrl.GetSelectedComponents();
-                AddUserControlToPage(AssetsComponentsProcessPage, AssetCompProcessCntrl);
-                AssetCompProcessCntrl.StartComponentProcess(comp);
-            }  
-            if(Wiz.CurrentPage==AssetsComponentsSelectionPage)
-            {
-                var t=AssetsCompSelectCntrl.GetSelectedComponents();
+                Logger.Instance.LogError("Error While Navigating to Next Page", ex);
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occured. Please Check Logs", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void AuthDB_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
@@ -147,6 +155,10 @@ namespace MigrationTool
         private void AuthComponents_ProcessCompleted(object sender, EventArgs e)
         {
             Wiz.CurrentPage.CanSelectNextPage = true;
+        }
+        private void Wiz_Help(object sender, RoutedEventArgs e)
+        {
+            Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Contact Support for Help", "Help", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

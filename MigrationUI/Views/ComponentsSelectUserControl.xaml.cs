@@ -38,16 +38,24 @@ namespace MigrationTool.Views
         }
         public void InitializeData()
         {
-            var group = SourceComponents.Select(t => t.GroupName).FirstOrDefault();
-            var completedList = DatabaseHelper.GetCompletedComponents(group, null);
-            completedList.ForEach(item => SourceComponents.RemoveAll(t => t.Name == item));
-            expander.Header = group.ToString();
-            Logger.Instance.LogInfo("Initializing Data For Components Selection for Group -" + expander.Header);
-            ComponentsCheckList.ItemsSource = SourceComponents;
-            ComponentsCheckList.DisplayMemberPath = "DisplayName";
-            ComponentsCheckList.ValueMemberPath = "Name";
-            ComponentsCheckList.SelectedItemsOverride = SourceComponents.ToList();
-            SelectedComponents = SourceComponents.ToList();
+            try
+            {
+                var group = SourceComponents.Select(t => t.GroupName).FirstOrDefault();
+                var completedList = DatabaseHelper.GetCompletedComponents(group, null);
+                completedList.ForEach(item => SourceComponents.RemoveAll(t => t.Name == item));
+                expander.Header = group.ToString();
+                Logger.Instance.LogInfo("Initializing Data For Components Selection for Group -" + expander.Header);
+                ComponentsCheckList.ItemsSource = SourceComponents;
+                ComponentsCheckList.DisplayMemberPath = "DisplayName";
+                ComponentsCheckList.ValueMemberPath = "Name";
+                ComponentsCheckList.SelectedItemsOverride = SourceComponents.ToList();
+                SelectedComponents = SourceComponents.ToList();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error Occurred While Initializing DataGrid For Components Selection", ex);
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occured. Please Check Logs", "Components Selection", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         private void ComponentsCheckList_ItemSelectionChanged(object sender, Xceed.Wpf.Toolkit.Primitives.ItemSelectionChangedEventArgs e)
         {
@@ -59,11 +67,18 @@ namespace MigrationTool.Views
         public Components GetSelectedComponents()
         {
             Components components = new Components();
-            Group grp = new Group(SelectedComponents, SelectedComponents.Select(t => t.GroupName).FirstOrDefault());
-            List<Group> grpList = new List<Group>();
-            grpList.Add(grp);
-            components.Group = grpList;
-            Logger.Instance.LogInfo("Selected Components For "+ grp.Name +" Group :" + string.Join(",", SelectedComponents.Select(t=>t.Name)));
+            try
+            {
+                Group grp = new Group(SelectedComponents, SelectedComponents.Select(t => t.GroupName).FirstOrDefault());
+                List<Group> grpList = new List<Group>();
+                grpList.Add(grp);
+                components.Group = grpList;
+                Logger.Instance.LogInfo("Selected Components For " + grp.Name + " Group :" + string.Join(",", SelectedComponents.Select(t => t.Name)));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error Occurred While returning selected components", ex);
+            }
             return components;
         }
     }

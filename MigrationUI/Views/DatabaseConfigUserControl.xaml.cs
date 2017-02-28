@@ -33,47 +33,81 @@ namespace MigrationTool.Views
         {
             #region VariableDeclaration
             string rsltString = "";
-            var serverName = serverNameTextBox.Text;
-            var username = loginTextBox.Text;
+            var serverName = serverNameTextBox.Text.Trim();
+            var username = loginTextBox.Text.Trim();
             var pwd = passwordBox.Password;
-            var authType = AuthTypeComboBox.SelectedValue.ToString(); 
+            var authType = AuthTypeComboBox.SelectedValue.ToString();
             #endregion
 
-            ConnectingIndicator.IsBusy = true;
-            Logger.Instance.LogInfo("Checking Connection to the Database Server -" + serverName);
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += (o, ea) =>
+            if(ValidateInputs())
             {
-                rsltString = DatabaseHelper.CheckAndGenerateConnectionString(serverName, username, pwd, (AuthenticationType)Enum.Parse(typeof(AuthenticationType), authType));
-            };
-            worker.RunWorkerCompleted += (o, ea) =>
+                ConnectingIndicator.IsBusy = true;
+                Logger.Instance.LogInfo("Checking Connection to the Database Server -" + serverName);
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (o, ea) =>
+                {
+                    rsltString = DatabaseHelper.CheckAndGenerateConnectionString(serverName, username, pwd, (AuthenticationType)Enum.Parse(typeof(AuthenticationType), authType));
+                };
+                worker.RunWorkerCompleted += (o, ea) =>
+                {
+                    try
+                    {
+                        ConnectingIndicator.IsBusy = false;
+                        if (rsltString == "")
+                        {
+                            Logger.Instance.LogInfo("Cannot Establish a Connection");
+                            Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Cannot Establish a Connection", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else
+                        {
+                            Logger.Instance.LogInfo("Connection to the Database Server Completed.");
+                            DatabaseSelectModal modalWindow = new DatabaseSelectModal();
+                            modalWindow.Owner = Window.GetWindow(this);
+                            modalWindow.ConnectionString = rsltString;
+                            modalWindow.ShowDialog();
+                            if (string.IsNullOrEmpty(modalWindow.DatabaseName))
+                            {
+                                rsltString = string.Empty;
+                            }
+                            else
+                            {
+                                rsltString = DatabaseHelper.AddDatabaseToConnString(rsltString, modalWindow.DatabaseName);
+                                Logger.Instance.LogInfo("Selected Database - " + modalWindow.DatabaseName);
+                            }
+                        }
+                        OnConnectComplete?.Invoke(this, new ConnectionCompleteEventArgs { ConnectionString = rsltString });
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Instance.LogError("Error occurred while selecting database", ex);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occurred.Please Check Logs.", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                };
+                worker.RunWorkerAsync();
+            }
+        }
+
+        private bool ValidateInputs()
+        {
+            if(string.IsNullOrWhiteSpace(serverNameTextBox.Text))
             {
-                ConnectingIndicator.IsBusy = false;
-                if (rsltString=="")
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Please enter a valid server name.", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
+            }
+            else if((AuthenticationType)AuthTypeComboBox.SelectedItem == AuthenticationType.SQLServer)
+            {
+                if(string.IsNullOrWhiteSpace(loginTextBox.Text))
                 {
-                    Logger.Instance.LogInfo("Cannot Establish a Connection");
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this),"Cannot Establish a Connection", "Database Connection",MessageBoxButton.OK,MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Please enter a valid User Name.", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return false;
                 }
-                else
+                else if(string.IsNullOrWhiteSpace(passwordBox.Text))
                 {
-                    Logger.Instance.LogInfo("Connection to the Database Server Completed.");
-                    DatabaseSelectModal modalWindow = new DatabaseSelectModal();
-                    modalWindow.Owner = Window.GetWindow(this);
-                    modalWindow.ConnectionString = rsltString;
-                    modalWindow.ShowDialog();
-                    if (string.IsNullOrEmpty(modalWindow.DatabaseName))
-                    {
-                        rsltString = string.Empty;
-                    }
-                    else
-                    {
-                        rsltString = DatabaseHelper.AddDatabaseToConnString(rsltString, modalWindow.DatabaseName);
-                        Logger.Instance.LogInfo("Selected Database - " + modalWindow.DatabaseName);
-                    }
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Please enter a valid Password", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return false;
                 }
-                OnConnectComplete?.Invoke(this, new ConnectionCompleteEventArgs { ConnectionString = rsltString });
-            };
-            worker.RunWorkerAsync();
+            }
+            return true;
         }
 
         private void AuthTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -92,5 +126,9 @@ namespace MigrationTool.Views
             loginTextBox.Clear();
             passwordBox.Clear();
         }
+        //private object GetEnumObjects()
+        //{
+
+        //}
     }
 }

@@ -20,27 +20,41 @@ namespace Migration.Generate.Helpers
         /// <returns>Dynamic ResultSet</returns>
         internal static dynamic ExecuteQueryOnSource(string query)
         {
-            dynamic result;
-            using (var conn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
+            try
             {
-                result = conn.Query<dynamic>(query);
+                dynamic result;
+                using (var conn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
+                {
+                    result = conn.Query<dynamic>(query);
+                }
+                return result;
             }
-            return result;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         internal static void InsertGenerateReport(string componentName,DateTime startTime, DateTime endTime, int totalRecordsCount, int totalUniqueRecordsCount,GroupType type,string Status)
         {
-            using (var conn = new SqlConnection(ConnectionStrings.GetConnectionString(type)))
+            try
             {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(Queries.ReportInsert, conn);
-                cmd.Parameters.Add(new SqlParameter("@Name", componentName));
-                cmd.Parameters.Add(new SqlParameter("@TotRecords", totalRecordsCount));
-                cmd.Parameters.Add(new SqlParameter("@TotUniqRecords", totalUniqueRecordsCount));
-                cmd.Parameters.Add(new SqlParameter("@StartTime", startTime));
-                cmd.Parameters.Add(new SqlParameter("@EndTime", endTime));
-                cmd.Parameters.Add(new SqlParameter("@Status", Status));
-                cmd.ExecuteNonQuery();
+                using (var conn = new SqlConnection(ConnectionStrings.GetConnectionString(type)))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(Queries.ReportInsert, conn);
+                    cmd.Parameters.Add(new SqlParameter("@Name", componentName));
+                    cmd.Parameters.Add(new SqlParameter("@TotRecords", totalRecordsCount));
+                    cmd.Parameters.Add(new SqlParameter("@TotUniqRecords", totalUniqueRecordsCount));
+                    cmd.Parameters.Add(new SqlParameter("@StartTime", startTime));
+                    cmd.Parameters.Add(new SqlParameter("@EndTime", endTime));
+                    cmd.Parameters.Add(new SqlParameter("@Status", Status));
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError(string.Format("Error Occurred While Inserting Generate Report for {0} , StartTime - {1}, totalRecordsCount - {2}, totalUniqueRecordsCount - {3}, Status - {4}",componentName,startTime.ToString(),totalRecordsCount,totalUniqueRecordsCount,Status), ex);
             }
         }
     }

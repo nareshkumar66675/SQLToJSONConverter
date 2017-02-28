@@ -7,6 +7,7 @@ using Migration.Configuration.ConfigObject;
 using Migration.Generate.Helpers;
 using Migration.ProcessQueue;
 using static Migration.Common.Common;
+using Migration.Common;
 
 namespace Migration.Generate.Generators
 {
@@ -22,7 +23,10 @@ namespace Migration.Generate.Generators
                 var qry = Configuration.Configurator.GetSourceByComponentName(component.Name);
                 rslt = SqlOperation.ExecuteQueryOnSource(qry);
                 Type type = Type.GetType(component.DomainType);
+                if (type == null)
+                    throw new Exception("Error in Domain Type -" + component.DomainType);
                 Mapper mapper = new Mapper();
+                //Slapper.AutoMapper.Configuration.AddIdentifiers(type, new List<string> { "Id","Component.Id", "Component.Components.ComponentValues.Id" });
                 resultEntities = mapper.Map<object>(rslt, type);
                 NotifyGenerateStatus(rslt, resultEntities, component, startTime,"Running");
                 ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultEntities));

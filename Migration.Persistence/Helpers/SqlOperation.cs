@@ -40,15 +40,22 @@ namespace Migration.Persistence.Helpers
         }
         internal static void UpdatePersistReport(string componentName, DateTime endTime, int totalInsertedRecordsCount, GroupType type,string Status)
         {
-            using (var conn = new SqlConnection(ConnectionStrings.GetConnectionString(type)))
+            try
             {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(Queries.ReportUpdate, conn);
-                cmd.Parameters.Add(new SqlParameter("@Name", componentName));
-                cmd.Parameters.Add(new SqlParameter("@InsrtdRcrds", totalInsertedRecordsCount));
-                cmd.Parameters.Add(new SqlParameter("@EndTime", endTime)); 
-                cmd.Parameters.Add(new SqlParameter("@Status", Status));
-                cmd.ExecuteNonQuery();
+                using (var conn = new SqlConnection(ConnectionStrings.GetConnectionString(type)))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(Queries.ReportUpdate, conn);
+                    cmd.Parameters.Add(new SqlParameter("@Name", componentName));
+                    cmd.Parameters.Add(new SqlParameter("@InsrtdRcrds", totalInsertedRecordsCount));
+                    cmd.Parameters.Add(new SqlParameter("@EndTime", endTime));
+                    cmd.Parameters.Add(new SqlParameter("@Status", Status));
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError(string.Format("Error Occurred While Updating Persist Report : {0} , Endtime - {1} , TotalInsertedRecordsCount - {2} , Status - {3}" + componentName,endTime.ToString(),totalInsertedRecordsCount,Status), ex);
             }
         }
     }

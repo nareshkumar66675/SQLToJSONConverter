@@ -22,7 +22,7 @@ namespace Migration.Generate.Helpers
             //    var tempResult = Slapper.AutoMapper.MapDynamic(type, item);
             //    result.AddRange(tempResult as IEnumerable<T>);
             //}
-            var mappedObject = (Slapper.AutoMapper.MapDynamic(type, resultSet,false) as IEnumerable<T>).ToList();
+            var mappedObject = (Slapper.AutoMapper.MapDynamic(type, resultSet,true) as IEnumerable<T>).ToList();
             return mappedObject;
         }
     }

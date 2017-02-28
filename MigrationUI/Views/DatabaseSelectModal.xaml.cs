@@ -34,14 +34,21 @@ namespace MigrationTool.Views
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if(!string.IsNullOrEmpty(ConnectionString))
+            try
             {
-                Logger.Instance.LogInfo("Retrieving Database List");
-                var databaseList = DatabaseHelper.GetDatabaseList(ConnectionString);
-                databaseList.Insert(0, comboDefaultText);
-                DatabaseComboBox.ItemsSource = databaseList;
-                if (DatabaseComboBox.Items.Count>0) DatabaseComboBox.SelectedIndex = 0;
-                errorTextBlock.Visibility = Visibility.Hidden;
+                if (!string.IsNullOrEmpty(ConnectionString))
+                {
+                    Logger.Instance.LogInfo("Retrieving Database List");
+                    var databaseList = DatabaseHelper.GetDatabaseList(ConnectionString);
+                    databaseList.Insert(0, comboDefaultText);
+                    DatabaseComboBox.ItemsSource = databaseList;
+                    if (DatabaseComboBox.Items.Count > 0) DatabaseComboBox.SelectedIndex = 0;
+                    errorTextBlock.Visibility = Visibility.Hidden;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error Occurred While Loading Database Select Modal", ex);
             }
         }
 
