@@ -51,6 +51,7 @@ namespace MigrationTool.Views
                 ComponentsCheckList.ValueMemberPath = "Name";
                 ComponentsCheckList.SelectedItemsOverride = SourceComponents.ToList();
                 SelectedComponents = SourceComponents.ToList();
+                NotifySelectionChanged();
             }
             catch (Exception ex)
             {
@@ -59,6 +60,10 @@ namespace MigrationTool.Views
             }
         }
         private void ComponentsCheckList_ItemSelectionChanged(object sender, Xceed.Wpf.Toolkit.Primitives.ItemSelectionChangedEventArgs e)
+        {
+            NotifySelectionChanged();
+        }
+        private void NotifySelectionChanged()
         {
             SelectedComponents = ComponentsCheckList.SelectedItems.Cast<Component>().ToList();
             var isEmpty = SelectedComponents.Count > 0 ? false : true;

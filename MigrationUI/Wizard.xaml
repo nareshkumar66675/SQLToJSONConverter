@@ -18,7 +18,7 @@
           HorizontalAlignment="Left"
           VerticalAlignment="Top">
         <xctk:Wizard x:Name="Wiz"
-                     CurrentPage="{Binding ElementName=AuthComponentsSelectionPage}"
+                     CurrentPage="{Binding ElementName=SourceConnectionPage}"
                      FinishButtonClosesWindow="True"
                      Help="Wiz_Help"
                      Next="Wiz_Next">
@@ -55,9 +55,10 @@
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="SrcConnectCntrl"
-                                                            Margin="116,88,116,87"
+                                                            Margin="116,75,116,76"
                                                             OnConnectComplete="SrcExisiting_OnConnectComplete"
                                                             RenderTransformOrigin="1.023,0.523" />
+
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
@@ -72,7 +73,7 @@
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="AuthConnectCntrl"
-                                                            Margin="116,88,116,87"
+                                                            Margin="116,75,116,76"
                                                             OnConnectComplete="AuthDB_OnConnectComplete"
                                                             RenderTransformOrigin="1.023,0.523" />
                         <Button x:Name="SkipAuthButton"
@@ -88,7 +89,7 @@
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="AuthComponentsSelectionPage"
                              Title="STEP 3 : Auth Components Selection"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              Description="Select the Auth Components that needs to be migrated."
                              NextPage="{Binding ElementName=AuthComponentsProcessPage}"
                              PageType="Interior"
@@ -97,6 +98,7 @@
                              Title="STEP 4 : Auth Components Migration"
                              CanCancel="False"
                              CanSelectNextPage="False"
+                             CanSelectPreviousPage="False"
                              Description="Please wait until the Migration is Complete."
                              NextPage="{Binding ElementName=AssetConnectionPage}"
                              PageType="Interior"
@@ -114,7 +116,7 @@
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="AssetConnectCntrl"
-                                                            Margin="116,88,116,87"
+                                                            Margin="116,75,116,76"
                                                             OnConnectComplete="AssetDB_OnConnectComplete"
                                                             RenderTransformOrigin="1.023,0.523" />
                         <Button x:Name="SkipAssetButton"
@@ -147,6 +149,7 @@
                              Title="STEP 8 : Assets Migration"
                              CanCancel="False"
                              CanSelectNextPage="False"
+                             CanSelectPreviousPage="False"
                              Description="Press Start to initiate the migrtaion process."
                              NextPage="{Binding ElementName=LastPage}"
                              PageType="Interior"

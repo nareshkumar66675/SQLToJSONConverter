@@ -17,6 +17,7 @@ namespace MigrationTool.Views
     /// </summary>
     public partial class DatabaseConfigUserControl : UserControl
     {
+        public string Type { get; set; }
         public DatabaseConfigUserControl()
         {
             InitializeComponent();
@@ -61,18 +62,17 @@ namespace MigrationTool.Views
                         else
                         {
                             Logger.Instance.LogInfo("Connection to the Database Server Completed.");
-                            DatabaseSelectModal modalWindow = new DatabaseSelectModal();
-                            modalWindow.Owner = Window.GetWindow(this);
-                            modalWindow.ConnectionString = rsltString;
-                            modalWindow.ShowDialog();
-                            if (string.IsNullOrEmpty(modalWindow.DatabaseName))
+                            var dbName=ShowSelectDBWindow(rsltString);
+                            if (string.IsNullOrEmpty(dbName))
                             {
                                 rsltString = string.Empty;
                             }
                             else
                             {
-                                rsltString = DatabaseHelper.AddDatabaseToConnString(rsltString, modalWindow.DatabaseName);
-                                Logger.Instance.LogInfo("Selected Database - " + modalWindow.DatabaseName);
+                                rsltString = DatabaseHelper.AddDatabaseToConnString(rsltString, dbName);
+                                databaseTextBox.Text = dbName;
+                                selectedDBGrid.Visibility = Visibility.Visible;
+                                Logger.Instance.LogInfo("Selected Database - " + dbName);
                             }
                         }
                         OnConnectComplete?.Invoke(this, new ConnectionCompleteEventArgs { ConnectionString = rsltString });
@@ -85,6 +85,15 @@ namespace MigrationTool.Views
                 };
                 worker.RunWorkerAsync();
             }
+        }
+        private string ShowSelectDBWindow(string connString)
+        {
+            DatabaseSelectModal modalWindow = new DatabaseSelectModal();
+            modalWindow.Type = this.Type;
+            modalWindow.Owner = Window.GetWindow(this);
+            modalWindow.ConnectionString = connString;
+            modalWindow.ShowDialog();
+            return modalWindow.DatabaseName;
         }
 
         private bool ValidateInputs()
@@ -125,6 +134,8 @@ namespace MigrationTool.Views
             serverNameTextBox.Clear();
             loginTextBox.Clear();
             passwordBox.Clear();
+            databaseTextBox.Clear();
+            selectedDBGrid.Visibility = Visibility.Collapsed;
         }
         //private object GetEnumObjects()
         //{

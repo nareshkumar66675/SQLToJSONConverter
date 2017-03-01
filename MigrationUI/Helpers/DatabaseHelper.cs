@@ -11,9 +11,9 @@ namespace MigrationTool.Helpers
 {
     public static class DatabaseHelper
     {
-        public static string CheckAndGenerateConnectionString(string serverName,string user,string password,AuthenticationType type)
+        public static string CheckAndGenerateConnectionString(string serverName, string user, string password, AuthenticationType type)
         {
-            
+
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
             builder.DataSource = serverName;
             builder.UserID = user;
@@ -33,7 +33,7 @@ namespace MigrationTool.Helpers
             {
                 return "";
             }
-            
+
         }
         public static string GetServerName(string connectionString)
         {
@@ -43,7 +43,7 @@ namespace MigrationTool.Helpers
         {
             return new SqlConnectionStringBuilder(connectionString).InitialCatalog;
         }
-        public static string AddDatabaseToConnString(string connectionString,string databaseName)
+        public static string AddDatabaseToConnString(string connectionString, string databaseName)
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString);
             builder.InitialCatalog = databaseName;
@@ -112,7 +112,7 @@ namespace MigrationTool.Helpers
             }
             return SiteList;
         }
-        public static List<string> GetCompletedComponents(GroupType group,List<string> Sites)
+        public static List<string> GetCompletedComponents(GroupType group, List<string> Sites)
         {
             List<string> completedComp = new List<string>();
             string query = string.Empty;
@@ -146,6 +146,26 @@ namespace MigrationTool.Helpers
                 }
             }
             return completedComp;
+        }
+        public static bool CheckIfTableExists(string connectionString, string tableName)
+        {
+            bool exists;
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                string query = @"SELECT CASE WHEN EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=@Schema AND TABLE_NAME = @TableName)) THEN 1 ELSE 0 END";
+                var temp = tableName.Split('.');
+                string schema = temp.Length == 2 ? temp[0] : "dbo";
+                string tabName = temp.Length == 2 ? temp[1] : temp[0];
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@Schema", schema));
+                    cmd.Parameters.Add(new SqlParameter("@TableName", tabName));
+
+                    exists = (int)cmd.ExecuteScalar() == 1;
+                }
+            }
+            return exists;
         }
     }
 }

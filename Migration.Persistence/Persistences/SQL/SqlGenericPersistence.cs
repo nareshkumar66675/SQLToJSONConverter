@@ -32,7 +32,7 @@ namespace Migration.Persistence.Persistences.SQL
             {
                 if (AppSettings.IsReportEnabled)
                     SqlOperation.UpdatePersistReport(item.Component.Name, DateTime.Now, item.Items.Count, item.Component.GroupName,"Failed");
-                Logger.Instance.LogError(string.Format("Error Occurred While Inserting Item : {0}" + item.Component.Name), ex);
+                Logger.Instance.LogError(string.Format("Error Occurred While Inserting Item : {0}" , item.Component.Name), ex);
                 return false;
             }
         }

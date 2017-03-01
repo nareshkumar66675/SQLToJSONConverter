@@ -89,7 +89,30 @@ namespace Migration.Common
                 }
                 private set { }
             }
-
+            public static string LegacyDBCheck
+            {
+                get
+                {
+                    return string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("LegacyDBCheck")) ? "GAM.ASSET" : ConfigurationManager.AppSettings.Get("LegacyDBCheck");
+                }
+                private set { }
+            }
+            public static string AuthDBCheck
+            {
+                get
+                {
+                    return string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("AuthDBCheck")) ? "Site.Site" : ConfigurationManager.AppSettings.Get("AuthDBCheck");
+                }
+                private set { }
+            }
+            public static string AssetDBCheck
+            {
+                get
+                {
+                    return string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("AssetDBCheck")) ? "DataManagement.Asset" : ConfigurationManager.AppSettings.Get("AssetDBCheck");
+                }
+                private set { }
+            }
         }
 
         public static class Queries

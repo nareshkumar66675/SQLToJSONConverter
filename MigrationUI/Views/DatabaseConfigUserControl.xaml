@@ -7,7 +7,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              Width="433.929"
-             Height="226"
+             Height="250"
              mc:Ignorable="d">
     <UserControl.Resources>
         <Style TargetType="{x:Type Button}">
@@ -34,11 +34,11 @@
                     </StackPanel>
                 </StackPanel>
             </xctk:BusyIndicator.BusyContent>
-            <Grid>
+            <Grid Height="238">
 
                 <Grid Width="414"
-                      Height="206"
-                      Margin="0,0,0,0"
+                      Height="236"
+                      Margin="0,0,0,-20"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Top">
                     <Border Margin="4"
@@ -50,6 +50,25 @@
                             <DropShadowEffect Opacity="0.5" Color="Gray" />
                         </Border.Effect>
                     </Border>
+                    <Grid Name="selectedDBGrid" Margin="9,164,9,30" Visibility="Collapsed">
+                        <Label x:Name="DBLabel"
+                               Width="108"
+                               Height="32"
+                               Margin="0,4,0,0"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               Content="Selected Database" />
+                        <xctk:WatermarkTextBox x:Name="databaseTextBox"
+                                               Width="235"
+                                               Height="23"
+                                               Margin="149,4,0,0"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Top"
+                                               IsEnabled="False"
+                                               IsReadOnly="True"
+                                               TextWrapping="Wrap"
+                                               Watermark="" />
+                    </Grid>
                     <Label x:Name="serverNameLabel"
                            Width="93"
                            Margin="10,24,0,0"
@@ -126,7 +145,7 @@
                     </Grid>
                     <Button x:Name="connectButton"
                             Width="75"
-                            Margin="158,174,0,0"
+                            Margin="158,200,0,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             Click="connectButton_Click"
@@ -134,7 +153,7 @@
                             IsDefault="True" />
                     <Button x:Name="cancelButton"
                             Width="75"
-                            Margin="266,174,0,0"
+                            Margin="266,200,0,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             Click="cancelButton_Click"

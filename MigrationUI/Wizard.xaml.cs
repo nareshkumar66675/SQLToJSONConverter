@@ -36,6 +36,9 @@ namespace MigrationTool
         {
             InitializeComponent();
             Logger.Instance.LogInfo("Data Migration Tool Initialized.");
+            SrcConnectCntrl.Type = "LEGACY";
+            AuthConnectCntrl.Type = GroupType.AUTH.ToString();
+            AssetConnectCntrl.Type = GroupType.ASSET.ToString();
             AuthCompProcessCntrl.ProcessCompleted += AuthComponents_ProcessCompleted;
             AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
             AuthCompSelectCntrl.OnComponentsSelectionChanged += AuthCompSelectCntrl_OnComponentsSelectionChanged;
