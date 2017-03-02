@@ -13,7 +13,7 @@ namespace Migration.Configuration.ConfigObject
     {
         [XmlAttribute(AttributeName = "Name")]
         public string Name { get; set; }
-        [XmlElement(ElementName = "Source")]
+        [XmlIgnore()]
         public string Source { get; set; }
         [XmlElement(ElementName = "Destination")]
         public string Destination { get; set; }

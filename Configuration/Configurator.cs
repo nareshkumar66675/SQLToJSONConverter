@@ -31,7 +31,8 @@ namespace Migration.Configuration
         /// <returns>Source/Query</returns>
         public static string GetSourceByComponentName(string componentName)
         {
-            return GetTransformationEnumerable(componentName).Select(u => u.Source).FirstOrDefault();
+            var source =GetTransformationEnumerable(componentName).Select(u => u.Source).FirstOrDefault();
+            return string.IsNullOrWhiteSpace(source)? XMLHelper.GetTransformationSource(componentName):source;
         }
         /// <summary>
         /// Retrieves Destination Table from Transformation XML

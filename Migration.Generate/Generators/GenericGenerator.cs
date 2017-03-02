@@ -32,7 +32,7 @@ namespace Migration.Generate.Generators
                 ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultEntities));
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 NotifyGenerateStatus(rslt, resultEntities, component, startTime, "Failed");
                 throw;

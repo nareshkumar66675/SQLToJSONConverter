@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace Migration.Configuration
@@ -28,7 +29,6 @@ namespace Migration.Configuration
 
                     Transforms = (Transformations)serializerTransformations.Deserialize(readerTransformations);
                     Components = (Components)serializerComponents.Deserialize(readerComponents);
-
                     readerTransformations.Close();
                     readerComponents.Close();
                 }
@@ -37,6 +37,21 @@ namespace Migration.Configuration
             {
                 Logger.Instance.LogError("Error Occurred While Intializing XML Configurations", ex);
                 throw;
+            }
+        }
+        internal static string GetTransformationSource(string componentName)
+        {
+            try
+            {
+                XElement ele = XElement.Load("ConfigXML/TransformationConfiguration.xml");
+
+                string rslt = ele.Elements().Where(t => t.Attribute("Name").Value == componentName).FirstOrDefault().Descendants("Source").FirstOrDefault().Value;
+
+                return rslt;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Component Name or Source Not found in Transformation Xml", ex);
             }
         }
     }

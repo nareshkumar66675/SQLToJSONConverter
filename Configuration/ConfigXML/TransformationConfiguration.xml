@@ -357,7 +357,7 @@
       from gam.denomination where IS_DELETED = 0 ) as den
 
       -------- EOF Denoms -----------
-    </Source>
+    </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
   </Transformation>
