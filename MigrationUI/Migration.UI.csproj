@@ -168,6 +168,10 @@
     <Resource Include="AMLogo.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Asset_Floret\Library\Persistence.MSSql\Asset.Persistence.MSSql.csproj">
+      <Project>{d8501ed1-8481-42ad-8247-7079d64f2672}</Project>
+      <Name>Asset.Persistence.MSSql</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Auth_Floret\Library\Persistence.MSSql\Auth.Persistence.MSSql.csproj">
       <Project>{c60971af-425a-462a-8e9c-6be49cb69998}</Project>
       <Name>Auth.Persistence.MSSql</Name>

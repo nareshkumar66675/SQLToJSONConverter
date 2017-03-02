@@ -107,7 +107,7 @@
             <!--  Asset Process Block Start  -->
             <xctk:WizardPage x:Name="AssetConnectionPage"
                              Title="STEP 5 : Asset Database Connection"
-                             CanSelectNextPage="False"
+                             CanSelectNextPage="True"
                              CanSelectPreviousPage="False"
                              Description="Enter the asset database connection details."
                              NextPage="{Binding ElementName=AssetSiteSelectionPage}"

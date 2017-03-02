@@ -164,6 +164,7 @@
   </Transformation>
   <Transformation Name="COMPDATA">
     <Source>
+      -------Manufacturer------
       SELECT 1 as Id,
       1 as Component_Id,
       --COMPONENTS---
@@ -176,13 +177,13 @@
       CAST(Components_Id as VARCHAR(50)) as Component_Components_ComponentValues_ChildComponents_Id,
       Name as Component_Components_ComponentValues_ChildComponents_Name,
       DisplayName AS Component_Components_ComponentValues_ChildComponents_DisplayName,
-      ---Options
+      ----- OPTIONS ------
+      ROW_NUMBER() OVER (PARTITION BY MANF_ID ORDER BY MANF_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
       CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'Manufacture Short Name'
       WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'Manufacture Long Name'
       WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'Manufacture Code'
       END AS Component_Components_ComponentValues_ChildComponents_Options_Name,
-      VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value ,
-      ROW_NUMBER() OVER (PARTITION BY MANF_ID ORDER BY MANF_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id
+      VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value
       FROM
       (SELECT MANF_ID,MANF_SHORT_NAME as Name, MANF_LONG_NAME as DisplayName,
       ROW_NUMBER() OVER (ORDER BY MANF_ID ) AS Components_Id,
@@ -193,6 +194,169 @@
       UNPIVOT
       ( VALUE FOR VALUE_DESC IN (MANF_SHORT_NAME, MANF_LONG_NAME, MANF_VEND_CODE)
       ) AS T
+      ------ EOF Manufacturer ------
+      UNION ALL
+      ----------- MODEL TYPE----------
+      SELECT 2 as Id,
+      2 as Component_Id,
+      --COMPONENTS---
+      0 as Component_Components_SiteId,
+      --Component Values---
+      '1_root' as Component_Components_ComponentValues_Id,
+      'Model Type' as Component_Components_ComponentValues_Name,
+      'Model Type' as Component_Components_ComponentValues_DisplayName,
+      --ChildCompoenents----
+      CAST(Components_Id as VARCHAR(50)) as Component_Components_ComponentValues_ChildComponents_Id,
+      Name as Component_Components_ComponentValues_ChildComponents_Name,
+      DisplayName AS Component_Components_ComponentValues_ChildComponents_DisplayName,
+      ----- OPTIONS ------
+      ROW_NUMBER() OVER (PARTITION BY MDLTYP_ID ORDER BY MDLTYP_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
+      CASE  WHEN VALUE_DESC = 'MDLTYP_SHORT_NAME' then 'Model Type Short Name'
+      WHEN VALUE_DESC = 'MDLTYP_LONG_NAME' then 'Model Type Long Name'
+      END AS Component_Components_ComponentValues_ChildComponents_Options_Name,
+      VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value
+      FROM
+      (SELECT MDLTYP_ID,
+      MDLTYP_SHORT_NAME as Name,
+      MDLTYP_LONG_NAME as DisplayName,
+      ROW_NUMBER() OVER (ORDER BY MDLTYP_ID ) AS Components_Id,
+      CAST(MDLTYP_SHORT_NAME AS NVARCHAR) AS MDLTYP_SHORT_NAME,
+      CAST(MDLTYP_LONG_NAME AS NVARCHAR) AS MDLTYP_LONG_NAME
+      FROM GAM.MODEL_TYPE  WHERE IS_DELETED = 0 ) MDL_TYPE
+      UNPIVOT
+      ( VALUE FOR VALUE_DESC IN (MDLTYP_SHORT_NAME, MDLTYP_LONG_NAME)
+      ) AS T
+      -------- EOF MODEL TYPE ----------
+      UNION ALL
+
+      ----------- MODEL ---------------
+      SELECT 3 as Id,
+      3 as Component_Id,
+      --COMPONENTS---
+      0 as Component_Components_SiteId,
+      --Component Values---
+      '1_root' as Component_Components_ComponentValues_Id,
+      'Model' as Component_Components_ComponentValues_Name,
+      'Model' as Component_Components_ComponentValues_DisplayName,
+      --ChildCompoenents----
+      CAST(Components_Id as VARCHAR(50)) as Component_Components_ComponentValues_ChildComponents_Id,
+      Name as Component_Components_ComponentValues_ChildComponents_Name,
+      Name AS Component_Components_ComponentValues_ChildComponents_DisplayName,
+      --------OPTIONS-----
+      ROW_NUMBER() OVER (PARTITION BY MDL_ID ORDER BY MDL_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
+      CASE  WHEN VALUE_DESC = 'MODL_SHORT_NAME' then 'Model Short Name'
+      WHEN VALUE_DESC = 'MODL_LONG_NAME' then 'Model Long Name'
+      WHEN VALUE_DESC = 'MODL_TYPE_SHORT_NAME' then 'Model Type Short Name'
+      WHEN VALUE_DESC = 'MODL_TYPE_LONG_NAME' then 'Model Type Long Name'
+      WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'Manufacture Short Name'
+      WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'Manufacture Long Name'
+      WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'Manufacture Code Name'
+      END AS Component_Components_ComponentValues_ChildComponents_Options_Name,
+      VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value
+      FROM ( SELECT MDL.MDL_ID, MDL_SHORT_NAME as Name,
+      ROW_NUMBER() OVER (ORDER BY MDL.MDL_ID ) AS Components_Id,
+      CAST(MDL.MDL_SHORT_NAME AS NVARCHAR) AS MODL_SHORT_NAME,
+      CAST(MDL.MDL_LONG_NAME AS NVARCHAR)  AS MODL_LONG_NAME,
+      CAST(MDLTYPE.MDLTYP_SHORT_NAME AS NVARCHAR)  AS MODL_TYPE_SHORT_NAME,
+      CAST(MDLTYPE.MDLTYP_LONG_NAME AS NVARCHAR)  AS MODL_TYPE_LONG_NAME,
+      CAST(MNF.MANF_SHORT_NAME AS NVARCHAR)  AS MANF_SHORT_NAME,
+      CAST(MNF.MANF_LONG_NAME AS NVARCHAR)  AS MANF_LONG_NAME,
+      CAST(MNF.MANF_VEND_CODE AS NVARCHAR)  AS MANF_VEND_CODE
+      FROM GAM.MODEL_MODELTYPE_MAP AS MAP
+      JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = MAP.MODL_ID
+      JOIN GAM.MODEL_TYPE AS MDLTYPE ON MDLTYPE.MDLTYP_ID = MAP.MTYP_ID
+      JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = MDL.MDL_MANF_ID
+      WHERE MDL.IS_DELETED = 0 ) MDL_TYPE
+      UNPIVOT
+      ( VALUE FOR VALUE_DESC IN (MODL_SHORT_NAME, MODL_LONG_NAME,
+      MODL_TYPE_SHORT_NAME, MODL_TYPE_LONG_NAME,
+      MANF_SHORT_NAME, MANF_LONG_NAME, MANF_VEND_CODE)
+      ) AS T
+
+      -------- EOF MODEL ----------
+      UNION ALL
+
+      ----------- THEME ---------------
+      SELECT 4 as Id,
+      4 as Component_Id,
+      --COMPONENTS---
+      0 as Component_Components_SiteId,
+      --Component Values---
+      '1_root' as Component_Components_ComponentValues_Id,
+      'Theme' as Component_Components_ComponentValues_Name,
+      'Theme' as Component_Components_ComponentValues_DisplayName,
+      --ChildCompoenents----
+      CAST(Components_Id as VARCHAR(50)) as Component_Components_ComponentValues_ChildComponents_Id,
+      Name as Component_Components_ComponentValues_ChildComponents_Name,
+      Name AS Component_Components_ComponentValues_ChildComponents_DisplayName,
+      ---- OPTIONS --------
+      ROW_NUMBER() OVER (PARTITION BY THEM_ID ORDER BY THEM_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
+      CASE
+      WHEN VALUE_DESC = 'THEM_SHORT_NAME' then 'Theme Short Name'
+      WHEN VALUE_DESC = 'THEM_LONG_NAME' then 'Theme Long Name'
+      WHEN VALUE_DESC = 'TCAT_SHORT_NAME' then 'Theme Category Short Name'
+      WHEN VALUE_DESC = 'TCAT_LONG_NAME' then 'Theme Category Long Name'
+      WHEN VALUE_DESC = 'TTYP_SHORT_NAME' then 'Theme Type Short Name'
+      WHEN VALUE_DESC = 'TTYP_LONG_NAME' then 'Theme Type Long Name'
+      WHEN VALUE_DESC = 'TGRP_SHORT_NAME' then 'Theme Group Short Name'
+      WHEN VALUE_DESC = 'TGRP_LONG_NAME' then 'Theme Group Long Name'
+      WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'Manufacturer Short Name'
+      WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'Manufacturer Long Name'
+      WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'Manufacturer Code'
+      END AS Component_Components_ComponentValues_ChildComponents_Options_Name,
+      VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value
+      FROM ( SELECT THEM_ID,THEM_NAME as Name,
+      ROW_NUMBER() OVER (ORDER BY THEM_ID ) AS Components_Id,
+      CAST(THEM_NAME AS NVARCHAR) AS THEM_NAME,
+      CAST(THEM_NAME AS NVARCHAR) AS THEM_SHORT_NAME,
+      CAST(THEM_NAME AS NVARCHAR) AS THEM_LONG_NAME,
+      CAST(TCAT_SHORT_NAME AS NVARCHAR) AS TCAT_SHORT_NAME,
+      CAST(TCAT_LONG_NAME AS NVARCHAR) AS TCAT_LONG_NAME,
+      CAST(TTYP_SHORT_NAME AS NVARCHAR) AS TTYP_SHORT_NAME,
+      CAST(TTYP_LONG_NAME AS NVARCHAR) AS TTYP_LONG_NAME,
+      CAST(TGRP_SHORT_NAME AS NVARCHAR) AS TGRP_SHORT_NAME,
+      CAST(TGRP_LONG_NAME AS NVARCHAR) AS TGRP_LONG_NAME ,
+      CAST(MANF_LONG_NAME AS NVARCHAR) AS MANF_LONG_NAME,
+      CAST(MANF_SHORT_NAME AS NVARCHAR) AS MANF_SHORT_NAME,
+      CAST(MANF_VEND_CODE AS NVARCHAR) AS MANF_VEND_CODE
+      FROM GAM.THEME AS THEM
+      JOIN GAM.THEME_CATEGORY AS THEM_CAT ON THEM_CAT.TCAT_ID = THEM.THEME_CAT_ID
+      JOIN GAM.THEME_TYPE AS TT ON TT.TTYP_ID = THEM.TTYP_ID
+      JOIN GAM.THEME_GROUP AS TGRP ON THEM_CAT.TCAT_TGRP_ID = TGRP.TGRP_ID
+      JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = THEM.MANF_ID
+      WHERE THEM.IS_DELETED = 0 ) TM
+      UNPIVOT
+      ( VALUE FOR VALUE_DESC IN (THEM_SHORT_NAME, THEM_LONG_NAME, TTYP_SHORT_NAME, TTYP_LONG_NAME,
+      TGRP_SHORT_NAME, TGRP_LONG_NAME, TCAT_SHORT_NAME, TCAT_LONG_NAME,
+      MANF_LONG_NAME, MANF_SHORT_NAME, MANF_VEND_CODE)  ) AS T
+
+      -------- EOF MODEL ----------
+      UNION ALL
+
+      ----------- THEME ---------------
+      SELECT 5 as Id,
+      5 as Component_Id,
+      --COMPONENTS---
+      0 as Component_Components_SiteId,
+      --Component Values---
+      '1_root' as Component_Components_ComponentValues_Id,
+      'Denomination' as Component_Components_ComponentValues_Name,
+      'Denomination' as Component_Components_ComponentValues_DisplayName,
+      --ChildCompoenents----
+      CAST(Components_Id as VARCHAR(50)) as Component_Components_ComponentValues_ChildComponents_Id,
+      DENM_AMOUNT as Component_Components_ComponentValues_ChildComponents_Name,
+      DENM_AMOUNT AS Component_Components_ComponentValues_ChildComponents_DisplayName,
+      ---- OPTIONS --------
+      ROW_NUMBER() OVER (PARTITION BY DENM_ID ORDER BY DENM_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
+      CODE AS Component_Components_ComponentValues_ChildComponents_Options_Name,
+      DENM_AMOUNT as Component_Components_ComponentValues_ChildComponents_Options_Value
+      from ( SELECT DENM_ID,
+      ROW_NUMBER() OVER (ORDER BY DENM_ID ) AS Components_Id,
+      'Denom Value' as CODE,
+      cast ( CONVERT(DECIMAL(10,2),cast(denm_amount as float)/100) as nvarchar) as DENM_AMOUNT
+      from gam.denomination where IS_DELETED = 0 ) as den
+
+      -------- EOF Denoms -----------
     </Source>
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />

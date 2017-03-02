@@ -23,6 +23,7 @@ namespace Migration.Generate.Helpers
             //    result.AddRange(tempResult as IEnumerable<T>);
             //}
             var mappedObject = (Slapper.AutoMapper.MapDynamic(type, resultSet,true) as IEnumerable<T>).ToList();
+            //Slapper.AutoMapper.Configuration.AddIdentifier()
             return mappedObject;
         }
     }
