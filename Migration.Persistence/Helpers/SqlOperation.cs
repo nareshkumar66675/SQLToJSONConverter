@@ -55,7 +55,7 @@ namespace Migration.Persistence.Helpers
             }
             catch (Exception ex)
             {
-                Logger.Instance.LogError(string.Format("Error Occurred While Updating Persist Report : {0} , Endtime - {1} , TotalInsertedRecordsCount - {2} , Status - {3}" + componentName,endTime.ToString(),totalInsertedRecordsCount,Status), ex);
+                Logger.Instance.LogError($"Error Occurred While Updating Persist Report : {componentName} , Endtime - {endTime.ToString()} , TotalInsertedRecordsCount - {totalInsertedRecordsCount} , Status - {Status}", ex);
             }
         }
     }

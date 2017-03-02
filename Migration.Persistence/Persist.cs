@@ -34,12 +34,12 @@ namespace Migration.Persistence
                     if (rslt)
                     {
                         progress.Report(new ProcessStatus(data.Component.Name, 100, Status.Success));
-                        Logger.Instance.LogInfo(string.Format("Persistence for {0} Completed.", data.Component.Name));
+                        Logger.Instance.LogInfo($"Persistence for {data.Component.Name} Completed.");
                     }
                     else
                     {
                         progress.Report(new ProcessStatus(data.Component.Name, 100, Status.Failed));
-                        Logger.Instance.LogInfo(string.Format("Persistence for {0} Failed.", data.Component.Name));
+                        Logger.Instance.LogInfo($"Persistence for {data.Component.Name} Failed.");
                     }
                 }
             }

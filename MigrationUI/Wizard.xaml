@@ -64,8 +64,8 @@
             </xctk:WizardPage>
             <!--  Auth Process Block Start  -->
             <xctk:WizardPage x:Name="AuthConnectionPage"
-                             Title="STEP 2 : Auth Database Connection"
-                             Description="Enter the auth database connection details."
+                             Title="STEP 2 : Authentication Database Connection"
+                             Description="Enter the Authentication database connection details."
                              NextPage="{Binding ElementName=AuthComponentsSelectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=SourceConnectionPage}">
@@ -90,7 +90,7 @@
             <xctk:WizardPage x:Name="AuthComponentsSelectionPage"
                              Title="STEP 3 : Auth Components Selection"
                              CanSelectNextPage="False"
-                             Description="Select the Auth Components that needs to be migrated."
+                             Description="Select the Authentication Components that needs to be migrated."
                              NextPage="{Binding ElementName=AuthComponentsProcessPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AuthConnectionPage}" />

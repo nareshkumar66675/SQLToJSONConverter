@@ -54,7 +54,7 @@ namespace Migration.Generate.Helpers
             }
             catch (Exception ex)
             {
-                Logger.Instance.LogError(string.Format("Error Occurred While Inserting Generate Report for {0} , StartTime - {1}, totalRecordsCount - {2}, totalUniqueRecordsCount - {3}, Status - {4}",componentName,startTime.ToString(),totalRecordsCount,totalUniqueRecordsCount,Status), ex);
+                Logger.Instance.LogError($"Error Occurred While Inserting Generate Report for {componentName} , StartTime - {startTime.ToString()}, totalRecordsCount - {totalRecordsCount}, totalUniqueRecordsCount - {totalUniqueRecordsCount}, Status - {Status}",ex);
             }
         }
     }

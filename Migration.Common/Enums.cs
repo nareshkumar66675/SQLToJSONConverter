@@ -35,6 +35,11 @@ namespace Migration.Common
 
     public static class EnumExtensions
     {
+        /// <summary>
+        /// Get Enum Description
+        /// </summary>
+        /// <param name="enumerationValue">Enum Value</param>
+        /// <returns>Description</returns>
         public static string GetDescription(this Enum enumerationValue) 
         {
             var type = enumerationValue.GetType();
