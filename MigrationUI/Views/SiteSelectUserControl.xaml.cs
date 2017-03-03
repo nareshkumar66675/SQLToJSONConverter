@@ -49,7 +49,6 @@ namespace MigrationTool.Views
             {
                 var selectedItems = selectedListBox.SelectedItems.Cast<KeyValuePair<string, string>>().ToList();
                 selectedItems.ForEach(item => SourceSites.Add(item.Key, item.Value));
-                SourceSites.OrderBy(t => t.Value);
                 selectedItems.ForEach(t => SelectedSites.Remove(t.Key));
                 ResetListBoxes();
             }
@@ -60,8 +59,8 @@ namespace MigrationTool.Views
         }
         private void ResetListBoxes()
         {
-            srcListBox.ItemsSource = SourceSites.ToList();
-            selectedListBox.ItemsSource = SelectedSites.ToList();
+            srcListBox.ItemsSource = SourceSites.OrderBy(t=>t.Value).ToList();
+            selectedListBox.ItemsSource = SelectedSites.OrderBy(t => t.Value).ToList();
             srcListBox.Items.Refresh();
             selectedListBox.Items.Refresh();
         }
@@ -92,6 +91,36 @@ namespace MigrationTool.Views
                 Logger.Instance.LogError("Error occurred While retrieving not migrated Sites", ex);
             }
             return allSites;
+        }
+
+        private void SelectAllSitesButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedItems = srcListBox.Items.Cast<KeyValuePair<string, string>>().ToList();
+                selectedItems.ForEach(item => SelectedSites.Add(item.Key, item.Value));
+                selectedItems.ForEach(t => SourceSites.Remove(t.Key));
+                ResetListBoxes();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error occurred While Selecting All Sites", ex);
+            }
+        }
+
+        private void DeSelectAllSitesButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedItems = selectedListBox.Items.Cast<KeyValuePair<string, string>>().ToList();
+                selectedItems.ForEach(item => SourceSites.Add(item.Key, item.Value));
+                selectedItems.ForEach(t => SelectedSites.Remove(t.Key));
+                ResetListBoxes();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error occurred While DeSelecting All Sites", ex);
+            }
         }
     }
 }

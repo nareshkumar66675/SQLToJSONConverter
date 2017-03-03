@@ -126,12 +126,16 @@
   </Transformation>
   <Transformation Name="ROLE">
     <Source>
-      SELECT CAST(RIGHT(CAST(ROLE_ID AS VARCHAR(50)),8) AS BIGINT) AS Id,
+      SELECT
+      ROLE_NEW_ID AS Id,
       ROLE_NAME AS Name,
       ROLE_CODE AS Code,
-      ROLE_DESCRIPTION AS [Description]
-      FROM [COMMON].[USER_ROLE] WHERE ROLE_IS_DELETED =0 AND ROLE_ID NOT IN (1)
-      ORDER BY Id
+      ROLE_DESCRIPTION AS [Description],
+      fnGrp.FUNCGRP_NEW_ID as TaskGroups_$
+      FROM [COMMON].[USER_ROLE] as rl
+      left join [COMMON].[USER_ROLE_FUNCTION_GROUP] as fnRlMap on fnRlMap.ROLE_ID = rl.ROLE_ID
+      left join [COMMON].[USER_FUNCTION_GROUP] as fnGrp on fnGrp.funcgrp_id = fnRlMap.[FUNCGRP_ID]
+      WHERE ROLE_IS_DELETED = 0 AND rl.ROLE_ID NOT IN (1)
     </Source>
     <Destination>[Employee].[Role]</Destination>
     <KeyFormat Format="50_{0}" Keys="Id"  />
@@ -151,7 +155,7 @@
   </Transformation>
   <Transformation Name="TSKGRP">
     <Source>
-      SELECT CAST(RIGHT(CAST(FUNCGRP_ID AS VARCHAR(50)),5) AS BIGINT)  as Id,
+      SELECT ROW_NUMBER() OVER (ORDER BY FUNCGRP_ID )+1 as Id,
       FUNCGRP_NAME as Code,
       FUNCGRP_NAME as Name,
       FUNCGRP_DESCRIPTION as [Description]
