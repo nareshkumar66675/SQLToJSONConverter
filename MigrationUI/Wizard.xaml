@@ -10,7 +10,7 @@
         Title="Asset Matrix Data Migrate Tool"
         Width="706.17"
         Height="560.108"
-        Icon="AMLogo.ico"
+        Icon="AppIcon.ico"
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d">
     <Grid Width="696"
@@ -18,7 +18,7 @@
           HorizontalAlignment="Left"
           VerticalAlignment="Top">
         <xctk:Wizard x:Name="Wiz"
-                     CurrentPage="{Binding ElementName=SourceConnectionPage}"
+                     CurrentPage="{Binding ElementName=IntroPage}"
                      FinishButtonClosesWindow="True"
                      Help="Wiz_Help"
                      Next="Wiz_Next">
@@ -38,10 +38,18 @@
                              Title="Asset Matrix Data Migrate Tool"
                              Description="Migrate Legacy Data to New Database"
                              FontSize="14"
-                             HeaderImage="AMLoginLogo.png">
+                             HeaderImage="AppLogo.png">
                 <xctk:WizardPage.Content>
                     <Grid>
-                        <Image Margin="164,117,164,120" Source="AMLoginLogo.png" />
+                        <Image Margin="24,108,304,129" Source="AppLogo.png" />
+                        <TextBlock Height="53"
+                                   Margin="202,161,10,176"
+                                   VerticalAlignment="Center"
+                                   FontFamily="Segoe UI Symbol"
+                                   FontSize="34"
+                                   Foreground="#2D75A3"
+                                   Text="Data Migrate Tool"
+                                   TextAlignment="Center" />
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
