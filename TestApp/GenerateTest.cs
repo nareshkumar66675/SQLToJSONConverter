@@ -53,6 +53,7 @@ namespace Migration.Test.Generate
         public void GenerateFactoryTest()
         {
             Assert.IsInstanceOf(typeof(GenericGenerator), GenerateFactory.GetGenerator("default"));
+            Assert.IsInstanceOf(typeof(GenericGeneratorWtParams), GenerateFactory.GetGenerator("defaultwtparams"));
             Assert.IsInstanceOf(typeof(GenericGenerator), GenerateFactory.GetGenerator("XXX"));
         }
         [Test]

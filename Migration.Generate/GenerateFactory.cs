@@ -21,6 +21,8 @@ namespace Migration.Generate
             {
                 case "DEFAULT":
                     return new GenericGenerator();
+                case "DEFAULTWTPARAMS":
+                    return new GenericGeneratorWtParams();
                 default:
                     return new GenericGenerator();
             }

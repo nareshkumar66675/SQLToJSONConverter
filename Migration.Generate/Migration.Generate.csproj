@@ -48,6 +48,7 @@
     <Compile Include="Generate.cs" />
     <Compile Include="GenerateFactory.cs" />
     <Compile Include="Generators\GenericGenerator.cs" />
+    <Compile Include="Generators\GenericGeneratorWtParams.cs" />
     <Compile Include="Helpers\Mapper.cs" />
     <Compile Include="Helpers\SqlOperation.cs" />
     <Compile Include="IGenerator.cs" />

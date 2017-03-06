@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TransformationConfig>
+  <!-- Auth Components -->
   <Transformation Name="TASK">
     <Source>
       SELECT DISTINCT
@@ -13,42 +14,6 @@
     </Source>
     <Destination>[Employee].[Task]</Destination>
     <KeyFormat Format="53_{0}" Keys="Id"  />
-  </Transformation>
-  <Transformation Name="AST_DEFN">
-    <Source>
-      SELECT AST.ASST_ID as Id,
-      CONVERT(varchar(100),ASTDFN_OPTN_ORDER) as Sequences,
-      CONVERT(bit,'true') as IsSystemDefined,
-      --------Asset Type -----
-      AST.ASST_ID as AssetType_Id,
-      AST.ASST_NAME as AssetType_Name,
-      Ast.ASST_DESCRIPTION as AssetType_Description,
-      CONVERT(bit,'true') as AssetType_IsRevenueAffecting,
-      CONVERT(bit,'false') as AssetType_IsInline,
-      'Root' as AssetType_Scope,
-      --------Options--------
-      optn.OPTN_ID as Options_Id,
-      optn.OPTN_NAME as Options_Name,
-      optn.OPTN_CODE as Options_Code,
-      optn.OPTN_DESCRIPTION as Options_Description,
-      optn.OPTN_DEFAULT_VAL as Options_DefaultValue,
-      optn.OPTN_MIN_VALUE as Options_MinLength, 
-      optn.OPTN_MAX_VALUE as Options_MaxLength,
-      optn.OPTN_EDIT_ENABLED as Options_IsEditEnabled,
-      optn.OPTN_ADD_ENABLED as Options_IsAddEnabled,
-      optn.OPTN_MOVE_ENABLED as Options_IsMoveEnabled,
-      optn.OPTN_MOVE_EDIT_ENABLED as Options_IsMoveEditEnabled,
-      optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
-      --optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
-      CONVERT(bit,'true') as Options_IsSearchable
-      FROM GAM.ASSET AS AST
-      LEFT JOIN GAM.ASSET_DEFINITION AS AST_DFN ON AST.ASST_ID = AST_DFN.ASTDFN_ASST_ID
-      LEFT JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AST_DFN.ASTDFN_OPTN_ID
-      --LEFT JOIN GAM.OPTION_ENUMERATION AS ENUM ON OPTN.OPTN_ID=ENUM.OPTEN_OPTN_ID
-      --WHERE AST.ASST_ID = 1
-    </Source>
-    <Destination>ASSET_DEF.ASSETS</Destination>
-      <KeyFormat Format="53_{0}" Keys="Id"  />
   </Transformation>
   <Transformation Name="EMPLOYEE">
     <Source>
@@ -166,6 +131,8 @@
     <Destination>[Employee].[TaskGroup]</Destination>
     <KeyFormat Format="51_{0}" Keys="Id"  />
   </Transformation>
+  
+  <!-- Asset Components-->
   <Transformation Name="COMPDATA">
     <Source>
       -------Manufacturer------
@@ -364,5 +331,89 @@
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
+  </Transformation>
+  <Transformation Name="AST_DEFN">
+    <Source>
+      SELECT AST.ASST_ID as Id,
+      CONVERT(varchar(100),ASTDFN_OPTN_ORDER) as Sequences,
+      CONVERT(bit,'true') as IsSystemDefined,
+      --------Asset Type -----
+      AST.ASST_ID as AssetType_Id,
+      AST.ASST_NAME as AssetType_Name,
+      Ast.ASST_DESCRIPTION as AssetType_Description,
+      CONVERT(bit,'true') as AssetType_IsRevenueAffecting,
+      CONVERT(bit,'false') as AssetType_IsInline,
+      'Root' as AssetType_Scope,
+      --------Options--------
+      optn.OPTN_ID as Options_Id,
+      optn.OPTN_NAME as Options_Name,
+      optn.OPTN_CODE as Options_Code,
+      optn.OPTN_DESCRIPTION as Options_Description,
+      optn.OPTN_DEFAULT_VAL as Options_DefaultValue,
+      optn.OPTN_MIN_VALUE as Options_MinLength,
+      optn.OPTN_MAX_VALUE as Options_MaxLength,
+      optn.OPTN_EDIT_ENABLED as Options_IsEditEnabled,
+      optn.OPTN_ADD_ENABLED as Options_IsAddEnabled,
+      optn.OPTN_MOVE_ENABLED as Options_IsMoveEnabled,
+      optn.OPTN_MOVE_EDIT_ENABLED as Options_IsMoveEditEnabled,
+      optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
+      --optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
+      CONVERT(bit,'true') as Options_IsSearchable
+      FROM GAM.ASSET AS AST
+      LEFT JOIN GAM.ASSET_DEFINITION AS AST_DFN ON AST.ASST_ID = AST_DFN.ASTDFN_ASST_ID
+      LEFT JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AST_DFN.ASTDFN_OPTN_ID
+      --LEFT JOIN GAM.OPTION_ENUMERATION AS ENUM ON OPTN.OPTN_ID=ENUM.OPTEN_OPTN_ID
+      --WHERE AST.ASST_ID = 1
+    </Source>
+    <Destination>ASSET_DEF.ASSETS</Destination>
+    <KeyFormat Format="53_{0}" Keys="Id"  />
+  </Transformation>
+  <Transformation Name="AST">
+    <Source>
+      SELECT 1 as Id,
+      ---ASSET ID -----
+      ASD.ASD_STD_ID as AssetId_Id,
+      ASST_ID as AssetId_AssetTypeDefinitionId,
+      ----SITE----------
+      SITE_NUMBER as Site_SiteId,
+      SITE_LONG_NAME as Site_SiteName,
+      SITE_NUMBER as Site_SiteNumber,
+      st.IS_DELETED as Site_IsDeleted,
+      0 as Site_OrganizationId, -- mapping needed
+      pt.prop_long_name as Site_OrganizationName, -- mapping needed
+      ---- OPTIONS ------
+      case when ogrp_id = 1 then OPTN.OPTN_ID else null end as Options_Id,
+      case when ogrp_id = 1 then OPTN.OPTN_CODE else null end as Options_Code,
+      case when ogrp_id = 1 then AST_OPTN_VALUE else null end as Options_Value,
+
+      -----Components -------- -- mapping needed
+      case when ogrp_id > 1 then OPTN.OPTN_ID else null end as Components_ComponentId,
+      case when ogrp_id > 1 then CAST(OPTN.OPTN_ID as varchar(50)) else null end as Components_ComponentInstanceId,
+      case when ogrp_id > 1 then OPTN.OPTN_NAME else null end as Components_ComponentName,
+      case when ogrp_id > 1 then OPTN.OPTN_NAME else null end as Components_ComponentKey,
+      case when ogrp_id > 1 then AST_OPTN_VALUE else null end as Components_ComponentValue,
+      case when ogrp_id > 1 then OPTN.OPTN_CODE else null end as Components_ComponentCode,
+
+      ----- Inline assets ------ Need to discuss
+      ------Type Code -----
+      0 as TypeCode_TypeCodeId, -- mapping needed
+      TCODE.TYCOD_NAME as TypeCode_TypeCodeName
+      FROM GAM.ASSET_STANDARD_DETAILS AS ASD
+      JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+      JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+      JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+      JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
+      JOIN GAM.ASSET_DETAIL AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
+      JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AD.AST_OPTION_ID
+      LEFT JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
+      LEFT JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD.ASD_MODL_ID
+      LEFT JOIN GAM.MODEL_MODELTYPE_MAP AS MDL_TYPE_MAP ON MDL_TYPE_MAP.[MODEL_MAP_ID] = ASD.ASD_MODL_TYP_MAPiD
+      LEFT JOIN GAM.METER_DELTA AS MTR_DELTA ON MTR_DELTA.MDT_ID = ASD.ASD_MTR_DLTA_ID
+      LEFT JOIN [GAM].[TYPE_CODE_MASTER] AS TCODE ON TCODE.TYCOD_ID = ASD.ASD_TCOD_ID
+      WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
+      AND AST.ASST_ID = 2 AND ASD.ASD_STD_ID = 209900201000000007
+    </Source>
+    <Destination>[DataManagement].[Asset]</Destination>
+    <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
   </Transformation>
 </TransformationConfig>

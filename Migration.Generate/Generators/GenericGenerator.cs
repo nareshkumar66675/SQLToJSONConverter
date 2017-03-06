@@ -13,14 +13,23 @@ namespace Migration.Generate.Generators
 {
     public class GenericGenerator : IGenerator
     {
-        public bool Generate(Component component)
+        /// <summary>
+        /// Retrieves the Source Query
+        /// </summary>
+        /// <param name="componentName">Component Name</param>
+        /// <returns>Query</returns>
+        public virtual string GetSourceQuery(string componentName)
+        {
+            return Configuration.Configurator.GetSourceByComponentName(componentName);
+        }
+        public virtual bool Generate(Component component)
         {
             DateTime startTime = DateTime.Now;
             dynamic rslt = null;
             List<object> resultEntities = null;
             try
             {
-                var qry = Configuration.Configurator.GetSourceByComponentName(component.Name);
+                var qry = GetSourceQuery(component.Name);
                 rslt = SqlOperation.ExecuteQueryOnSource(qry);
                 Type type = Type.GetType(component.DomainType);
                 if (type == null)
@@ -38,7 +47,15 @@ namespace Migration.Generate.Generators
                 throw;
             }
         }
-        private void NotifyGenerateStatus(dynamic src,dynamic mapped ,Component component,DateTime startTime,string status)
+        /// <summary>
+        /// Updates Report Table. If Settings allow.
+        /// </summary>
+        /// <param name="src">Source Data</param>
+        /// <param name="mapped">Mapped Data</param>
+        /// <param name="component">Component</param>
+        /// <param name="startTime">Generation Start Time</param>
+        /// <param name="status">Status of Generation</param>
+        protected void NotifyGenerateStatus(dynamic src,dynamic mapped ,Component component,DateTime startTime,string status)
         {
             if(AppSettings.IsReportEnabled)
             {

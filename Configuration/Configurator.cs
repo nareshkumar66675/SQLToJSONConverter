@@ -103,6 +103,15 @@ namespace Migration.Configuration
         {
             GetTransformationEnumerable(componentName).FirstOrDefault().QueryParams = queryParams;
         }
+        /// <summary>
+        /// Get Query Parameters from Transformation
+        /// </summary>
+        /// <param name="componentName">Compoennt Name</param>
+        /// <returns>List of Parameter Values</returns>
+        public static List<string> GetQueryParams(string componentName)
+        {
+            return GetTransformationEnumerable(componentName).FirstOrDefault().QueryParams;
+        }
 
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)

@@ -48,7 +48,7 @@ namespace Migration.Persistence.Persistences.SQL
                 items.ForEach((item) =>
                 {
                     List<string> arr = new List<string>();
-                    keyFormat.Keys.Split(',').ToList().ForEach(col => { arr.Add(item.GetType().GetProperty(col).GetValue(item) + string.Empty); });
+                    keyFormat.Keys.Split(',').ToList().ForEach(col => { arr.Add(GetPropertyValue(item,col) + string.Empty); });
                     dataResult.Rows.Add(string.Format(keyFormat.Format, arr.ToArray()), JSONConverter.SerializeObject(item));
                 });
                 return dataResult;
@@ -56,6 +56,19 @@ namespace Migration.Persistence.Persistences.SQL
             catch (Exception)
             {
                 throw;
+            }
+        }
+        private object GetPropertyValue(object src,string propName)
+        {
+            if (propName.Contains("."))
+            {
+                var temp = propName.Split(new char[] { '.' }, 2);
+                return GetPropertyValue(GetPropertyValue(src, temp[0]), temp[1]);
+            }
+            else
+            {
+                var prop = src.GetType().GetProperty(propName);
+                return prop != null ? prop.GetValue(src, null) : null;
             }
         }
     }
