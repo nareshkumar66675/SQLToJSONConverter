@@ -104,6 +104,14 @@ namespace Migration.Configuration
             GetTransformationEnumerable(componentName).FirstOrDefault().QueryParams = queryParams;
         }
         /// <summary>
+        /// Sets Query Params to Transforms with Generate Type - DEFAULTWITHTPARAMS
+        /// </summary>
+        /// <param name="queryParams"></param>
+        public static void SetQueryParamsFrTrnsfrmWtParams(List<string> queryParams)
+        {
+            GetComponentsWithParamsType().ForEach(t => SetQueryParams(t, queryParams));
+        }
+        /// <summary>
         /// Get Query Parameters from Transformation
         /// </summary>
         /// <param name="componentName">Compoennt Name</param>
@@ -112,7 +120,20 @@ namespace Migration.Configuration
         {
             return GetTransformationEnumerable(componentName).FirstOrDefault().QueryParams;
         }
-
+        /// <summary>
+        /// Retrieves Components With Generate Type - DEFAULTWITHTPARAMS
+        /// </summary>
+        /// <returns>List of Component Names</returns>
+        public static List<string> GetComponentsWithParamsType()
+        {
+            List<string> rslt = new List<string>();
+            SourceComponents.Group.ForEach(grp =>
+            {
+                var te=grp.Component.Where(t => string.Equals(t.GenerateType, "DEFAULTWITHPARAMS",StringComparison.OrdinalIgnoreCase)).Select(t => t.Name);
+                rslt.AddRange(te);
+            });
+            return rslt;
+        }
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)
         {

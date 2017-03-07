@@ -97,7 +97,7 @@ namespace MigrationTool.Helpers
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 con.Open();
-                string query = @"select Distinct SiteID from[Migration].[SiteGroup] grp 
+                string query = @"select Distinct SiteID from [Migration].[SiteGroup] grp 
                                 LEFT JOIN[Migration].[Report] rpt on grp.SiteGroupID = rpt.SiteGroupID and rpt.[Status] = 'Success'";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {

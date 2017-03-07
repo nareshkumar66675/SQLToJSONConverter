@@ -25,6 +25,15 @@ namespace MigrationTool.Views
     {
         public Dictionary<string,string> SourceSites = new Dictionary<string, string>();
         public static Dictionary<string, string> SelectedSites = new Dictionary<string, string>();
+        public event EventHandler<SitesSelectionChangedEventArgs> OnSitesSelectionChanged;
+        public class SitesSelectionChangedEventArgs : EventArgs
+        {
+            public SitesSelectionChangedEventArgs(bool isEmpty)
+            {
+                this.IsEmpty = isEmpty;
+            }
+            public bool IsEmpty { get; set; }
+        }
         public SiteSelectUserControl()
         {
             InitializeComponent();
@@ -63,6 +72,7 @@ namespace MigrationTool.Views
             selectedListBox.ItemsSource = SelectedSites.OrderBy(t => t.Value).ToList();
             srcListBox.Items.Refresh();
             selectedListBox.Items.Refresh();
+            NotifySelectionChanged();
         }
         public void LoadSites(GroupType group)
         {
@@ -121,6 +131,13 @@ namespace MigrationTool.Views
             {
                 Logger.Instance.LogError("Error occurred While DeSelecting All Sites", ex);
             }
+        }
+        private void NotifySelectionChanged()
+        {
+            var selected = selectedListBox.Items.Cast<KeyValuePair<string, string>>().ToList();
+            var isEmpty = selected.Count > 0 ? false : true;
+            SitesSelectionChangedEventArgs args = new SitesSelectionChangedEventArgs(isEmpty);
+            OnSitesSelectionChanged?.Invoke(this, args);
         }
     }
 }

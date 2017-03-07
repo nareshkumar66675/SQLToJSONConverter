@@ -16,7 +16,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit;
 using Xceed.Wpf.Toolkit.Core;
-using static MigrationTool.Views.ComponentsSelectUserControl;
 
 namespace MigrationTool
 {
@@ -36,55 +35,55 @@ namespace MigrationTool
         {
             InitializeComponent();
             Logger.Instance.LogInfo("Data Migration Tool Initialized.");
-            SrcConnectCntrl.Type = "LEGACY";
-            AuthConnectCntrl.Type = GroupType.AUTH.ToString();
-            AssetConnectCntrl.Type = GroupType.ASSET.ToString();
-            AuthCompProcessCntrl.ProcessCompleted += AuthComponents_ProcessCompleted;
-            AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
             AuthCompSelectCntrl.OnComponentsSelectionChanged += AuthCompSelectCntrl_OnComponentsSelectionChanged;
             AssetsCompSelectCntrl.OnComponentsSelectionChanged += AssetsCompSelectCntrl_OnComponentsSelectionChanged;
+            AssetSiteCntrl.OnSitesSelectionChanged += AssetSiteCntrl_OnSitesSelectionChanged;
+            AuthCompProcessCntrl.ProcessCompleted += AuthComponents_ProcessCompleted;
+            AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
         }
+
         private void Wiz_Next(object sender, CancelRoutedEventArgs e)
         {
             try
             {
                 Logger.Instance.LogInfo("Navigating From Page - " + Wiz.CurrentPage.Name + " to Next Page. ");
 
+                //Auth Connection Page -> Auth Components Selection Page
                 if (Wiz.CurrentPage == AuthConnectionPage)
                 {
                     AuthCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.AUTH);
                     AuthCompSelectCntrl.InitializeData(GroupType.AUTH);
                     AddUserControlToPage(AuthComponentsSelectionPage, AuthCompSelectCntrl);
                 }
-                if (Wiz.CurrentPage == AuthComponentsSelectionPage)
+                // Auth Components Selection Page -> Auth Process Page
+                else if (Wiz.CurrentPage == AuthComponentsSelectionPage)
                 {
                     var comp = AuthCompSelectCntrl.GetSelectedComponents();
                     AddUserControlToPage(AuthComponentsProcessPage, AuthCompProcessCntrl);
                     AuthCompProcessCntrl.StartComponentProcess(comp);
                 }
-                if (Wiz.CurrentPage == AssetConnectionPage)
+                // Asset Connection Page -> Asset Sites Selection Page
+                else if (Wiz.CurrentPage == AssetConnectionPage)
                 {
                     Grid AssetSiteSelectGrid = new Grid();
                     AssetSiteCntrl.LoadSites(GroupType.ASSET);
                     AddUserControlToPage(AssetSiteSelectionPage, AssetSiteCntrl);
                 }
-                if (Wiz.CurrentPage == AssetSiteSelectionPage)
+                // Asset Sites Selection Page -> Asset Components Selection Page
+                else if (Wiz.CurrentPage == AssetSiteSelectionPage)
                 {
-                    var temp = string.Join(",", AssetSiteCntrl.GetSelectedSites().Select(t => t.Key));
+                    var site = string.Join(",", AssetSiteCntrl.GetSelectedSites().Select(t => t.Key));
+                    Configurator.SetQueryParamsFrTrnsfrmWtParams(new List<string> { site });
                     AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.ASSET);
                     AssetsCompSelectCntrl.InitializeData(GroupType.ASSET);
                     AddUserControlToPage(AssetsComponentsSelectionPage, AssetsCompSelectCntrl);
-                    //Configurator.SetQueryParams()
                 }
-                if (Wiz.CurrentPage == AssetsComponentsSelectionPage)
+                // Asset Components Selection Page -> Asset Process Page
+                else if (Wiz.CurrentPage == AssetsComponentsSelectionPage)
                 {
                     var comp = AssetsCompSelectCntrl.GetSelectedComponents();
                     AddUserControlToPage(AssetsComponentsProcessPage, AssetCompProcessCntrl);
                     AssetCompProcessCntrl.StartComponentProcess(comp);
-                }
-                if (Wiz.CurrentPage == AssetsComponentsSelectionPage)
-                {
-                    var t = AssetsCompSelectCntrl.GetSelectedComponents();
                 }
             }
             catch (Exception ex)
@@ -143,11 +142,11 @@ namespace MigrationTool
                 page.Content = tempGrid;
             }
         }
-        private void AssetsCompSelectCntrl_OnComponentsSelectionChanged(object sender, ComponentsSelectionChangedEventArgs e)
+        private void AssetsCompSelectCntrl_OnComponentsSelectionChanged(object sender, ComponentsSelectUserControl.ComponentsSelectionChangedEventArgs e)
         {
             AssetsComponentsSelectionPage.CanSelectNextPage = !e.IsEmpty;
         }
-        private void AuthCompSelectCntrl_OnComponentsSelectionChanged(object sender, ComponentsSelectionChangedEventArgs e)
+        private void AuthCompSelectCntrl_OnComponentsSelectionChanged(object sender, ComponentsSelectUserControl.ComponentsSelectionChangedEventArgs e)
         {
             AuthComponentsSelectionPage.CanSelectNextPage = !e.IsEmpty;
         }
@@ -158,6 +157,10 @@ namespace MigrationTool
         private void AuthComponents_ProcessCompleted(object sender, EventArgs e)
         {
             Wiz.CurrentPage.CanSelectNextPage = true;
+        }
+        private void AssetSiteCntrl_OnSitesSelectionChanged(object sender, SiteSelectUserControl.SitesSelectionChangedEventArgs e)
+        {
+            AssetSiteSelectionPage.CanSelectNextPage = !e.IsEmpty;
         }
         private void Wiz_Help(object sender, RoutedEventArgs e)
         {
