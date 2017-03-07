@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace MigrationTool.Views
 {
@@ -17,6 +18,7 @@ namespace MigrationTool.Views
     /// </summary>
     public partial class DatabaseConfigUserControl : UserControl
     {
+        public Brush BGColor { get; set; }
         public string Type { get; set; }
         public DatabaseConfigUserControl()
         {
@@ -136,6 +138,11 @@ namespace MigrationTool.Views
             passwordBox.Clear();
             databaseTextBox.Clear();
             selectedDBGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private void DatabaseConfigUserCntrl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Resources["BGColor"] = BGColor;//Brushes.DarkGray;
         }
         //private object GetEnumObjects()
         //{

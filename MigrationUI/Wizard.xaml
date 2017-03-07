@@ -65,8 +65,10 @@
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="SrcConnectCntrl"
                                                             Margin="116,75,116,76"
+                                                            BGColor="DarkGray"
                                                             OnConnectComplete="SrcExisiting_OnConnectComplete"
-                                                            RenderTransformOrigin="1.023,0.523" />
+                                                            RenderTransformOrigin="1.023,0.523"
+                                                            Type="gdfg" />
 
                     </Grid>
                 </xctk:WizardPage.Content>
@@ -83,6 +85,7 @@
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="AuthConnectCntrl"
                                                             Margin="116,75,116,76"
+                                                            BGColor="#759fba"
                                                             OnConnectComplete="AuthDB_OnConnectComplete"
                                                             RenderTransformOrigin="1.023,0.523" />
                         <Button x:Name="SkipAuthButton"
@@ -126,6 +129,7 @@
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="AssetConnectCntrl"
                                                             Margin="116,75,116,76"
+                                                            BGColor="#909e81"
                                                             OnConnectComplete="AssetDB_OnConnectComplete"
                                                             RenderTransformOrigin="1.023,0.523" />
                         <Button x:Name="SkipAssetButton"
@@ -141,6 +145,7 @@
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="AssetSiteSelectionPage"
                              Title="STEP 6 : Asset Sites Selection"
+                             CanSelectNextPage="True"
                              Description="Select the Sites which needs to be migrated."
                              NextPage="{Binding ElementName=AssetsComponentsSelectionPage}"
                              PageType="Interior"

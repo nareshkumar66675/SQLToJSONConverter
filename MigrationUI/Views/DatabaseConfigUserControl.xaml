@@ -8,8 +8,10 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              Width="433.929"
              Height="250"
+             Loaded="DatabaseConfigUserCntrl_Loaded"
              mc:Ignorable="d">
     <UserControl.Resources>
+        <SolidColorBrush x:Key="BGColor" />
         <Style TargetType="{x:Type Button}">
             <Setter Property="Background">
                 <Setter.Value>
@@ -35,14 +37,13 @@
                 </StackPanel>
             </xctk:BusyIndicator.BusyContent>
             <Grid Height="238">
-
                 <Grid Width="414"
                       Height="236"
                       Margin="0,0,0,-20"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Top">
                     <Border Margin="4"
-                            Background="DarkGray"
+                            Background="{DynamicResource BGColor}"
                             BorderBrush="White"
                             BorderThickness="1,1,1,1"
                             CornerRadius="8,8,8,8">

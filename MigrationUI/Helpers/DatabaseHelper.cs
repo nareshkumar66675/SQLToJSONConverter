@@ -57,7 +57,7 @@ namespace MigrationTool.Helpers
             {
                 con.Open();
 
-                using (SqlCommand cmd = new SqlCommand("SELECT name from sys.databases", con))
+                using (SqlCommand cmd = new SqlCommand("SELECT name from sys.databases where state_desc<>'OFFLINE'", con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
                     {

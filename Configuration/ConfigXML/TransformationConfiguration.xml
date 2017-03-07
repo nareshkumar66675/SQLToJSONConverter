@@ -301,10 +301,10 @@
       TGRP_SHORT_NAME, TGRP_LONG_NAME, TCAT_SHORT_NAME, TCAT_LONG_NAME,
       MANF_LONG_NAME, MANF_SHORT_NAME, MANF_VEND_CODE)  ) AS T
 
-      -------- EOF MODEL ----------
+      -------- EOF Themes ----------
       UNION ALL
 
-      ----------- THEME ---------------
+      ----------- Denoms ---------------
       SELECT 5 as Id,
       5 as Component_Id,
       --COMPONENTS---
