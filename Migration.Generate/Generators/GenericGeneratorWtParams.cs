@@ -15,7 +15,7 @@ namespace Migration.Generate.Generators
             string srcQry = string.Empty;
             try
             {
-                srcQry = string.Format(Configurator.GetSourceByComponentName(componentName), Configurator.GetQueryParams(componentName));
+                srcQry = string.Format(Configurator.GetSourceByComponentName(componentName), Configurator.GetQueryParams(componentName).ToArray());
             }
             catch (FormatException ex)
             {

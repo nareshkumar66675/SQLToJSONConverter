@@ -23,9 +23,11 @@ namespace MigrationTool.Views
     /// </summary>
     public partial class SiteSelectUserControl : UserControl
     {
-        public Dictionary<string,string> SourceSites = new Dictionary<string, string>();
+        #region Variable Initialization
+        public Dictionary<string, string> SourceSites = new Dictionary<string, string>();
         public static Dictionary<string, string> SelectedSites = new Dictionary<string, string>();
-        public event EventHandler<SitesSelectionChangedEventArgs> OnSitesSelectionChanged;
+        public event EventHandler<SitesSelectionChangedEventArgs> OnSitesSelectionChanged; 
+        #endregion
         public class SitesSelectionChangedEventArgs : EventArgs
         {
             public SitesSelectionChangedEventArgs(bool isEmpty)
@@ -37,6 +39,19 @@ namespace MigrationTool.Views
         public SiteSelectUserControl()
         {
             InitializeComponent();
+        }
+        public void LoadSites(GroupType group)
+        {
+            SourceSites = GetNotMigratedSites(group);
+            srcListBox.DisplayMemberPath = "Value";
+            selectedListBox.DisplayMemberPath = "Value";
+            Logger.Instance.LogInfo("Site Selection for Group - " + group);
+            ResetListBoxes();
+        }
+        public Dictionary<string, string> GetSelectedSites()
+        {
+            Logger.Instance.LogInfo("Selected Sites : " + string.Join(",", SelectedSites.Select(t => t.Key)));
+            return SelectedSites;
         }
         private void SelectSitesButton_Click(object sender, RoutedEventArgs e)
         {
@@ -66,6 +81,34 @@ namespace MigrationTool.Views
                 Logger.Instance.LogError("Error occurred While DeSelecting Sites", ex);
             }
         }
+        private void SelectAllSitesButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedItems = srcListBox.Items.Cast<KeyValuePair<string, string>>().ToList();
+                selectedItems.ForEach(item => SelectedSites.Add(item.Key, item.Value));
+                selectedItems.ForEach(t => SourceSites.Remove(t.Key));
+                ResetListBoxes();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error occurred While Selecting All Sites", ex);
+            }
+        }
+        private void DeSelectAllSitesButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedItems = selectedListBox.Items.Cast<KeyValuePair<string, string>>().ToList();
+                selectedItems.ForEach(item => SourceSites.Add(item.Key, item.Value));
+                selectedItems.ForEach(t => SelectedSites.Remove(t.Key));
+                ResetListBoxes();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error occurred While DeSelecting All Sites", ex);
+            }
+        }
         private void ResetListBoxes()
         {
             srcListBox.ItemsSource = SourceSites.OrderBy(t=>t.Value).ToList();
@@ -73,19 +116,6 @@ namespace MigrationTool.Views
             srcListBox.Items.Refresh();
             selectedListBox.Items.Refresh();
             NotifySelectionChanged();
-        }
-        public void LoadSites(GroupType group)
-        {
-            SourceSites = GetNotMigratedSites(group);
-            srcListBox.DisplayMemberPath = "Value";
-            selectedListBox.DisplayMemberPath = "Value";
-            Logger.Instance.LogInfo("Site Selection for Group - "+ group);
-            ResetListBoxes();
-        }
-        public Dictionary<string, string> GetSelectedSites()
-        {
-            Logger.Instance.LogInfo("Selected Sites : "+ string.Join(",",SelectedSites.Select(t=>t.Key)));
-            return SelectedSites;
         }
         private Dictionary<string, string> GetNotMigratedSites(GroupType group)
         {
@@ -101,36 +131,6 @@ namespace MigrationTool.Views
                 Logger.Instance.LogError("Error occurred While retrieving not migrated Sites", ex);
             }
             return allSites;
-        }
-
-        private void SelectAllSitesButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var selectedItems = srcListBox.Items.Cast<KeyValuePair<string, string>>().ToList();
-                selectedItems.ForEach(item => SelectedSites.Add(item.Key, item.Value));
-                selectedItems.ForEach(t => SourceSites.Remove(t.Key));
-                ResetListBoxes();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.LogError("Error occurred While Selecting All Sites", ex);
-            }
-        }
-
-        private void DeSelectAllSitesButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var selectedItems = selectedListBox.Items.Cast<KeyValuePair<string, string>>().ToList();
-                selectedItems.ForEach(item => SourceSites.Add(item.Key, item.Value));
-                selectedItems.ForEach(t => SelectedSites.Remove(t.Key));
-                ResetListBoxes();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.LogError("Error occurred While DeSelecting All Sites", ex);
-            }
         }
         private void NotifySelectionChanged()
         {

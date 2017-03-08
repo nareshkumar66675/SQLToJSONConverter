@@ -72,9 +72,10 @@ namespace MigrationTool
                 // Asset Sites Selection Page -> Asset Components Selection Page
                 else if (Wiz.CurrentPage == AssetSiteSelectionPage)
                 {
-                    var site = string.Join(",", AssetSiteCntrl.GetSelectedSites().Select(t => t.Key));
-                    Configurator.SetQueryParamsFrTrnsfrmWtParams(new List<string> { site });
+                    var siteList = AssetSiteCntrl.GetSelectedSites().Select(t => t.Key);
+                    Configurator.SetQueryParamsFrTrnsfrmWtParams(new List<string> { string.Join(",", siteList) });
                     AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.ASSET);
+                    AssetsCompSelectCntrl.SelectedSiteIDList = siteList.ToList();
                     AssetsCompSelectCntrl.InitializeData(GroupType.ASSET);
                     AddUserControlToPage(AssetsComponentsSelectionPage, AssetsCompSelectCntrl);
                 }

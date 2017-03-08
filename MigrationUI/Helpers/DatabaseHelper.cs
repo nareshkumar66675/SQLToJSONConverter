@@ -97,8 +97,8 @@ namespace MigrationTool.Helpers
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 con.Open();
-                string query = @"select Distinct SiteID from [Migration].[SiteGroup] grp 
-                                LEFT JOIN[Migration].[Report] rpt on grp.SiteGroupID = rpt.SiteGroupID and rpt.[Status] = 'Success'";
+                string query = @"SELECT Distinct SiteID FROM [Migration].[SiteGroup] grp 
+                                LEFT JOIN[Migration].[Report] rpt on grp.SiteGroupID = rpt.SiteGroupID WHERE rpt.[Status] = 'Success'";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
@@ -124,12 +124,14 @@ namespace MigrationTool.Helpers
             }
             else if (group == GroupType.ASSET)
             {
-                query = @"SELECT DISTINCT Component_Name from Migration.Report rpt
-                                Inner join Migration.SiteGroup grp on rpt.SiteGroupID=grp.SiteGroupID
-                                where Status='Success'";
+                query = @"SELECT DISTINCT Component_Name FROM Migration.Report rpt
+                                LEFT JOIN Migration.SiteGroup grp ON rpt.SiteGroupID=grp.SiteGroupID 
+                                WHERE Status='Success' ";
                 conString = Common.ConnectionStrings.AssetConnectionString;
                 if (Sites != null && Sites.Count > 0)
-                    query += query + " and SiteID in (" + string.Join(",", Sites) + ")";
+                    query += " AND  (rpt.SiteGroupID IS NULL  OR SiteID IN (" + string.Join(",", Sites) + "))";
+                else
+                    query += " AND  (rpt.SiteGroupID IS NULL)";
             }
             using (SqlConnection con = new SqlConnection(conString))
             {

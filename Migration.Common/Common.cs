@@ -139,8 +139,8 @@ namespace Migration.Common
             {
                 get
                 {
-                    return @"INSERT INTO [Migration].[Report] ([Component_Name],[Tot_Rcrds_InLegacy],[Tot_Unique_RcrdsInLegacy],[Start_Time],[End_Time],[Status]) 
-                                                VALUES (@Name,@TotRecords,@TotUniqRecords,@StartTime,@EndTime,@Status)";
+                    return @"INSERT INTO [Migration].[Report] ([Component_Name],[SiteGroupID],[Tot_Rcrds_InLegacy],[Tot_Unique_RcrdsInLegacy],[Start_Time],[End_Time],[Status]) 
+                                                VALUES (@Name,@SiteGrpID,@TotRecords,@TotUniqRecords,@StartTime,@EndTime,@Status)";
                 }
                 private set { }
             }
@@ -149,6 +149,22 @@ namespace Migration.Common
                 get
                 {
                     return @"UPDATE [Migration].[Report] SET [Inserted_Rcrds_InNew]=@InsrtdRcrds,[End_Time]=@EndTime,[Status]=@Status WHERE [Component_Name]=@Name and [Status] ='Running'";
+                }
+                private set { }
+            }
+            public static string GetSiteGroupMaxID
+            {
+                get
+                {
+                    return "SELECT MAX(SiteGroupID) FROM Migration.SiteGroup";
+                }
+                private set { }
+            }
+            public static string SiteGroupInsert
+            {
+                get
+                {
+                    return "INSERT INTO Migration.SiteGroup (SiteGroupID,SiteID) VALUES({0},{1});";
                 }
                 private set { }
             }

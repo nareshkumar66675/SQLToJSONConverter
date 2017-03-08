@@ -152,13 +152,13 @@
                             Click="connectButton_Click"
                             Content="Connect"
                             IsDefault="True" />
-                    <Button x:Name="cancelButton"
+                    <Button x:Name="resetButton"
                             Width="75"
                             Margin="266,200,0,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
-                            Click="cancelButton_Click"
-                            Content="Cancel" />
+                            Click="resetButton_Click"
+                            Content="Reset" />
                 </Grid>
             </Grid>
         </xctk:BusyIndicator>

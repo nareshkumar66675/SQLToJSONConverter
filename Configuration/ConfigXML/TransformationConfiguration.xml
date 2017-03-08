@@ -370,31 +370,41 @@
   </Transformation>
   <Transformation Name="AST">
     <Source>
-      SELECT 1 as Id,
+      SELECT ASD_AM_UID as  Id,
       ---ASSET ID -----
       ASD.ASD_STD_ID as AssetId_Id,
-      ASST_ID as AssetId_AssetTypeDefinitionId,
+      ASD_AM_UID as AssetId_AssetTypeDefinitionId,
       ----SITE----------
       SITE_NUMBER as Site_SiteId,
       SITE_LONG_NAME as Site_SiteName,
       SITE_NUMBER as Site_SiteNumber,
       st.IS_DELETED as Site_IsDeleted,
       0 as Site_OrganizationId, -- mapping needed
-      pt.prop_long_name as Site_OrganizationName, -- mapping needed
-      ---- OPTIONS ------
+      pt.prop_long_name as Site_OrganizationName,
+      ---- OPTIONS ----------
       case when ogrp_id = 1 then OPTN.OPTN_ID else null end as Options_Id,
       case when ogrp_id = 1 then OPTN.OPTN_CODE else null end as Options_Code,
       case when ogrp_id = 1 then AST_OPTN_VALUE else null end as Options_Value,
-
-      -----Components -------- -- mapping needed
+      -----Components --------
       case when ogrp_id > 1 then OPTN.OPTN_ID else null end as Components_ComponentId,
-      case when ogrp_id > 1 then CAST(OPTN.OPTN_ID as varchar(50)) else null end as Components_ComponentInstanceId,
+      <!--case when ogrp_id > 1 then CAST(OPTN.OPTN_ID as varchar(50)) else null end as Components_ComponentInstanceId,-->
+      case when ogrp_id > 1 then OPTN.OPTN_ID  else null end as Components_ComponentInstanceId,
       case when ogrp_id > 1 then OPTN.OPTN_NAME else null end as Components_ComponentName,
       case when ogrp_id > 1 then OPTN.OPTN_NAME else null end as Components_ComponentKey,
-      case when ogrp_id > 1 then AST_OPTN_VALUE else null end as Components_ComponentValue,
+      case when ogrp_id > 1 then
+      ( case ogrp_id
+      when 90023 then  mdl.mdl_long_name
+      when 90011 then  ar.ar_long_name
+      when 90012 then  zn.zn_long_name
+      when 90013 then  bk.bk_long_name/*Bank*/
+      when 90041 then  cast(contract_no as nvarchar)/*Contract*/
+      when 90051 then  cast(mdt_number as nvarchar)/*Meter Delta*/
+      when 90021 then  MANF_LONG_NAME
+      when 90014 then  COL_LONG_NAME
+      when 90023 then  MDLTYP_LONG_NAME end)  else null end as Components_ComponentValue,
       case when ogrp_id > 1 then OPTN.OPTN_CODE else null end as Components_ComponentCode,
-
       ----- Inline assets ------ Need to discuss
+
       ------Type Code -----
       0 as TypeCode_TypeCodeId, -- mapping needed
       TCODE.TYCOD_NAME as TypeCode_TypeCodeName
@@ -405,13 +415,20 @@
       JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
       JOIN GAM.ASSET_DETAIL AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
       JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AD.AST_OPTION_ID
-      LEFT JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
+      LEFT JOIN GAM.VIEW_MANUFACTURER AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
       LEFT JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD.ASD_MODL_ID
       LEFT JOIN GAM.MODEL_MODELTYPE_MAP AS MDL_TYPE_MAP ON MDL_TYPE_MAP.[MODEL_MAP_ID] = ASD.ASD_MODL_TYP_MAPiD
+      LEFT JOIN GAM.AREA AS AR ON AR.AREA_ID = ASD.ASD_AREA_ID
+      LEFT JOIN GAM.ZONE AS ZN ON ZN.ZONE_ID = ASD.ASD_ZONE_ID
+      LEFT JOIN GAM.BANK AS BK ON BK.BANK_ID = ASD.ASD_BANK_ID
       LEFT JOIN GAM.METER_DELTA AS MTR_DELTA ON MTR_DELTA.MDT_ID = ASD.ASD_MTR_DLTA_ID
       LEFT JOIN [GAM].[TYPE_CODE_MASTER] AS TCODE ON TCODE.TYCOD_ID = ASD.ASD_TCOD_ID
+      LEFT JOIN [GAM].[CONTRACT_DETAILS] AS CNTRCT ON CNTRCT.CONTRACT_ID = ASD.ASD_CNTR_ID
+      LEFT JOIN [GAM].[COLLECTION] AS COL ON COL.[COLLECTION_ID] = ASD.ASD_COLLECTION_ID
+      LEFT JOIN [GAM].MODEL_TYPE AS MTYP ON COL.[COLLECTION_ID] = ASD.ASD_COLLECTION_ID
       WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-      AND AST.ASST_ID = 2 AND ASD.ASD_STD_ID = 209900201000000007
+      AND AST.ASST_ID not in( 1,14,7)
+      AND SITE_NUMBER in ({0})
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />

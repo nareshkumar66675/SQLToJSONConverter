@@ -28,7 +28,7 @@ namespace Migration.Persistence
 
                 if (data != null)
                 {
-                    progress.Report(new ProcessStatus(data.Component.Name, 0, Status.Running));
+                    progress.Report(new ProcessStatus(data.Component.Name, 50, Status.Running));
                     var rslt = await Task.Run(() => PersistenceFactory.GetPersistenceType(data.Component).Insert(data));
 
                     if (rslt)

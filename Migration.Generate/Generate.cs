@@ -24,7 +24,7 @@ namespace Migration.Generate
             {
                 foreach (var comp in grp.Component)
                 {
-                    progress.Report(new ProcessStatus(comp.Name, 0, Status.Running));
+                    progress.Report(new ProcessStatus(comp.Name, 50, Status.Running));
                     var result =  await StartTask(comp);
                     if (result)
                     {

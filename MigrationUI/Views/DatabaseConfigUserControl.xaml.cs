@@ -56,6 +56,7 @@ namespace MigrationTool.Views
                     try
                     {
                         ConnectingIndicator.IsBusy = false;
+                        //Check Connection String
                         if (rsltString == "")
                         {
                             Logger.Instance.LogInfo("Cannot Establish a Connection");
@@ -64,16 +65,21 @@ namespace MigrationTool.Views
                         else
                         {
                             Logger.Instance.LogInfo("Connection to the Database Server Completed.");
+                            //Show Model Window to Select DB
                             var dbName=ShowSelectDBWindow(rsltString);
+
+                            //Check If Database is selected
                             if (string.IsNullOrEmpty(dbName))
                             {
                                 rsltString = string.Empty;
                             }
+                            //If Connection and DB is Valid
                             else
                             {
                                 rsltString = DatabaseHelper.AddDatabaseToConnString(rsltString, dbName);
                                 databaseTextBox.Text = dbName;
                                 selectedDBGrid.Visibility = Visibility.Visible;
+                                connectButton.IsEnabled = false;
                                 Logger.Instance.LogInfo("Selected Database - " + dbName);
                             }
                         }
@@ -129,7 +135,7 @@ namespace MigrationTool.Views
                 CredentialGrid.IsEnabled = true;
         }
 
-        private void cancelButton_Click(object sender, RoutedEventArgs e)
+        private void resetButton_Click(object sender, RoutedEventArgs e)
         {
             AuthTypeComboBox.ItemsSource = Enum.GetValues(typeof(AuthenticationType)).Cast<AuthenticationType>();
             AuthTypeComboBox.SelectedIndex = 0;
@@ -138,6 +144,7 @@ namespace MigrationTool.Views
             passwordBox.Clear();
             databaseTextBox.Clear();
             selectedDBGrid.Visibility = Visibility.Collapsed;
+            connectButton.IsEnabled = true;
         }
 
         private void DatabaseConfigUserCntrl_Loaded(object sender, RoutedEventArgs e)
