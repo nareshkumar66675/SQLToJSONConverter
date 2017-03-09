@@ -6,7 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace Migration.Configuration
@@ -22,15 +24,30 @@ namespace Migration.Configuration
                 XmlSerializer serializerTransformations = new XmlSerializer(typeof(Transformations));
                 XmlSerializer serializerComponents = new XmlSerializer(typeof(Components));
 
-                if (File.Exists("ConfigXML/TransformationConfiguration.xml") && File.Exists("ConfigXML/ComponentConfiguration.xml"))
-                {
-                    StreamReader readerTransformations = new StreamReader("ConfigXML/TransformationConfiguration.xml");
-                    StreamReader readerComponents = new StreamReader("ConfigXML/ComponentConfiguration.xml");
+                string transformFilePath = "ConfigXML/TransformationConfiguration.xml";
+                string componentFilePath = "ConfigXML/ComponentConfiguration.xml";
 
-                    Transforms = (Transformations)serializerTransformations.Deserialize(readerTransformations);
-                    Components = (Components)serializerComponents.Deserialize(readerComponents);
-                    readerTransformations.Close();
-                    readerComponents.Close();
+                if (File.Exists(transformFilePath) && File.Exists(componentFilePath)) // For Unit Test - Need to handle Properly 
+                {
+                    if (Validate(transformFilePath, Resources.TransformationXSD))
+                    {
+                        using (StreamReader readerTransformations = new StreamReader("ConfigXML/TransformationConfiguration.xml"))
+                        {
+                            Transforms = (Transformations)serializerTransformations.Deserialize(readerTransformations);
+                        }
+                    }
+                    else
+                        throw new Exception("Transformation XML Validation Failed");
+
+                    if (Validate(componentFilePath, Resources.ComponentXSD))
+                    {
+                        using (StreamReader readerComponents = new StreamReader("ConfigXML/ComponentConfiguration.xml"))
+                        {
+                            Components = (Components)serializerComponents.Deserialize(readerComponents);
+                        }
+                    }
+                    else
+                        throw new Exception("Component XML Validation Failed");
                 }
             }
             catch (Exception ex)
@@ -57,6 +74,30 @@ namespace Migration.Configuration
             catch (Exception ex)
             {
                 throw new Exception("Component Name or Source Not found in Transformation Xml", ex);
+            }
+        }
+        private static bool Validate(string xmlFilePath,string xsdFile)
+        {
+            try
+            {
+                bool isValid = true;
+
+                XmlSchemaSet schemas = new XmlSchemaSet();
+                schemas.Add("", XmlReader.Create(new StringReader(xsdFile),new XmlReaderSettings()));
+
+                XDocument custOrdDoc = XDocument.Load(xmlFilePath);
+
+                custOrdDoc.Validate(schemas, (o, e) =>
+                {
+                    Logger.Instance.LogError("XML Validation Failed :", new Exception(e.Message));
+                    isValid = false;
+                });
+
+                return isValid;
+            }
+            catch (Exception)
+            {
+                throw ;
             }
         }
     }
