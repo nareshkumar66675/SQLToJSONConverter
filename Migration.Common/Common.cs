@@ -164,7 +164,15 @@ namespace Migration.Common
             {
                 get
                 {
-                    return "INSERT INTO Migration.SiteGroup (SiteGroupID,SiteID) VALUES({0},{1});";
+                    return "INSERT INTO Migration.SiteGroup (SiteGroupID,SiteID,SiteName) VALUES({0},{1},'{2}');";
+                }
+                private set { }
+            }
+            public static string GetSiteDetails
+            {
+                get
+                {
+                    return "SELECT SITE_NUMBER,SITE_LONG_NAME FROM [GAM].[view_site_info] WHERE SITE_NUMBER in ({0})";
                 }
                 private set { }
             }

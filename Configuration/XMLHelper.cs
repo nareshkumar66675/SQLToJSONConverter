@@ -39,6 +39,11 @@ namespace Migration.Configuration
                 throw;
             }
         }
+        /// <summary>
+        /// Retrieves Transformation Source From XML - To Lazy Load SQL Query
+        /// </summary>
+        /// <param name="componentName">Name of the Component</param>
+        /// <returns>Source Query</returns>
         internal static string GetTransformationSource(string componentName)
         {
             try

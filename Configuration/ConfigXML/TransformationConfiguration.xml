@@ -387,8 +387,7 @@
       case when ogrp_id = 1 then AST_OPTN_VALUE else null end as Options_Value,
       -----Components --------
       case when ogrp_id > 1 then OPTN.OPTN_ID else null end as Components_ComponentId,
-      <!--case when ogrp_id > 1 then CAST(OPTN.OPTN_ID as varchar(50)) else null end as Components_ComponentInstanceId,-->
-      case when ogrp_id > 1 then OPTN.OPTN_ID  else null end as Components_ComponentInstanceId,
+      case when ogrp_id > 1 then CAST(OPTN.OPTN_ID as varchar(50)) else null end as Components_ComponentInstanceId,
       case when ogrp_id > 1 then OPTN.OPTN_NAME else null end as Components_ComponentName,
       case when ogrp_id > 1 then OPTN.OPTN_NAME else null end as Components_ComponentKey,
       case when ogrp_id > 1 then

@@ -10,6 +10,11 @@ namespace Migration.Generate.Generators
 {
     public class GenericGeneratorWtParams:GenericGenerator,IGenerator
     {
+        /// <summary>
+        /// Retrieves Source Query after parsing the Query Params
+        /// </summary>
+        /// <param name="componentName">Name of the Component</param>
+        /// <returns>Query String</returns>
         public override string GetSourceQuery(string componentName)
         {
             string srcQry = string.Empty;

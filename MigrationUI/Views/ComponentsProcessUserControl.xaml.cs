@@ -66,6 +66,7 @@ namespace MigrationTool.Views
             {
                 Logger.Instance.LogError("Error While Initializing DataGrid For Components Process",ex);
                 Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occured. Please Check Logs", "Process Status", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
             }
         }
 

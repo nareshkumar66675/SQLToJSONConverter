@@ -115,37 +115,44 @@ namespace MigrationTool.Helpers
         public static List<string> GetCompletedComponents(GroupType group, List<string> Sites)
         {
             List<string> completedComp = new List<string>();
-            string query = string.Empty;
-            string conString = string.Empty;
-            if (group == GroupType.AUTH)
+            try
             {
-                query = "SELECT DISTINCT Component_Name from Migration.Report where Status = 'Success'";
-                conString = Common.ConnectionStrings.AuthConnectionString;
-            }
-            else if (group == GroupType.ASSET)
-            {
-                query = @"SELECT DISTINCT Component_Name FROM Migration.Report rpt
+                string query = string.Empty;
+                string conString = string.Empty;
+                if (group == GroupType.AUTH)
+                {
+                    query = "SELECT DISTINCT Component_Name from Migration.Report where Status = 'Success'";
+                    conString = Common.ConnectionStrings.AuthConnectionString;
+                }
+                else if (group == GroupType.ASSET)
+                {
+                    query = @"SELECT DISTINCT Component_Name FROM Migration.Report rpt
                                 LEFT JOIN Migration.SiteGroup grp ON rpt.SiteGroupID=grp.SiteGroupID 
                                 WHERE Status='Success' ";
-                conString = Common.ConnectionStrings.AssetConnectionString;
-                if (Sites != null && Sites.Count > 0)
-                    query += " AND  (rpt.SiteGroupID IS NULL  OR SiteID IN (" + string.Join(",", Sites) + "))";
-                else
-                    query += " AND  (rpt.SiteGroupID IS NULL)";
-            }
-            using (SqlConnection con = new SqlConnection(conString))
-            {
-                con.Open();
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                    conString = Common.ConnectionStrings.AssetConnectionString;
+                    if (Sites != null && Sites.Count > 0)
+                        query += " AND  (rpt.SiteGroupID IS NULL  OR SiteID IN (" + string.Join(",", Sites) + "))";
+                    else
+                        query += " AND  (rpt.SiteGroupID IS NULL)";
+                }
+                using (SqlConnection con = new SqlConnection(conString))
                 {
-                    using (IDataReader dr = cmd.ExecuteReader())
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        while (dr.Read())
+                        using (IDataReader dr = cmd.ExecuteReader())
                         {
-                            completedComp.Add(dr[0].ToString());
+                            while (dr.Read())
+                            {
+                                completedComp.Add(dr[0].ToString());
+                            }
                         }
                     }
                 }
+            }
+            catch (SqlException ex)
+            {
+                throw new InvalidOperationException("Error Occurred While retrieving completed components", ex);
             }
             return completedComp;
         }

@@ -9,6 +9,13 @@ namespace Migration.Generate.Helpers
 {
     public class Mapper
     {
+        /// <summary>
+        /// Maps ResultSet to Entities using Slapper.Automapper
+        /// </summary>
+        /// <typeparam name="T">Entity Result Type</typeparam>
+        /// <param name="resultSet">Data</param>
+        /// <param name="type">Type of Entity</param>
+        /// <returns>List of Mapped Data</returns>
         public List<T> Map<T>(dynamic resultSet,Type type)
         {
             //var obj = (object)resultSet;

@@ -22,28 +22,38 @@ namespace Migration.Generate.Generators
         {
             return Configuration.Configurator.GetSourceByComponentName(componentName);
         }
+        /// <summary>
+        /// Generates Entities from Old Data and adds it to the Process Queue
+        /// </summary>
+        /// <param name="component">Component Details</param>
+        /// <returns>True, is Success else False.</returns>
         public virtual bool Generate(Component component)
         {
             DateTime startTime = DateTime.Now;
-            dynamic rslt = null;
+            dynamic resultSet = null;
             List<object> resultEntities = null;
             try
             {
-                var qry = GetSourceQuery(component.Name);
-                rslt = SqlOperation.ExecuteQueryOnSource(qry);
-                Type type = Type.GetType(component.DomainType);
-                if (type == null)
+                //Get Data From Legacy/Old Database
+                var query = GetSourceQuery(component.Name);
+                resultSet = SqlOperation.ExecuteQueryOnSource(query);
+
+                //Get Entity Type
+                Type entityType = Type.GetType(component.DomainType);
+                if (entityType == null)
                     throw new Exception("Error in Domain Type -" + component.DomainType);
+
+                //Map Data to Entity
                 Mapper mapper = new Mapper();
-                resultEntities = mapper.Map<object>(rslt, type);
+                resultEntities = mapper.Map<object>(resultSet, entityType);
                 
-                NotifyGenerateStatus(rslt, resultEntities, component, startTime,"Running");
+                NotifyGenerateStatus(resultSet, resultEntities, component, startTime,"Running");
                 ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultEntities));
                 return true;
             }
             catch (Exception ex)
             {
-                NotifyGenerateStatus(rslt, resultEntities, component, startTime, "Failed");
+                NotifyGenerateStatus(resultSet, resultEntities, component, startTime, "Failed");
                 throw;
             }
         }

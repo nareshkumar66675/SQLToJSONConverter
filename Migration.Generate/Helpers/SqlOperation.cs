@@ -50,23 +50,26 @@ namespace Migration.Generate.Helpers
                     command.Transaction = transaction;
                     try
                     {
-                        int? maxId=null;
+                        int? siteGrpID=null;
                         if (type == GroupType.ASSET)
                         {
                             var qryParams = Configurator.GetQueryParams(componentName);
                             if (qryParams != null && qryParams.Count == 1)
                             {
+                                //Get Site Group Max ID
                                 command.CommandText = Queries.GetSiteGroupMaxID;
-                                maxId = (int)command.ExecuteScalar() +1;
+                                var max = command.ExecuteScalar();
+                                siteGrpID = ((max is DBNull) ? 0 : (int)max) + 1;
 
-                                command.CommandText = GetSiteGroupQuery(maxId.GetValueOrDefault(), qryParams[0].Split(',').ToList());
+                                //Insert Records To Site Group Table
+                                command.CommandText = GetSiteGroupQuery(siteGrpID.GetValueOrDefault(), qryParams[0]);
                                 command.ExecuteNonQuery();
                             }
                         }
-
+                        //Insert Records to Report Table
                         command.CommandText = Queries.ReportInsert;
                         command.Parameters.Add(new SqlParameter("@Name", componentName));
-                        command.Parameters.Add(new SqlParameter("@SiteGrpID", maxId));
+                        command.Parameters.Add(new SqlParameter("@SiteGrpID",(object) siteGrpID ?? DBNull.Value));
                         command.Parameters.Add(new SqlParameter("@TotRecords", totalRecordsCount));
                         command.Parameters.Add(new SqlParameter("@TotUniqRecords", totalUniqueRecordsCount));
                         command.Parameters.Add(new SqlParameter("@StartTime", startTime));
@@ -95,15 +98,25 @@ namespace Migration.Generate.Helpers
                 Logger.Instance.LogError($"Error Occurred While Inserting Generate Report for {componentName} , StartTime - {startTime.ToString()}, totalRecordsCount - {totalRecordsCount}, totalUniqueRecordsCount - {totalUniqueRecordsCount}, Status - {Status}", ex);
             }
         }
-        private static string GetSiteGroupQuery(int siteGrpId,List<string> sites)
+        private static string GetSiteGroupQuery(int siteGrpId,string sites)
         {
             StringBuilder sbuild = new StringBuilder();
-            if(sites!=null && sites.Count>0)
+            using (var legacyConn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
             {
-                sites.ForEach(site =>
+                legacyConn.Open();
+                var query = string.Format(Queries.GetSiteDetails, sites);
+                using (SqlCommand legacyCommand = new SqlCommand(query, legacyConn))
                 {
-                    sbuild.AppendFormat(Queries.SiteGroupInsert, siteGrpId, site);
-                });
+                    using (IDataReader dr = legacyCommand.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            var siteID = dr.GetInt64(0);
+                            var siteName = dr.GetString(1);
+                            sbuild.AppendFormat(Queries.SiteGroupInsert,siteGrpId, siteID, siteName);
+                        }
+                    }
+                }
             }
             return sbuild.ToString();
         }

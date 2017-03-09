@@ -37,7 +37,17 @@ namespace MigrationTool.Views
             try
             {
                 SetDBDetails(group);
-                var completedList = DatabaseHelper.GetCompletedComponents(group, SelectedSiteIDList);
+                List<string> completedList = new List<string>();
+                try
+                {
+                    completedList = DatabaseHelper.GetCompletedComponents(group, SelectedSiteIDList);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Logger.Instance.LogError("Error Occurred", ex);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Migration Report Tables Not Found.\nTerminating Application", "Components Selection", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Application.Current.Shutdown();
+                }
                 completedListBox.ItemsSource = SourceComponents.Where(t => completedList.Contains(t.Name)).Select(u => u.DisplayName);
                 completedList.ForEach(item => SourceComponents.RemoveAll(t => t.Name == item));
                 expander.Header = group.GetDescription();
@@ -53,6 +63,7 @@ namespace MigrationTool.Views
             {
                 Logger.Instance.LogError("Error Occurred While Initializing DataGrid For Components Selection", ex);
                 Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occured. Please Check Logs", "Components Selection", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
             }
         }
         public ComponentsSelectUserControl()
