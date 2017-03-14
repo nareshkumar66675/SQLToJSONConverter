@@ -32,23 +32,30 @@ namespace Migration.Generate.Generators
             DateTime startTime = DateTime.Now;
             dynamic resultSet = null;
             List<object> resultEntities = null;
+            Mapper mapper = new Mapper();
+
             try
             {
-                //Get Data From Legacy/Old Database
-                var query = GetSourceQuery(component.Name);
-                resultSet = SqlOperation.ExecuteQueryOnSource(query);
-
                 //Get Entity Type
                 Type entityType = Type.GetType(component.DomainType);
                 if (entityType == null)
                     throw new Exception("Error in Domain Type -" + component.DomainType);
 
+                //Get Data From Legacy/Old Database
+                var query = GetSourceQuery(component.Name);
+                resultSet = SqlOperation.ExecuteQueryOnSource(query);
+
+                //Map Column Names
+                resultSet = MapColumns(component.Name, resultSet);
+
                 //Map Data to Entity
-                Mapper mapper = new Mapper();
                 resultEntities = mapper.Map<object>(resultSet, entityType);
                 
                 NotifyGenerateStatus(resultSet, resultEntities, component, startTime,"Running");
+
+                //Add to Process Queue for Persisting
                 ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultEntities));
+
                 return true;
             }
             catch (Exception ex)
@@ -73,6 +80,39 @@ namespace Migration.Generate.Generators
                 var totUniqueRecordCount = (mapped as List<dynamic>)?.Select(t => t.Id).Distinct()?.Count();
                 SqlOperation.InsertGenerateReport(component.Name, startTime,DateTime.Now, totRecordCount??0, totUniqueRecordCount??0,component.GroupName, status);
             }
+        }
+        private dynamic MapColumns(string componentName,dynamic resultSet)
+        {
+            var mapping = Configuration.Configurator.GetColumnMapping(componentName);
+
+            if (mapping == null || mapping.ColumnMap == null || mapping.ColumnMap.Count < 1)
+                return resultSet;
+
+            var srcSet = (resultSet as IEnumerable<object>).Select(dynamicItem => dynamicItem as IDictionary<string, object>).ToList();
+
+            resultSet = null;
+
+            var tempSet= new List<Dictionary<string, object>>();
+
+            if(srcSet!=null)
+            {
+                foreach (var row in srcSet)
+                {
+                    Dictionary<string, object> temp = new Dictionary<string, object>();
+                    if (row != null)
+                    {
+                        foreach (var column in row)
+                        {
+                            StringBuilder key = new StringBuilder(column.Key);
+                            mapping.ColumnMap.ForEach(t => key.Replace(t.Key, t.ColumnName));
+                            temp.Add(key.ToString(), column.Value);
+                        }
+                    }
+                    tempSet.Add(temp);
+                }
+            }
+
+            return tempSet;
         }
     }
 }

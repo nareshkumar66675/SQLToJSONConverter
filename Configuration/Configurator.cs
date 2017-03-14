@@ -134,6 +134,15 @@ namespace Migration.Configuration
             });
             return rslt;
         }
+        /// <summary>
+        /// Gets Column Mapping From Transformation XML
+        /// </summary>
+        /// <param name="componentName"></param>
+        /// <returns></returns>
+        public static ColumnMapping GetColumnMapping(string componentName)
+        {
+            return GetTransformationEnumerable(componentName).Select(t => t.ColumnMapping)?.FirstOrDefault();
+        }
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)
         {
