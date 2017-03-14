@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TransformationConfig>
   <!-- Auth Components -->
-   <Transformation Name="SITE">
+  <Transformation Name="SITE">
     <Source>
       select st.SITE_NUMBER as Id,
       st.SITE_NUMBER as Number,
@@ -204,164 +204,142 @@
   <Transformation Name="COMPDATA_MODEL">
     <Source>
       ----------- MODEL ---------------
-      SELECT 122006 as Id,
+      Select 122006 as Id,
       22006 as Component_Id,
+      'MODEL.RELATION' as Component_Code,
       --COMPONENTS---
       0 as Component_Components_SiteId,
-	   'MODEL.RELATION' as Component_Code,
       --Component Values---
       '1_root' as Component_Components_ComponentValues_Id,
       'Model' as Component_Components_ComponentValues_Name,
       'MODEL.RELATION' as Component_Components_ComponentValues_DisplayName,
-	  'MODEL.RELATION' as Component_Components_ComponentValues_Code,
-      --ChildCompoenents----
-      CAST(Components_Id as VARCHAR(50)) as Component_Components_ComponentValues_ChildComponents_Id,
-      Name as Component_Components_ComponentValues_ChildComponents_Name,
-      Name AS Component_Components_ComponentValues_ChildComponents_DisplayName,
-      --------OPTIONS-----
-      ROW_NUMBER() OVER (PARTITION BY MDL_ID ORDER BY MDL_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
-      CASE  WHEN VALUE_DESC = 'MODL_SHORT_NAME' then 'Model Short Name'
-      WHEN VALUE_DESC = 'MODL_LONG_NAME' then 'Model Long Name'
-      WHEN VALUE_DESC = 'MODL_TYPE_SHORT_NAME' then 'Model Type Short Name'
-      WHEN VALUE_DESC = 'MODL_TYPE_LONG_NAME' then 'Model Type Long Name'
-      WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'Manufacturer Short Name'
-      WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'Manufacturer Long Name'
-      WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'Manufacturer Code Name'
-      END AS Component_Components_ComponentValues_ChildComponents_Options_Name,
-	  CASE  WHEN VALUE_DESC = 'MODL_SHORT_NAME' then 'MODEL.SHORT.NAME'
-      WHEN VALUE_DESC = 'MODL_LONG_NAME' then 'MODEL.LONG.NAME'
-      WHEN VALUE_DESC = 'MODL_TYPE_SHORT_NAME' then 'MODEL.TYPE.SHORT.NAME'
-      WHEN VALUE_DESC = 'MODL_TYPE_LONG_NAME' then 'MODEL.TYPE.LONG.NAME'
-      WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'MANF.SHORT.NAME'
-      WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'MANF.LONG.NAME'
-      WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'MANUF.CODE'
-      END AS Component_Components_ComponentValues_ChildComponents_Options_Code,
-      VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value
-      FROM ( SELECT MDL.MDL_ID, MDL_SHORT_NAME as Name,
-      ROW_NUMBER() OVER (ORDER BY MDL.MDL_ID ) AS Components_Id,
-      CAST(MDL.MDL_SHORT_NAME AS NVARCHAR) AS MODL_SHORT_NAME,
-      CAST(MDL.MDL_LONG_NAME AS NVARCHAR)  AS MODL_LONG_NAME,
-      CAST(MDLTYPE.MDLTYP_SHORT_NAME AS NVARCHAR)  AS MODL_TYPE_SHORT_NAME,
-      CAST(MDLTYPE.MDLTYP_LONG_NAME AS NVARCHAR)  AS MODL_TYPE_LONG_NAME,
-      CAST(MNF.MANF_SHORT_NAME AS NVARCHAR)  AS MANF_SHORT_NAME,
-      CAST(MNF.MANF_LONG_NAME AS NVARCHAR)  AS MANF_LONG_NAME,
-      CAST(MNF.MANF_VEND_CODE AS NVARCHAR)  AS MANF_VEND_CODE
-      FROM GAM.MODEL_MODELTYPE_MAP AS MAP
-      JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = MAP.MODL_ID
-      JOIN GAM.MODEL_TYPE AS MDLTYPE ON MDLTYPE.MDLTYP_ID = MAP.MTYP_ID
-      JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = MDL.MDL_MANF_ID
-      WHERE MDL.IS_DELETED = 0 ) MDL_TYPE
-      UNPIVOT
-      ( VALUE FOR VALUE_DESC IN (MODL_SHORT_NAME, MODL_LONG_NAME,
-      MODL_TYPE_SHORT_NAME, MODL_TYPE_LONG_NAME,
-      MANF_SHORT_NAME, MANF_LONG_NAME, MANF_VEND_CODE)
-      ) AS T
+      'MODEL.RELATION' as Component_Components_ComponentValues_Code,
+      ---Manufacture ----
+      --cast(ROW_NUMBER() OVER (Partition by MF.mf_id ORDER BY MF.mf_id ) as varchar(50))  + '_'+
+      CAST ( (MF.MF_ID)  AS NVARCHAR) + '_'+
+      MF.COMP_TYPE_ID as Component_Components_ComponentValues_CC_Id,
+      MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_Name,
+      'MANUFACTURER' as Component_Components_ComponentValues_CC_Code,
+      MF.value as Component_Components_ComponentValues_CC_DisplayName,
+      ---Manufacture Type Options ----
+      MF.MNF_CODE_SEQ as Component_Components_ComponentValues_CC_Options_Id,
+      MF.MNF_NAME as Component_Components_ComponentValues_CC_Options_Name,
+      mf.value as Component_Components_ComponentValues_CC_Options_Value,
+      mf.MNF_CODE  as Component_Components_ComponentValues_CC_Options_Code,
+      ---Model Type ----
+      CAST ( MF.MF_ID  AS NVARCHAR) + '_'+
+      MT.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_Id,
+      MT.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_Name,
+      'MODEL.TYPE' as Component_Components_ComponentValues_CC_CC_Code,
+      ---Model Type  Options ----
+      mt.MDL_TYP_SEQ as Component_Components_ComponentValues_CC_CC_Options_Id,
+      mt.VALUE as Component_Components_ComponentValues_CC_CC_Options_Value,
+      mt.MDL_TYP_CODE as Component_Components_ComponentValues_CC_CC_Options_Code,
+      mt.MDL_TYP_NAME as Component_Components_ComponentValues_CC_CC_Options_Name,
+      ---Model Type ----
+      CAST ( MF.MF_ID  AS NVARCHAR) + '_'+
+      MD.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_CC_Id,
+      MD.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_Name,
+      'MODEL' as Component_Components_ComponentValues_CC_CC_CC_Code,
+      ---Model Options ----
+      md.MDL_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
+      MD.VALUE as Component_Components_ComponentValues_CC_CC_CC_Options_Value,
+      MD.MDL_CODE as Component_Components_ComponentValues_CC_CC_CC_Options_Code,
+      MD.MDL_Name as Component_Components_ComponentValues_CC_CC_CC_Options_Name
+
+      FROM GAM.VIEW_MODEL AS MD
+      join gam.view_MANUFACTURE as mf on mf.manf_id = MD.MDL_MANF_ID and mf.mnf_seq = MD.MDL_SEQ
+      JOIN [GAM].[MODEL_MODELTYPE_MAP] AS mdlMap ON mdlMap.MODL_ID = MD.MDL_ID
+      join gam.VIEW_MODEL_TYPE as MT on MT.MDLTYP_ID = mdlMap.MTYP_ID and md.MDL_SEQ = MDL_TYP_SEQ
+      --where md.MDL_ID in (1,2)
+      order by mf.mf_id
+
 
       -------- EOF MODEL ----------
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
+    <ColumnMapping>
+      <ColumnMap Key="CC" ColumnName="ChildComponents"/>
+    </ColumnMapping>
   </Transformation>
   <Transformation Name="COMPDATA_THEME">
     <Source>
-      select '122061' as Id,
+      SELECT
+      '122061' as Id,
       '22061' as Component_Id,
       'THEME.RELATION' as Component_Code,
       '0'as Component_Components_SiteId,
       '1_root' as Component_Components_ComponentValues_Id,
       'Theme' as Component_Components_ComponentValues_Name,
-      'Theme'  as Component_Components_ComponentValues_DisplayName,
+      'Theme'  as Component_Components_ComponentValues_DisplayName,
       'THEME.RELATION' as Component_Components_ComponentValues_Code,
-      ---Theme Type ----
-      '1_22507'as Component_Components_ComponentValues_CC_Id,
-      'Unknown Theme Type'as Component_Components_ComponentValues_CC_Name,
-      'THEME.TYPE' Component_Components_ComponentValues_CC_Code,
-      'Unknown Theme Type' as Component_Components_ComponentValues_CC_DisplayName,
-      ---Theme Options ----
-      '0' Component_Components_ComponentValues_CC_Options_Id,
-      'type short name' as Component_Components_ComponentValues_CC_Options_Value,
-      'THEME.TYPE.SHORT.NAME' as Component_Components_ComponentValues_CC_Options_Code,
+      
+      ---- Theme Type -----
+      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      TT.COMP_TYPE_ID as Component_Components_ComponentValues_CC_Id,
+      TT.DISPLAY_NAME as Component_Components_ComponentValues_CC_Name,
+      'THEME.TYPE' as Component_Components_ComponentValues_CC_Code,
+      TT.value as Component_Components_ComponentValues_CC_DisplayName,
+
+      ---Theme Type Options ----
+      tt.THEM_TYPE_SEQ as Component_Components_ComponentValues_CC_Options_Id,
+      tt.value as Component_Components_ComponentValues_CC_Options_Value,
+      tt.them_type_name  as Component_Components_ComponentValues_CC_Options_Code,
+
       ---Theme Group ----
-      '1_22058' as Component_Components_ComponentValues_CC_CC_Id,
-      'Unknown Theme Group' as Component_Components_ComponentValues_CC_CC_Name,
+      --ROW_NUMBER() OVER (ORDER BY TG.DISPLAY_NAME) AS TG_RW_NM,
+      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      TG.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_Id,
+      TG.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_Name,
       'THEME.GROUP' as Component_Components_ComponentValues_CC_CC_Code,
       ---Theme Options ----
-      '0' as Component_Components_ComponentValues_CC_CC_Options_Id,
-      'Group short name' as Component_Components_ComponentValues_CC_CC_Options_Value,
-      'THEME.GROUP.SHORT.NAME' as Component_Components_ComponentValues_CC_CC_Options_Code,
-      --- theme Category ---
-      '1_22059' as Component_Components_ComponentValues_CC_CC_CC_Id,
-      'Unknown Theme Category' as Component_Components_ComponentValues_CC_CC_CC_Name,
+      tg.THM_GRP_SEQ as Component_Components_ComponentValues_CC_CC_Options_Id,
+      tg.VALUE as Component_Components_ComponentValues_CC_CC_Options_Value,
+      tg.THM_GRP_CODE as Component_Components_ComponentValues_CC_CC_Options_Code,
+
+      --- Theme Category ---
+      --ROW_NUMBER() OVER (ORDER BY TC.TCAT_CODE) AS TC_RW_NM,
+      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      tc.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_CC_Id,
+      TC.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_Name,
       'THEME.CATEGORY' as Component_Components_ComponentValues_CC_CC_CC_Code,
       ---- Theme Category Options ----
-      '0' as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
-      'Category Long' as Component_Components_ComponentValues_CC_CC_CC_Options_Value,
-      'THEME.CATEGORY.LONG.NAME' as Component_Components_ComponentValues_CC_CC_CC_Options_Code,
+      tc.TCAT_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
+      tc.VALUE as Component_Components_ComponentValues_CC_CC_CC_Options_Value,
+      tc.TCAT_CODE Component_Components_ComponentValues_CC_CC_CC_Options_Code,
+
       --- Manfacturer ----
-      '1_22002' as Component_Components_ComponentValues_CC_CC_CC_CC_Id,
-      'BALLY' as Component_Components_ComponentValues_CC_CC_CC_CC_Name,
+      --ROW_NUMBER() OVER (PARTITION BY mf.DISPLAY_NAME ORDER BY mf.DISPLAY_NAME) AS MF_RW_NM,
+      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      mf.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_CC_CC_Id,
+      MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_CC_Name,
       'MANUFACTURER' as Component_Components_ComponentValues_CC_CC_CC_CC_Code,
       --- MAnufacturer Options
-      '0' as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Id,
-      'B' as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Value,
-      'MANUF.CODE' as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Code,
+      MF.MNF_CODE_SEQ as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Id,
+      mf.VALUE as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Value,
+      mf.MNF_CODE as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Code,
       --- theme ---
-      '1_22060' as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Id,
-      'Unknown Theme' as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Name,
+      --ROW_NUMBER() OVER (ORDER BY TM.DISPLAY_NAME) AS TM_RW_NM,
+      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      TM.COMP_TYPE_ID as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Id,
+      TM.DISPLAY_NAME as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Name,
       'THEME' as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Code,
       --- Theme Options ------
-      '0' as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Id,
-      'Unknown Theme' as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Value,
-      'THEME.NAME' as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Code
+      TM.THEM_CODE_SEQ as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Id,
+      TM.VALUE as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Value,
+      TM.THEM_CODE as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Code
 
-      Union All
-
-      select '122061' as Id,
-      '22061' as Component_Id,
-      'THEME.RELATION' as Component_Code,
-      '0'as Component_Components_SiteId,
-      '1_root' as Component_Components_ComponentValues_Id,
-      'Theme' as Component_Components_ComponentValues_Name,
-      'Theme'  as Component_Components_ComponentValues_DisplayName,
-      'THEME.RELATION' as Component_Components_ComponentValues_Code,
-      '1_22507'as Component_Components_ComponentValues_CC_Id,
-      'Unknown Theme Type'as Component_Components_ComponentValues_CC_Name,
-      'THEME.TYPE' Component_Components_ComponentValues_CC_Code,
-      'Unknown Theme Type' as Component_Components_ComponentValues_CC_DisplayName,
-      '1' Component_Components_ComponentValues_CC_Options_Id,
-      'type long name' as Component_Components_ComponentValues_CC_Options_Value,
-      'THEME.TYPE.LONG.NAM' as Component_Components_ComponentValues_CC_Options_Code,
-      '1_22058' as Component_Components_ComponentValues_CC_CC_Id,
-      'Unknown Theme Group' as Component_Components_ComponentValues_CC_CC_Name,
-      'THEME.GROUP' as Component_Components_ComponentValues_CC_CC_Code,
-      '1' as Component_Components_ComponentValues_CC_CC_Options_Id,
-      'Group Long name' as Component_Components_ComponentValues_CC_CC_Options_Value,
-      'THEME.GROUP.SHORT.NAME' as Component_Components_ComponentValues_CC_CC_Options_Code,
-      '1_22059' as Component_Components_ComponentValues_CC_CC_CC_Id,
-      'Unknown Theme Category' as Component_Components_ComponentValues_CC_CC_CC_Name,
-      'THEME.CATEGORY' as Component_Components_ComponentValues_CC_CC_CC_Code,
-      '1' as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
-      'Category short name' as Component_Components_ComponentValues_CC_CC_CC_Options_Value,
-      'THEME.CATEGORY.SHORT.NAME' as Component_Components_ComponentValues_CC_CC_CC_Options_Code,
-      '1_22002' as Component_Components_ComponentValues_CC_CC_CC_CC_Id,
-      'BALLY' as Component_Components_ComponentValues_CC_CC_CC_CC_Name,
-      'MANUFACTURER' as Component_Components_ComponentValues_CC_CC_CC_CC_Code,
-      '1' as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Id,
-      'BALLY' as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Value,
-      'MANF.LONG.NAME' as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Code,
-      null as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Id,
-      null as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Name,
-      null as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Code,
-      null as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Id,
-      null as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Value,
-      null as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Code
+      FROM GAM.VIEW_THEME AS TM
+      JOIN GAM.VIEW_MANUFACTURE AS MF ON MF.MANF_ID = TM.MANF_ID AND MNF_SEQ = TM.THEM_SEQ
+      JOIN GAM.VIEW_THEME_CATEGORY AS TC ON TM.THEME_CAT_ID = TC.TCAT_ID AND TM.THEM_SEQ = TC.TCAT_SEQ
+      JOIN GAM.VIEW_THEME_GROUP AS TG ON TG.TGRP_ID = TC.TCAT_TGRP_ID AND TG.THM_GRP_SEQ = TC.TCAT_SEQ
+      JOIN GAM.VIEW_THEME_TYPE AS TT ON TT.TTYP_ID = TG.TGRP_TTYP_ID AND TT.THEM_TYPE_SEQ = TG.THM_GRP_SEQ
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
     <ColumnMapping>
       <ColumnMap Key="CC" ColumnName="ChildComponents"/>
-      <!--<ColumnMap Key="3" ColumnName="fv"/>
-      <ColumnMap Key="4" ColumnName="fdv"/>-->
     </ColumnMapping>
   </Transformation>
   <Transformation Name="COMPDATA_DENOM">
@@ -371,19 +349,22 @@
       22011 as Component_Id,
       --COMPONENTS---
       0 as Component_Components_SiteId,
-	   'DENOMINATION' as Component_Code,
+      'DENOMINATION' as Component_Code,
       --Component Values---
       '1_root' as Component_Components_ComponentValues_Id,
       'Denomination' as Component_Components_ComponentValues_Name,
-      'Denomination' as Component_Components_ComponentValues_DisplayName,
+      'DENOMINATION' as Component_Components_ComponentValues_DisplayName,
+      'DENOMINATION' as Component_Components_ComponentValues_Code,
       --ChildCompoenents----
-      CAST(Components_Id as VARCHAR(50)) as Component_Components_ComponentValues_ChildComponents_Id,
+      CAST(Components_Id as VARCHAR(50))+'_1' as Component_Components_ComponentValues_ChildComponents_Id,
       DENM_AMOUNT as Component_Components_ComponentValues_ChildComponents_Name,
       DENM_AMOUNT AS Component_Components_ComponentValues_ChildComponents_DisplayName,
+      'DENOMINATION' AS Component_Components_ComponentValues_ChildComponents_Code,
       ---- OPTIONS --------
       ROW_NUMBER() OVER (PARTITION BY DENM_ID ORDER BY DENM_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
       CODE AS Component_Components_ComponentValues_ChildComponents_Options_Name,
-      DENM_AMOUNT as Component_Components_ComponentValues_ChildComponents_Options_Value
+      DENM_AMOUNT as Component_Components_ComponentValues_ChildComponents_Options_Value,
+      'DENOM.AMOUNT' as Component_Components_ComponentValues_ChildComponents_Options_Code
       from ( SELECT DENM_ID,
       ROW_NUMBER() OVER (ORDER BY DENM_ID ) AS Components_Id,
       'Denom Value' as CODE,
@@ -484,10 +465,24 @@
   </Transformation>
   <Transformation Name="AST">
     <Source>
-      SELECT ASD_AM_UID as  Id,
+      SELECT ASD_STD_NEW_ID as  Id,
       ---ASSET ID -----
-      ASD.ASD_STD_ID as AssetId_Id,
-      ASD_AM_UID as AssetId_AssetTypeDefinitionId,
+      ASD_STD_NEW_ID as AssetId_Id,
+      CASE WHEN AST.ASST_ID = 1 THEN 10
+      WHEN AST.ASST_ID = 2 THEN 3
+      WHEN AST.ASST_ID = 3 THEN 4
+      WHEN AST.ASST_ID = 4 THEN 8
+      WHEN AST.ASST_ID = 5 THEN 7
+      WHEN AST.ASST_ID = 6 THEN 9
+      --WHEN AST.ASST_ID = 7 THEN
+      WHEN AST.ASST_ID = 8 THEN 2
+      WHEN AST.ASST_ID = 9 THEN 13
+      WHEN AST.ASST_ID = 10 THEN 14
+      WHEN AST.ASST_ID = 11 THEN 12
+      WHEN AST.ASST_ID = 12 THEN 6
+      WHEN AST.ASST_ID = 13 THEN 5
+      WHEN AST.ASST_ID = 14 THEN 1
+      END as AssetId_AssetTypeDefinitionId,
       ----SITE----------
       SITE_NUMBER as Site_SiteId,
       SITE_LONG_NAME as Site_SiteName,

@@ -81,6 +81,12 @@ namespace Migration.Generate.Generators
                 SqlOperation.InsertGenerateReport(component.Name, startTime,DateTime.Now, totRecordCount??0, totUniqueRecordCount??0,component.GroupName, status);
             }
         }
+        /// <summary>
+        /// Renames ResultSet Column Based on Column Mapping
+        /// </summary>
+        /// <param name="componentName">Component Name</param>
+        /// <param name="resultSet">Source Set</param>
+        /// <returns>Updated Result Set</returns>
         private dynamic MapColumns(string componentName,dynamic resultSet)
         {
             var mapping = Configuration.Configurator.GetColumnMapping(componentName);
