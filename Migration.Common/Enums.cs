@@ -9,15 +9,27 @@ using System.Xml.Serialization;
 
 namespace Migration.Common
 {
+    /// <summary>
+    /// Groups
+    /// </summary>
     [Serializable]
     public enum GroupType
     {
-       [Description("Auth Service")]
+        /// <summary>
+        /// Authorization Service
+        /// </summary>
+       [Description("Authorization Service")]
        [XmlEnum("AUTH")]
        AUTH,
+       /// <summary>
+       /// Asset Service
+       /// </summary>
        [Description("Asset Service")]
        [XmlEnum("ASSET")]
         ASSET,
+       /// <summary>
+       /// Search Service
+       /// </summary>
        [Description("Search Service")]
        [XmlEnum("SEARCH")]
         SEARCH

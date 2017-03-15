@@ -14,6 +14,12 @@ namespace Migration.Configuration.ConfigObject
     [XmlRoot(ElementName = "ColumnMap")]
     public class ColumnMap
     {
+        public ColumnMap() { }
+        public ColumnMap(string key,string columnName)
+        {
+            this.Key = key;
+            this.ColumnName = columnName;
+        }
         /// <summary>
         /// Key used in Source Query
         /// </summary>

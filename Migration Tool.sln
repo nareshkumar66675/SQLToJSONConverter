@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration.UI", "MigrationUI\Migration.UI.csproj", "{8B5983F1-E8DE-466A-B345-D52A2A37AB11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration.Test", "TestApp\Migration.Test.csproj", "{D9597B2D-3A8D-4B55-A10C-AF9D83130EB3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration.Test", "Migration.Test\Migration.Test.csproj", "{D9597B2D-3A8D-4B55-A10C-AF9D83130EB3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Domain", "..\Auth_Floret\Library\Domain\Auth.Domain.csproj", "{72D12166-348C-49D6-9984-E000A634A45F}"
 EndProject
