@@ -10,7 +10,8 @@
         Title="Asset Matrix Data Migrate Tool"
         Width="706.17"
         Height="560.108"
-        Icon="AMLogo.ico"
+        Icon="AppIcon.ico"
+        ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d">
     <Grid Width="696"
@@ -18,10 +19,10 @@
           HorizontalAlignment="Left"
           VerticalAlignment="Top">
         <xctk:Wizard x:Name="Wiz"
-                     CurrentPage="{Binding ElementName=AuthConnectionPage}"
+                     CurrentPage="{Binding ElementName=IntroPage}"
                      FinishButtonClosesWindow="True"
-                     Next="Wiz_Next"
-                     Help="Wiz_Help">
+                     Help="Wiz_Help"
+                     Next="Wiz_Next">
             <xctk:Wizard.Resources>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background">
@@ -38,10 +39,18 @@
                              Title="Asset Matrix Data Migrate Tool"
                              Description="Migrate Legacy Data to New Database"
                              FontSize="14"
-                             HeaderImage="AMLoginLogo.png">
+                             HeaderImage="AppLogo.png">
                 <xctk:WizardPage.Content>
                     <Grid>
-                        <Image Margin="164,117,164,120" Source="AMLoginLogo.png" />
+                        <Image Margin="24,108,304,129" Source="AppLogo.png" />
+                        <TextBlock Height="53"
+                                   Margin="202,161,10,176"
+                                   VerticalAlignment="Center"
+                                   FontFamily="Segoe UI Symbol"
+                                   FontSize="34"
+                                   Foreground="#2D75A3"
+                                   Text="Data Migrate Tool"
+                                   TextAlignment="Center" />
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
@@ -52,29 +61,36 @@
                              NextPage="{Binding ElementName=AuthConnectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=IntroPage}">
+                <!--  CanSelectNextPage="False"  -->
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="SrcConnectCntrl"
-                                                            Margin="116,88,116,87"
+                                                            Margin="116,75,116,76"
+                                                            BGColor="DarkGray"
                                                             OnConnectComplete="SrcExisiting_OnConnectComplete"
-                                                            RenderTransformOrigin="1.023,0.523" />
+                                                            RenderTransformOrigin="1.023,0.523"
+                                                            Type="LEGACY" />
+
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
             <!--  Auth Process Block Start  -->
             <xctk:WizardPage x:Name="AuthConnectionPage"
-                             Title="STEP 2 : Auth Database Connection"
+                             Title="STEP 2 : Authentication Database Connection"
                              CanSelectNextPage="False"
-                             Description="Enter the auth database connection details."
+                             Description="Enter the Authentication database connection details."
                              NextPage="{Binding ElementName=AuthComponentsSelectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=SourceConnectionPage}">
+                <!--  CanSelectNextPage="False"  -->
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="AuthConnectCntrl"
-                                                            Margin="116,88,116,87"
+                                                            Margin="116,75,116,76"
+                                                            BGColor="#759fba"
                                                             OnConnectComplete="AuthDB_OnConnectComplete"
-                                                            RenderTransformOrigin="1.023,0.523" />
+                                                            RenderTransformOrigin="1.023,0.523"
+                                                            Type="AUTH" />
                         <Button x:Name="SkipAuthButton"
                                 Width="75"
                                 Margin="294,346,0,0"
@@ -88,8 +104,8 @@
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="AuthComponentsSelectionPage"
                              Title="STEP 3 : Auth Components Selection"
-                             CanSelectNextPage="True"
-                             Description="Select the Auth Components that needs to be migrated."
+                             CanSelectNextPage="False"
+                             Description="Select the Authentication Components that needs to be migrated."
                              NextPage="{Binding ElementName=AuthComponentsProcessPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AuthConnectionPage}" />
@@ -97,6 +113,7 @@
                              Title="STEP 4 : Auth Components Migration"
                              CanCancel="False"
                              CanSelectNextPage="False"
+                             CanSelectPreviousPage="False"
                              Description="Please wait until the Migration is Complete."
                              NextPage="{Binding ElementName=AssetConnectionPage}"
                              PageType="Interior"
@@ -111,12 +128,15 @@
                              NextPage="{Binding ElementName=AssetSiteSelectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AuthComponentsProcessPage}">
+                <!--  CanSelectNextPage="False"  -->
                 <xctk:WizardPage.Content>
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="AssetConnectCntrl"
-                                                            Margin="116,88,116,87"
+                                                            Margin="116,75,116,76"
+                                                            BGColor="#909e81"
                                                             OnConnectComplete="AssetDB_OnConnectComplete"
-                                                            RenderTransformOrigin="1.023,0.523" />
+                                                            RenderTransformOrigin="1.023,0.523"
+                                                            Type="ASSET" />
                         <Button x:Name="SkipAssetButton"
                                 Width="75"
                                 Margin="294,346,0,0"
@@ -130,6 +150,7 @@
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="AssetSiteSelectionPage"
                              Title="STEP 6 : Asset Sites Selection"
+                             CanSelectNextPage="False"
                              Description="Select the Sites which needs to be migrated."
                              NextPage="{Binding ElementName=AssetsComponentsSelectionPage}"
                              PageType="Interior"
@@ -147,7 +168,8 @@
                              Title="STEP 8 : Assets Migration"
                              CanCancel="False"
                              CanSelectNextPage="False"
-                             Description="Press Start to initiate the migrtaion process."
+                             CanSelectPreviousPage="False"
+                             Description="Please wait until the Migration is Complete."
                              NextPage="{Binding ElementName=LastPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AssetsComponentsSelectionPage}" />

@@ -11,9 +11,9 @@ namespace MigrationTool.Helpers
 {
     public static class DatabaseHelper
     {
-        public static string CheckAndGenerateConnectionString(string serverName,string user,string password,AuthenticationType type)
+        public static string CheckAndGenerateConnectionString(string serverName, string user, string password, AuthenticationType type)
         {
-            
+
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
             builder.DataSource = serverName;
             builder.UserID = user;
@@ -33,9 +33,17 @@ namespace MigrationTool.Helpers
             {
                 return "";
             }
-            
+
         }
-        public static string AddDatabaseToConnString(string connectionString,string databaseName)
+        public static string GetServerName(string connectionString)
+        {
+            return new SqlConnectionStringBuilder(connectionString).DataSource;
+        }
+        public static string GetDatabaseName(string connectionString)
+        {
+            return new SqlConnectionStringBuilder(connectionString).InitialCatalog;
+        }
+        public static string AddDatabaseToConnString(string connectionString, string databaseName)
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString);
             builder.InitialCatalog = databaseName;
@@ -49,7 +57,7 @@ namespace MigrationTool.Helpers
             {
                 con.Open();
 
-                using (SqlCommand cmd = new SqlCommand("SELECT name from sys.databases", con))
+                using (SqlCommand cmd = new SqlCommand("SELECT name from sys.databases where state_desc<>'OFFLINE'", con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
                     {
@@ -89,8 +97,8 @@ namespace MigrationTool.Helpers
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 con.Open();
-                string query = @"select Distinct SiteID from[Migration].[SiteGroup] grp 
-                                LEFT JOIN[Migration].[Report] rpt on grp.SiteGroupID = rpt.SiteGroupID and rpt.[Status] = 'Success'";
+                string query = @"SELECT Distinct SiteID FROM [Migration].[SiteGroup] grp 
+                                LEFT JOIN[Migration].[Report] rpt on grp.SiteGroupID = rpt.SiteGroupID WHERE rpt.[Status] = 'Success'";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
@@ -104,40 +112,69 @@ namespace MigrationTool.Helpers
             }
             return SiteList;
         }
-        public static List<string> GetCompletedComponents(GroupType group,List<string> Sites)
+        public static List<string> GetCompletedComponents(GroupType group, List<string> Sites)
         {
             List<string> completedComp = new List<string>();
-            string query = string.Empty;
-            string conString = string.Empty;
-            if (group == GroupType.AUTH)
+            try
             {
-                query = "SELECT DISTINCT Component_Name from Migration.Report where Status = 'Success'";
-                conString = Common.ConnectionStrings.AuthConnectionString;
-            }
-            else if (group == GroupType.ASSET)
-            {
-                query = @"SELECT DISTINCT Component_Name from Migration.Report rpt
-                                Inner join Migration.SiteGroup grp on rpt.SiteGroupID=grp.SiteGroupID
-                                where Status='Success'";
-                conString = Common.ConnectionStrings.AssetConnectionString;
-                if (Sites != null && Sites.Count > 0)
-                    query += query + " and SiteID in (" + string.Join(",", Sites) + ")";
-            }
-            using (SqlConnection con = new SqlConnection(conString))
-            {
-                con.Open();
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                string query = string.Empty;
+                string conString = string.Empty;
+                if (group == GroupType.AUTH)
                 {
-                    using (IDataReader dr = cmd.ExecuteReader())
+                    query = "SELECT DISTINCT Component_Name from Migration.Report where Status = 'Success'";
+                    conString = Common.ConnectionStrings.AuthConnectionString;
+                }
+                else if (group == GroupType.ASSET)
+                {
+                    query = @"SELECT DISTINCT Component_Name FROM Migration.Report rpt
+                                LEFT JOIN Migration.SiteGroup grp ON rpt.SiteGroupID=grp.SiteGroupID 
+                                WHERE Status='Success' ";
+                    conString = Common.ConnectionStrings.AssetConnectionString;
+                    if (Sites != null && Sites.Count > 0)
+                        query += " AND  (rpt.SiteGroupID IS NULL  OR SiteID IN (" + string.Join(",", Sites) + "))";
+                    else
+                        query += " AND  (rpt.SiteGroupID IS NULL)";
+                }
+                using (SqlConnection con = new SqlConnection(conString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        while (dr.Read())
+                        using (IDataReader dr = cmd.ExecuteReader())
                         {
-                            completedComp.Add(dr[0].ToString());
+                            while (dr.Read())
+                            {
+                                completedComp.Add(dr[0].ToString());
+                            }
                         }
                     }
                 }
             }
+            catch (SqlException ex)
+            {
+                throw new InvalidOperationException("Error Occurred While retrieving completed components", ex);
+            }
             return completedComp;
+        }
+        public static bool CheckIfTableExists(string connectionString, string tableName)
+        {
+            bool exists;
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                string query = @"SELECT CASE WHEN EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=@Schema AND TABLE_NAME = @TableName)) THEN 1 ELSE 0 END";
+                var temp = tableName.Split('.');
+                string schema = temp.Length == 2 ? temp[0] : "dbo";
+                string tabName = temp.Length == 2 ? temp[1] : temp[0];
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@Schema", schema));
+                    cmd.Parameters.Add(new SqlParameter("@TableName", tabName));
+
+                    exists = (int)cmd.ExecuteScalar() == 1;
+                }
+            }
+            return exists;
         }
     }
 }

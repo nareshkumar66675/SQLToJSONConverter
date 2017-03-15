@@ -49,11 +49,14 @@ namespace Migration.Common
                 var exptText = new StringBuilder();
                 exptText.AppendLine("Error Occurred: " + logMessage);
                 if (ex != null) exptText.AppendLine("*****Exceptions Stack Trace******");
+                int count = 1;
                 while (ex != null)
                 {
+                    exptText.AppendLine("Exception : " + count);
                     exptText.AppendLine(ex.Message);
                     exptText.AppendLine(ex.StackTrace);
                     ex = ex.InnerException;
+                    count++;
                 }
                 WriteToFile(exptText.ToString());
             }

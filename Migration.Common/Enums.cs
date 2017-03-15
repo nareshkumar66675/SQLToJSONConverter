@@ -24,13 +24,23 @@ namespace Migration.Common
     }
     public class EnumDescription<T>
     {
+        public EnumDescription(string description, T enumName)
+        {
+            this.Description = description;
+            this.EnumName = enumName;
+        }
         public string Description { get; set; }
         public T EnumName { get; set; }
     }
 
     public static class EnumExtensions
     {
-        public static string GetDescription<T>(this T enumerationValue) where T : struct
+        /// <summary>
+        /// Get Enum Description
+        /// </summary>
+        /// <param name="enumerationValue">Enum Value</param>
+        /// <returns>Description</returns>
+        public static string GetDescription(this Enum enumerationValue) 
         {
             var type = enumerationValue.GetType();
             if (!type.IsEnum)
@@ -41,7 +51,6 @@ namespace Migration.Common
             if (memberInfo.Length > 0)
             {
                 var attrs = memberInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
-
                 if (attrs.Length > 0)
                 {
                     return ((DescriptionAttribute)attrs[0]).Description;
@@ -49,6 +58,5 @@ namespace Migration.Common
             }
             return enumerationValue.ToString();
         }
-        //public 
     }
 }

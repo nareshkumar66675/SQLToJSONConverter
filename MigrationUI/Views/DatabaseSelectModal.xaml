@@ -15,14 +15,14 @@
     <Grid>
         <TextBlock x:Name="textBlock"
                    Width="125"
-                   Margin="72,22,0,0"
+                   Margin="72,18,0,0"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Foreground="#FF423737"
                    TextWrapping="Wrap"><Run Text="Connection Successful." /></TextBlock>
         <ComboBox x:Name="DatabaseComboBox"
                   Width="213"
-                  Margin="33,54,0,0"
+                  Margin="31,59,0,0"
                   HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -44,7 +44,8 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Click="ok_Click"
-                Content="Ok">
+                Content="Ok"
+                IsDefault="True">
             <Button.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                     <GradientStop Offset="0" Color="#FFF3F3F3" />
@@ -54,13 +55,14 @@
             </Button.Background>
         </Button>
         <TextBlock x:Name="errorTextBlock"
-                   Width="83"
-                   Height="11"
-                   Margin="91,43,0,0"
+                   Width="213"
+                   Height="15"
+                   Margin="31,39,0,0"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    FontSize="10"
                    Foreground="#FFF90505"
+                   TextAlignment="Center"
                    TextWrapping="Wrap"
                    Visibility="Hidden" />
         <Button x:Name="cancelButton"

@@ -31,7 +31,8 @@ namespace Migration.Configuration
         /// <returns>Source/Query</returns>
         public static string GetSourceByComponentName(string componentName)
         {
-            return GetTransformationEnumerable(componentName).Select(u => u.Source).FirstOrDefault();
+            var source =GetTransformationEnumerable(componentName).Select(u => u.Source).FirstOrDefault();
+            return string.IsNullOrWhiteSpace(source)? XMLHelper.GetTransformationSource(componentName):source;
         }
         /// <summary>
         /// Retrieves Destination Table from Transformation XML
@@ -102,7 +103,46 @@ namespace Migration.Configuration
         {
             GetTransformationEnumerable(componentName).FirstOrDefault().QueryParams = queryParams;
         }
-
+        /// <summary>
+        /// Sets Query Params to Transforms with Generate Type - DEFAULTWITHPARAMS
+        /// </summary>
+        /// <param name="queryParams"></param>
+        public static void SetQueryParamsFrTrnsfrmWtParams(List<string> queryParams)
+        {
+            GetComponentsWithParamsType().ForEach(t => SetQueryParams(t, queryParams));
+        }
+        /// <summary>
+        /// Get Query Parameters from Transformation
+        /// </summary>
+        /// <param name="componentName">Compoennt Name</param>
+        /// <returns>List of Parameter Values</returns>
+        public static List<string> GetQueryParams(string componentName)
+        {
+            return GetTransformationEnumerable(componentName).FirstOrDefault().QueryParams;
+        }
+        /// <summary>
+        /// Retrieves Components With Generate Type - DEFAULTWITHPARAMS
+        /// </summary>
+        /// <returns>List of Component Names</returns>
+        public static List<string> GetComponentsWithParamsType()
+        {
+            List<string> rslt = new List<string>();
+            SourceComponents.Group.ForEach(grp =>
+            {
+                var te=grp.Component.Where(t => string.Equals(t.GenerateType, "DEFAULTWITHPARAMS", StringComparison.OrdinalIgnoreCase)).Select(t => t.Name);
+                rslt.AddRange(te);
+            });
+            return rslt;
+        }
+        /// <summary>
+        /// Gets Column Mapping From Transformation XML
+        /// </summary>
+        /// <param name="componentName"></param>
+        /// <returns></returns>
+        public static ColumnMapping GetColumnMapping(string componentName)
+        {
+            return GetTransformationEnumerable(componentName).Select(t => t.ColumnMapping)?.FirstOrDefault();
+        }
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)
         {

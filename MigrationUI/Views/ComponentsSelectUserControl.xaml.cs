@@ -20,7 +20,7 @@ namespace MigrationTool.Views
     {
         #region VariablesInitialization
         private static List<Component> SelectedComponents = new List<Component>();
-        public List<int> SelectedSiteIDList { get; set; }
+        public List<string> SelectedSiteIDList { get; set; }
         public List<Component> SourceComponents { get; set; }
         public event EventHandler<ComponentsSelectionChangedEventArgs> OnComponentsSelectionChanged;
         #endregion
@@ -32,37 +32,43 @@ namespace MigrationTool.Views
             }
             public bool IsEmpty { get; set; }
         }
-        public ComponentsSelectUserControl()
-        {
-            InitializeComponent();     
-        }
-        public void InitializeData()
+        public void InitializeData(GroupType group)
         {
             try
             {
-                var group = SourceComponents.Select(t => t.GroupName).FirstOrDefault();
-                var completedList = DatabaseHelper.GetCompletedComponents(group, null);
+                SetDBDetails(group);
+                List<string> completedList = new List<string>();
+                try
+                {
+                    completedList = DatabaseHelper.GetCompletedComponents(group, SelectedSiteIDList);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Logger.Instance.LogError("Error Occurred", ex);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Migration Report Tables Not Found.\nTerminating Application", "Components Selection", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Application.Current.Shutdown();
+                }
+                completedListBox.ItemsSource = SourceComponents.Where(t => completedList.Contains(t.Name)).Select(u => u.DisplayName);
                 completedList.ForEach(item => SourceComponents.RemoveAll(t => t.Name == item));
-                expander.Header = group.ToString();
+                expander.Header = group.GetDescription();
                 Logger.Instance.LogInfo("Initializing Data For Components Selection for Group -" + expander.Header);
                 ComponentsCheckList.ItemsSource = SourceComponents;
                 ComponentsCheckList.DisplayMemberPath = "DisplayName";
                 ComponentsCheckList.ValueMemberPath = "Name";
                 ComponentsCheckList.SelectedItemsOverride = SourceComponents.ToList();
                 SelectedComponents = SourceComponents.ToList();
+                NotifySelectionChanged();
             }
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error Occurred While Initializing DataGrid For Components Selection", ex);
                 Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occured. Please Check Logs", "Components Selection", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
             }
         }
-        private void ComponentsCheckList_ItemSelectionChanged(object sender, Xceed.Wpf.Toolkit.Primitives.ItemSelectionChangedEventArgs e)
+        public ComponentsSelectUserControl()
         {
-            SelectedComponents = ComponentsCheckList.SelectedItems.Cast<Component>().ToList();
-            var isEmpty = SelectedComponents.Count > 0 ? false : true;
-            ComponentsSelectionChangedEventArgs args = new ComponentsSelectionChangedEventArgs(isEmpty);
-            OnComponentsSelectionChanged?.Invoke(this, args);
+            InitializeComponent();     
         }
         public Components GetSelectedComponents()
         {
@@ -80,6 +86,22 @@ namespace MigrationTool.Views
                 Logger.Instance.LogError("Error Occurred While returning selected components", ex);
             }
             return components;
+        }
+        private void ComponentsCheckList_ItemSelectionChanged(object sender, Xceed.Wpf.Toolkit.Primitives.ItemSelectionChangedEventArgs e)
+        {
+            NotifySelectionChanged();
+        }
+        private void NotifySelectionChanged()
+        {
+            SelectedComponents = ComponentsCheckList.SelectedItems.Cast<Component>().ToList();
+            var isEmpty = SelectedComponents.Count > 0 ? false : true;
+            ComponentsSelectionChangedEventArgs args = new ComponentsSelectionChangedEventArgs(isEmpty);
+            OnComponentsSelectionChanged?.Invoke(this, args);
+        }
+        private void SetDBDetails(GroupType group)
+        {
+            this.databaseTextBlock.Text = DatabaseHelper.GetDatabaseName(Common.ConnectionStrings.GetConnectionString(group));
+            this.serverTextBlock.Text= DatabaseHelper.GetServerName(Common.ConnectionStrings.GetConnectionString(group));
         }
     }
 }

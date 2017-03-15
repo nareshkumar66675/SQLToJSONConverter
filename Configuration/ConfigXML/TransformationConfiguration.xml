@@ -1,79 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TransformationConfig>
-  <Transformation Name="TASK">
-    <Source>
-      SELECT DISTINCT
-      tc.FUNC_ID as Id,
-      tc.FUNC_NAME Name,
-      tc.FUNC_DESCRIPTION as [Description],
-      tp.MODL_ID as Module_Id,
-      tp.MODL_NAME as Module_Name
-      FROM [COMMON].[USER_FUNCTION] tc
-      LEFT JOIN [COMMON].[MODULE] tp ON tc.MODULE_ID = tp.MODL_ID where FUNC_ID>0
-    </Source>
-    <Destination>[Employee].[Task]</Destination>
-    <KeyFormat Format="53_{0}" Keys="Id"  />
-  </Transformation>
-  <Transformation Name="AST_DEFN">
-    <Source>
-      SELECT AST.ASST_ID as Id,
-      CONVERT(varchar(100),ASTDFN_OPTN_ORDER) as Sequences,
-      CONVERT(bit,'true') as IsSystemDefined,
-      --------Asset Type -----
-      AST.ASST_ID as AssetType_Id,
-      AST.ASST_NAME as AssetType_Name,
-      Ast.ASST_DESCRIPTION as AssetType_Description,
-      CONVERT(bit,'true') as AssetType_IsRevenueAffecting,
-      CONVERT(bit,'false') as AssetType_IsInline,
-      'Root' as AssetType_Scope,
-      --------Options--------
-      optn.OPTN_ID as Options_Id,
-      optn.OPTN_NAME as Options_Name,
-      optn.OPTN_CODE as Options_Code,
-      optn.OPTN_DESCRIPTION as Options_Description,
-      optn.OPTN_DEFAULT_VAL as Options_DefaultValue,
-      optn.OPTN_MIN_VALUE as Options_MinLength, 
-      optn.OPTN_MAX_VALUE as Options_MaxLength,
-      optn.OPTN_EDIT_ENABLED as Options_IsEditEnabled,
-      optn.OPTN_ADD_ENABLED as Options_IsAddEnabled,
-      optn.OPTN_MOVE_ENABLED as Options_IsMoveEnabled,
-      optn.OPTN_MOVE_EDIT_ENABLED as Options_IsMoveEditEnabled,
-      optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
-      --optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
-      CONVERT(bit,'true') as Options_IsSearchable
-      FROM GAM.ASSET AS AST
-      LEFT JOIN GAM.ASSET_DEFINITION AS AST_DFN ON AST.ASST_ID = AST_DFN.ASTDFN_ASST_ID
-      LEFT JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AST_DFN.ASTDFN_OPTN_ID
-      --LEFT JOIN GAM.OPTION_ENUMERATION AS ENUM ON OPTN.OPTN_ID=ENUM.OPTEN_OPTN_ID
-      --WHERE AST.ASST_ID = 1
-    </Source>
-    <Destination>ASSET_DEF.ASSETS</Destination>
-      <KeyFormat Format="53_{0}" Keys="Id"  />
-  </Transformation>
-  <Transformation Name="EMPLOYEE">
-    <Source>
-      select (ROW_NUMBER() over (ORDER BY Actr_Id) )+1 as  Id,
-      ACTR_FIRST_NAME as FirstName,
-      ACTR_MIDDLE_NAME as MiddleName,
-      ACTR_LAST_NAME as LastName,
-      --actr_active_dir_user as UserMatrixId,
-	    cast(0 as varchar(50)) as UserMatrixId,
-      ACTR_LOGIN as LoginName,
-      --ACTR_USER_ID as SDSLogin,
-	  cast(10000 as varchar(50)) as SDSLogin,
-      ACTR_IS_DELETED  as IsActive,
-      ACTR_AUTO_SIGN_OFF as IsAutoSigOffEnabled,
-      ACTR_EMAIL_ID as Email,
-      null as Access,
-      null as LevelType,
-      null as OrgLevel,
-      0 as UMVersion from common.user_actor
-	  WHERE ACTR_ID NOT IN( 1)
-	  ORDER BY ACTR_ID
-    </Source>
-    <Destination>[Employee].[User]</Destination>
-    <KeyFormat Format="52_{0}" Keys="Id"  />
-  </Transformation>
+  <!-- Auth Components -->
   <Transformation Name="SITE">
     <Source>
       select st.SITE_NUMBER as Id,
@@ -81,8 +8,9 @@
       st.SITE_short_NAME as Name,
       st.SITE_LONG_NAME as [Description],
       st.SITE_short_NAME as VenueCode,
-      st.SITE_short_NAME as Code,
-      'Rot' as ParentCode,
+      st.SITE_CODE as Code,
+      --'Rot' as ParentCode,
+	  coalesce(PROP_PARENT_CODE,PROP_SHORT_NAME) as ParentCode,
       p.PROP_SHORT_NAME as ServiceProviderCode,
       --st.SITE_TIMEZONE_ID as Timezone,
       'AUS Eastern Standard Time' as Timezone,
@@ -93,9 +21,10 @@
       CAST(0 as varchar(50)) as GamingLicenseNumber,
       --123456 as FaxNumber,
       --123456 as MobileNumber ,
-      cast(0 as bit) as IsActive,
+      cast(1 as bit) as IsActive,
       cast(0 as bit) as IsDeleted,
-      2 as DepthLevel,
+      --2 as DepthLevel,
+	   coalesce(PROP_DEPTH_LEVEL, 2) as DepthLevel,
       '' as ContactInformation_Address,
       '' as ContactInformation_City,
       '' as ContactInformation_State,
@@ -124,14 +53,72 @@
     <Destination>[Site].[Site]</Destination>
     <KeyFormat Format="151_{0}" Keys="Id"  />
   </Transformation>
+  <Transformation Name="TASK">
+    <!--<Source>
+      SELECT DISTINCT
+      tc.FUNC_ID as Id,
+      tc.FUNC_NAME Name,
+      tc.FUNC_DESCRIPTION as [Description],
+      tp.MODL_ID as Module_Id,
+      tp.MODL_NAME as Module_Name
+      FROM [COMMON].[USER_FUNCTION] tc
+      LEFT JOIN [COMMON].[MODULE] tp ON tc.MODULE_ID = tp.MODL_ID where FUNC_ID>0
+    </Source>-->
+    <Source>
+      SELECT DISTINCT
+      tc.FUNC_ID as 1,
+      tc.FUNC_NAME 2,
+      tc.FUNC_DESCRIPTION as 3,
+      tp.MODL_ID as Module_Id,
+      tp.MODL_NAME as Module_Name
+      FROM [COMMON].[USER_FUNCTION] tc
+      LEFT JOIN [COMMON].[MODULE] tp ON tc.MODULE_ID = tp.MODL_ID where FUNC_ID>0
+    </Source>
+    <Destination>[Employee].[Task]</Destination>
+    <KeyFormat Format="53_{0}" Keys="Id"  />
+    <ColumnMapping>
+      <ColumnMap Key="1" ColumnName="Id"/>
+      <ColumnMap Key="2" ColumnName="2"/>
+      <ColumnMap Key="3" ColumnName="fv"/>
+      <ColumnMap Key="4" ColumnName="fdv"/>
+    </ColumnMapping>
+  </Transformation>
+  <Transformation Name="EMPLOYEE">
+    <Source>
+      select (ROW_NUMBER() over (ORDER BY Actr_Id) )+1 as  Id,
+      ACTR_FIRST_NAME as FirstName,
+      ACTR_MIDDLE_NAME as MiddleName,
+      ACTR_LAST_NAME as LastName,
+      --actr_active_dir_user as UserMatrixId,
+	    cast(0 as varchar(50)) as UserMatrixId,
+      ACTR_LOGIN as LoginName,
+      --ACTR_USER_ID as SDSLogin,
+	  cast(10000 as varchar(50)) as SDSLogin,
+      ACTR_IS_DELETED  as IsActive,
+      ACTR_AUTO_SIGN_OFF as IsAutoSigOffEnabled,
+      ACTR_EMAIL_ID as Email,
+      null as Access,
+      null as LevelType,
+      null as OrgLevel,
+      0 as UMVersion from common.user_actor
+	  WHERE ACTR_ID NOT IN( 1)
+	  ORDER BY ACTR_ID
+    </Source>
+    <Destination>[Employee].[User]</Destination>
+    <KeyFormat Format="52_{0}" Keys="Id"  />
+  </Transformation>
   <Transformation Name="ROLE">
     <Source>
-      SELECT CAST(RIGHT(CAST(ROLE_ID AS VARCHAR(50)),8) AS BIGINT) AS Id,
+      SELECT
+      ROLE_NEW_ID AS Id,
       ROLE_NAME AS Name,
       ROLE_CODE AS Code,
-      ROLE_DESCRIPTION AS [Description]
-      FROM [COMMON].[USER_ROLE] WHERE ROLE_IS_DELETED =0 AND ROLE_ID NOT IN (1)
-      ORDER BY Id
+      ROLE_DESCRIPTION AS [Description],
+      fnGrp.FUNCGRP_NEW_ID as TaskGroups_$
+      FROM [COMMON].[USER_ROLE] as rl
+      left join [COMMON].[USER_ROLE_FUNCTION_GROUP] as fnRlMap on fnRlMap.ROLE_ID = rl.ROLE_ID
+      left join [COMMON].[USER_FUNCTION_GROUP] as fnGrp on fnGrp.funcgrp_id = fnRlMap.[FUNCGRP_ID]
+      WHERE ROLE_IS_DELETED = 0 AND rl.ROLE_ID NOT IN (1)
     </Source>
     <Destination>[Employee].[Role]</Destination>
     <KeyFormat Format="50_{0}" Keys="Id"  />
@@ -140,18 +127,23 @@
     <Source>
       select CAST(RIGHT(CAST(PROP_ID AS VARCHAR(50)),5) AS BIGINT)  as Id,
       PROP_SHORT_NAME as Code,
+	  --coalesce(PROP_PARENT_CODE,PROP_SHORT_NAME) as ParentCode,
+	  'Rot' as ParentCode,
       PROP_LONG_NAME as Name,
       PROP_LONG_NAME as [Description],
-      CONVERT(bit,'true') as IsRoot
+      CONVERT(bit,'false') as IsRoot,
+	  coalesce(PROP_DEPTH_LEVEL, 2) as DepthLevel,
+	  0 as UMDataRowVersion,
+	  0 as DataRowVersion
       from GAM.PROPERTY
-      WHERE IS_DELETED=0 and PROP_ID not in (1,550001000000000001)
+      WHERE IS_DELETED = 0 and PROP_ID not in (1,550001000000000001)
     </Source>
     <Destination>Organization.Organization</Destination>
     <KeyFormat Format="100_{0}" Keys="Id"  />
   </Transformation>
   <Transformation Name="TSKGRP">
     <Source>
-      SELECT CAST(RIGHT(CAST(FUNCGRP_ID AS VARCHAR(50)),5) AS BIGINT)  as Id,
+      SELECT ROW_NUMBER() OVER (ORDER BY FUNCGRP_ID )+1 as Id,
       FUNCGRP_NAME as Code,
       FUNCGRP_NAME as Name,
       FUNCGRP_DESCRIPTION as [Description]
@@ -162,10 +154,239 @@
     <Destination>[Employee].[TaskGroup]</Destination>
     <KeyFormat Format="51_{0}" Keys="Id"  />
   </Transformation>
-  <Transformation Name="COMPDATA">
+  
+  <!-- Asset Components-->
+ 
+  <Transformation Name="COMPDATA_MODEL_TYPE">
     <Source>
-      SELECT 1 as Id,
-      1 as Component_Id,
+      ----------- MODEL TYPE----------
+      SELECT 122003 as Id,
+      22003 as cc_1,
+      --COMPONENTS---
+      0 as Component_Components_SiteId,
+      'MODEL.TYPE' as cc_Code,
+      --Component Values---
+      '1_root' as cc_Components_ComponentValues_Id,
+      'Model Type' as cc_Components_ComponentValues_Name,
+      'Model Type' as cc_Components_ComponentValues_DisplayName,
+      --ChildCompoenents----
+      CAST(Components_Id as VARCHAR(50)) as cc_Components_ComponentValues_ChildComponents_Id,
+      Name as cc_Components_ComponentValues_ChildComponents_Name,
+      DisplayName AS cc_Components_ComponentValues_ChildComponents_DisplayName,
+      ----- OPTIONS ------
+      ROW_NUMBER() OVER (PARTITION BY MDLTYP_ID ORDER BY MDLTYP_ID ) AS cc_Components_ComponentValues_ChildComponents_Options_Id,
+      CASE  WHEN VALUE_DESC = 'MDLTYP_SHORT_NAME' then 'Model Type Short Name'
+      WHEN VALUE_DESC = 'MDLTYP_LONG_NAME' then 'Model Type Long Name'
+      END AS cc_Components_ComponentValues_ChildComponents_Options_Name,
+      VALUE as cc_Components_ComponentValues_ChildComponents_Options_Value
+      FROM
+      (SELECT MDLTYP_ID,
+      MDLTYP_SHORT_NAME as Name,
+      MDLTYP_LONG_NAME as DisplayName,
+      ROW_NUMBER() OVER (ORDER BY MDLTYP_ID ) AS Components_Id,
+      CAST(MDLTYP_SHORT_NAME AS NVARCHAR) AS MDLTYP_SHORT_NAME,
+      CAST(MDLTYP_LONG_NAME AS NVARCHAR) AS MDLTYP_LONG_NAME
+      FROM GAM.MODEL_TYPE  WHERE IS_DELETED = 0 ) MDL_TYPE
+      UNPIVOT
+      ( VALUE FOR VALUE_DESC IN (MDLTYP_SHORT_NAME, MDLTYP_LONG_NAME)
+      ) AS T
+      -------- EOF MODEL TYPE ----------
+    </Source>
+    <Destination>[COMPONENTS].[ComponentData]</Destination>
+    <KeyFormat Format="57_{0}" Keys="Id" />
+    <ColumnMapping>
+      <ColumnMap Key="1" ColumnName="Id"/>
+      <ColumnMap Key="cc" ColumnName="Component"/>
+      <!--<ColumnMap Key="3" ColumnName="fv"/>
+      <ColumnMap Key="4" ColumnName="fdv"/>-->
+    </ColumnMapping>
+  </Transformation>
+  <Transformation Name="COMPDATA_MODEL">
+    <Source>
+      ----------- MODEL ---------------
+      Select 122006 as Id,
+      22006 as Component_Id,
+      'MODEL.RELATION' as Component_Code,
+      --COMPONENTS---
+      0 as Component_Components_SiteId,
+      --Component Values---
+      '1_root' as Component_Components_ComponentValues_Id,
+      'Model' as Component_Components_ComponentValues_Name,
+      'MODEL.RELATION' as Component_Components_ComponentValues_DisplayName,
+      'MODEL.RELATION' as Component_Components_ComponentValues_Code,
+      ---Manufacture ----
+      --cast(ROW_NUMBER() OVER (Partition by MF.mf_id ORDER BY MF.mf_id ) as varchar(50))  + '_'+
+      CAST ( (MF.MF_ID)  AS NVARCHAR) + '_'+
+      MF.COMP_TYPE_ID as Component_Components_ComponentValues_CC_Id,
+      MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_Name,
+      'MANUFACTURER' as Component_Components_ComponentValues_CC_Code,
+      MF.value as Component_Components_ComponentValues_CC_DisplayName,
+      ---Manufacture Type Options ----
+      MF.MNF_CODE_SEQ as Component_Components_ComponentValues_CC_Options_Id,
+      MF.MNF_NAME as Component_Components_ComponentValues_CC_Options_Name,
+      mf.value as Component_Components_ComponentValues_CC_Options_Value,
+      mf.MNF_CODE  as Component_Components_ComponentValues_CC_Options_Code,
+      ---Model Type ----
+      CAST ( MF.MF_ID  AS NVARCHAR) + '_'+
+      MT.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_Id,
+      MT.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_Name,
+      'MODEL.TYPE' as Component_Components_ComponentValues_CC_CC_Code,
+      ---Model Type  Options ----
+      mt.MDL_TYP_SEQ as Component_Components_ComponentValues_CC_CC_Options_Id,
+      mt.VALUE as Component_Components_ComponentValues_CC_CC_Options_Value,
+      mt.MDL_TYP_CODE as Component_Components_ComponentValues_CC_CC_Options_Code,
+      mt.MDL_TYP_NAME as Component_Components_ComponentValues_CC_CC_Options_Name,
+      ---Model Type ----
+      CAST ( MF.MF_ID  AS NVARCHAR) + '_'+
+      MD.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_CC_Id,
+      MD.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_Name,
+      'MODEL' as Component_Components_ComponentValues_CC_CC_CC_Code,
+      ---Model Options ----
+      md.MDL_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
+      MD.VALUE as Component_Components_ComponentValues_CC_CC_CC_Options_Value,
+      MD.MDL_CODE as Component_Components_ComponentValues_CC_CC_CC_Options_Code,
+      MD.MDL_Name as Component_Components_ComponentValues_CC_CC_CC_Options_Name
+
+      FROM GAM.VIEW_MODEL AS MD
+      join gam.view_MANUFACTURE as mf on mf.manf_id = MD.MDL_MANF_ID and mf.mnf_seq = MD.MDL_SEQ
+      JOIN [GAM].[MODEL_MODELTYPE_MAP] AS mdlMap ON mdlMap.MODL_ID = MD.MDL_ID
+      join gam.VIEW_MODEL_TYPE as MT on MT.MDLTYP_ID = mdlMap.MTYP_ID and md.MDL_SEQ = MDL_TYP_SEQ
+      --where md.MDL_ID in (1,2)
+      order by mf.mf_id
+
+
+      -------- EOF MODEL ----------
+    </Source>   
+    <Destination>[COMPONENTS].[ComponentData]</Destination>
+    <KeyFormat Format="57_{0}" Keys="Id" />
+    <ColumnMapping>
+      <ColumnMap Key="CC" ColumnName="ChildComponents"/>
+    </ColumnMapping>
+  </Transformation>
+  <Transformation Name="COMPDATA_THEME">
+    <Source>
+      SELECT
+      '122061' as Id,
+      '22061' as Component_Id,
+      'THEME.RELATION' as Component_Code,
+      '0'as Component_Components_SiteId,
+      '1_root' as Component_Components_ComponentValues_Id,
+      'Theme' as Component_Components_ComponentValues_Name,
+      'Theme'  as Component_Components_ComponentValues_DisplayName,
+      'THEME.RELATION' as Component_Components_ComponentValues_Code,
+      
+      ---- Theme Type -----
+      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      TT.COMP_TYPE_ID as Component_Components_ComponentValues_CC_Id,
+      TT.DISPLAY_NAME as Component_Components_ComponentValues_CC_Name,
+      'THEME.TYPE' as Component_Components_ComponentValues_CC_Code,
+      TT.value as Component_Components_ComponentValues_CC_DisplayName,
+
+      ---Theme Type Options ----
+      tt.THEM_TYPE_SEQ as Component_Components_ComponentValues_CC_Options_Id,
+      tt.value as Component_Components_ComponentValues_CC_Options_Value,
+      tt.them_type_name  as Component_Components_ComponentValues_CC_Options_Code,
+
+      ---Theme Group ----
+      --ROW_NUMBER() OVER (ORDER BY TG.DISPLAY_NAME) AS TG_RW_NM,
+      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      TG.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_Id,
+      TG.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_Name,
+      'THEME.GROUP' as Component_Components_ComponentValues_CC_CC_Code,
+      ---Theme Options ----
+      tg.THM_GRP_SEQ as Component_Components_ComponentValues_CC_CC_Options_Id,
+      tg.VALUE as Component_Components_ComponentValues_CC_CC_Options_Value,
+      tg.THM_GRP_CODE as Component_Components_ComponentValues_CC_CC_Options_Code,
+
+      --- Theme Category ---
+      --ROW_NUMBER() OVER (ORDER BY TC.TCAT_CODE) AS TC_RW_NM,
+      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      tc.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_CC_Id,
+      TC.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_Name,
+      'THEME.CATEGORY' as Component_Components_ComponentValues_CC_CC_CC_Code,
+      ---- Theme Category Options ----
+      tc.TCAT_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
+      tc.VALUE as Component_Components_ComponentValues_CC_CC_CC_Options_Value,
+      tc.TCAT_CODE Component_Components_ComponentValues_CC_CC_CC_Options_Code,
+
+      --- Manfacturer ----
+      --ROW_NUMBER() OVER (PARTITION BY mf.DISPLAY_NAME ORDER BY mf.DISPLAY_NAME) AS MF_RW_NM,
+      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      mf.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_CC_CC_Id,
+      MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_CC_Name,
+      'MANUFACTURER' as Component_Components_ComponentValues_CC_CC_CC_CC_Code,
+      --- MAnufacturer Options
+      MF.MNF_CODE_SEQ as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Id,
+      mf.VALUE as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Value,
+      mf.MNF_CODE as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Code,
+      --- theme ---
+      --ROW_NUMBER() OVER (ORDER BY TM.DISPLAY_NAME) AS TM_RW_NM,
+      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      TM.COMP_TYPE_ID as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Id,
+      TM.DISPLAY_NAME as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Name,
+      'THEME' as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Code,
+      --- Theme Options ------
+      TM.THEM_CODE_SEQ as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Id,
+      TM.VALUE as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Value,
+      TM.THEM_CODE as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Code
+
+      FROM GAM.VIEW_THEME AS TM
+      JOIN GAM.VIEW_MANUFACTURE AS MF ON MF.MANF_ID = TM.MANF_ID AND MNF_SEQ = TM.THEM_SEQ
+      JOIN GAM.VIEW_THEME_CATEGORY AS TC ON TM.THEME_CAT_ID = TC.TCAT_ID AND TM.THEM_SEQ = TC.TCAT_SEQ
+      JOIN GAM.VIEW_THEME_GROUP AS TG ON TG.TGRP_ID = TC.TCAT_TGRP_ID AND TG.THM_GRP_SEQ = TC.TCAT_SEQ
+      JOIN GAM.VIEW_THEME_TYPE AS TT ON TT.TTYP_ID = TG.TGRP_TTYP_ID AND TT.THEM_TYPE_SEQ = TG.THM_GRP_SEQ
+    </Source>   
+    <Destination>[COMPONENTS].[ComponentData]</Destination>
+    <KeyFormat Format="57_{0}" Keys="Id" />
+    <ColumnMapping>
+      <ColumnMap Key="CC" ColumnName="ChildComponents"/>
+    </ColumnMapping>
+  </Transformation>
+  <Transformation Name="COMPDATA_DENOM">
+    <Source>
+      ----------- Denoms ---------------
+      SELECT  122011 as Id,
+      22011 as Component_Id,
+      --COMPONENTS---
+      0 as Component_Components_SiteId,
+      'DENOMINATION' as Component_Code,
+      --Component Values---
+      '1_root' as Component_Components_ComponentValues_Id,
+      'Denomination' as Component_Components_ComponentValues_Name,
+      'DENOMINATION' as Component_Components_ComponentValues_DisplayName,
+      'DENOMINATION' as Component_Components_ComponentValues_Code,
+      --ChildCompoenents----
+      CAST(Components_Id as VARCHAR(50))+'_1' as Component_Components_ComponentValues_ChildComponents_Id,
+      DENM_AMOUNT as Component_Components_ComponentValues_ChildComponents_Name,
+      DENM_AMOUNT AS Component_Components_ComponentValues_ChildComponents_DisplayName,
+      'DENOMINATION' AS Component_Components_ComponentValues_ChildComponents_Code,
+      ---- OPTIONS --------
+      ROW_NUMBER() OVER (PARTITION BY DENM_ID ORDER BY DENM_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
+      CODE AS Component_Components_ComponentValues_ChildComponents_Options_Name,
+      DENM_AMOUNT as Component_Components_ComponentValues_ChildComponents_Options_Value,
+      'DENOM.AMOUNT' as Component_Components_ComponentValues_ChildComponents_Options_Code
+      from ( SELECT DENM_ID,
+      ROW_NUMBER() OVER (ORDER BY DENM_ID ) AS Components_Id,
+      'Denom Value' as CODE,
+      cast ( CONVERT(DECIMAL(10,2),cast(denm_amount as float)/100) as nvarchar) as DENM_AMOUNT
+      from gam.denomination where IS_DELETED = 0 ) as den
+
+      -------- EOF Denoms -----------
+    </Source>   
+    <Destination>[COMPONENTS].[ComponentData]</Destination>
+    <KeyFormat Format="57_{0}" Keys="Id" />
+    <ColumnMapping>
+      <ColumnMap Key="1" ColumnName="fd"/>
+      <ColumnMap Key="2" ColumnName="df"/>
+      <ColumnMap Key="3" ColumnName="fv"/>
+      <ColumnMap Key="4" ColumnName="fdv"/>
+    </ColumnMapping>
+  </Transformation>
+  <Transformation Name="COMPDATA_MNF">
+    <Source>
+     SELECT 122002 as Id,
+      22002 as Component_Id,	
+	  'MANUFACTURER' as Component_Code,
       --COMPONENTS---
       0 as Component_Components_SiteId,
       --Component Values---
@@ -173,28 +394,151 @@
       'Manufacturer' as Component_Components_ComponentValues_Name,
       'Manufacturer' as Component_Components_ComponentValues_DisplayName,
       --ChildCompoenents----
-      CAST(Components_Id as VARCHAR(50)) as Component_Components_ComponentValues_ChildComponents_Id,
+      CAST(Components_Id as VARCHAR(50)) +'_1' as Component_Components_ComponentValues_ChildComponents_Id,
+	  'MANUFACTURER' as  Component_Components_ComponentValues_ChildComponents_Code,
       Name as Component_Components_ComponentValues_ChildComponents_Name,
       DisplayName AS Component_Components_ComponentValues_ChildComponents_DisplayName,
-      ---Options
+      ----- OPTIONS ------
+     cast( ROW_NUMBER() OVER (PARTITION BY MANF_ID ORDER BY MANF_ID ) as nvarchar) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
       CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'Manufacture Short Name'
       WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'Manufacture Long Name'
-      WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'Manufacture Code'
+      WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'Code'
       END AS Component_Components_ComponentValues_ChildComponents_Options_Name,
-      VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value ,
-      ROW_NUMBER() OVER (PARTITION BY MANF_ID ORDER BY MANF_ID ) AS Component_Components_ComponentValues_ChildComponents_Options_Id
+	
+	  CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'MANF.SHORT.NAME'
+      WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'MANF.LONG.NAME'
+      WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'MANUF.CODE'
+      END AS Component_Components_ComponentValues_ChildComponents_Options_Code,
+
+      VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value
       FROM
       (SELECT MANF_ID,MANF_SHORT_NAME as Name, MANF_LONG_NAME as DisplayName,
       ROW_NUMBER() OVER (ORDER BY MANF_ID ) AS Components_Id,
       CAST(MANF_SHORT_NAME AS NVARCHAR) AS MANF_SHORT_NAME,
       CAST(MANF_LONG_NAME AS NVARCHAR) AS MANF_LONG_NAME,
       CAST(MANF_VEND_CODE AS NVARCHAR) AS MANF_VEND_CODE
-      FROM GAM.MANUFACTURER  WHERE IS_DELETED = 0 ) MFN
+      FROM GAM.MANUFACTURER  WHERE IS_DELETED = 0 AND MANF_IS_VENDOR = 0) MFN
       UNPIVOT
       ( VALUE FOR VALUE_DESC IN (MANF_SHORT_NAME, MANF_LONG_NAME, MANF_VEND_CODE)
       ) AS T
-    </Source>
+      ------ EOF Manufacturer ------
+     
+    </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
+  </Transformation>
+  <Transformation Name="AST_DEFN">
+    <Source>
+      SELECT AST.ASST_ID as Id,
+      CONVERT(varchar(100),ASTDFN_OPTN_ORDER) as Sequences,
+      CONVERT(bit,'true') as IsSystemDefined,
+      --------Asset Type -----
+      AST.ASST_ID as AssetType_Id,
+      AST.ASST_NAME as AssetType_Name,
+      Ast.ASST_DESCRIPTION as AssetType_Description,
+      CONVERT(bit,'true') as AssetType_IsRevenueAffecting,
+      CONVERT(bit,'false') as AssetType_IsInline,
+      'Root' as AssetType_Scope,
+      --------Options--------
+      optn.OPTN_ID as Options_Id,
+      optn.OPTN_NAME as Options_Name,
+      optn.OPTN_CODE as Options_Code,
+      optn.OPTN_DESCRIPTION as Options_Description,
+      optn.OPTN_DEFAULT_VAL as Options_DefaultValue,
+      optn.OPTN_MIN_VALUE as Options_MinLength,
+      optn.OPTN_MAX_VALUE as Options_MaxLength,
+      optn.OPTN_EDIT_ENABLED as Options_IsEditEnabled,
+      optn.OPTN_ADD_ENABLED as Options_IsAddEnabled,
+      optn.OPTN_MOVE_ENABLED as Options_IsMoveEnabled,
+      optn.OPTN_MOVE_EDIT_ENABLED as Options_IsMoveEditEnabled,
+      optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
+      --optn.OPTN_DELETE_ENABLED as Options_IsDeleteEnabled,
+      CONVERT(bit,'true') as Options_IsSearchable
+      FROM GAM.ASSET AS AST
+      LEFT JOIN GAM.ASSET_DEFINITION AS AST_DFN ON AST.ASST_ID = AST_DFN.ASTDFN_ASST_ID
+      LEFT JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AST_DFN.ASTDFN_OPTN_ID
+      --LEFT JOIN GAM.OPTION_ENUMERATION AS ENUM ON OPTN.OPTN_ID=ENUM.OPTEN_OPTN_ID
+      --WHERE AST.ASST_ID = 1
+    </Source>
+    <Destination>ASSET_DEF.ASSETS</Destination>
+    <KeyFormat Format="53_{0}" Keys="Id"  />
+  </Transformation>
+  <Transformation Name="AST">
+    <Source>
+      SELECT ASD_STD_NEW_ID as  Id,
+      ---ASSET ID -----
+      ASD_STD_NEW_ID as AssetId_Id,
+      CASE WHEN AST.ASST_ID = 1 THEN 10
+      WHEN AST.ASST_ID = 2 THEN 3
+      WHEN AST.ASST_ID = 3 THEN 4
+      WHEN AST.ASST_ID = 4 THEN 8
+      WHEN AST.ASST_ID = 5 THEN 7
+      WHEN AST.ASST_ID = 6 THEN 9
+      --WHEN AST.ASST_ID = 7 THEN
+      WHEN AST.ASST_ID = 8 THEN 2
+      WHEN AST.ASST_ID = 9 THEN 13
+      WHEN AST.ASST_ID = 10 THEN 14
+      WHEN AST.ASST_ID = 11 THEN 12
+      WHEN AST.ASST_ID = 12 THEN 6
+      WHEN AST.ASST_ID = 13 THEN 5
+      WHEN AST.ASST_ID = 14 THEN 1
+      END as AssetId_AssetTypeDefinitionId,
+      ----SITE----------
+      SITE_NUMBER as Site_SiteId,
+      SITE_LONG_NAME as Site_SiteName,
+      SITE_NUMBER as Site_SiteNumber,
+      st.IS_DELETED as Site_IsDeleted,
+      0 as Site_OrganizationId, -- mapping needed
+      pt.prop_long_name as Site_OrganizationName,
+      ---- OPTIONS ----------
+      case when ogrp_id = 1 then OPTN.OPTN_ID else null end as Options_Id,
+      case when ogrp_id = 1 then OPTN.OPTN_CODE else null end as Options_Code,
+      case when ogrp_id = 1 then AST_OPTN_VALUE else null end as Options_Value,
+      -----Components --------
+      case when ogrp_id > 1 then OPTN.OPTN_ID else null end as Components_ComponentId,
+      case when ogrp_id > 1 then CAST(OPTN.OPTN_ID as varchar(50)) else null end as Components_ComponentInstanceId,
+      case when ogrp_id > 1 then OPTN.OPTN_NAME else null end as Components_ComponentName,
+      case when ogrp_id > 1 then OPTN.OPTN_NAME else null end as Components_ComponentKey,
+      case when ogrp_id > 1 then
+      ( case ogrp_id
+      when 90023 then  mdl.mdl_long_name
+      when 90011 then  ar.ar_long_name
+      when 90012 then  zn.zn_long_name
+      when 90013 then  bk.bk_long_name/*Bank*/
+      when 90041 then  cast(contract_no as nvarchar)/*Contract*/
+      when 90051 then  cast(mdt_number as nvarchar)/*Meter Delta*/
+      when 90021 then  MANF_LONG_NAME
+      when 90014 then  COL_LONG_NAME
+      when 90023 then  MDLTYP_LONG_NAME end)  else null end as Components_ComponentValue,
+      case when ogrp_id > 1 then OPTN.OPTN_CODE else null end as Components_ComponentCode,
+      ----- Inline assets ------ Need to discuss
+
+      ------Type Code -----
+      0 as TypeCode_TypeCodeId, -- mapping needed
+      TCODE.TYCOD_NAME as TypeCode_TypeCodeName
+      FROM GAM.ASSET_STANDARD_DETAILS AS ASD
+      JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+      JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+      JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+      JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
+      JOIN GAM.ASSET_DETAIL AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
+      JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AD.AST_OPTION_ID
+      LEFT JOIN GAM.VIEW_MANUFACTURER AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
+      LEFT JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD.ASD_MODL_ID
+      LEFT JOIN GAM.MODEL_MODELTYPE_MAP AS MDL_TYPE_MAP ON MDL_TYPE_MAP.[MODEL_MAP_ID] = ASD.ASD_MODL_TYP_MAPiD
+      LEFT JOIN GAM.AREA AS AR ON AR.AREA_ID = ASD.ASD_AREA_ID
+      LEFT JOIN GAM.ZONE AS ZN ON ZN.ZONE_ID = ASD.ASD_ZONE_ID
+      LEFT JOIN GAM.BANK AS BK ON BK.BANK_ID = ASD.ASD_BANK_ID
+      LEFT JOIN GAM.METER_DELTA AS MTR_DELTA ON MTR_DELTA.MDT_ID = ASD.ASD_MTR_DLTA_ID
+      LEFT JOIN [GAM].[TYPE_CODE_MASTER] AS TCODE ON TCODE.TYCOD_ID = ASD.ASD_TCOD_ID
+      LEFT JOIN [GAM].[CONTRACT_DETAILS] AS CNTRCT ON CNTRCT.CONTRACT_ID = ASD.ASD_CNTR_ID
+      LEFT JOIN [GAM].[COLLECTION] AS COL ON COL.[COLLECTION_ID] = ASD.ASD_COLLECTION_ID
+      LEFT JOIN [GAM].MODEL_TYPE AS MTYP ON COL.[COLLECTION_ID] = ASD.ASD_COLLECTION_ID
+      WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
+      AND AST.ASST_ID not in( 1,14,7)
+      AND SITE_NUMBER in ({0})
+    </Source>
+    <Destination>[DataManagement].[Asset]</Destination>
+    <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
   </Transformation>
 </TransformationConfig>

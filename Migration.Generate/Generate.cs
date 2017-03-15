@@ -29,7 +29,7 @@ namespace Migration.Generate
                     if (result)
                     {
                         progress.Report(new ProcessStatus(comp.Name, 100, Status.Success));
-                        Logger.Instance.LogInfo(string.Format("Generate task for the component {0} Succeeded.", comp.Name));
+                        Logger.Instance.LogInfo($"Generate task for the component {comp.Name} Succeeded." );
                     }
                     else
                     {
@@ -53,7 +53,7 @@ namespace Migration.Generate
             }
             catch (Exception ex)
             {
-                Logger.Instance.LogError(string.Format("Generate task for the component {0} failed." , component.Name),ex);
+                Logger.Instance.LogError($"Generate task for the component {component.Name} failed.",ex);
             }
             return result;
         }

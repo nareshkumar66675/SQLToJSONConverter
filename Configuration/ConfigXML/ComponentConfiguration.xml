@@ -1,15 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ComponentConfig>
   <Group Name="AUTH">
-    <!--<Component Name="TASK" DisplayName="Task" DomainType="BallyTech.Library.Domain.Employee.Task,BallyTech.Library.Auth.Domain" GenerateType="Default" PersistType="Default"  ></Component>-->
-    <!--<Component Name="EMPLOYEE" DisplayName="Employee" DomainType="BallyTech.Library.Persistence.MSSql.Entity.EmployeeEntity,BallyTech.Library.Persistence.MSSql" GenerateType="Default" PersistType="Default"  ></Component>-->
+	<Component Name="ORG" DisplayName="Organization" DomainType="BallyTech.Library.Persistence.MSSql.Entity.ServiceProviderEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default"  ></Component>
     <Component Name="SITE" DisplayName="Sites" DomainType="BallyTech.Library.Persistence.MSSql.Entity.SiteEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default"  ></Component>
-    <Component Name="ROLE" DisplayName="Role" DomainType="BallyTech.Library.Persistence.MSSql.Entity.RoleEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default"  ></Component>
-    <!--<Component Name="ORG" DisplayName="Organization" DomainType="BallyTech.Library.Persistence.MSSql.Entity.ServiceProviderEntity,BallyTech.Library.Persistence.MSSql" GenerateType="Default" PersistType="Default"  ></Component>-->
     <Component Name="TSKGRP" DisplayName="Task Group" DomainType="BallyTech.Library.Persistence.MSSql.Entity.TaskGroupEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default"  ></Component>    
+	<Component Name="ROLE" DisplayName="Role" DomainType="BallyTech.Library.Persistence.MSSql.Entity.RoleEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default"  ></Component>
   </Group>
   <Group Name="ASSET">
-    <!--<Component Name="AST_DEFN" DisplayName="Asset Definition"  DomainType="BallyTech.Library.Domain.Asset.AssetDefinition,BallyTech.Library.Asset.Domain" GenerateType="Default" PersistType="Default" ></Component>-->
-    <!--<Component Name="COMPDATA" DisplayName="Component Data"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.ComponentDataEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="Default" PersistType="Default" ></Component>-->
+	 <Component Name="COMPDATA_MNF" DisplayName="Component Data - Manufacture"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.ComponentDataEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="Default" PersistType="Default" >
+	 </Component>
+	 <Component Name="COMPDATA_MODEL_TYPE" DisplayName="Component Data - Model Type"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.ComponentDataEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="Default" PersistType="Default" >
+	 </Component>
+	 <Component Name="COMPDATA_MODEL" DisplayName="Component Data - Model"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.ComponentDataEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="Default" PersistType="Default" >
+	 </Component>
+	 <Component Name="COMPDATA_THEME" DisplayName="Component Data - Theme"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.ComponentDataEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="Default" PersistType="Default" >
+	 </Component>
+	 <Component Name="COMPDATA_DENOM" DisplayName="Component Data - Denomination"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.ComponentDataEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="Default" PersistType="Default" >
+	 </Component>
+    <Component Name="AST" DisplayName="Asset Data"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="DefaultWithParams" PersistType="Default" >
+	</Component>
   </Group>
 </ComponentConfig>

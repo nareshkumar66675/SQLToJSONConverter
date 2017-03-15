@@ -18,22 +18,26 @@ namespace Migration.Persistence.Helpers
                        new SqlConnection(ConnectionStrings.GetConnectionString(type)))
             {
                 destinationConnection.Open();
-                using (SqlBulkCopy bulkCopy =
-                           new SqlBulkCopy(destinationConnection))
+                using (SqlTransaction transaction = destinationConnection.BeginTransaction())
                 {
-                    bulkCopy.DestinationTableName = destinationTableName;
-                    bulkCopy.BatchSize = AppSettings.BulkCopyBatchSize;
-                    
-
-                    try
+                    using (SqlBulkCopy bulkCopy =
+                               new SqlBulkCopy(destinationConnection,SqlBulkCopyOptions.Default,transaction))
                     {
-                        bulkCopy.WriteToServer(data);
-                        Logger.Instance.LogInfo("Bulk Copy Completed for table " + destinationTableName);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Instance.LogError("Bulk Copy Failed for table " + destinationTableName, ex);
-                        throw;
+                        bulkCopy.DestinationTableName = destinationTableName;
+                        bulkCopy.BatchSize = AppSettings.BulkCopyBatchSize;
+                        
+                        try
+                        {
+                            bulkCopy.WriteToServer(data);
+                            transaction.Commit();
+                            Logger.Instance.LogInfo($"Bulk Copy Completed for table { destinationTableName }");
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            Logger.Instance.LogError($"Bulk Copy Failed for table { destinationTableName } ", ex);
+                            throw;
+                        }
                     }
                 }
             }
@@ -55,7 +59,7 @@ namespace Migration.Persistence.Helpers
             }
             catch (Exception ex)
             {
-                Logger.Instance.LogError(string.Format("Error Occurred While Updating Persist Report : {0} , Endtime - {1} , TotalInsertedRecordsCount - {2} , Status - {3}" + componentName,endTime.ToString(),totalInsertedRecordsCount,Status), ex);
+                Logger.Instance.LogError($"Error Occurred While Updating Persist Report : {componentName} , Endtime - {endTime.ToString()} , TotalInsertedRecordsCount - {totalInsertedRecordsCount} , Status - {Status}", ex);
             }
         }
     }

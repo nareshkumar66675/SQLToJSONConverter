@@ -23,12 +23,12 @@ namespace MigrationTool.Views
     {
         public string ConnectionString { get; set; }
         public string DatabaseName { get; private set; }
-
+        public string Type;
         private string comboDefaultText = "Select Database";
         public DatabaseSelectModal()
         {
             InitializeComponent();
-            errorTextBlock.Text = comboDefaultText;
+            errorTextBlock.Text = string.Empty;
             errorTextBlock.Visibility = Visibility.Hidden;
         }
 
@@ -56,7 +56,15 @@ namespace MigrationTool.Views
         {
             this.DatabaseName= DatabaseComboBox.SelectedValue as string;
             if (this.DatabaseName == comboDefaultText)
+            {
+                errorTextBlock.Text = "Select a Database";
                 errorTextBlock.Visibility = Visibility.Visible;
+            }
+            else if(!ValidateDatabase())
+            {
+                errorTextBlock.Text = "Not a Valid " + Type + " Database";
+                errorTextBlock.Visibility = Visibility.Visible;
+            }
             else
                 this.Close();
         }
@@ -64,7 +72,10 @@ namespace MigrationTool.Views
         private void DatabaseComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if ((DatabaseComboBox.SelectedValue as string) == comboDefaultText)
+            {
+                errorTextBlock.Text = "Select a Database";
                 errorTextBlock.Visibility = Visibility.Visible;
+            }
             else
                 errorTextBlock.Visibility = Visibility.Hidden;
         }
@@ -73,6 +84,21 @@ namespace MigrationTool.Views
         {
             this.DatabaseName = string.Empty;
             this.Close();
+        }
+        private bool ValidateDatabase()
+        {
+            switch (Type)
+            {
+                case "AUTH":
+                    return DatabaseHelper.CheckIfTableExists(DatabaseHelper.AddDatabaseToConnString(ConnectionString,DatabaseName), Common.AppSettings.AuthDBCheck);
+                case "ASSET":
+                    return DatabaseHelper.CheckIfTableExists(DatabaseHelper.AddDatabaseToConnString(ConnectionString, DatabaseName), Common.AppSettings.AssetDBCheck);
+                case "LEGACY":
+                    return DatabaseHelper.CheckIfTableExists(DatabaseHelper.AddDatabaseToConnString(ConnectionString, DatabaseName), Common.AppSettings.LegacyDBCheck);
+                default:
+                    return DatabaseHelper.CheckIfTableExists(DatabaseHelper.AddDatabaseToConnString(ConnectionString, DatabaseName), Common.AppSettings.LegacyDBCheck);
+            }
+
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Migration.Common;
+using Migration.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -42,20 +43,82 @@ namespace Migration.Generate.Helpers
                 using (var conn = new SqlConnection(ConnectionStrings.GetConnectionString(type)))
                 {
                     conn.Open();
-                    SqlCommand cmd = new SqlCommand(Queries.ReportInsert, conn);
-                    cmd.Parameters.Add(new SqlParameter("@Name", componentName));
-                    cmd.Parameters.Add(new SqlParameter("@TotRecords", totalRecordsCount));
-                    cmd.Parameters.Add(new SqlParameter("@TotUniqRecords", totalUniqueRecordsCount));
-                    cmd.Parameters.Add(new SqlParameter("@StartTime", startTime));
-                    cmd.Parameters.Add(new SqlParameter("@EndTime", endTime));
-                    cmd.Parameters.Add(new SqlParameter("@Status", Status));
-                    cmd.ExecuteNonQuery();
+                    SqlCommand command = conn.CreateCommand();
+                    SqlTransaction transaction;
+                    transaction = conn.BeginTransaction("InsertReport");
+                    command.Connection = conn;
+                    command.Transaction = transaction;
+                    try
+                    {
+                        int? siteGrpID=null;
+                        if (type == GroupType.ASSET)
+                        {
+                            var qryParams = Configurator.GetQueryParams(componentName);
+                            if (qryParams != null && qryParams.Count == 1)
+                            {
+                                //Get Site Group Max ID
+                                command.CommandText = Queries.GetSiteGroupMaxID;
+                                var max = command.ExecuteScalar();
+                                siteGrpID = ((max is DBNull) ? 0 : (int)max) + 1;
+
+                                //Insert Records To Site Group Table
+                                command.CommandText = GetSiteGroupQuery(siteGrpID.GetValueOrDefault(), qryParams[0]);
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        //Insert Records to Report Table
+                        command.CommandText = Queries.ReportInsert;
+                        command.Parameters.Add(new SqlParameter("@Name", componentName));
+                        command.Parameters.Add(new SqlParameter("@SiteGrpID",(object) siteGrpID ?? DBNull.Value));
+                        command.Parameters.Add(new SqlParameter("@TotRecords", totalRecordsCount));
+                        command.Parameters.Add(new SqlParameter("@TotUniqRecords", totalUniqueRecordsCount));
+                        command.Parameters.Add(new SqlParameter("@StartTime", startTime));
+                        command.Parameters.Add(new SqlParameter("@EndTime", endTime));
+                        command.Parameters.Add(new SqlParameter("@Status", Status));
+                        command.ExecuteNonQuery();
+
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        try
+                        {
+                            transaction.Rollback();
+                            throw new Exception("Error Ocurred - Rollbacked", ex);
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Logger.Instance.LogError(string.Format("Error Occurred While Inserting Generate Report for {0} , StartTime - {1}, totalRecordsCount - {2}, totalUniqueRecordsCount - {3}, Status - {4}",componentName,startTime.ToString(),totalRecordsCount,totalUniqueRecordsCount,Status), ex);
+                Logger.Instance.LogError($"Error Occurred While Inserting Generate Report for {componentName} , StartTime - {startTime.ToString()}, totalRecordsCount - {totalRecordsCount}, totalUniqueRecordsCount - {totalUniqueRecordsCount}, Status - {Status}", ex);
             }
+        }
+        private static string GetSiteGroupQuery(int siteGrpId,string sites)
+        {
+            StringBuilder sbuild = new StringBuilder();
+            using (var legacyConn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
+            {
+                legacyConn.Open();
+                var query = string.Format(Queries.GetSiteDetails, sites);
+                using (SqlCommand legacyCommand = new SqlCommand(query, legacyConn))
+                {
+                    using (IDataReader dr = legacyCommand.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            var siteID = dr.GetInt64(0);
+                            var siteName = dr.GetString(1);
+                            sbuild.AppendFormat(Queries.SiteGroupInsert,siteGrpId, siteID, siteName);
+                        }
+                    }
+                }
+            }
+            return sbuild.ToString();
         }
     }
 }

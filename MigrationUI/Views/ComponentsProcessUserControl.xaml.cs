@@ -66,6 +66,7 @@ namespace MigrationTool.Views
             {
                 Logger.Instance.LogError("Error While Initializing DataGrid For Components Process",ex);
                 Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occured. Please Check Logs", "Process Status", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
             }
         }
 
@@ -82,7 +83,7 @@ namespace MigrationTool.Views
                             ProgressBar temp = new ProgressBar();
                             temp.Name = COMP.Name + "Progress";
                             temp.Minimum = 0; temp.Maximum = 100;
-                            table.Rows.Add(grp.Name.ToString(), COMP.DisplayName, new ProgressBar(), Status.NotStarted.ToString(), COMP.Name);
+                            table.Rows.Add(grp.Name.GetDescription(), COMP.DisplayName, new ProgressBar(), Status.NotStarted.GetDescription(), COMP.Name);
                         });
                     });
                     ProcessGrid.Items.Refresh();
@@ -141,13 +142,13 @@ namespace MigrationTool.Views
                     progressBar.Value += processStatus.PercentCompleted / 2;
                     if (processStatus.Status == Status.Failed)
                     {
-                        rcrd.SetField("Status", processStatus.Status.ToString());
+                        rcrd.SetField("Status", processStatus.Status.GetDescription());
                         progressBar.Value = 100;
                         progressBar.Foreground = Brushes.Red;
                     }
                     else
                     {
-                        rcrd.SetField("Status", processStatus.Status.ToString());
+                        rcrd.SetField("Status", processStatus.Status.GetDescription());
                     }
                     ProcessGrid.Items.Refresh();
                 }
@@ -170,13 +171,13 @@ namespace MigrationTool.Views
                     progressBar.Value += processStatus.PercentCompleted / 2;
                     if (processStatus.Status == Status.Failed)
                     {
-                        rcrd.SetField("Status", processStatus.Status.ToString());
+                        rcrd.SetField("Status", processStatus.Status.GetDescription());
                         progressBar.Value = 100;
                         progressBar.Foreground = Brushes.Red;
                     }
                     if (!(processStatus.Status == Status.Success))
                     {
-                        rcrd.SetField("Status", processStatus.Status.ToString());
+                        rcrd.SetField("Status", processStatus.Status.GetDescription());
                     }
                     ProcessGrid.Items.Refresh();
                 }

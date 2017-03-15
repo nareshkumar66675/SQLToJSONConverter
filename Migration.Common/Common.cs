@@ -89,7 +89,30 @@ namespace Migration.Common
                 }
                 private set { }
             }
-
+            public static string LegacyDBCheck
+            {
+                get
+                {
+                    return string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("LegacyDBCheck")) ? "GAM.ASSET" : ConfigurationManager.AppSettings.Get("LegacyDBCheck");
+                }
+                private set { }
+            }
+            public static string AuthDBCheck
+            {
+                get
+                {
+                    return string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("AuthDBCheck")) ? "Site.Site" : ConfigurationManager.AppSettings.Get("AuthDBCheck");
+                }
+                private set { }
+            }
+            public static string AssetDBCheck
+            {
+                get
+                {
+                    return string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("AssetDBCheck")) ? "DataManagement.Asset" : ConfigurationManager.AppSettings.Get("AssetDBCheck");
+                }
+                private set { }
+            }
         }
 
         public static class Queries
@@ -116,8 +139,8 @@ namespace Migration.Common
             {
                 get
                 {
-                    return @"INSERT INTO [Migration].[Report] ([Component_Name],[Tot_Rcrds_InLegacy],[Tot_Unique_RcrdsInLegacy],[Start_Time],[End_Time],[Status]) 
-                                                VALUES (@Name,@TotRecords,@TotUniqRecords,@StartTime,@EndTime,@Status)";
+                    return @"INSERT INTO [Migration].[Report] ([Component_Name],[SiteGroupID],[Tot_Rcrds_InLegacy],[Tot_Unique_RcrdsInLegacy],[Start_Time],[End_Time],[Status]) 
+                                                VALUES (@Name,@SiteGrpID,@TotRecords,@TotUniqRecords,@StartTime,@EndTime,@Status)";
                 }
                 private set { }
             }
@@ -126,6 +149,30 @@ namespace Migration.Common
                 get
                 {
                     return @"UPDATE [Migration].[Report] SET [Inserted_Rcrds_InNew]=@InsrtdRcrds,[End_Time]=@EndTime,[Status]=@Status WHERE [Component_Name]=@Name and [Status] ='Running'";
+                }
+                private set { }
+            }
+            public static string GetSiteGroupMaxID
+            {
+                get
+                {
+                    return "SELECT MAX(SiteGroupID) FROM Migration.SiteGroup";
+                }
+                private set { }
+            }
+            public static string SiteGroupInsert
+            {
+                get
+                {
+                    return "INSERT INTO Migration.SiteGroup (SiteGroupID,SiteID,SiteName) VALUES({0},{1},'{2}');";
+                }
+                private set { }
+            }
+            public static string GetSiteDetails
+            {
+                get
+                {
+                    return "SELECT SITE_NUMBER,SITE_LONG_NAME FROM [GAM].[view_site_info] WHERE SITE_NUMBER in ({0})";
                 }
                 private set { }
             }
