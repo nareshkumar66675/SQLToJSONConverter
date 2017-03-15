@@ -56,7 +56,7 @@
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="SourceConnectionPage"
                              Title="STEP 1 : Legacy Database Connection"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              Description="Enter the Legacy database connection details."
                              NextPage="{Binding ElementName=AuthConnectionPage}"
                              PageType="Interior"
@@ -77,7 +77,7 @@
             <!--  Auth Process Block Start  -->
             <xctk:WizardPage x:Name="AuthConnectionPage"
                              Title="STEP 2 : Authentication Database Connection"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              Description="Enter the Authentication database connection details."
                              NextPage="{Binding ElementName=AuthComponentsSelectionPage}"
                              PageType="Interior"
@@ -122,7 +122,7 @@
             <!--  Asset Process Block Start  -->
             <xctk:WizardPage x:Name="AssetConnectionPage"
                              Title="STEP 5 : Asset Database Connection"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
                              Description="Enter the asset database connection details."
                              NextPage="{Binding ElementName=AssetSiteSelectionPage}"
@@ -169,7 +169,7 @@
                              CanCancel="False"
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
-                             Description="Press Start to initiate the migrtaion process."
+                             Description="Please wait until the Migration is Complete."
                              NextPage="{Binding ElementName=LastPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AssetsComponentsSelectionPage}" />
