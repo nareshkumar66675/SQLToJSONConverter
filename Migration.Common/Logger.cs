@@ -23,11 +23,12 @@ namespace Migration.Common
         private static readonly Lazy<ILogger> instance = new Lazy<ILogger>(() => new Logger(), LazyThreadSafetyMode.ExecutionAndPublication);
         private readonly TextWriter logWriter;
         public static ILogger Instance => instance.Value;
+        public static string LogFileName { get; private set; }
 
         private Logger()
         {
-            string fileName = Path.Combine(AppSettings.LogFilePath, string.Concat(AppSettings.LogFileName, "_", DateTime.Now.ToString(AppSettings.LogFileTimeStampPattern), ".txt"));
-            logWriter = TextWriter.Synchronized(File.AppendText(fileName));
+            LogFileName = Path.Combine(AppSettings.LogFilePath, string.Concat(AppSettings.LogFileName, "_", DateTime.Now.ToString(AppSettings.LogFileTimeStampPattern), ".txt"));
+            logWriter = TextWriter.Synchronized(File.AppendText(LogFileName));
             WriteToFile("********Start Of Log**********");
         }
         public void LogInfo(string logMessage)

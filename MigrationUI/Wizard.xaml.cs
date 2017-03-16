@@ -1,5 +1,6 @@
 ﻿using Migration.Common;
 using Migration.Configuration;
+using MigrationTool.Helpers;
 using MigrationTool.Views;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ namespace MigrationTool
         private SiteSelectUserControl AssetSiteCntrl = new SiteSelectUserControl();
         private ComponentsProcessUserControl AuthCompProcessCntrl = new ComponentsProcessUserControl();
         private ComponentsProcessUserControl AssetCompProcessCntrl = new ComponentsProcessUserControl();
+        private bool CanClose = true;
         #endregion
         public Wizard()
         {
@@ -38,7 +40,7 @@ namespace MigrationTool
             AuthCompSelectCntrl.OnComponentsSelectionChanged += AuthCompSelectCntrl_OnComponentsSelectionChanged;
             AssetsCompSelectCntrl.OnComponentsSelectionChanged += AssetsCompSelectCntrl_OnComponentsSelectionChanged;
             AssetSiteCntrl.OnSitesSelectionChanged += AssetSiteCntrl_OnSitesSelectionChanged;
-            AuthCompProcessCntrl.ProcessCompleted += AuthComponents_ProcessCompleted;
+            AuthCompProcessCntrl.ProcessCompleted += AuthCompProcessCntrl_ProcessCompleted;
             AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
         }
 
@@ -60,6 +62,7 @@ namespace MigrationTool
                 {
                     var comp = AuthCompSelectCntrl.GetSelectedComponents();
                     AddUserControlToPage(AuthComponentsProcessPage, AuthCompProcessCntrl);
+                    CanClose = false;
                     AuthCompProcessCntrl.StartComponentProcess(comp);
                 }
                 // Asset Connection Page -> Asset Sites Selection Page
@@ -84,14 +87,14 @@ namespace MigrationTool
                 {
                     var comp = AssetsCompSelectCntrl.GetSelectedComponents();
                     AddUserControlToPage(AssetsComponentsProcessPage, AssetCompProcessCntrl);
+                    CanClose = false;
                     AssetCompProcessCntrl.StartComponentProcess(comp);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error While Navigating to Next Page", ex);
-                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occured. Please Check Logs", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Application.Current.Shutdown();
+                ErrorHandler.ShowFatalErrorMesage(Window.GetWindow(this), "Error");
             }
         }
         private void AuthDB_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
@@ -154,10 +157,12 @@ namespace MigrationTool
         }
         private void AssetCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
         {
+            CanClose = true;
             Wiz.CurrentPage.CanSelectNextPage = true;
         }
-        private void AuthComponents_ProcessCompleted(object sender, EventArgs e)
+        private void AuthCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
         {
+            CanClose = true;
             Wiz.CurrentPage.CanSelectNextPage = true;
         }
         private void AssetSiteCntrl_OnSitesSelectionChanged(object sender, SiteSelectUserControl.SitesSelectionChangedEventArgs e)
@@ -167,6 +172,20 @@ namespace MigrationTool
         private void Wiz_Help(object sender, RoutedEventArgs e)
         {
             Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Contact Support for Help", "Help", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        private void LogAppClose(object sender, RoutedEventArgs e)
+        {
+            Logger.Instance.LogInfo("Application has been terminated by user");
+        }
+
+        private void WizardWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(!CanClose)
+            {
+                Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Please wait for the process to complete.", "Close", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                e.Cancel = true;
+            }
+                
         }
     }
 }

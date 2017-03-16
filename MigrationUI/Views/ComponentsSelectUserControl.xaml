@@ -45,7 +45,7 @@
                       FontWeight="ExtraBold"
                       Header="Auth"
                       IsExpanded="True">
-                <Grid Height="210" Margin="0,0,8,0">
+                <Grid Height="210" Margin="0,0,0,0">
                     <Border Margin="5,5,5,10"
                             Background="DarkGray"
                             BorderBrush="White"
@@ -56,13 +56,31 @@
                         </Border.Effect>
                     </Border>
                     <xctk:CheckListBox x:Name="ComponentsCheckList"
-                                       Height="184"
+                                       Height="155"
                                        Margin="10,10,10,0"
                                        Padding="5,5,5,5"
                                        VerticalAlignment="Top"
                                        FontSize="14"
                                        FontWeight="Normal"
-                                       ItemSelectionChanged="ComponentsCheckList_ItemSelectionChanged" />
+                                       ItemSelectionChanged="ComponentsCheckList_ItemSelectionChanged">
+                        <xctk:CheckListBox.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="5" />
+                            </Style>
+                        </xctk:CheckListBox.Resources>
+                    </xctk:CheckListBox>
+                    <Grid Margin="10,173,10,19" RenderTransformOrigin="0.586,8.671">
+                        <Button x:Name="selectAllButton"
+                                Margin="51,-1,220,-1"
+                                Content="Select All"
+                                FontSize="12"
+                                FontWeight="Normal" Click="selectAllButton_Click" />
+                        <Button x:Name="deselectAllButton"
+                                Margin="205,-1,66,-1"
+                                Content="Deselect All"
+                                FontSize="12"
+                                FontWeight="Normal" Click="deselectAllButton_Click" />
+                    </Grid>
                 </Grid>
             </Expander>
             <Grid Height="130">
@@ -77,7 +95,7 @@
                 </Border>
                 <ListBox x:Name="completedListBox"
                          Width="174"
-                         Height="87"
+                         Height="90"
                          Margin="196,27,0,0"
                          HorizontalAlignment="Left"
                          VerticalAlignment="Top"
@@ -87,13 +105,18 @@
                             <Setter Property="Focusable" Value="false" />
                         </Style>
                     </ListBox.ItemContainerStyle>
+                    <ListBox.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5" />
+                        </Style>
+                    </ListBox.Resources>
                 </ListBox>
                 <Grid Width="183"
                       Height="93"
                       Margin="10,27,0,0"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Top">
-                    <Border BorderBrush="Gray" BorderThickness="1" />
+                    <Border BorderBrush="#cbcbcb" BorderThickness="1" CornerRadius="5" />
                     <Label x:Name="serverLabel"
                            Width="83"
                            HorizontalAlignment="Left"

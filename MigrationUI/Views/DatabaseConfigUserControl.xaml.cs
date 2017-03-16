@@ -88,7 +88,7 @@ namespace MigrationTool.Views
                     catch (Exception ex)
                     {
                         Logger.Instance.LogError("Error occurred while selecting database", ex);
-                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occurred.Please Check Logs.", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Error);
+                        ErrorHandler.ShowFatalErrorMesage(Window.GetWindow(this), "Database Connection");
                     }
                 };
                 worker.RunWorkerAsync();
@@ -151,9 +151,5 @@ namespace MigrationTool.Views
         {
             Resources["BGColor"] = BGColor;//Brushes.DarkGray;
         }
-        //private object GetEnumObjects()
-        //{
-
-        //}
     }
 }

@@ -55,7 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Configuration\Migration.Configuration.csproj">
+    <ProjectReference Include="..\Migration.Configuration\Migration.Configuration.csproj">
       <Project>{C259A426-7959-4DEB-B711-29C768C6986E}</Project>
       <Name>Migration.Configuration</Name>
     </ProjectReference>

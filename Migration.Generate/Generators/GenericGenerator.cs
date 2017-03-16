@@ -40,7 +40,7 @@ namespace Migration.Generate.Generators
                 Type entityType = Type.GetType(component.DomainType);
                 if (entityType == null)
                     throw new Exception("Error in Domain Type -" + component.DomainType);
-
+                System.Threading.Thread.Sleep(10000);
                 //Get Data From Legacy/Old Database
                 var query = GetSourceQuery(component.Name);
                 resultSet = SqlOperation.ExecuteQueryOnSource(query);
@@ -102,7 +102,7 @@ namespace Migration.Generate.Generators
 
             if(srcSet!=null)
             {
-                foreach (var row in srcSet)
+                srcSet.ForEach(row =>
                 {
                     Dictionary<string, object> temp = new Dictionary<string, object>();
                     if (row != null)
@@ -115,7 +115,7 @@ namespace Migration.Generate.Generators
                         }
                     }
                     tempSet.Add(temp);
-                }
+                });
             }
 
             return tempSet;

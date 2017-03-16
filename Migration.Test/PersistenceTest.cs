@@ -21,7 +21,6 @@ namespace Migration.Test
     [TestFixture(TestName ="Persistence Test",Author ="Naresh")]
     public class PersistenceTest
     {
-        public Components components;
         [SetUp]
         public void GenerateInitailze()
         {
@@ -41,7 +40,7 @@ namespace Migration.Test
             grpList.Add(grp);
 
             XMLHelper.Components.Group = grpList;
-            components = XMLHelper.Components;
+
             #endregion
 
             #region TransformationsDeclaration

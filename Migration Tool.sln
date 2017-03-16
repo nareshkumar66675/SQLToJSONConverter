@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration.Test", "Migration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Domain", "..\Auth_Floret\Library\Domain\Auth.Domain.csproj", "{72D12166-348C-49D6-9984-E000A634A45F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration.Configuration", "Configuration\Migration.Configuration.csproj", "{C259A426-7959-4DEB-B711-29C768C6986E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration.Configuration", "Migration.Configuration\Migration.Configuration.csproj", "{C259A426-7959-4DEB-B711-29C768C6986E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Auth.Domain", "Auth.Domain", "{D023CC62-E70B-4370-8197-14D671749FF5}"
 EndProject

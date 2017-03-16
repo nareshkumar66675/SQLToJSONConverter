@@ -4,6 +4,7 @@ using Migration.Configuration.ConfigObject;
 using Migration.Generate;
 using Migration.Persistence;
 using Migration.ProcessQueue;
+using MigrationTool.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -65,8 +66,7 @@ namespace MigrationTool.Views
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error While Initializing DataGrid For Components Process",ex);
-                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occured. Please Check Logs", "Process Status", MessageBoxButton.OK, MessageBoxImage.Error);
-                Application.Current.Shutdown();
+                ErrorHandler.ShowFatalErrorMesage(Window.GetWindow(this), "Process Status");
             }
         }
 

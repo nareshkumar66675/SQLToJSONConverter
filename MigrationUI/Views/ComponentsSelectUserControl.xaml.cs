@@ -1,5 +1,4 @@
 ﻿using Migration.Common;
-using Migration.Configuration;
 using Migration.Configuration.ConfigObject;
 using MigrationTool.Helpers;
 using System;
@@ -9,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using static MigrationTool.Wizard;
+using System.Windows.Documents;
 
 namespace MigrationTool.Views
 {
@@ -62,8 +61,7 @@ namespace MigrationTool.Views
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error Occurred While Initializing DataGrid For Components Selection", ex);
-                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Error Occured. Please Check Logs", "Components Selection", MessageBoxButton.OK, MessageBoxImage.Error);
-                Application.Current.Shutdown();
+                ErrorHandler.ShowFatalErrorMesage(Window.GetWindow(this), "Components Selection");
             }
         }
         public ComponentsSelectUserControl()
@@ -102,6 +100,22 @@ namespace MigrationTool.Views
         {
             this.databaseTextBlock.Text = DatabaseHelper.GetDatabaseName(Common.ConnectionStrings.GetConnectionString(group));
             this.serverTextBlock.Text= DatabaseHelper.GetServerName(Common.ConnectionStrings.GetConnectionString(group));
+        }
+
+        private void selectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            ComponentsCheckList.SelectedItemsOverride = SourceComponents.ToList();
+            SelectedComponents = SourceComponents.ToList();
+            ComponentsCheckList.Items.Refresh();
+            NotifySelectionChanged();
+        }
+
+        private void deselectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            ComponentsCheckList.SelectedItemsOverride.Clear();
+            SelectedComponents.Clear();
+            ComponentsCheckList.Items.Refresh();
+            NotifySelectionChanged();
         }
     }
 }
