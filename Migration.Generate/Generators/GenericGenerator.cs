@@ -38,9 +38,10 @@ namespace Migration.Generate.Generators
             {
                 //Get Entity Type
                 Type entityType = Type.GetType(component.DomainType);
+                
                 if (entityType == null)
                     throw new Exception("Error in Domain Type -" + component.DomainType);
-                System.Threading.Thread.Sleep(10000);
+
                 //Get Data From Legacy/Old Database
                 var query = GetSourceQuery(component.Name);
                 resultSet = SqlOperation.ExecuteQueryOnSource(query);

@@ -89,6 +89,7 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\DatabaseHelper.cs" />
     <Compile Include="Helpers\Enums.cs" />
+	<Compile Include="Helpers\ErrorHandler.cs" />
     <Compile Include="Views\ComponentsProcessUserControl.xaml.cs">
       <DependentUpon>ComponentsProcessUserControl.xaml</DependentUpon>
     </Compile>

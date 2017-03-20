@@ -45,9 +45,39 @@ namespace MigrationTool.Views
             SourceSites = GetNotMigratedSites(group);
             srcListBox.DisplayMemberPath = "Value";
             selectedListBox.DisplayMemberPath = "Value";
+
             Logger.Instance.LogInfo("Site Selection for Group - " + group);
+            
+            srcListBox.ItemsSource = SourceSites;
+            selectedListBox.ItemsSource = SelectedSites;
+
+            CollectionView srcView = (CollectionView)CollectionViewSource.GetDefaultView(srcListBox.ItemsSource);
+            srcView.Filter = SrcSiteFilter;
+
+            CollectionView selectView = (CollectionView)CollectionViewSource.GetDefaultView(selectedListBox.ItemsSource);
+            selectView.Filter = SelectedSiteFilter;
+
+
+
             ResetListBoxes();
         }
+
+        private bool SelectedSiteFilter(object obj)
+        {
+            if (String.IsNullOrEmpty(selectedSitesFltrTxtBox.Text))
+                return true;
+            else
+                return ((obj as KeyValuePair<string, string>?).Value.Value.IndexOf(selectedSitesFltrTxtBox.Text, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        private bool SrcSiteFilter(object obj)
+        {
+            if (String.IsNullOrEmpty(srcSitesFltrTxtBox.Text))
+                return true;
+            else
+                return ((obj as KeyValuePair<string, string>?).Value.Value.IndexOf(srcSitesFltrTxtBox.Text, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
         public Dictionary<string, string> GetSelectedSites()
         {
             Logger.Instance.LogInfo("Selected Sites : " + string.Join(",", SelectedSites.Select(t => t.Key)));
@@ -60,6 +90,7 @@ namespace MigrationTool.Views
                 var selectedItems = srcListBox.SelectedItems.Cast<KeyValuePair<string, string>>().ToList();
                 selectedItems.ForEach(item => SelectedSites.Add(item.Key, item.Value));
                 selectedItems.ForEach(t => SourceSites.Remove(t.Key));
+                SourceSites.OrderBy(t => t.Value);
                 ResetListBoxes();
             }
             catch (Exception ex)
@@ -111,10 +142,10 @@ namespace MigrationTool.Views
         }
         private void ResetListBoxes()
         {
-            srcListBox.ItemsSource = SourceSites.OrderBy(t=>t.Value).ToList();
-            selectedListBox.ItemsSource = SelectedSites.OrderBy(t => t.Value).ToList();
-            srcListBox.Items.Refresh();
-            selectedListBox.Items.Refresh();
+            SelectedSites.OrderBy(t => t.Value);
+            CollectionViewSource.GetDefaultView(srcListBox.ItemsSource).Refresh();
+            CollectionViewSource.GetDefaultView(selectedListBox.ItemsSource).Refresh();
+            UpdateStatusBar();
             NotifySelectionChanged();
         }
         private Dictionary<string, string> GetNotMigratedSites(GroupType group)
@@ -130,14 +161,29 @@ namespace MigrationTool.Views
             {
                 Logger.Instance.LogError("Error occurred While retrieving not migrated Sites", ex);
             }
+            allSites.OrderBy(t => t.Value);
             return allSites;
         }
         private void NotifySelectionChanged()
         {
-            var selected = selectedListBox.Items.Cast<KeyValuePair<string, string>>().ToList();
+            var selected = selectedListBox.ItemsSource.Cast<KeyValuePair<string, string>>().ToList();
             var isEmpty = selected.Count > 0 ? false : true;
             SitesSelectionChangedEventArgs args = new SitesSelectionChangedEventArgs(isEmpty);
             OnSitesSelectionChanged?.Invoke(this, args);
+        }
+
+        private void srcSitesFltrTxtBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(srcListBox.ItemsSource).Refresh();
+        }
+
+        private void selectedSitesFltrTxtBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(selectedListBox.ItemsSource).Refresh();
+        }
+        private void UpdateStatusBar()
+        {
+            statusTextBlock.Text = $"{selectedListBox.Items.Count} of {srcListBox.Items.Count + selectedListBox.Items.Count} sites selected.";
         }
     }
 }
