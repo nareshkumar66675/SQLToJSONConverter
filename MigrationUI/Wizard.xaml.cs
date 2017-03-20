@@ -94,7 +94,7 @@ namespace MigrationTool
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error While Navigating to Next Page", ex);
-                ErrorHandler.ShowFatalErrorMesage(Window.GetWindow(this), "Error");
+                ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Error");
             }
         }
         private void AuthDB_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)

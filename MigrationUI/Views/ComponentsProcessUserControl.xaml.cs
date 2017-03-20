@@ -66,7 +66,7 @@ namespace MigrationTool.Views
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error While Initializing DataGrid For Components Process",ex);
-                ErrorHandler.ShowFatalErrorMesage(Window.GetWindow(this), "Process Status");
+                ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Process Status");
             }
         }
 
@@ -107,6 +107,7 @@ namespace MigrationTool.Views
             {   
                 Generate generate = new Generate();
                 Persist persist = new Persist();
+
                 var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
                 var progressPersist = new Progress<ProcessStatus>(PersistProgress);
 
@@ -119,9 +120,7 @@ namespace MigrationTool.Views
                 Dispatcher.Invoke(() =>
                 {
                     ProcessCompleted?.Invoke(sender, e);
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this),"Completed", "Process Status", MessageBoxButton.OK, MessageBoxImage.Information);
-                    Logger.Instance.LogInfo("Components Processs Completed");
-                    //table.Clear();
+                    ShowCompletedMessage();
                 });
             }
             catch (Exception ex)
@@ -187,6 +186,22 @@ namespace MigrationTool.Views
             {
                 Logger.Instance.LogError("Error Occured While Updating Generate Progress Bars", ex);
             }
+        }
+
+        private void ShowCompletedMessage()
+        {
+            string message = string.Empty;
+            var failedCount = table.AsEnumerable().Count(t => (t.Field<string>("Status") == Status.Failed.GetDescription()));
+            if (failedCount > 0)
+            {
+                message = $"Completed with Errors. {failedCount} of { table.AsEnumerable().Count()} failed.";   
+            }
+            else
+            {
+                message = "Completed Successfully.";  
+            }
+            ErrorHandler.ShowErrorMsgWtLog(Window.GetWindow(this), "Process Status", message);
+            Logger.Instance.LogInfo(message);
         }
     }
 }

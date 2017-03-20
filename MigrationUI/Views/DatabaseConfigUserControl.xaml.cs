@@ -88,7 +88,7 @@ namespace MigrationTool.Views
                     catch (Exception ex)
                     {
                         Logger.Instance.LogError("Error occurred while selecting database", ex);
-                        ErrorHandler.ShowFatalErrorMesage(Window.GetWindow(this), "Database Connection");
+                        ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Database Connection");
                     }
                 };
                 worker.RunWorkerAsync();

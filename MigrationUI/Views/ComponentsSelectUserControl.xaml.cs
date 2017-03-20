@@ -61,7 +61,7 @@ namespace MigrationTool.Views
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error Occurred While Initializing DataGrid For Components Selection", ex);
-                ErrorHandler.ShowFatalErrorMesage(Window.GetWindow(this), "Components Selection");
+                ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Components Selection");
             }
         }
         public ComponentsSelectUserControl()

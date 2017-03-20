@@ -14,19 +14,37 @@ namespace MigrationTool.Helpers
         /// Shows an Error Message and Terminates the Application.
         /// Option is given to view Log File.
         /// </summary>
-        /// <param name="window">Window</param>
+        /// <param name="window">Window - for Message Box Positioning</param>
         /// <param name="messageBoxTitle">Message Box Title</param>
-        public static void ShowFatalErrorMesage(Window window,string messageBoxTitle)
+        public static void ShowFatalErrorMsgWtLog(Window window,string messageBoxTitle)
         {
             var result= Xceed.Wpf.Toolkit.MessageBox.Show(window, "Error Occurred. Terminating Application.\nClick Yes to View Log", messageBoxTitle, MessageBoxButton.YesNo, MessageBoxImage.Error);
 
             Logger.Instance.LogInfo("Application Terminated Abnormally");
 
             if(result==MessageBoxResult.Yes)
-            {
-                System.Diagnostics.Process.Start(Logger.LogFileName);
-            }
+                ShowLog();
+
             Application.Current.Shutdown();
+        }
+
+        /// <summary>
+        /// Shows Error Message with an option to check Log
+        /// </summary>
+        /// <param name="window">Window - for Message Box Positioning</param>
+        /// <param name="messageBoxTitle">Message Box Title</param>
+        /// <param name="message">Custom Message</param>
+        public static void ShowErrorMsgWtLog(Window window, string messageBoxTitle,string message)
+        {
+            var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, $"{message} \nClick Yes to View Log", messageBoxTitle, MessageBoxButton.YesNo, MessageBoxImage.Error);
+
+            if (result == MessageBoxResult.Yes)
+                ShowLog();
+        }
+
+        private static void ShowLog()
+        {
+            System.Diagnostics.Process.Start(Logger.LogFileName);
         }
     }
 }
