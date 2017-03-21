@@ -541,4 +541,41 @@
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
   </Transformation>
+<Transformation Name="PROGRESSIVE">
+    <Source>
+      select mtr.prgp_id as Id,
+    ---ASSET ID -----
+    --1 as AssetId_Id,
+mtr.prgp_id as AssetId_Id,
+11 as AssetId_AssetTypeDefinitionId,
+----SITE----------
+Site_SiteId,
+Site_SiteName,
+Site_SiteNumber,
+Site_IsDeleted,
+Site_OrganizationId, -- mapping needed
+Site_OrganizationName,
+-----
+Options_Id,
+Options_Name,
+Options_Code,
+Options_Value,
+
+-----InlineAssets----
+0 as InlineAssets_Id,
+213 as InlineAssets_AssetId_AssetTypeDefinitionId,
+0 as InlineAssets_AssetId_Id,
+-----Options------
+InlineAssets_Id as InlineAssets_Options_Id,
+InlineAssets_Name as InlineAssets_Options_Name,
+InlineAssets_Code as InlineAssets_Options_Code,
+InlineAssets as InlineAssets_Options_Value
+--select *
+from MIGRATION.VIEW_PROGRESSIVE_METERS as mtr 
+left join MIGRATION.VIEW_POOL AS P on p.prgp_id = mtr.PRGP_ID and mtr.InlineAssets_Id = Options_Id
+order by mtr.PRGP_ID, mtr.InlineAssets_Id
+    </Source>
+    <Destination>[DataManagement].[Asset]</Destination>
+    <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
+  </Transformation>
 </TransformationConfig>

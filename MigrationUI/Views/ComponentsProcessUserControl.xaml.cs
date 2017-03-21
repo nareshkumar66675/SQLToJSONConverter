@@ -104,7 +104,9 @@ namespace MigrationTool.Views
         {
             var components = e.Argument as Components;
             try
-            {   
+            {
+                await RunPrequisites();
+
                 Generate generate = new Generate();
                 Persist persist = new Persist();
 
@@ -126,8 +128,14 @@ namespace MigrationTool.Views
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Processing Components Failed for Group -" + components.Group.FirstOrDefault().Name??"", ex);
-                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Failed", "Process Status", MessageBoxButton.OK, MessageBoxImage.Error);
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Process Failed", "Process Status", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private async Task RunPrequisites()
+        {
+            if(table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.ASSET.GetDescription()))>0)
+                await Task.Run(()=>DatabaseHelper.InsertComponentDefinition());
         }
 
         private void PersistProgress(ProcessStatus processStatus)
@@ -194,13 +202,14 @@ namespace MigrationTool.Views
             var failedCount = table.AsEnumerable().Count(t => (t.Field<string>("Status") == Status.Failed.GetDescription()));
             if (failedCount > 0)
             {
-                message = $"Completed with Errors. {failedCount} of { table.AsEnumerable().Count()} failed.";   
+                message = $"Completed with Errors. {failedCount} of { table.AsEnumerable().Count()} failed.";
+                ErrorHandler.ShowErrorMsgWtLog(Window.GetWindow(this), "Process Status", message);
             }
             else
             {
-                message = "Completed Successfully.";  
-            }
-            ErrorHandler.ShowErrorMsgWtLog(Window.GetWindow(this), "Process Status", message);
+                message = "Completed Successfully.";
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), message, "Process Status", MessageBoxButton.OK, MessageBoxImage.Information);
+            }        
             Logger.Instance.LogInfo(message);
         }
     }
