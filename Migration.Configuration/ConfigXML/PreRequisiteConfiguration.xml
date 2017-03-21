@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PreRequisiteConfig>
+  <PreRequisite Name ="NewMigrationTables" ScriptFilePath="Scripts/T_NewMigration.sql" Skip="False"/>
+  <PreRequisite Name ="LegacyMigrationTables" ScriptFilePath="Scripts/T_LegacyMigration.sql" Skip="False"/>
+  <PreRequisite Name ="AstDfnIdInsert" ScriptFilePath="Scripts/SP_AstDefinition.sql" Skip="False"/>
+  <PreRequisite Name ="LegacyViews" ScriptFilePath="Scripts/V_Legacy.sql" Skip="False"/>
+</PreRequisiteConfig>

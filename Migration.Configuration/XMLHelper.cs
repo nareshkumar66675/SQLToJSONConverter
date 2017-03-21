@@ -17,21 +17,29 @@ namespace Migration.Configuration
     {
         public static Transformations Transforms { get; set; }
         public static Components Components { get; set; }
+        public static PreRequisites PreRequisites { get; set; }
         static XMLHelper()
         {
             try
             {
                 XmlSerializer serializerTransformations = new XmlSerializer(typeof(Transformations));
                 XmlSerializer serializerComponents = new XmlSerializer(typeof(Components));
+                XmlSerializer serializerPreRequisite = new XmlSerializer(typeof(PreRequisites));
 
                 string transformFilePath = "ConfigXML/TransformationConfiguration.xml";
                 string componentFilePath = "ConfigXML/ComponentConfiguration.xml";
+                string preReqFilePath = "ConfigXML/PreRequisiteConfiguration";
+
+                using (StreamReader readerPreRequisites = new StreamReader(preReqFilePath))
+                {
+                    PreRequisites = (PreRequisites)serializerPreRequisite.Deserialize(readerPreRequisites);
+                }
 
                 if (File.Exists(transformFilePath) && File.Exists(componentFilePath)) // For Unit Test - Need to handle Properly 
                 {
                     if (Validate(transformFilePath, Resources.TransformationXSD))
                     {
-                        using (StreamReader readerTransformations = new StreamReader("ConfigXML/TransformationConfiguration.xml"))
+                        using (StreamReader readerTransformations = new StreamReader(transformFilePath))
                         {
                             Transforms = (Transformations)serializerTransformations.Deserialize(readerTransformations);
                         }
@@ -41,7 +49,7 @@ namespace Migration.Configuration
 
                     if (Validate(componentFilePath, Resources.ComponentXSD))
                     {
-                        using (StreamReader readerComponents = new StreamReader("ConfigXML/ComponentConfiguration.xml"))
+                        using (StreamReader readerComponents = new StreamReader(componentFilePath))
                         {
                             Components = (Components)serializerComponents.Deserialize(readerComponents);
                         }

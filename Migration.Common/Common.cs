@@ -176,6 +176,23 @@ namespace Migration.Common
                 }
                 private set { }
             }
+            public static string GetCompletedPreRequisites
+            {
+                get
+                {
+                    return "SELECT PreRequisiteName FROM [Migration].[PreRequisite] WHERE Status='Success'";
+                }
+                private set { }
+            }      
+            public static string InsertPreRequisites
+            {
+                get
+                {
+                    return "INSERT INTO[Migration].[PreRequisite] (PreRequisiteName,Status,CreatedTime) VALUES(@Name, @Status, GETDATE())";
+                }
+                private set { }
+            }
+
         }
     }
 }

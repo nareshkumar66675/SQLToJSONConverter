@@ -193,6 +193,10 @@
       <Project>{24A7F3B1-1DD3-40B3-817D-7D6C6483A167}</Project>
       <Name>Migration.Persistence</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Migration.PreRequisite\Migration.PreRequisite.csproj">
+      <Project>{c01f0bcb-b583-4350-a1b1-41a11dff5180}</Project>
+      <Name>Migration.PreRequisite</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Migration.ProcessQueue\Migration.ProcessQueue.csproj">
       <Project>{12d20e9d-834a-439a-a8b4-9a48c5d16e3d}</Project>
       <Name>Migration.ProcessQueue</Name>

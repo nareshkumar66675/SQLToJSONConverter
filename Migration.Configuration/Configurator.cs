@@ -2,6 +2,7 @@
 using Migration.Configuration.ConfigObject;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -142,6 +143,17 @@ namespace Migration.Configuration
         public static ColumnMapping GetColumnMapping(string componentName)
         {
             return GetTransformationEnumerable(componentName).Select(t => t.ColumnMapping)?.FirstOrDefault();
+        }
+        /// <summary>
+        /// Get Script File Content based on PreRequisite Name
+        /// </summary>
+        /// <param name="preReqName"></param>
+        /// <returns></returns>
+        public static string GetScriptFile(string preReqName)
+        {
+            var filePath=XMLHelper.PreRequisites.PreRequisite.Where(t => t.Name == preReqName)?.FirstOrDefault().ScriptFilePath;
+
+            return File.ReadAllText(filePath);
         }
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)

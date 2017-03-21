@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C259A426-7959-4DEB-B711-29C768C6986E}</ProjectGuid>
+    <ProjectGuid>{C01F0BCB-B583-4350-A1B1-41A11DFF5180}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Migration.Configuration</RootNamespace>
-    <AssemblyName>Migration.Configuration</AssemblyName>
+    <RootNamespace>Migration.PreRequisite</RootNamespace>
+    <AssemblyName>Migration.PreRequisite</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -41,48 +41,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigObject\ComponentConfig.cs" />
-    <Compile Include="ConfigObject\PreRequisiteConfig.cs" />
-    <Compile Include="ConfigObject\TransformationConfig.cs" />
-    <Compile Include="Configurator.cs" />
+    <Compile Include="AbstractFacade.cs" />
+    <Compile Include="Facades\AssetFacade.cs" />
+    <Compile Include="Facades\AuthFacade.cs" />
+    <Compile Include="Facades\LegacyFacade.cs" />
+    <Compile Include="Helpers\SqlOperation.cs" />
+    <Compile Include="IPreRequisite.cs" />
+    <Compile Include="PreReqStatus.cs" />
+    <Compile Include="PreRequisites\ExecuteScriptPreRequisite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="XMLHelper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ConfigXML\ComponentConfiguration.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="ConfigXML\PreRequisiteConfiguration.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="ConfigXML\TransformationConfiguration.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
-    <None Include="Resources\TransformationXSD.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Resources\ComponentXSD.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Migration.Common\Migration.Common.csproj">
       <Project>{96e1e9e6-b206-4ca0-af79-0ca3ec31f997}</Project>
       <Name>Migration.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Migration.Configuration\Migration.Configuration.csproj">
+      <Project>{c259a426-7959-4deb-b711-29c768c6986e}</Project>
+      <Name>Migration.Configuration</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <Content Include="Scripts\V_Legacy.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\SP_AstDefinition.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\T_LegacyMigration.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\T_NewMigration.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
