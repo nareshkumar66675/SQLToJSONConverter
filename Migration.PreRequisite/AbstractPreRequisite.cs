@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static Migration.Common.Common;
 
@@ -14,7 +15,7 @@ namespace Migration.PreRequisite
         Auth,
         Asset
     }
-    public abstract class AbstractFacade
+    public abstract class AbstractPreRequisite
     {
         public abstract List<IPreRequisite> PreRequisites { get;  }
         public abstract FacadeType Type { get; }
@@ -26,6 +27,7 @@ namespace Migration.PreRequisite
             foreach (var item in items)
             {
                 var rslt = item.Execute();
+                Thread.Sleep(10000);
                 if(rslt)
                 {
                     //Report Progress

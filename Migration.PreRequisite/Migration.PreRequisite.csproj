@@ -45,13 +45,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractFacade.cs" />
+    <Compile Include="AbstractPreRequisite.cs" />
     <Compile Include="Facades\AssetFacade.cs" />
     <Compile Include="Facades\AuthFacade.cs" />
     <Compile Include="Facades\LegacyFacade.cs" />
     <Compile Include="Helpers\SqlOperation.cs" />
     <Compile Include="IPreRequisite.cs" />
     <Compile Include="PreReqStatus.cs" />
+    <Compile Include="PreRequisiteFactory.cs" />
     <Compile Include="PreRequisites\ExecuteScriptPreRequisite.cs" />
     <Compile Include="PreRequisites\InsertCompDefinitionIdPreRequisite.cs" />
     <Compile Include="PreRequisites\UMDataRetrievalPreRequisite.cs" />

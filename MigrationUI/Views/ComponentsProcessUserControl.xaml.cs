@@ -3,6 +3,7 @@ using Migration.Configuration;
 using Migration.Configuration.ConfigObject;
 using Migration.Generate;
 using Migration.Persistence;
+using Migration.PreRequisite;
 using Migration.ProcessQueue;
 using MigrationTool.Helpers;
 using System;
@@ -18,6 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using Xceed.Wpf.DataGrid;
+using Xceed.Wpf.Toolkit;
 
 namespace MigrationTool.Views
 {
@@ -134,8 +136,35 @@ namespace MigrationTool.Views
 
         private async Task RunPrequisites()
         {
-            if(table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.ASSET.GetDescription()))>0)
-                await Task.Run(()=>DatabaseHelper.InsertComponentDefinition());
+            var progressPreRequisite = new Progress<PreReqProgress>(PreRequisiteProgress);
+
+            Dispatcher.Invoke(() =>
+            {
+                ProcessingIndicator.IsBusy = true;
+                processText.Text = string.Empty;
+            });
+
+            if (table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.ASSET.GetDescription()))>0)
+                await Task.Run(()=>PreRequisiteFactory.GetPreRequistes(GroupType.ASSET).Start(progressPreRequisite));
+            else if(table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.AUTH.GetDescription())) > 0)
+                await Task.Run(() => PreRequisiteFactory.GetPreRequistes(GroupType.AUTH).Start(progressPreRequisite));
+        }
+
+        private void PreRequisiteProgress(PreReqProgress preReqStatus)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (preReqStatus.TotalCount == preReqStatus.CompletedCount)
+                {
+                    ProcessingIndicator.IsBusy = false; ;
+                }
+                else
+                {
+                    processText.Text = $"Completed {preReqStatus.CompletedCount} of {preReqStatus.TotalCount} ";
+                    preReqProcessBar.Maximum = preReqStatus.TotalCount;
+                    preReqProcessBar.Value = preReqStatus.CompletedCount;
+                }
+            });
         }
 
         private void PersistProgress(ProcessStatus processStatus)

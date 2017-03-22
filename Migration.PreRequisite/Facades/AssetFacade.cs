@@ -8,7 +8,7 @@ using Migration.PreRequisite.PreRequisites;
 
 namespace Migration.PreRequisite.Facades
 {
-    public class AssetFacade : AbstractFacade
+    public class AssetFacade : AbstractPreRequisite
     {
         private List<IPreRequisite> _assetPreRequisites = new List<IPreRequisite>();
         private string _connectionString = ConnectionStrings.AuthConnectionString;

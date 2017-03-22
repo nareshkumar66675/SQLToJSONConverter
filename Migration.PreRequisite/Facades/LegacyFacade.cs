@@ -8,7 +8,7 @@ using static Migration.Common.Common;
 
 namespace Migration.PreRequisite.Facades
 {
-    class LegacyFacade : AbstractFacade
+    class LegacyFacade : AbstractPreRequisite
     {
         private List<IPreRequisite> _legacyPreRequisites = new List<IPreRequisite>();
         private string _connectionString = ConnectionStrings.LegacyConnectionString;
