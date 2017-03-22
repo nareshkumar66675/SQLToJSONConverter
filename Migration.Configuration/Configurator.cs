@@ -151,9 +151,24 @@ namespace Migration.Configuration
         /// <returns></returns>
         public static string GetScriptFile(string preReqName)
         {
-            var filePath=XMLHelper.PreRequisites.PreRequisite.Where(t => t.Name == preReqName)?.FirstOrDefault().ScriptFilePath;
+            string script;
+            var filePath=XMLHelper.PreRequisites.PreRequisite.Where(t => t.Name == preReqName).FirstOrDefault()?.ScriptFilePath;
+            if (filePath == null || string.IsNullOrWhiteSpace(filePath))
+                throw new Exception("Script File Not Configured");
 
-            return File.ReadAllText(filePath);
+            try
+            {
+                script = File.ReadAllText(filePath);
+            }
+            catch (Exception ex)
+            {
+                throw new FileNotFoundException("Script File Not found", ex);
+            }
+
+            if (script == null || string.IsNullOrWhiteSpace(script))
+                throw new Exception("Script file is Empty.");
+
+            return script;
         }
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)

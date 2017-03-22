@@ -3,6 +3,7 @@ using Microsoft.SqlServer.Management.Smo;
 using Migration.Common;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Migration.PreRequisite.Helpers
 {
     internal static class SqlOperation
     {
-        public static bool CheckIfTableExists(string connectionString, string tableName)
+        internal static bool CheckIfTableExists(string connectionString, string tableName)
         {
             bool exists;
             using (SqlConnection con = new SqlConnection(connectionString))
@@ -34,7 +35,29 @@ namespace Migration.PreRequisite.Helpers
             }
             return exists;
         }
-        public static List<string> GetAllCompletedPreRequisites(string connectionString)
+
+        internal static string GetDataFromUserMatrix(string query)
+        {
+            StringBuilder dataScript = new StringBuilder();
+
+            using (var conn = new SqlConnection(GetUMConnectionString()))
+            {
+                conn.Open();
+                using (SqlCommand legacyCommand = new SqlCommand(query, conn))
+                {
+                    using (IDataReader dr = legacyCommand.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            dataScript.Append(dr.GetString(0));
+                        }
+                    }
+                }
+            }
+            return dataScript.ToString();
+        }
+
+        internal static List<string> GetAllCompletedPreRequisites(string connectionString)
         {
             List<string> completedList = new List<string>();
 
@@ -68,7 +91,7 @@ namespace Migration.PreRequisite.Helpers
                 command.Connection = conn;
                 try
                 {
-                    //Insert Records to Report Table
+                    //Insert Records to PreRequisite Status Table
                     command.CommandText = Queries.InsertPreRequisites;
                     command.Parameters.Add(new SqlParameter("@Name", name));
                     command.Parameters.Add(new SqlParameter("@Status", status));
@@ -81,21 +104,16 @@ namespace Migration.PreRequisite.Helpers
             }
         }
 
-        public static bool ExecuteQuery(string connectionString, string query)
+        internal static bool ExecuteQuery(string connectionString, string query)
         {
             try
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    //SqlCommand command = conn.CreateCommand();
-                    //SqlTransaction transaction;
-                    //transaction = conn.BeginTransaction();
-                    //command.Connection = conn;
-                    //command.Transaction = transaction;
 
-                    //command.CommandText = query;
-                    //command.CommandType = CommandType.Text;
+                    /*Using SQL Server SMO Object
+                      Since SqlComand Doesn't support scripts with GO*/
                     Server server = new Server();
                     try
                     {
@@ -103,15 +121,12 @@ namespace Migration.PreRequisite.Helpers
                         server.ConnectionContext.BeginTransaction();
                         server.ConnectionContext.ExecuteNonQuery(query);
                         server.ConnectionContext.CommitTransaction();
-                        //command.ExecuteNonQuery();
-                        //transaction.Commit();
                     }
                     catch (Exception ex)
                     {
                         try
                         {
                             server.ConnectionContext.RollBackTransaction();
-                            //transaction.Rollback();
                             throw new Exception("Error Ocurred while Executing PreRequisites - Rollbacked", ex);
                         }
                         catch (Exception)
@@ -129,7 +144,7 @@ namespace Migration.PreRequisite.Helpers
             }
             return true;
         }
-        public static bool InsertComponentDefinition(string connectionString)
+        internal static bool InsertComponentDefinition(string connectionString)
         {
             try
             {
@@ -218,7 +233,7 @@ namespace Migration.PreRequisite.Helpers
                 return false;
             }
         }
-        public static string GetConnectionString(this FacadeType type)
+        internal static string GetConnectionString(this FacadeType type)
         {
             switch (type)
             {
@@ -231,6 +246,13 @@ namespace Migration.PreRequisite.Helpers
                 default:
                     return "";
             }
+        }
+        private static string GetUMConnectionString()
+        {
+            var temp =ConfigurationManager.ConnectionStrings["UserMatrixDB"]?.ConnectionString;
+            if (temp == null || string.IsNullOrWhiteSpace(temp))
+                throw new Exception("User Matrix DB details not found");
+            return temp;
         }
 
     }

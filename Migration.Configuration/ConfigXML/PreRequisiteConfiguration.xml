@@ -5,4 +5,5 @@
   <PreRequisite Name ="AssetDefinitionParseSP" ScriptFilePath="Scripts/SP_AstDefinition.sql" Skip="False"/>
   <PreRequisite Name ="LegacyViews" ScriptFilePath="Scripts/V_Legacy.sql" Skip="False"/>
   <PreRequisite Name ="AuthStaticData" ScriptFilePath="Scripts/D_AuthDefaultInserts.sql" Skip="False"/>
+  <PreRequisite Name ="UMDataRetrieval" ScriptFilePath="Scripts/D_UserMatrixData.sql" Skip="False"/>
 </PreRequisiteConfig>
