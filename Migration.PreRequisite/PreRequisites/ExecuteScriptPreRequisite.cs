@@ -10,11 +10,13 @@ namespace Migration.PreRequisite.PreRequisites
 {
     public class ExecuteScriptPreRequisite : IPreRequisite
     {
-        public ExecuteScriptPreRequisite(string name)
+        private readonly string _name = string.Empty;
+        private readonly string _connectionString = string.Empty;
+        public ExecuteScriptPreRequisite(string name,string connString)
         {
             _name = name;
+            _connectionString = connString;
         }
-        private string _name = string.Empty;
         public string Name
         {
             get
@@ -22,10 +24,10 @@ namespace Migration.PreRequisite.PreRequisites
                 return _name;
             }
         }
-        public bool Execute(string connectionString)
+        public bool Execute()
         {
             string sqlQuery = Configurator.GetScriptFile(_name);
-            return SqlOperation.ExecuteQuery(connectionString, sqlQuery);
+            return SqlOperation.ExecuteQuery(_connectionString, sqlQuery);
         }
     }
 }

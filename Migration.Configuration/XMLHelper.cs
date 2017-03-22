@@ -28,7 +28,7 @@ namespace Migration.Configuration
 
                 string transformFilePath = "ConfigXML/TransformationConfiguration.xml";
                 string componentFilePath = "ConfigXML/ComponentConfiguration.xml";
-                string preReqFilePath = "ConfigXML/PreRequisiteConfiguration";
+                string preReqFilePath = "ConfigXML/PreRequisiteConfiguration.xml";
 
                 using (StreamReader readerPreRequisites = new StreamReader(preReqFilePath))
                 {

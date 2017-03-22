@@ -2,6 +2,7 @@
 <PreRequisiteConfig>
   <PreRequisite Name ="NewMigrationTables" ScriptFilePath="Scripts/T_NewMigration.sql" Skip="False"/>
   <PreRequisite Name ="LegacyMigrationTables" ScriptFilePath="Scripts/T_LegacyMigration.sql" Skip="False"/>
-  <PreRequisite Name ="AstDfnIdInsert" ScriptFilePath="Scripts/SP_AstDefinition.sql" Skip="False"/>
+  <PreRequisite Name ="AssetDefinitionParseSP" ScriptFilePath="Scripts/SP_AstDefinition.sql" Skip="False"/>
   <PreRequisite Name ="LegacyViews" ScriptFilePath="Scripts/V_Legacy.sql" Skip="False"/>
+  <PreRequisite Name ="AuthStaticData" ScriptFilePath="Scripts/D_AuthDefaultInserts.sql" Skip="False"/>
 </PreRequisiteConfig>

@@ -11,13 +11,19 @@ namespace Migration.PreRequisite
     {
         [Description("Not Needed")]
         NotNeeded,
-        [Description("Completed")]
-        Completed,
+        [Description("Success")]
+        Success,
         [Description("Failed")]
         Failed
     }
     public class PreReqProgress
     {
+        public PreReqProgress(int totalCount, int completedCount, List<PreReqItem> completed)
+        {
+            this.TotalCount = totalCount;
+            this.CompletedCount = completedCount;
+            this.Completed = completed;
+        }
         public int TotalCount { get; set; }
         public List<PreReqItem> Completed { get; set; }
         public int CompletedCount { get; set; }

@@ -1,4 +1,6 @@
-﻿using Migration.ProcessQueue;
+﻿using Migration.PreRequisite;
+using Migration.PreRequisite.Facades;
+using Migration.ProcessQueue;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -70,7 +72,8 @@ namespace Migration.Test
             //a.Wait();
             //Persistence.Persist per = new Persistence.Persist();
 
-
+            AuthFacade fc = new AuthFacade();
+            fc.Start(null);
         }
     }
 }

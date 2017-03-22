@@ -6,6 +6,24 @@ EXEC sys.sp_executesql N'CREATE SCHEMA [Migration]'
 
 GO
 
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Migration].[PreRequisite]') AND type in (N'U'))
+DROP TABLE [Migration].[PreRequisite]
+GO
+
+
+CREATE TABLE [Migration].[PreRequisite](
+	[PreRequisiteId] [int] IDENTITY(1,1) NOT NULL,
+	[PreRequisiteName] [nvarchar](50) NULL,
+	[Status] [nvarchar](50) NULL,
+	[CreatedTime] [datetime] NULL,
+ CONSTRAINT [PK_PreRequisite] PRIMARY KEY CLUSTERED 
+(
+	[PreRequisiteId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Migration].[Report]') AND type in (N'U'))
 BEGIN
 DROP Table [Migration].[Report]

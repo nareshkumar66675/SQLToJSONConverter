@@ -9,6 +9,6 @@ namespace Migration.PreRequisite
     public interface IPreRequisite
     {
         string Name { get; }
-        bool Execute(string connectionString);
+        bool Execute();
     }
 }
