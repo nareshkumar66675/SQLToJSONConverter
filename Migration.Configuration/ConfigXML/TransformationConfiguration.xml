@@ -10,7 +10,7 @@
       st.SITE_short_NAME as VenueCode,
       st.SITE_CODE as Code,
       --'Rot' as ParentCode,
-	  coalesce(PROP_PARENT_CODE,PROP_SHORT_NAME) as ParentCode,
+      coalesce(PROP_PARENT_CODE,P.PROP_SHORT_NAME) as ParentCode,
       p.PROP_SHORT_NAME as ServiceProviderCode,
       --st.SITE_TIMEZONE_ID as Timezone,
       'AUS Eastern Standard Time' as Timezone,
@@ -24,7 +24,7 @@
       cast(1 as bit) as IsActive,
       cast(0 as bit) as IsDeleted,
       --2 as DepthLevel,
-	   coalesce(PROP_DEPTH_LEVEL, 2) as DepthLevel,
+      coalesce(PROP_DEPTH_LEVEL, 2) as DepthLevel,
       '' as ContactInformation_Address,
       '' as ContactInformation_City,
       '' as ContactInformation_State,
@@ -42,11 +42,13 @@
       im.INS_SYSTEM_IP_ADDRESS as Products_Ip ,
       CAST(im.INS_SERVICE_PORT as VARCHAR(50)) as Products_Port
       from gam.SITE as st
+      LEFT JOIN MIGRATION.GAM_SITE AS MST ON MST.SITE_LEGCY_ID = ST.SITE_ID
       join gam.SITE_TYPE as stType on st.SITE_TYPE_ID = stType.SITE_TYPE_ID
       join gam.INSTALLED_SYSTEM_MAP  as iMap on iMap.INSM_SITE_ID = st.site_id
       join gam.INSTALLED_SYSTEM as im on im.INS_SYS_ID = iMap.INSM_SYS_ID
       join gam.[SYSTEM] as sy on sy.SYS_ID = im.SYS_ID
       join gam.PROPERTY as p on p.PROP_ID = st.SITE_PROP_ID
+      LEFT JOIN MIGRATION.GAM_PROPERTY AS MP ON MP.PROP_LEGCY_ID = P.PROP_ID
       where iMap.INSM_IS_SITE_GROUP = 0 and INS_SYSTEM_IP_ADDRESS NOT IN ('0.0.0.0')
       order by st.site_number
     </Source>
@@ -110,32 +112,36 @@
   <Transformation Name="ROLE">
     <Source>
       SELECT
-      ROLE_NEW_ID AS Id,
+      CAST(mrRle.ROLE_NEW_ID as int) AS Id,
       ROLE_NAME AS Name,
       ROLE_CODE AS Code,
       ROLE_DESCRIPTION AS [Description],
-      fnGrp.FUNCGRP_NEW_ID as TaskGroups_$
+      CAST(MG.FUNCGRP_NEW_ID as int) as TaskGroups_$
       FROM [COMMON].[USER_ROLE] as rl
+      left join MIGRATION.COMMON_USER_ROLE as mrRle on mrRle.ROLE_ID = rl.ROLE_ID
       left join [COMMON].[USER_ROLE_FUNCTION_GROUP] as fnRlMap on fnRlMap.ROLE_ID = rl.ROLE_ID
       left join [COMMON].[USER_FUNCTION_GROUP] as fnGrp on fnGrp.funcgrp_id = fnRlMap.[FUNCGRP_ID]
+      JOIN MIGRATION.COMMON_USER_FUNCTION_GROUP AS MG ON MG.FUNCGRP_ID = fnGrp.FUNCGRP_ID
       WHERE ROLE_IS_DELETED = 0 AND rl.ROLE_ID NOT IN (1)
+      order by mrRle.ROLE_NEW_ID
     </Source>
     <Destination>[Employee].[Role]</Destination>
     <KeyFormat Format="50_{0}" Keys="Id"  />
   </Transformation>
   <Transformation Name="ORG">
     <Source>
-      select CAST(RIGHT(CAST(PROP_ID AS VARCHAR(50)),5) AS BIGINT)  as Id,
-      PROP_SHORT_NAME as Code,
-	  --coalesce(PROP_PARENT_CODE,PROP_SHORT_NAME) as ParentCode,
-	  'Rot' as ParentCode,
-      PROP_LONG_NAME as Name,
+      SELECT PROP_NEW_ID  as Id,
+      MGP.PROP_SHORT_NAME as Code,
+      --coalesce(PROP_PARENT_CODE,PROP_SHORT_NAME) as ParentCode,
+      'Rot' as ParentCode,
+      GP.PROP_SHORT_NAME as Name,
       PROP_LONG_NAME as [Description],
       CONVERT(bit,'false') as IsRoot,
-	  coalesce(PROP_DEPTH_LEVEL, 2) as DepthLevel,
-	  0 as UMDataRowVersion,
-	  0 as DataRowVersion
-      from GAM.PROPERTY
+      coalesce(PROP_DEPTH_LEVEL, 2) as DepthLevel,
+      0 as UMDataRowVersion,
+      0 as DataRowVersion
+      FROM GAM.PROPERTY AS GP
+      LEFT JOIN MIGRATION.GAM_PROPERTY AS MGP ON MGP.PROP_LEGCY_ID = GP.PROP_ID
       WHERE IS_DELETED = 0 and PROP_ID not in (1,550001000000000001)
     </Source>
     <Destination>Organization.Organization</Destination>
@@ -143,13 +149,15 @@
   </Transformation>
   <Transformation Name="TSKGRP">
     <Source>
-      SELECT ROW_NUMBER() OVER (ORDER BY FUNCGRP_ID )+1 as Id,
+      SELECT
+      MG.FUNCGRP_NEW_ID as Id,
       FUNCGRP_NAME as Code,
       FUNCGRP_NAME as Name,
       FUNCGRP_DESCRIPTION as [Description]
-      FROM
-      [COMMON].[USER_FUNCTION_GROUP] WHERE FUNCGRP_ID not in (1)
-      ORDER BY FUNCGRP_ID
+      FROM [COMMON].[USER_FUNCTION_GROUP] AS FG
+      JOIN MIGRATION.COMMON_USER_FUNCTION_GROUP AS MG ON MG.FUNCGRP_ID = FG.FUNCGRP_ID
+      WHERE FG.FUNCGRP_ID NOT IN (1)
+      ORDER BY MG.FUNCGRP_NEW_ID
     </Source>
     <Destination>[Employee].[TaskGroup]</Destination>
     <KeyFormat Format="51_{0}" Keys="Id"  />
