@@ -95,6 +95,10 @@ namespace MigrationTool.Helpers
         public static List<string> GetMigratedSites(string connectionString)
         {
             List<string> SiteList = new List<string>();
+
+            if (!CheckIfTableExists(connectionString, "Migration.SiteGroup"))
+                return SiteList;
+
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 con.Open();
@@ -153,7 +157,8 @@ namespace MigrationTool.Helpers
             }
             catch (SqlException ex)
             {
-                throw new InvalidOperationException("Error Occurred While retrieving completed components", ex);
+                //throw new InvalidOperationException("Error Occurred While retrieving completed components", ex);
+                return new List<string>();//If Migration Tables Not Found - Tables Will be added through Prerequisites
             }
             return completedComp;
         }

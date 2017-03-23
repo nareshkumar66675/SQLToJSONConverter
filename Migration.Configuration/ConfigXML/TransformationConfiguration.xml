@@ -177,24 +177,31 @@
       '1_root' as cc_Components_ComponentValues_Id,
       'Model Type' as cc_Components_ComponentValues_Name,
       'Model Type' as cc_Components_ComponentValues_DisplayName,
+      'MODEL.TYPE' as cc_Components_ComponentValues_Code,
       --ChildCompoenents----
-      CAST(Components_Id as VARCHAR(50))+'_1' as cc_Components_ComponentValues_ChildComponents_Id,
+      CAST(MDLTYPE_NEW_ID as VARCHAR(50))+'_1' as cc_Components_ComponentValues_ChildComponents_Id,
       Name as cc_Components_ComponentValues_ChildComponents_Name,
       DisplayName AS cc_Components_ComponentValues_ChildComponents_DisplayName,
+      'MODEL.TYPE' AS cc_Components_ComponentValues_ChildComponents_Code,
       ----- OPTIONS ------
-      ROW_NUMBER() OVER (PARTITION BY MDLTYP_ID ORDER BY MDLTYP_ID ) AS cc_Components_ComponentValues_ChildComponents_Options_Id,
+      ROW_NUMBER() OVER (PARTITION BY MDLTYP_ID ORDER BY MDLTYP_ID desc ) AS cc_Components_ComponentValues_ChildComponents_Options_Id,
       CASE  WHEN VALUE_DESC = 'MDLTYP_SHORT_NAME' then 'Model Type Short Name'
       WHEN VALUE_DESC = 'MDLTYP_LONG_NAME' then 'Model Type Long Name'
       END AS cc_Components_ComponentValues_ChildComponents_Options_Name,
+      CASE  WHEN VALUE_DESC = 'MDLTYP_SHORT_NAME' then 'MODEL.TYPE.SHORT.NAME'
+      WHEN VALUE_DESC = 'MDLTYP_LONG_NAME' then 'MODEL.TYPE.LONG.NAME'
+      END AS cc_Components_ComponentValues_ChildComponents_Options_Code,
       VALUE as cc_Components_ComponentValues_ChildComponents_Options_Value
       FROM
-      (SELECT MDLTYP_ID,
+      (SELECT MDLTYP_ID, MDLTYPE_NEW_ID,
       MDLTYP_SHORT_NAME as Name,
       MDLTYP_LONG_NAME as DisplayName,
       ROW_NUMBER() OVER (ORDER BY MDLTYP_ID ) AS Components_Id,
       CAST(MDLTYP_SHORT_NAME AS NVARCHAR) AS MDLTYP_SHORT_NAME,
       CAST(MDLTYP_LONG_NAME AS NVARCHAR) AS MDLTYP_LONG_NAME
-      FROM GAM.MODEL_TYPE  WHERE IS_DELETED = 0 ) MDL_TYPE
+      FROM GAM.MODEL_TYPE AS BASE_MT
+      JOIN MIGRATION.GAM_MODEL_TYPE AS MG_MT ON BASE_MT.MDLTYP_ID = MG_MT.MDLTYPE_LEGCY_ID
+      WHERE BASE_MT.IS_DELETED = 0 ) MDL_TYPE
       UNPIVOT
       ( VALUE FOR VALUE_DESC IN (MDLTYP_SHORT_NAME, MDLTYP_LONG_NAME)
       ) AS T
@@ -392,45 +399,48 @@
   </Transformation>
   <Transformation Name="COMPDATA_MNF">
     <Source>
-     SELECT 122002 as Id,
-      22002 as Component_Id,	
-	  'MANUFACTURER' as Component_Code,
+      SELECT 122002 as Id,
+      22002 as Component_Id,
+      'MANUFACTURER' as Component_Code,
       --COMPONENTS---
       0 as Component_Components_SiteId,
       --Component Values---
       '1_root' as Component_Components_ComponentValues_Id,
       'Manufacturer' as Component_Components_ComponentValues_Name,
       'Manufacturer' as Component_Components_ComponentValues_DisplayName,
+      'Manufacturer' as Component_Components_ComponentValues_Code,
       --ChildCompoenents----
       CAST(Components_Id as VARCHAR(50)) +'_1' as Component_Components_ComponentValues_ChildComponents_Id,
-	  'MANUFACTURER' as  Component_Components_ComponentValues_ChildComponents_Code,
+      'MANUFACTURER' as  Component_Components_ComponentValues_ChildComponents_Code,
       Name as Component_Components_ComponentValues_ChildComponents_Name,
       DisplayName AS Component_Components_ComponentValues_ChildComponents_DisplayName,
       ----- OPTIONS ------
-     cast( ROW_NUMBER() OVER (PARTITION BY MANF_ID ORDER BY MANF_ID ) as nvarchar) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
+      cast( ROW_NUMBER() OVER (PARTITION BY MANF_ID ORDER BY MANF_ID ) as nvarchar) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
       CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'Manufacture Short Name'
       WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'Manufacture Long Name'
       WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'Code'
       END AS Component_Components_ComponentValues_ChildComponents_Options_Name,
-	
-	  CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'MANF.SHORT.NAME'
+
+      CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'MANF.SHORT.NAME'
       WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'MANF.LONG.NAME'
       WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'MANUF.CODE'
       END AS Component_Components_ComponentValues_ChildComponents_Options_Code,
 
       VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value
       FROM
-      (SELECT MANF_ID,MANF_SHORT_NAME as Name, MANF_LONG_NAME as DisplayName,
-      ROW_NUMBER() OVER (ORDER BY MANF_ID ) AS Components_Id,
+      (SELECT MANF_ID, MANF_SHORT_NAME as Name, MANF_LONG_NAME as DisplayName,
+      ROW_NUMBER() OVER (ORDER BY MF_NEW_ID ) AS Components_Id,
       CAST(MANF_SHORT_NAME AS NVARCHAR) AS MANF_SHORT_NAME,
       CAST(MANF_LONG_NAME AS NVARCHAR) AS MANF_LONG_NAME,
       CAST(MANF_VEND_CODE AS NVARCHAR) AS MANF_VEND_CODE
-      FROM GAM.MANUFACTURER  WHERE IS_DELETED = 0 AND MANF_IS_VENDOR = 0) MFN
+      FROM GAM.MANUFACTURER
+      JOIN MIGRATION.GAM_MANUFACTURER ON MNF_LEGCY_ID = MANF_ID
+      WHERE IS_DELETED = 0 AND MANF_IS_VENDOR = 0) MFN
       UNPIVOT
       ( VALUE FOR VALUE_DESC IN (MANF_SHORT_NAME, MANF_LONG_NAME, MANF_VEND_CODE)
       ) AS T
       ------ EOF Manufacturer ------
-     
+
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />

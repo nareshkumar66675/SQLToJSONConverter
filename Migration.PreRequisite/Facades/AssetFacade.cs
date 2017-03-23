@@ -11,7 +11,7 @@ namespace Migration.PreRequisite.Facades
     public class AssetFacade : AbstractPreRequisite
     {
         private List<IPreRequisite> _assetPreRequisites = new List<IPreRequisite>();
-        private string _connectionString = ConnectionStrings.AuthConnectionString;
+        private string _connectionString = ConnectionStrings.AssetConnectionString;
         public AssetFacade()
         {
             _assetPreRequisites.Add(new ExecuteScriptPreRequisite("NewMigrationTables", _connectionString));
