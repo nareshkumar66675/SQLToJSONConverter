@@ -35,32 +35,27 @@
             </xcdg:DataGridCollectionViewSource>-->
         </Grid.Resources>
         <xctk:BusyIndicator x:Name="ProcessingIndicator" IsBusy="True">
-            <!--  {Binding ElementName=DatabaseConfigUserCntrl, Path=IsConnecting}  -->
             <xctk:BusyIndicator.BusyContent>
-                <StackPanel Margin="4">
-                    <TextBlock HorizontalAlignment="Center" FontWeight="Bold" Text="Executing PreRequisites" />
-                    <StackPanel Margin="4">
-                        <TextBlock Name="processText" />
+                <StackPanel Margin="1">
+                    <TextBlock Height="19"
+                               HorizontalAlignment="Center"
+                               FontWeight="Bold"
+                               Text="Executing PreRequisites" />
+                    <StackPanel Margin="3">
+                        <TextBlock Name="processText"
+                                   Margin="0,0,0,2"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
                         <ProgressBar Name="preReqProcessBar" Height="18" Margin="3" />
                     </StackPanel>
                 </StackPanel>
             </xctk:BusyIndicator.BusyContent>
-            <!--<xctk:BusyIndicator.BusyContentTemplate>
-                <DataTemplate x:Name="template">
-                    <StackPanel Margin="4">
-                        <TextBlock HorizontalAlignment="Center" FontWeight="Bold" Text="Executing PreRequisites" />
-                        <StackPanel Margin="4">
-                            <TextBlock Name="processText" Text="Downloading message 4/10..." />
-                            <ProgressBar Name="preReqProcessBar" Height="15" />
-                        </StackPanel>
-                    </StackPanel>
-                </DataTemplate>
-            </xctk:BusyIndicator.BusyContentTemplate>-->
-            <!--<xctk:BusyIndicator.OverlayStyle>
+            <xctk:BusyIndicator.OverlayStyle>
                 <Style TargetType="Rectangle">
-                    <Setter Property="Fill" Value="#B1EB1D12" />
+                    <Setter Property="Fill" Value="#bfbfbf" />
+                    <Setter Property="Opacity" Value="0.4" />
                 </Style>
-            </xctk:BusyIndicator.OverlayStyle>-->
+            </xctk:BusyIndicator.OverlayStyle>
             <xctk:BusyIndicator.ProgressBarStyle>
                 <Style TargetType="ProgressBar">
                     <Setter Property="Visibility" Value="Hidden" />

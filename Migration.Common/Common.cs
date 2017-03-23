@@ -113,6 +113,15 @@ namespace Migration.Common
                 }
                 private set { }
             }
+            public static bool RunPreRequisites
+            {
+                get
+                {
+                    bool runPreRequisites;
+                    return bool.TryParse(ConfigurationManager.AppSettings.Get("RunPreRequisites"), out runPreRequisites) ? runPreRequisites : false;
+                }
+                private set { }
+            }
         }
 
         public static class Queries

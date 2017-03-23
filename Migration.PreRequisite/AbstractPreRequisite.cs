@@ -1,11 +1,8 @@
-﻿using Migration.PreRequisite.Helpers;
+﻿using Migration.Common;
+using Migration.PreRequisite.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using static Migration.Common.Common;
 
 namespace Migration.PreRequisite
 {
@@ -19,30 +16,48 @@ namespace Migration.PreRequisite
     {
         public abstract List<IPreRequisite> PreRequisites { get;  }
         public abstract FacadeType Type { get; }
-        public virtual bool Start(IProgress<PreReqProgress> progress)
+        public bool Start(IProgress<PreReqProgress> progress)
         {
-            var items = GetNotCompletedItems();
-            PreReqProgress status = new PreReqProgress(PreRequisites.Count, PreRequisites.Count-items.Count, new List<PreReqItem>());
-
-            foreach (var item in items)
+            try
             {
-                var rslt = item.Execute();
-                Thread.Sleep(10000);
-                if(rslt)
+                var notCompletedPreReqs = GetNotCompletedItems();
+                PreReqProgress status = new PreReqProgress(PreRequisites.Count, PreRequisites.Count - notCompletedPreReqs.Count, new List<PreReqItem>());
+                //Report Initial Status
+                progress?.Report(status);
+
+                foreach (var preReq in notCompletedPreReqs)
                 {
-                    //Report Progress
-                    if (progress!=null)
+                    try
                     {
-                        status.Completed.Add(new PreReqItem(item.Name, PreReqStatus.Success, 0));
-                        status.CompletedCount += 1;
-                        progress.Report(status); 
+                        var rslt = preReq.Execute();
+                        if (rslt)
+                        {
+                            //Report Progress
+                            if (progress != null)
+                            {
+                                status.Completed.Add(new PreReqItem(preReq.Name, PreReqStatus.Success, 0));
+                                ++status.CompletedCount;
+                                progress.Report(status);
+                            }
+                            NotifyStatus(preReq.Name, PreReqStatus.Success.ToString());
+                        }
+                        else
+                        {
+                            NotifyStatus(preReq.Name, PreReqStatus.Failed.ToString());
+                            return false;
+                        }
                     }
-                    NotifyStatus(item.Name, PreReqStatus.Success.ToString());
+                    catch (Exception ex)
+                    {
+                        NotifyStatus(preReq.Name, PreReqStatus.Failed.ToString());
+                        throw new Exception($"PreRequisite {preReq.Name} Failed", ex);
+                    }
                 }
-                else
-                {
-                    NotifyStatus(item.Name, PreReqStatus.Failed.ToString());
-                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error Occurred While Executing PreRequisites", ex);
+                return false;
             }
             return true;
         }

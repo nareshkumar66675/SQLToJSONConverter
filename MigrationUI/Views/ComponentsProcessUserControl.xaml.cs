@@ -20,6 +20,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using Xceed.Wpf.DataGrid;
 using Xceed.Wpf.Toolkit;
+using static Migration.Common.Common;
 
 namespace MigrationTool.Views
 {
@@ -115,12 +116,14 @@ namespace MigrationTool.Views
                 var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
                 var progressPersist = new Progress<ProcessStatus>(PersistProgress);
 
+                //Starting Generate and Persist Parallely
                 Task genTask = generate.Start(components, progressGenerate);
                 Task persisTask = persist.Start(progressPersist);
 
                 await genTask;
                 await persisTask;
 
+                Thread.Sleep(100);
                 Dispatcher.Invoke(() =>
                 {
                     ProcessCompleted?.Invoke(sender, e);
@@ -130,41 +133,42 @@ namespace MigrationTool.Views
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Processing Components Failed for Group -" + components.Group.FirstOrDefault().Name??"", ex);
-                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Process Failed", "Process Status", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                Dispatcher.Invoke(() =>
+                {
+                    ProcessingIndicator.IsBusy = false;
+                    ProcessCompleted?.Invoke(sender, e);
+                    if (ex.Message == "PreRequisites Execution Failed")
+                        ErrorHandler.ShowErrorMsgWtLog(Window.GetWindow(this), "PreRequsites Failed", "One of the PreRequistes Failed.");
+                    else
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Process Failed", "Process Status", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
             }
         }
 
         private async Task RunPrequisites()
         {
-            var progressPreRequisite = new Progress<PreReqProgress>(PreRequisiteProgress);
-
-            Dispatcher.Invoke(() =>
+            if(AppSettings.RunPreRequisites)
             {
-                ProcessingIndicator.IsBusy = true;
-                processText.Text = string.Empty;
-            });
-
-            if (table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.ASSET.GetDescription()))>0)
-                await Task.Run(()=>PreRequisiteFactory.GetPreRequistes(GroupType.ASSET).Start(progressPreRequisite));
-            else if(table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.AUTH.GetDescription())) > 0)
-                await Task.Run(() => PreRequisiteFactory.GetPreRequistes(GroupType.AUTH).Start(progressPreRequisite));
-        }
-
-        private void PreRequisiteProgress(PreReqProgress preReqStatus)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                if (preReqStatus.TotalCount == preReqStatus.CompletedCount)
+                var progressPreRequisite = new Progress<PreReqProgress>(PreRequisiteProgress);
+                Dispatcher.Invoke(() =>
                 {
-                    ProcessingIndicator.IsBusy = false; ;
-                }
-                else
+                    ProcessingIndicator.IsBusy = true;
+                    processText.Text = string.Empty;
+                    preReqProcessBar.Visibility = Visibility.Hidden;
+                });
+                bool result = false; ;
+
+                if (table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.ASSET.GetDescription())) > 0)
+                   result = await Task.Run(() => PreRequisiteFactory.GetPreRequistes(GroupType.ASSET).Start(progressPreRequisite));
+                else if (table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.AUTH.GetDescription())) > 0)
+                   result = await Task.Run(() => PreRequisiteFactory.GetPreRequistes(GroupType.AUTH).Start(progressPreRequisite));
+
+                if(!result)
                 {
-                    processText.Text = $"Completed {preReqStatus.CompletedCount} of {preReqStatus.TotalCount} ";
-                    preReqProcessBar.Maximum = preReqStatus.TotalCount;
-                    preReqProcessBar.Value = preReqStatus.CompletedCount;
+                    throw new Exception("PreRequisites Execution Failed");
                 }
-            });
+            }
         }
 
         private void PersistProgress(ProcessStatus processStatus)
@@ -223,6 +227,32 @@ namespace MigrationTool.Views
             {
                 Logger.Instance.LogError("Error Occured While Updating Generate Progress Bars", ex);
             }
+        }
+        private void PreRequisiteProgress(PreReqProgress preReqStatus)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (preReqStatus.TotalCount == preReqStatus.CompletedCount)
+                {
+                    ProcessingIndicator.IsBusy = false; ;
+                }
+                else
+                {
+                    var failedPreReq = preReqStatus.Completed.Where(t => t.Status == PreReqStatus.Failed);
+                    if(failedPreReq.Count()>0)
+                    {
+                        Logger.Instance.LogError($"PreRequisites Failed - {string.Join(",", failedPreReq.Select(t => t.Name).ToList())}", null);
+                        ProcessingIndicator.IsBusy = false;
+                    }
+                    else
+                    {
+                        preReqProcessBar.Visibility = Visibility.Visible;
+                        processText.Text = $"Completed {preReqStatus.CompletedCount} of {preReqStatus.TotalCount} ";
+                        preReqProcessBar.Maximum = preReqStatus.TotalCount;
+                        preReqProcessBar.Value = preReqStatus.CompletedCount;
+                    }
+                }
+            });
         }
 
         private void ShowCompletedMessage()
