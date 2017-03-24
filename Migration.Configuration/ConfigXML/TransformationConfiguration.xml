@@ -562,10 +562,10 @@
   </Transformation>
   <Transformation Name="PROGRESSIVE">
     <Source>
-      select mtr.prgp_id as Id,
+      select mtr.POOL_NEW_ID  as Id,
       ---ASSET ID -----
       --1 as AssetId_Id,
-      mtr.prgp_id as AssetId_Id,
+      mtr.POOL_NEW_ID  as AssetId_Id,
       11 as AssetId_AssetTypeDefinitionId,
       ----SITE----------
       Site_SiteId,
@@ -602,13 +602,13 @@
       SELECT TYCOD_Number as Id,
       TYCOD_NAME as Name,
       TYCOD_DESC as [Desc],
-      0 as SelectedInlines,
+      CAST(0 as VARCHAR(50)) as SelectedInlines,
       case when TYCOD_NAME like 'POS%' then 305 else 11 end as AssetTypeId,
       case when TYCOD_NAME like 'POS%' then 'POS' else 'Slot' end as Asset_Type,
       --------TypeCodeOption------
       ---------Options------------
-      [OPTION_ID] as TypeCodeOption_Options_Id,
-      val.[TYCV_OPTN_VALUE] as TypeCodeOption_Options_Id
+      [OPTION_ID] as TypeCodeOption_Options_OptionId,
+      val.[TYCV_OPTN_VALUE] as TypeCodeOption_Options_Value
       ---------ComponentOptions---------
 
 
@@ -621,7 +621,7 @@
       order by  ms.[TYCOD_ID]
     </Source>
     <Destination>[DataManagement].[TypeCode]</Destination>
-    <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
+    <KeyFormat Format="56_{0}" Keys="Id"  />
   </Transformation>
   <Transformation Name="AST_SLOT">
     <Source>

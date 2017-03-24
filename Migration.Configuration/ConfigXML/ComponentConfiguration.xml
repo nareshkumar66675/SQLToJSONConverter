@@ -15,5 +15,6 @@
    <Component Name="AST" DisplayName="Asset Data"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="DefaultWithParams" PersistType="Default" />
    <Component Name="PROGRESSIVE" DisplayName="Progressive Pool"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="Default" PersistType="Default" />
    <Component Name="AST_SLOT" DisplayName="Slot Data"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="DefaultWithParams" PersistType="Default" />
+   <Component Name="TYPCODE" DisplayName="Type Code"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.TypeCodeEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="Default" PersistType="Default" />
   </Group>
 </ComponentConfig>
