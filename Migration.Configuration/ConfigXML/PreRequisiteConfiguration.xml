@@ -6,4 +6,5 @@
   <PreRequisite Name ="LegacyViews" ScriptFilePath="Scripts/V_Legacy.sql" Skip="False"/>
   <PreRequisite Name ="AuthStaticData" ScriptFilePath="Scripts/D_AuthDefaultInserts.sql" Skip="False"/>
   <PreRequisite Name ="UMDataRetrieval" ScriptFilePath="Scripts/D_UserMatrixData.sql" Skip="False"/>
+  <PreRequisite Name ="OptionOrderUpdate" ScriptFilePath="Scripts/U_OptionOrder.sql" Skip="False"/>
 </PreRequisiteConfig>

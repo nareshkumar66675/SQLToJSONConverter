@@ -77,7 +77,7 @@ namespace Migration.Generate.Generators
         {
             if(AppSettings.IsReportEnabled)
             {
-                var totRecordCount = (src as List<object>)?.Count;
+                var totRecordCount = (src as IEnumerable<object>)?.Count();
                 var totUniqueRecordCount = (mapped as List<dynamic>)?.Select(t => t.Id).Distinct()?.Count();
                 SqlOperation.InsertGenerateReport(component.Name, startTime,DateTime.Now, totRecordCount??0, totUniqueRecordCount??0,component.GroupName, status);
             }

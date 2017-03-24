@@ -25,7 +25,7 @@ namespace Migration.Persistence.Helpers
                     {
                         bulkCopy.DestinationTableName = destinationTableName;
                         bulkCopy.BatchSize = AppSettings.BulkCopyBatchSize;
-                        
+                        bulkCopy.BulkCopyTimeout = 0;
                         try
                         {
                             bulkCopy.WriteToServer(data);

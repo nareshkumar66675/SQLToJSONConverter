@@ -483,9 +483,9 @@
   </Transformation>
   <Transformation Name="AST">
     <Source>
-      SELECT ASD_STD_NEW_ID as  Id,
+      SELECT MG.ASD_STD_NEW_ID as  Id,
       ---ASSET ID -----
-      ASD_STD_NEW_ID as AssetId_Id,
+      MG.ASD_STD_NEW_ID as AssetId_Id,
       CASE WHEN AST.ASST_ID = 1 THEN 10
       WHEN AST.ASST_ID = 2 THEN 3
       WHEN AST.ASST_ID = 3 THEN 4
@@ -535,6 +535,7 @@
       0 as TypeCode_TypeCodeId, -- mapping needed
       TCODE.TYCOD_NAME as TypeCode_TypeCodeName
       FROM GAM.ASSET_STANDARD_DETAILS AS ASD
+      JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS MG on MG.ASD_STD_LEGACY_ID=ASD.ASD_STD_ID
       JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
       JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
       JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
@@ -559,39 +560,123 @@
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
   </Transformation>
-<Transformation Name="PROGRESSIVE">
+  <Transformation Name="PROGRESSIVE">
     <Source>
       select mtr.prgp_id as Id,
-    ---ASSET ID -----
-    --1 as AssetId_Id,
-mtr.prgp_id as AssetId_Id,
-11 as AssetId_AssetTypeDefinitionId,
-----SITE----------
-Site_SiteId,
-Site_SiteName,
-Site_SiteNumber,
-Site_IsDeleted,
-Site_OrganizationId, -- mapping needed
-Site_OrganizationName,
------
-Options_Id,
-Options_Name,
-Options_Code,
-Options_Value,
+      ---ASSET ID -----
+      --1 as AssetId_Id,
+      mtr.prgp_id as AssetId_Id,
+      11 as AssetId_AssetTypeDefinitionId,
+      ----SITE----------
+      Site_SiteId,
+      Site_SiteName,
+      Site_SiteNumber,
+      Site_IsDeleted,
+      Site_OrganizationId, -- mapping needed
+      Site_OrganizationName,
+      -----
+      Options_Id,
+      Options_Name,
+      Options_Code,
+      Options_Value,
 
------InlineAssets----
-0 as InlineAssets_Id,
-213 as InlineAssets_AssetId_AssetTypeDefinitionId,
-0 as InlineAssets_AssetId_Id,
------Options------
-InlineAssets_Id as InlineAssets_Options_Id,
-InlineAssets_Name as InlineAssets_Options_Name,
-InlineAssets_Code as InlineAssets_Options_Code,
-InlineAssets as InlineAssets_Options_Value
---select *
-from MIGRATION.VIEW_PROGRESSIVE_METERS as mtr 
-left join MIGRATION.VIEW_POOL AS P on p.prgp_id = mtr.PRGP_ID and mtr.InlineAssets_Id = Options_Id
-order by mtr.PRGP_ID, mtr.InlineAssets_Id
+      -----InlineAssets----
+      0 as InlineAssets_Id,
+      213 as InlineAssets_AssetId_AssetTypeDefinitionId,
+      0 as InlineAssets_AssetId_Id,
+      -----Options------
+      InlineAssets_Id as InlineAssets_Options_Id,
+      InlineAssets_Name as InlineAssets_Options_Name,
+      InlineAssets_Code as InlineAssets_Options_Code,
+      InlineAssets as InlineAssets_Options_Value
+      --select *
+      from MIGRATION.VIEW_PROGRESSIVE_METERS as mtr
+      left join MIGRATION.VIEW_POOL AS P on p.prgp_id = mtr.PRGP_ID and mtr.InlineAssets_Id = Options_Id
+      order by mtr.PRGP_ID, mtr.InlineAssets_Id
+    </Source>
+    <Destination>[DataManagement].[Asset]</Destination>
+    <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
+  </Transformation>
+  <Transformation Name="TYPCODE">
+    <Source>
+      SELECT TYCOD_Number as Id,
+      TYCOD_NAME as Name,
+      TYCOD_DESC as [Desc],
+      0 as SelectedInlines,
+      case when TYCOD_NAME like 'POS%' then 305 else 11 end as AssetTypeId,
+      case when TYCOD_NAME like 'POS%' then 'POS' else 'Slot' end as Asset_Type,
+      --------TypeCodeOption------
+      ---------Options------------
+      [OPTION_ID] as TypeCodeOption_Options_Id,
+      val.[TYCV_OPTN_VALUE] as TypeCodeOption_Options_Id
+      ---------ComponentOptions---------
+
+
+      ----------InlineOptions-----------
+      from GAM.TYPE_CODE_MASTER as ms
+      join GAM.TYPE_CODE_VALUES as val on val.[TYCV_TYCOD_ID] = ms.TYCOD_ID
+      join gam.[OPTION] as optn on optn.optn_id  = tycv_optn_id
+      left join [MIGRATION].[ASSET_TYPE_DEFN] as tOptn on tOptn.[OPTION_CODE] = optn.[OPTN_CODE]
+      where ms.[TYCOD_TYPE] = 2
+      order by  ms.[TYCOD_ID]
+    </Source>
+    <Destination>[DataManagement].[TypeCode]</Destination>
+    <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
+  </Transformation>
+  <Transformation Name="AST_SLOT">
+    <Source>
+select  ASD_STD_NEW_ID as  Id,
+      ---ASSET ID -----
+      ASD_STD_NEW_ID as AssetId_Id,
+       10 as AssetId_AssetTypeDefinitionId,
+       ----SITE----------
+      SITE_NEW_ID as Site_SiteId,
+      SITE_LONG_NAME as Site_SiteName,
+      SITE_NUMBER as Site_SiteNumber,
+      --st.IS_DELETED as Site_IsDeleted,
+      Ast_Optn.PROP_NEW_ID as Site_OrganizationId,
+      Ast_Optn.PROP_LONG_NAME as Site_OrganizationName,
+            --   ---- OPTIONS ----------
+      Ast_Optn.[OPTION_ID] as Options_Id,
+      Ast_Optn.OPTION_CODE as Options_Code,
+      Ast_Optn.AST_OPTN_VALUE as Options_Value,
+               -----Components --------
+      ComponentId as Components_ComponentId,
+      ComponentInstanceId as Components_ComponentInstanceId,
+      ComponentName as Components_ComponentName,
+      ComponentKey as Components_ComponentKey,
+      ComponentValue as Components_ComponentValue,
+      ComponentCode as Components_ComponentCode,
+	  ASST_OPTN_ORDER,  Seq_Id 
+from (SELECT ASD.ASD_STD_ID,ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
+fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
+Case when AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' 
+	 when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes' 
+	 else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE, 
+ GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_LONG_NAME,
+gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER
+
+FROM GAM.ASSET_STANDARD_DETAILS AS ASD
+JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
+JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
+JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
+join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+left join gam.[OPTION] as optn on optn.[OPTN_ID] = AST_OPTION_ID
+left join gam.ASSET_DEFINITION as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID 
+and optn.[OPTN_ID] = astDfn.[ASTDFN_OPTN_ID]
+left join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on 
+fastDefn.[ASSET_NAME] = AST.asst_name and fastDefn.[OPTION_CODE] = optn.OPTN_CODE
+WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 AND ASD.ASD_ASST_ID = 1 
+and [OPTION_ID] is not null and st.SITE_NUMBER in ({0}) ) as Ast_Optn
+left join MIGRATION.GAM_ASSET_COMP_VALUES as ast_comp on Ast_Optn.asd_std_id = AM_LegacyId
+and Ast_Optn.ASST_OPTN_ORDER = Seq_Id 
+--WHERE-- Ast_Optn.asd_std_id = 209907247000000408
+order by Ast_Optn.asd_std_id --=209907247000000408
+
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />

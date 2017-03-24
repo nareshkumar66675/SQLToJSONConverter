@@ -26,7 +26,7 @@ namespace Migration.Generate.Helpers
                 dynamic result;
                 using (var conn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
                 {
-                    result = conn.Query<dynamic>(query);
+                    result = conn.Query<dynamic>(query,commandTimeout:500);
                 }
                 return result;
             }
