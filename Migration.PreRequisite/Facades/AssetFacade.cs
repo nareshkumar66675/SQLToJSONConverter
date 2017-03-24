@@ -16,6 +16,7 @@ namespace Migration.PreRequisite.Facades
         {
             _assetPreRequisites.Add(new ExecuteScriptPreRequisite("NewMigrationTables", _connectionString));
             _assetPreRequisites.Add(new InsertCompDefinitionIdPreRequisite(_connectionString));
+            _assetPreRequisites.Add(new ExecuteScriptPreRequisite("OptionOrderUpdate", ConnectionStrings.LegacyConnectionString));
         }
         public override FacadeType Type
         {

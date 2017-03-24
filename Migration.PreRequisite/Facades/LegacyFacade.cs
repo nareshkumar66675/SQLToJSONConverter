@@ -16,8 +16,7 @@ namespace Migration.PreRequisite.Facades
         {
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyMigrationTables", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("AssetDefinitionParseSP", _connectionString));
-            _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyViews", _connectionString));
-            _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("OptionOrderUpdate", _connectionString));
+            _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyViews", _connectionString));            
             _legacyPreRequisites.Add(new UMDataRetrievalPreRequisite()); 
         }
 

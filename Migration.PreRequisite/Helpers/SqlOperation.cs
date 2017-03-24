@@ -118,6 +118,7 @@ namespace Migration.PreRequisite.Helpers
                     try
                     {
                         server = new Server(new ServerConnection(conn));
+                        server.ConnectionContext.StatementTimeout = 500;
                         server.ConnectionContext.BeginTransaction();
                         server.ConnectionContext.ExecuteNonQuery(query);
                         server.ConnectionContext.CommitTransaction();

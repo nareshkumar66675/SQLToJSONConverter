@@ -72,7 +72,9 @@
     <Content Include="Scripts\D_AuthDefaultInserts.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\U_OptionOrder.sql" />
+    <Content Include="Scripts\U_OptionOrder.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\V_Legacy.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

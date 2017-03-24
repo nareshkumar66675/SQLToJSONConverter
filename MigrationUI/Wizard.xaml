@@ -10,11 +10,11 @@
         Title="Asset Matrix Data Migrate Tool"
         Width="706.17"
         Height="560.108"
+        Closing="WizardWindow_Closing"
         Icon="AppIcon.ico"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
-        mc:Ignorable="d"
-        Closing="WizardWindow_Closing">
+        mc:Ignorable="d">
     <Grid Width="696"
           Height="525"
           HorizontalAlignment="Left"
@@ -58,7 +58,7 @@
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="SourceConnectionPage"
                              Title="STEP 1 : Legacy Database Connection"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              Description="Enter the Legacy database connection details."
                              NextPage="{Binding ElementName=AuthConnectionPage}"
                              PageType="Interior"
@@ -79,7 +79,7 @@
             <!--  Auth Process Block Start  -->
             <xctk:WizardPage x:Name="AuthConnectionPage"
                              Title="STEP 2 : Authentication Database Connection"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              Description="Enter the Authentication database connection details."
                              NextPage="{Binding ElementName=AuthComponentsSelectionPage}"
                              PageType="Interior"
@@ -124,7 +124,7 @@
             <!--  Asset Process Block Start  -->
             <xctk:WizardPage x:Name="AssetConnectionPage"
                              Title="STEP 5 : Asset Database Connection"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
                              Description="Enter the asset database connection details."
                              NextPage="{Binding ElementName=AssetSiteSelectionPage}"
