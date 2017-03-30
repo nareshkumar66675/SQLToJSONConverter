@@ -49,6 +49,7 @@
     <Compile Include="Facades\AssetFacade.cs" />
     <Compile Include="Facades\AuthFacade.cs" />
     <Compile Include="Facades\LegacyFacade.cs" />
+    <Compile Include="Facades\ReportFacade.cs" />
     <Compile Include="Helpers\SqlOperation.cs" />
     <Compile Include="IPreRequisite.cs" />
     <Compile Include="PreReqStatus.cs" />
@@ -73,6 +74,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\U_OptionOrder.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\D_ReportTruncate.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\V_Legacy.sql">

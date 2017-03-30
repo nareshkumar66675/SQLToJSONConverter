@@ -86,7 +86,7 @@ namespace Migration.Test
             Assert.IsInstanceOf(typeof(SqlGenericPersistence), PersistenceFactory.GetPersistenceType(comp));
             comp.GroupName = Common.GroupType.ASSET;
             Assert.IsInstanceOf(typeof(SqlGenericPersistence), PersistenceFactory.GetPersistenceType(comp));
-            comp.GroupName = Common.GroupType.SEARCH;
+            comp.GroupName = Common.GroupType.REPORT;
             Assert.IsInstanceOf(typeof(ElasticGenericPersistence), PersistenceFactory.GetPersistenceType(comp));
         }
         [Test]

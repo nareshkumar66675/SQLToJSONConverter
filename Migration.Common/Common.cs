@@ -15,6 +15,7 @@ namespace Migration.Common
             public static string AuthConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Auth_Migration";
             public static string AssetConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Asset_Migration";
             public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=PROD0121_AssetMatrix14";
+            public static string ReportConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Report_Migration";
             /// <summary>
             /// Retrieves Connection String based on Group Type
             /// </summary>
@@ -28,8 +29,8 @@ namespace Migration.Common
                         return AuthConnectionString;
                     case GroupType.ASSET:
                         return AssetConnectionString;
-                    case GroupType.SEARCH:
-                        return "";
+                    case GroupType.REPORT:
+                        return ReportConnectionString;
                     default:
                         return "";
                 }

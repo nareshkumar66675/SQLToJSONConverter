@@ -10,7 +10,8 @@ namespace Migration.PreRequisite
     {
         Legacy,
         Auth,
-        Asset
+        Asset,
+        Report
     }
     public abstract class AbstractPreRequisite
     {

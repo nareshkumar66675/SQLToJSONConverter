@@ -35,7 +35,27 @@ namespace Migration.Generate.Helpers
                 throw;
             }
         }
+        internal static DataTable ExecuteQuery(string connectionString,string query)
+        {
+            try
+            {
+                DataTable rsltTable = new DataTable();
 
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(query, conn);
+
+                    rsltTable.Load(cmd.ExecuteReader());
+                }
+                return rsltTable;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         internal static void InsertGenerateReport(string componentName,DateTime startTime, DateTime endTime, int totalRecordsCount, int totalUniqueRecordsCount,GroupType type,string Status)
         {
             try

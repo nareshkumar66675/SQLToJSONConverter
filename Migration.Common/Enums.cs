@@ -27,12 +27,12 @@ namespace Migration.Common
        [Description("Asset Service")]
        [XmlEnum("ASSET")]
         ASSET,
-       /// <summary>
-       /// Search Service
-       /// </summary>
-       [Description("Search Service")]
-       [XmlEnum("SEARCH")]
-        SEARCH
+        /// <summary>
+        /// Asset History Database
+        /// </summary>
+        [Description("REPORT Database")]
+       [XmlEnum("REPORT")]
+        REPORT
     }
     public class EnumDescription<T>
     {

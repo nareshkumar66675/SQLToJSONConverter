@@ -18,18 +18,18 @@ namespace Migration.Persistence
         /// <returns>Persistence Instance</returns>
         public static IPersistence GetPersistenceType(Component component)
         {
-            if (component.GroupName== Common.GroupType.SEARCH)
-            {
-                switch (component.PersistType.ToUpper())
-                {
-                    case "DEFAULT":
-                        return new ElasticGenericPersistence();
-                    default:
-                        return new ElasticGenericPersistence();
-                }
-            }
-            else    
-            {
+            //if (component.GroupName== Common.GroupType.REPORT)
+            //{
+            //    switch (component.PersistType.ToUpper())
+            //    {
+            //        case "DEFAULT":
+            //            return new ElasticGenericPersistence();
+            //        default:
+            //            return new ElasticGenericPersistence();
+            //    }
+            //}
+            //else    
+            //{
                 switch (component.PersistType.ToUpper())
                 {
                     case "DEFAULT":
@@ -37,7 +37,7 @@ namespace Migration.Persistence
                     default:
                         return new SqlGenericPersistence();
                 }
-            }
+            //}
         }
     }
 }

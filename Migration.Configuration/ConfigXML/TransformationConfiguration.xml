@@ -56,16 +56,6 @@
     <KeyFormat Format="151_{0}" Keys="Id"  />
   </Transformation>
   <Transformation Name="TASK">
-    <!--<Source>
-      SELECT DISTINCT
-      tc.FUNC_ID as Id,
-      tc.FUNC_NAME Name,
-      tc.FUNC_DESCRIPTION as [Description],
-      tp.MODL_ID as Module_Id,
-      tp.MODL_NAME as Module_Name
-      FROM [COMMON].[USER_FUNCTION] tc
-      LEFT JOIN [COMMON].[MODULE] tp ON tc.MODULE_ID = tp.MODL_ID where FUNC_ID>0
-    </Source>-->
     <Source>
       SELECT DISTINCT
       tc.FUNC_ID as 1,
@@ -674,5 +664,20 @@ order by Ast_Optn.asd_std_id --=209907247000000408
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
+  </Transformation>
+
+  <!-- History Components-->
+
+  <Transformation Name="RPT_TSKGRP">
+    <Source> SELECT [key],[value] from Employee.TaskGroup </Source>
+    <Destination>[Employee].[TaskGroup]</Destination>
+  </Transformation>
+  <Transformation Name="RPT_ORG">
+    <Source> SELECT [key],[value] from Organization.Organization </Source>
+    <Destination>Organization.Organization</Destination>
+  </Transformation>
+  <Transformation Name="RPT_COMPDATA">
+    <Source> SELECT [key],[value] from COMPONENTS.ComponentData </Source>
+    <Destination>COMPONENTS.ComponentData</Destination>
   </Transformation>
 </TransformationConfig>

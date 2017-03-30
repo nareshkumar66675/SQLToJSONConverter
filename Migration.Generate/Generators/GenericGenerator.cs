@@ -121,5 +121,9 @@ namespace Migration.Generate.Generators
 
             return tempSet;
         }
+        private static bool IsPropertyExist(dynamic obj, string name)
+        {
+            return obj.GetType().GetProperty(name) != null;
+        }
     }
 }

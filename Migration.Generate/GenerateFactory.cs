@@ -11,18 +11,22 @@ namespace Migration.Generate
     public static class GenerateFactory
     {
         /// <summary>
-        /// Used to get Generator Type based on Process Type
+        /// Used to get Generator Type based on Generate Type
         /// </summary>
-        /// <param name="processType">Process Type</param>
+        /// <param name="generateType">Generate Type</param>
         /// <returns>Generator Instance</returns>
-        public static IGenerator GetGenerator(string processType)
+        public static IGenerator GetGenerator(string generateType)
         {
-            switch (processType.ToUpper())
+            switch (generateType.ToUpper())
             {
                 case "DEFAULT":
                     return new GenericGenerator();
                 case "DEFAULTWITHPARAMS":
                     return new GenericGeneratorWtParams();
+                case "AUTHDATA":
+                    return new AuthReportData();
+                case "ASSETDATA":
+                    return new AssetReportData();
                 default:
                     return new GenericGenerator();
             }

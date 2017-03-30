@@ -153,7 +153,7 @@ namespace MigrationTool.Views
             var allSites = new Dictionary<string, string>();
             try
             {
-                allSites = DatabaseHelper.GetAllSites(ConnectionStrings.LegacyConnectionString);
+                allSites = DatabaseHelper.GetAllSitesFromLegacy();
                 var migratedSites = DatabaseHelper.GetMigratedSites(ConnectionStrings.GetConnectionString(group));
                 migratedSites.ForEach(t => allSites.Remove(t));
             }

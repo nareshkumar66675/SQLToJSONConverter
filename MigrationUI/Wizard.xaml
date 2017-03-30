@@ -170,10 +170,41 @@
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
                              Description="Please wait until the Migration is Complete."
-                             NextPage="{Binding ElementName=LastPage}"
+                             NextPage="{Binding ElementName=ReportConnectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AssetsComponentsSelectionPage}" />
             <!--  EOF Asset Process Block  -->
+            <!--  Asset History Process Block Start  -->
+            <xctk:WizardPage x:Name="ReportConnectionPage"
+                             Title="STEP 9 : Report Database Connection"
+                             CanSelectNextPage="True"
+                             CanSelectPreviousPage="False"
+                             Description="Enter the report database connection details."
+                             NextPage="{Binding ElementName=ReportComponentsProcessPage}"
+                             PageType="Interior"
+                             PreviousPage="{Binding ElementName=AssetsComponentsProcessPage}">
+                <!--  CanSelectNextPage="False"  -->
+                <xctk:WizardPage.Content>
+                    <Grid>
+                        <controls:DatabaseConfigUserControl x:Name="ReportConnectCntrl"
+                                                            Margin="116,75,116,76"
+                                                            BGColor="#909e81"
+                                                            OnConnectComplete="ReportDBCntrl_OnConnectComplete"
+                                                            RenderTransformOrigin="1.023,0.523"
+                                                            Type="REPORT" />
+                    </Grid>
+                </xctk:WizardPage.Content>
+            </xctk:WizardPage>
+            <xctk:WizardPage x:Name="ReportComponentsProcessPage"
+                             Title="STEP 10 : Report Migration"
+                             CanCancel="False"
+                             CanSelectNextPage="False"
+                             CanSelectPreviousPage="False"
+                             Description="Please wait until the Migration is Complete."
+                             NextPage="{Binding ElementName=LastPage}"
+                             PageType="Interior"
+                             PreviousPage="{Binding ElementName=ReportConnectionPage}" />
+            <!--  EOF Asset History Process Block  -->
             <xctk:WizardPage x:Name="LastPage"
                              Title="Last Page"
                              CanFinish="True"

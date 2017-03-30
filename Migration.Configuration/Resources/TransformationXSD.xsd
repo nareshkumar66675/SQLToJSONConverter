@@ -19,7 +19,7 @@
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="KeyFormat">
+              <xs:element name="KeyFormat" minOccurs="0" >
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">

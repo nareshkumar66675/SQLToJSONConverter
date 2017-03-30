@@ -91,7 +91,7 @@ namespace Migration.Configuration
         /// </summary>
         /// <param name="group">Group Type</param>
         /// <returns>List Of Component</returns>
-        public static List<Component> GetComponentsByGroup(GroupType group)
+        public static List<Component> GetComponentListByGroup(GroupType group)
         {
             return SourceComponents.Group.Where(t => t.Name == group).Select(u => u.Component).FirstOrDefault();
         }
@@ -169,6 +169,12 @@ namespace Migration.Configuration
                 throw new Exception("Script file is Empty.");
 
             return script;
+        }
+        public static Components GetComponentsByGroup(GroupType type)
+        {
+            Components comp = new Components();
+            comp.Group = SourceComponents.Group.Where(t => t.Name == type).ToList();
+            return comp;
         }
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)

@@ -28,17 +28,17 @@ namespace Migration.Persistence
 
                 if (data != null)
                 {
-                    progress.Report(new ProcessStatus(data.Component.Name, 0, Status.Running));
+                    progress?.Report(new ProcessStatus(data.Component.Name, 0, Status.Running));
                     var rslt = await Task.Run(() => PersistenceFactory.GetPersistenceType(data.Component).Insert(data));
 
                     if (rslt)
                     {
-                        progress.Report(new ProcessStatus(data.Component.Name, 100, Status.Success));
+                        progress?.Report(new ProcessStatus(data.Component.Name, 100, Status.Success));
                         Logger.Instance.LogInfo($"Persistence for {data.Component.Name} Completed.");
                     }
                     else
                     {
-                        progress.Report(new ProcessStatus(data.Component.Name, 100, Status.Failed));
+                        progress?.Report(new ProcessStatus(data.Component.Name, 100, Status.Failed));
                         Logger.Instance.LogInfo($"Persistence for {data.Component.Name} Failed.");
                     }
                 }

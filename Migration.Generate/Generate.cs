@@ -24,16 +24,16 @@ namespace Migration.Generate
             {
                 foreach (var comp in grp.Component)
                 {
-                    progress.Report(new ProcessStatus(comp.Name, 0, Status.Running));
+                    progress?.Report(new ProcessStatus(comp.Name, 0, Status.Running));
                     var result =  await StartTask(comp);
                     if (result)
                     {
-                        progress.Report(new ProcessStatus(comp.Name, 100, Status.Success));
+                        progress?.Report(new ProcessStatus(comp.Name, 100, Status.Success));
                         Logger.Instance.LogInfo($"Generate task for the component {comp.Name} Succeeded." );
                     }
                     else
                     {
-                        progress.Report(new ProcessStatus(comp.Name, 100, Status.Failed));
+                        progress?.Report(new ProcessStatus(comp.Name, 100, Status.Failed));
                     }
                 }
             }

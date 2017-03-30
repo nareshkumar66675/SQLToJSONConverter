@@ -3,7 +3,7 @@
   <xs:restriction base="xs:string">
     <xs:enumeration value="AUTH" />
     <xs:enumeration value="ASSET" />
-    <xs:enumeration value="SEARCH" />
+    <xs:enumeration value="REPORT" />
   </xs:restriction>
 </xs:simpleType>  
 <xs:element name="ComponentConfig">
@@ -18,7 +18,7 @@
                     <xs:extension base="xs:string">
                       <xs:attribute type="xs:string" name="Name" use="required"/>
                       <xs:attribute type="xs:string" name="DisplayName" use="required"/>
-                      <xs:attribute type="xs:string" name="DomainType" use="required"/>
+                      <xs:attribute type="xs:string" name="DomainType" use="optional"/>
                       <xs:attribute type="xs:string" name="GenerateType" use="optional"/>
                       <xs:attribute type="xs:string" name="PersistType" use="optional"/>
                     </xs:extension>

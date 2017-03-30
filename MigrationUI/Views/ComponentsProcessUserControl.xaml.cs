@@ -163,8 +163,10 @@ namespace MigrationTool.Views
                    result = await Task.Run(() => PreRequisiteFactory.GetPreRequistes(GroupType.ASSET).Start(progressPreRequisite));
                 else if (table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.AUTH.GetDescription())) > 0)
                    result = await Task.Run(() => PreRequisiteFactory.GetPreRequistes(GroupType.AUTH).Start(progressPreRequisite));
+                else if (table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.REPORT.GetDescription())) > 0)
+                    result = await Task.Run(() => PreRequisiteFactory.GetPreRequistes(GroupType.REPORT).Start(progressPreRequisite));
 
-                if(!result)
+                if (!result)
                 {
                     throw new Exception("PreRequisites Execution Failed");
                 }

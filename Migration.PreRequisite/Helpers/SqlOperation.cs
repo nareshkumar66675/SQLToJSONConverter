@@ -17,23 +17,30 @@ namespace Migration.PreRequisite.Helpers
     {
         internal static bool CheckIfTableExists(string connectionString, string tableName)
         {
-            bool exists;
-            using (SqlConnection con = new SqlConnection(connectionString))
+            try
             {
-                con.Open();
-                string query = @"SELECT CASE WHEN EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=@Schema AND TABLE_NAME = @TableName)) THEN 1 ELSE 0 END";
-                var temp = tableName.Split('.');
-                string schema = temp.Length == 2 ? temp[0] : "dbo";
-                string tabName = temp.Length == 2 ? temp[1] : temp[0];
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                bool exists;
+                using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    cmd.Parameters.Add(new SqlParameter("@Schema", schema));
-                    cmd.Parameters.Add(new SqlParameter("@TableName", tabName));
+                    con.Open();
+                    string query = @"SELECT CASE WHEN EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=@Schema AND TABLE_NAME = @TableName)) THEN 1 ELSE 0 END";
+                    var temp = tableName.Split('.');
+                    string schema = temp.Length == 2 ? temp[0] : "dbo";
+                    string tabName = temp.Length == 2 ? temp[1] : temp[0];
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@Schema", schema));
+                        cmd.Parameters.Add(new SqlParameter("@TableName", tabName));
 
-                    exists = (int)cmd.ExecuteScalar() == 1;
+                        exists = (int)cmd.ExecuteScalar() == 1;
+                    }
                 }
+                return exists;
             }
-            return exists;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         internal static string GetDataFromUserMatrix(string query)
@@ -59,27 +66,34 @@ namespace Migration.PreRequisite.Helpers
 
         internal static List<string> GetAllCompletedPreRequisites(string connectionString)
         {
-            List<string> completedList = new List<string>();
-
-            if (!CheckIfTableExists(connectionString, "Migration.PreRequisite"))
-                return completedList;
-
-            using (var conn = new SqlConnection(connectionString))
+            try
             {
-                conn.Open();
-                var query = Queries.GetCompletedPreRequisites;
-                using (SqlCommand legacyCommand = new SqlCommand(query, conn))
+                List<string> completedList = new List<string>();
+
+                if (!CheckIfTableExists(connectionString, "Migration.PreRequisite"))
+                    return completedList;
+
+                using (var conn = new SqlConnection(connectionString))
                 {
-                    using (IDataReader dr = legacyCommand.ExecuteReader())
+                    conn.Open();
+                    var query = Queries.GetCompletedPreRequisites;
+                    using (SqlCommand legacyCommand = new SqlCommand(query, conn))
                     {
-                        while (dr.Read())
+                        using (IDataReader dr = legacyCommand.ExecuteReader())
                         {
-                            completedList.Add(dr.GetString(0));
+                            while (dr.Read())
+                            {
+                                completedList.Add(dr.GetString(0));
+                            }
                         }
                     }
                 }
+                return completedList;
             }
-            return completedList;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         internal static void InsertPreRequisiteStatus(string connectionString, string name, string status)
@@ -244,6 +258,8 @@ namespace Migration.PreRequisite.Helpers
                     return ConnectionStrings.AuthConnectionString;
                 case FacadeType.Asset:
                     return ConnectionStrings.AssetConnectionString;
+                case FacadeType.Report:
+                    return ConnectionStrings.ReportConnectionString;
                 default:
                     return "";
             }

@@ -47,9 +47,23 @@ namespace Migration.Persistence.Persistences.SQL
 
                 items.ForEach((item) =>
                 {
-                    List<string> arr = new List<string>();
-                    keyFormat.Keys.Split(',').ToList().ForEach(col => { arr.Add(GetPropertyValue(item,col) + string.Empty); });
-                    dataResult.Rows.Add(string.Format(keyFormat.Format, arr.ToArray()), JSONConverter.SerializeObject(item));
+                    string key = string.Empty;
+                    string value = string.Empty;
+                    if((item is KeyValuePair<string,string>) && keyFormat == null )
+                    {
+                        var temp = (KeyValuePair <string, string>) item ;
+                        key = temp.Key;
+                        value = temp.Value;
+                    }
+                    else
+                    {
+                        List<string> arr = new List<string>();
+                        keyFormat.Keys.Split(',').ToList().ForEach(col => { arr.Add(GetPropertyValue(item, col) + string.Empty); });
+                        key = string.Format(keyFormat.Format, arr.ToArray());
+                        value = JSONConverter.SerializeObject(item);
+                    }
+
+                    dataResult.Rows.Add(key, value);
                 });
                 return dataResult;
             }

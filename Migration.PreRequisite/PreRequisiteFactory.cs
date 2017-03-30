@@ -18,8 +18,8 @@ namespace Migration.PreRequisite
                     return new AuthFacade();
                 case GroupType.ASSET:
                     return new AssetFacade();
-                case GroupType.SEARCH:
-                    return null;
+                case GroupType.REPORT:
+                    return new ReportFacade();
                 default:
                     return null;
             }

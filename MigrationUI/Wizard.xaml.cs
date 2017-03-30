@@ -31,6 +31,7 @@ namespace MigrationTool
         private SiteSelectUserControl AssetSiteCntrl = new SiteSelectUserControl();
         private ComponentsProcessUserControl AuthCompProcessCntrl = new ComponentsProcessUserControl();
         private ComponentsProcessUserControl AssetCompProcessCntrl = new ComponentsProcessUserControl();
+        private ComponentsProcessUserControl ReportsCompProcessCntrl = new ComponentsProcessUserControl();
         private bool CanClose = true;
         #endregion
         public Wizard()
@@ -42,6 +43,7 @@ namespace MigrationTool
             AssetSiteCntrl.OnSitesSelectionChanged += AssetSiteCntrl_OnSitesSelectionChanged;
             AuthCompProcessCntrl.ProcessCompleted += AuthCompProcessCntrl_ProcessCompleted;
             AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
+            ReportsCompProcessCntrl.ProcessCompleted += ReportsCompProcessCntrl_ProcessCompleted;
         }
 
         private void Wiz_Next(object sender, CancelRoutedEventArgs e)
@@ -53,7 +55,7 @@ namespace MigrationTool
                 //Auth Connection Page -> Auth Components Selection Page
                 if (Wiz.CurrentPage == AuthConnectionPage)
                 {
-                    AuthCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.AUTH);
+                    AuthCompSelectCntrl.SourceComponents = Configurator.GetComponentListByGroup(GroupType.AUTH);
                     AuthCompSelectCntrl.InitializeData(GroupType.AUTH);
                     AddUserControlToPage(AuthComponentsSelectionPage, AuthCompSelectCntrl);
                 }
@@ -77,7 +79,7 @@ namespace MigrationTool
                 {
                     var siteList = AssetSiteCntrl.GetSelectedSites().Select(t => t.Key);
                     Configurator.SetQueryParamsFrTrnsfrmWtParams(new List<string> { string.Join(",", siteList) });
-                    AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentsByGroup(GroupType.ASSET);
+                    AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentListByGroup(GroupType.ASSET);
                     AssetsCompSelectCntrl.SelectedSiteIDList = siteList.ToList();
                     AssetsCompSelectCntrl.InitializeData(GroupType.ASSET);
                     AddUserControlToPage(AssetsComponentsSelectionPage, AssetsCompSelectCntrl);
@@ -90,6 +92,21 @@ namespace MigrationTool
                     CanClose = false;
                     AssetCompProcessCntrl.StartComponentProcess(comp);
                 }
+                //Report Connection Page -> Reports Process Page
+                else if(Wiz.CurrentPage==ReportConnectionPage)
+                {
+                    AddUserControlToPage(ReportComponentsProcessPage, ReportsCompProcessCntrl);
+                    if(CanProcessReport())
+                    {
+                        CanClose = false;
+                        ReportsCompProcessCntrl.StartComponentProcess(Configurator.GetComponentsByGroup(GroupType.REPORT));
+                    }
+                    else
+                    {
+                        Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Please Migrate all Data before proceeding to Report", "Report Migration", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        e.Cancel = true;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -97,6 +114,34 @@ namespace MigrationTool
                 ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Error");
             }
         }
+
+        private bool CanProcessReport()
+        {
+            //Auth Check 
+            var authCompledtedComp =DatabaseHelper.GetCompletedComponents(GroupType.AUTH, null).Count;
+            var authAllComp = Configurator.GetComponentListByGroup(GroupType.AUTH).Count;
+
+            if (authCompledtedComp != authAllComp)
+            {
+                Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Auth Components; All Componnets Count - { authAllComp} Completed Components - {authCompledtedComp}");
+                return false;
+            }
+
+            //Asset Check
+            var allSites = DatabaseHelper.GetAllSitesFromLegacy();
+
+            var assetCompletedComp = DatabaseHelper.GetCompletedComponents(GroupType.ASSET, allSites.Select(t => t.Key).ToList()).Count;
+
+            var assetAllComp = Configurator.GetComponentListByGroup(GroupType.ASSET).Count;
+
+            if (assetCompletedComp != assetAllComp)
+            {
+                Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Asset Components ; All Componnets Count - { assetAllComp} Completed Components - {assetCompletedComp}");
+                return false;
+            }
+            return true;
+        }
+
         private void AuthDB_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
         {
             if (ValidateConnectionString(e.ConnectionString))
@@ -121,6 +166,14 @@ namespace MigrationTool
                 Logger.Instance.LogInfo("Source Database Connection Completed");
             }
         }
+        private void ReportDBCntrl_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
+        {
+            if (ValidateConnectionString(e.ConnectionString))
+            {
+                Common.ConnectionStrings.ReportConnectionString = e.ConnectionString;
+                Logger.Instance.LogInfo("Report Database Connection Completed");
+            }
+        }
         private bool ValidateConnectionString(string connectionString)
         {
             if (!string.IsNullOrEmpty(connectionString))
@@ -136,7 +189,7 @@ namespace MigrationTool
         }
         private void SkipAssetButton_Click(object sender, RoutedEventArgs e)
         {
-            Wiz.CurrentPage = LastPage;
+            Wiz.CurrentPage = ReportConnectionPage;
         }
         private void AddUserControlToPage(WizardPage page,UserControl cntrl)
         {
@@ -161,6 +214,11 @@ namespace MigrationTool
             Wiz.CurrentPage.CanSelectNextPage = true;
         }
         private void AuthCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
+        {
+            CanClose = true;
+            Wiz.CurrentPage.CanSelectNextPage = true;
+        }
+        private void ReportsCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
         {
             CanClose = true;
             Wiz.CurrentPage.CanSelectNextPage = true;

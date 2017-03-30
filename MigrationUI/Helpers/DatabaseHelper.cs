@@ -72,10 +72,10 @@ namespace MigrationTool.Helpers
             return list;
 
         }
-        public static Dictionary<string, string> GetAllSites(string connectionString)
+        public static Dictionary<string, string> GetAllSitesFromLegacy()
         {
             Dictionary<string, string> SiteList = new Dictionary<string, string>();
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con = new SqlConnection(ConnectionStrings.LegacyConnectionString))
             {
                 con.Open();
 

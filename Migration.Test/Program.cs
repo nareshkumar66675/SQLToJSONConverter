@@ -1,4 +1,5 @@
-﻿using Migration.PreRequisite;
+﻿using Migration.Generate;
+using Migration.PreRequisite;
 using Migration.PreRequisite.Facades;
 using Migration.ProcessQueue;
 using Newtonsoft.Json;
@@ -65,15 +66,19 @@ namespace Migration.Test
             //       }
             //   }
 
-            //Generate.Generate gen = new Generate.Generate();
-            ////await gen.Start(Configuration.Configurator.Components, null);
-            //Task a =Task.Factory.StartNew(() => gen.Start(Configuration.Configurator.SourceComponents, null));
-            ////Task.Run(()=>gen.Start(Configuration.Configurator.Components, null));
-            //a.Wait();
-            //Persistence.Persist per = new Persistence.Persist();
+            Migration.Generate.Generate gen = new Migration.Generate.Generate();
+            //await gen.Start(Configuration.Configurator.Components, null);
+            Task a = gen.Start(Migration.Configuration.Configurator.SourceComponents, null);
+            //Task.Run(()=>gen.Start(Configuration.Configurator.Components, null));
+            a.Wait();
+            Persistence.Persist per = new Persistence.Persist();
+            Task b =  per.Start(null);
+            b.Wait();
 
-            AuthFacade fc = new AuthFacade();
-            fc.Start(null);
+            //AuthFacade fc = new AuthFacade();
+            //fc.Start(null);
+
+
         }
     }
 }
