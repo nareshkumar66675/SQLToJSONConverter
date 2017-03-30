@@ -58,7 +58,7 @@
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="SourceConnectionPage"
                              Title="STEP 1 : Legacy Database Connection"
-                             CanSelectNextPage="False"
+                             CanSelectNextPage="True"
                              Description="Enter the Legacy database connection details."
                              NextPage="{Binding ElementName=AuthConnectionPage}"
                              PageType="Interior"
@@ -79,7 +79,7 @@
             <!--  Auth Process Block Start  -->
             <xctk:WizardPage x:Name="AuthConnectionPage"
                              Title="STEP 2 : Authentication Database Connection"
-                             CanSelectNextPage="False"
+                             CanSelectNextPage="True"
                              Description="Enter the Authentication database connection details."
                              NextPage="{Binding ElementName=AuthComponentsSelectionPage}"
                              PageType="Interior"
@@ -124,7 +124,7 @@
             <!--  Asset Process Block Start  -->
             <xctk:WizardPage x:Name="AssetConnectionPage"
                              Title="STEP 5 : Asset Database Connection"
-                             CanSelectNextPage="False"
+                             CanSelectNextPage="True"
                              CanSelectPreviousPage="False"
                              Description="Enter the asset database connection details."
                              NextPage="{Binding ElementName=AssetSiteSelectionPage}"

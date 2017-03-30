@@ -390,12 +390,6 @@
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
-    <ColumnMapping>
-      <ColumnMap Key="1" ColumnName="fd"/>
-      <ColumnMap Key="2" ColumnName="df"/>
-      <ColumnMap Key="3" ColumnName="fv"/>
-      <ColumnMap Key="4" ColumnName="fdv"/>
-    </ColumnMapping>
   </Transformation>
   <Transformation Name="COMPDATA_MNF">
     <Source>
