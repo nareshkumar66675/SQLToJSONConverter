@@ -1,0 +1,43 @@
+﻿<Window x:Class="MigrationTool.Views.DatabaseConfigSubWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:MigrationTool.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:MigrationTool.Views"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Title="Database Server Details"
+        Width="465"
+        Height="342"
+        Background="#FFF0F0F0"
+        Icon="../AppIcon.ico"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        mc:Ignorable="d">
+    <Grid Margin="7,7,3,7">
+        <Grid.Resources>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Offset="0" Color="#FFF3F3F3" />
+                            <GradientStop Offset="0.971" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+                        </LinearGradientBrush>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Grid.Resources>
+        <Grid Margin="5,0,10,37">
+            <local:DatabaseConfigUserControl x:Name="DBConnectCntrl"
+                                             Width="Auto"
+                                             BGColor="DarkGray"
+                                             OnConnectComplete="DBConnectCntrl_OnConnectComplete" />
+        </Grid>
+        <Button x:Name="completeBtn"
+                Width="75"
+                Margin="176,263,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Click="completeBtn_Click"
+                Content="Ok" />
+    </Grid>
+</Window>

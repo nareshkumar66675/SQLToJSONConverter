@@ -56,6 +56,9 @@
   <PropertyGroup>
     <StartupObject>MigrationTool.App</StartupObject>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -96,6 +99,9 @@
     <Compile Include="Views\ComponentsSelectUserControl.xaml.cs">
       <DependentUpon>ComponentsSelectUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DatabaseConfigSubWindow.xaml.cs">
+      <DependentUpon>DatabaseConfigSubWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DatabaseConfigUserControl.xaml.cs">
       <DependentUpon>DatabaseConfigUserControl.xaml</DependentUpon>
     </Compile>
@@ -120,6 +126,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ComponentsSelectUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DatabaseConfigSubWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -218,8 +228,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Resource Include="Resources\cross.png" />
-    <Resource Include="Resources\tick.png" />
+    <Resource Include="Resources\Cross.png" />
+    <Resource Include="Resources\Tick.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -95,8 +95,10 @@ namespace MigrationTool.Views
                     return DatabaseHelper.CheckIfTableExists(DatabaseHelper.AddDatabaseToConnString(ConnectionString, DatabaseName), Common.AppSettings.AssetDBCheck);
                 case "LEGACY":
                     return DatabaseHelper.CheckIfTableExists(DatabaseHelper.AddDatabaseToConnString(ConnectionString, DatabaseName), Common.AppSettings.LegacyDBCheck);
+                case "REPORT":
+                    return DatabaseHelper.CheckIfTableExists(DatabaseHelper.AddDatabaseToConnString(ConnectionString, DatabaseName), Common.AppSettings.AssetDBCheck);
                 default:
-                    return DatabaseHelper.CheckIfTableExists(DatabaseHelper.AddDatabaseToConnString(ConnectionString, DatabaseName), Common.AppSettings.LegacyDBCheck);
+                    return true ;
             }
 
         }

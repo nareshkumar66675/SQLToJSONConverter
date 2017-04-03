@@ -21,7 +21,7 @@
           VerticalAlignment="Top">
         <xctk:Wizard x:Name="Wiz"
                      Cancel="LogAppClose"
-                     CurrentPage="{Binding ElementName=ViewMigrationReportPage}"
+                     CurrentPage="{Binding ElementName=ReportConnectionPage}"
                      FinishButtonClosesWindow="True"
                      Help="Wiz_Help"
                      Next="Wiz_Next">
@@ -195,16 +195,12 @@
                         <Button x:Name="assetDBConnectBtn"
                                 Width="154"
                                 Height="30"
-                                Margin="363,348,0,0"
+                                Margin="368,339,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Click="assetDBConnectBtn_Click">
                             <DockPanel>
-                                <Image>
-                                    <Image.Source>
-                                        <BitmapImage UriSource="/Resources/cross.png" />
-                                    </Image.Source>
-                                </Image>
+                                <Image x:Name="assetDBStatusIcon" />
                                 <TextBlock Margin="2,0"
                                            VerticalAlignment="Center"
                                            FontFamily="Segoe UI Symbol"
@@ -216,15 +212,12 @@
                         <Button x:Name="authConnectBtn"
                                 Width="154"
                                 Height="30"
-                                Margin="140,348,0,0"
+                                Margin="145,339,0,0"
                                 HorizontalAlignment="Left"
-                                VerticalAlignment="Top">
+                                VerticalAlignment="Top"
+                                Click="authConnectBtn_Click">
                             <DockPanel>
-                                <Image>
-                                    <Image.Source>
-                                        <BitmapImage UriSource="/Resources/cross.png" />
-                                    </Image.Source>
-                                </Image>
+                                <Image x:Name="authDBStatusIcon" />
                                 <TextBlock Margin="2,0"
                                            VerticalAlignment="Center"
                                            FontFamily="Segoe UI Symbol"
@@ -233,6 +226,14 @@
                                            TextAlignment="Center" />
                             </DockPanel>
                         </Button>
+                        <TextBlock Margin="116,374,116,0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontStretch="Condensed"
+                                   FontStyle="Italic"
+                                   FontWeight="Light">
+                            Note: Report Migration Requires both Auth and Asset Database Connection Details
+                        </TextBlock>
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>

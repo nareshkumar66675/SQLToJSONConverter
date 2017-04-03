@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit;
 using Xceed.Wpf.Toolkit.Core;
+using static Migration.Common.Common;
 
 namespace MigrationTool
 {
@@ -33,6 +34,10 @@ namespace MigrationTool
         private ComponentsProcessUserControl AssetCompProcessCntrl = new ComponentsProcessUserControl();
         private ComponentsProcessUserControl ReportsCompProcessCntrl = new ComponentsProcessUserControl();
         private bool CanClose = true;
+
+        private const string crossImagePath= "/Resources/Cross.png";
+        private const string tickImagePath = "/Resources/Tick.png";
+
         #endregion
         public Wizard()
         {
@@ -44,6 +49,7 @@ namespace MigrationTool
             AuthCompProcessCntrl.ProcessCompleted += AuthCompProcessCntrl_ProcessCompleted;
             AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
             ReportsCompProcessCntrl.ProcessCompleted += ReportsCompProcessCntrl_ProcessCompleted;
+            UpdateDbConnectButtonIcon();
         }
 
         private void Wiz_Next(object sender, CancelRoutedEventArgs e)
@@ -151,7 +157,8 @@ namespace MigrationTool
         {
             if (ValidateConnectionString(e.ConnectionString))
             {
-                Common.ConnectionStrings.AuthConnectionString = e.ConnectionString;
+                ConnectionStrings.AuthConnectionString = e.ConnectionString;
+
                 Logger.Instance.LogInfo("Auth Database Connection Completed");
             }      
         }
@@ -159,7 +166,7 @@ namespace MigrationTool
         {
             if (ValidateConnectionString(e.ConnectionString))
             {
-                Common.ConnectionStrings.AssetConnectionString = e.ConnectionString;
+                ConnectionStrings.AssetConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Asset Database Connection Completed");
             }
         }
@@ -167,7 +174,7 @@ namespace MigrationTool
         {
             if (ValidateConnectionString(e.ConnectionString))
             {
-                Common.ConnectionStrings.LegacyConnectionString = e.ConnectionString;
+                ConnectionStrings.LegacyConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Source Database Connection Completed");
             }
         }
@@ -175,7 +182,7 @@ namespace MigrationTool
         {
             if (ValidateConnectionString(e.ConnectionString))
             {
-                Common.ConnectionStrings.ReportConnectionString = e.ConnectionString;
+                ConnectionStrings.ReportConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Report Database Connection Completed");
             }
         }
@@ -250,10 +257,59 @@ namespace MigrationTool
             }
                 
         }
+        private BitmapImage GetDBStatusImage(string connString)
+        {
+            BitmapImage statusIcon = new BitmapImage();
+            statusIcon.BeginInit();
+            if (string.IsNullOrWhiteSpace(connString))
+                statusIcon.UriSource = new Uri(crossImagePath, UriKind.Relative);
+            else
+                statusIcon.UriSource = new Uri(tickImagePath, UriKind.Relative);
+            statusIcon.EndInit();
+
+            return statusIcon;
+        }
+
+        private void authConnectBtn_Click(object sender, RoutedEventArgs e)
+        {
+            DatabaseConfigSubWindow win = new DatabaseConfigSubWindow();
+            win.Owner = Application.Current.MainWindow;
+            win.Closed += authDBSelect_Closed; ;
+            win.Type = GroupType.AUTH.ToString();
+            win.ShowDialog();
+        }
+
+        private void authDBSelect_Closed(object sender, EventArgs e)
+        {
+            ConnectionStrings.AuthConnectionString = (sender as DatabaseConfigSubWindow).GetConnectionString();
+            UpdateDbConnectButtonIcon();
+        }
 
         private void assetDBConnectBtn_Click(object sender, RoutedEventArgs e)
         {
+            DatabaseConfigSubWindow win = new DatabaseConfigSubWindow();
+            win.Owner = Application.Current.MainWindow;
+            win.Closed += assetDBSelect_Closed;
+            win.Type = GroupType.ASSET.ToString();
+            win.ShowDialog();
+        }
 
+        private void assetDBSelect_Closed(object sender, EventArgs e)
+        {
+            ConnectionStrings.AssetConnectionString = (sender as DatabaseConfigSubWindow).GetConnectionString();
+            UpdateDbConnectButtonIcon();
+        }
+        private void UpdateDbConnectButtonIcon()
+        {
+            try
+            {
+                assetDBStatusIcon.Source = GetDBStatusImage(ConnectionStrings.AssetConnectionString);
+                authDBStatusIcon.Source = GetDBStatusImage(ConnectionStrings.AuthConnectionString);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
