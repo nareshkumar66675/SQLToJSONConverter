@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ComponentConfig>
   <Group Name="AUTH">
-	<Component Name="ORG" DisplayName="Organization" DomainType="BallyTech.Library.Persistence.MSSql.Entity.ServiceProviderEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default" />
-    <Component Name="SITE" DisplayName="Sites" DomainType="BallyTech.Library.Persistence.MSSql.Entity.SiteEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default" />
-    <Component Name="TSKGRP" DisplayName="Task Group" DomainType="BallyTech.Library.Persistence.MSSql.Entity.TaskGroupEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default" />   
-	<Component Name="ROLE" DisplayName="Role" DomainType="BallyTech.Library.Persistence.MSSql.Entity.RoleEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default" />
+	 <Component Name="ORG" DisplayName="Organization" DomainType="BallyTech.Library.Persistence.MSSql.Entity.ServiceProviderEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default" />
+   <Component Name="SITE" DisplayName="Sites" DomainType="BallyTech.Library.Persistence.MSSql.Entity.SiteEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default" />
+   <Component Name="TSKGRP" DisplayName="Task Group" DomainType="BallyTech.Library.Persistence.MSSql.Entity.TaskGroupEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default" />   
+	 <Component Name="ROLE" DisplayName="Role" DomainType="BallyTech.Library.Persistence.MSSql.Entity.RoleEntity,BallyTech.Library.Auth.Persistence.MSSql" GenerateType="Default" PersistType="Default" />
   </Group>
   <Group Name="ASSET">
 	 <Component Name="COMPDATA_MNF" DisplayName="Component Data - Manufacture"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.ComponentDataEntity,BallyTech.Library.Asset.Persistence.MSSql" GenerateType="Default" PersistType="Default" />

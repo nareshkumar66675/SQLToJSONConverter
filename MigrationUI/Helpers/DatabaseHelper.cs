@@ -128,9 +128,9 @@ namespace MigrationTool.Helpers
                                 table.Rows.Add( group.GetDescription() // Group Name
                                                 , Configurator.GetDisplayNameByComponentName(dr.GetString(0)) // Component_Name -> Display Name
                                                 , dr[1].ToString()  //SiteCount
-                                                , dr[2].ToString()  //Legacy
-                                                , dr[3].ToString()  //Unique
-                                                , dr[4].ToString());//InsertedRcrds
+                                                , dr[2].ToString()  //Legacy Count
+                                                , dr[3].ToString()  //Unique Count
+                                                , dr[4].ToString());//InsertedRcrds Count
                             }
                         }
                     }
@@ -142,12 +142,14 @@ namespace MigrationTool.Helpers
 
         internal static DataTable GetAllReports()
         {
+            //Get All Reports From Databases asynchronously
             var authTask =Task.Factory.StartNew(() => GetReportSummary(GroupType.AUTH));
             var assetTask = Task.Factory.StartNew(() => GetReportSummary(GroupType.ASSET));
             var rptTask = Task.Factory.StartNew(() => GetReportSummary(GroupType.REPORT));
 
             DataTable table = new DataTable();
 
+            //Wait and Union the Results
             authTask.Wait();
             table.Merge(authTask.Result, true, MissingSchemaAction.Add);
             assetTask.Wait();
@@ -221,7 +223,7 @@ namespace MigrationTool.Helpers
                     }
                 }
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
                 //throw new InvalidOperationException("Error Occurred While retrieving completed components", ex);
                 return new List<string>();//If Migration Tables Not Found - Tables Will be added through Prerequisites
