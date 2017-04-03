@@ -21,7 +21,7 @@
           VerticalAlignment="Top">
         <xctk:Wizard x:Name="Wiz"
                      Cancel="LogAppClose"
-                     CurrentPage="{Binding ElementName=IntroPage}"
+                     CurrentPage="{Binding ElementName=ViewMigrationReportPage}"
                      FinishButtonClosesWindow="True"
                      Help="Wiz_Help"
                      Next="Wiz_Next">
@@ -188,10 +188,51 @@
                     <Grid>
                         <controls:DatabaseConfigUserControl x:Name="ReportConnectCntrl"
                                                             Margin="116,75,116,76"
-                                                            BGColor="#909e81"
+                                                            BGColor="#c7c0ce"
                                                             OnConnectComplete="ReportDBCntrl_OnConnectComplete"
                                                             RenderTransformOrigin="1.023,0.523"
                                                             Type="REPORT" />
+                        <Button x:Name="assetDBConnectBtn"
+                                Width="154"
+                                Height="30"
+                                Margin="363,348,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Click="assetDBConnectBtn_Click">
+                            <DockPanel>
+                                <Image>
+                                    <Image.Source>
+                                        <BitmapImage UriSource="/Resources/cross.png" />
+                                    </Image.Source>
+                                </Image>
+                                <TextBlock Margin="2,0"
+                                           VerticalAlignment="Center"
+                                           FontFamily="Segoe UI Symbol"
+                                           FontSize="12"
+                                           Text="Asset DB Connection"
+                                           TextAlignment="Center" />
+                            </DockPanel>
+                        </Button>
+                        <Button x:Name="authConnectBtn"
+                                Width="154"
+                                Height="30"
+                                Margin="140,348,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top">
+                            <DockPanel>
+                                <Image>
+                                    <Image.Source>
+                                        <BitmapImage UriSource="/Resources/cross.png" />
+                                    </Image.Source>
+                                </Image>
+                                <TextBlock Margin="2,0"
+                                           VerticalAlignment="Center"
+                                           FontFamily="Segoe UI Symbol"
+                                           FontSize="12"
+                                           Text="Auth DB Connection"
+                                           TextAlignment="Center" />
+                            </DockPanel>
+                        </Button>
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
@@ -201,10 +242,25 @@
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
                              Description="Please wait until the Migration is Complete."
-                             NextPage="{Binding ElementName=LastPage}"
+                             NextPage="{Binding ElementName=ViewMigrationReportPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=ReportConnectionPage}" />
             <!--  EOF Asset History Process Block  -->
+            <xctk:WizardPage x:Name="ViewMigrationReportPage"
+                             Title="Migration Report"
+                             CanCancel="False"
+                             CanSelectNextPage="False"
+                             CanSelectPreviousPage="False"
+                             Description="Please find the overall migration status"
+                             NextPage="{Binding ElementName=LastPage}"
+                             PageType="Interior"
+                             PreviousPage="{Binding ElementName=ReportComponentsProcessPage}">
+                <xctk:WizardPage.Content>
+                    <Grid>
+                        <controls:ViewReportUserControl x:Name="ViewMigrationRptCntrl" Margin="33,0,33,10" />
+                    </Grid>
+                </xctk:WizardPage.Content>
+            </xctk:WizardPage>
             <xctk:WizardPage x:Name="LastPage"
                              Title="Last Page"
                              CanFinish="True"

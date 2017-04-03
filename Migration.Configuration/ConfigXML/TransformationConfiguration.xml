@@ -666,18 +666,35 @@ order by Ast_Optn.asd_std_id --=209907247000000408
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
   </Transformation>
 
-  <!-- History Components-->
+  <!-- Report Components-->
 
+  <Transformation Name="RPT_ORG">
+    <Source> SELECT [key],[value] from Organization.Organization </Source>
+    <Destination>Organization.Organization</Destination>
+  </Transformation>
+  <Transformation Name="RPT_SITE">
+    <Source> SELECT [key],[value] from Site.Site </Source>
+    <Destination>Site.Site</Destination>
+  </Transformation>
   <Transformation Name="RPT_TSKGRP">
     <Source> SELECT [key],[value] from Employee.TaskGroup </Source>
     <Destination>[Employee].[TaskGroup]</Destination>
   </Transformation>
-  <Transformation Name="RPT_ORG">
-    <Source> SELECT [key],[value] from Organization.Organization </Source>
-    <Destination>Organization.Organization</Destination>
+  <Transformation Name="RPT_ROLE">
+    <Source> SELECT [key],[value] from Employee.Role </Source>
+    <Destination>Employee.Role</Destination>
   </Transformation>
   <Transformation Name="RPT_COMPDATA">
     <Source> SELECT [key],[value] from COMPONENTS.ComponentData </Source>
     <Destination>COMPONENTS.ComponentData</Destination>
   </Transformation>
+  <Transformation Name="RPT_ASSET">
+    <Source> SELECT [key],[value] from DataManagement.Asset </Source>
+    <Destination>DataManagement.Asset</Destination>
+  </Transformation>
+  <Transformation Name="RPT_ASTLINK">
+    <Source> SELECT [key],[value] from DataManagement.AssetLink </Source>
+    <Destination>DataManagement.AssetLink</Destination>
+  </Transformation>
+  
 </TransformationConfig>

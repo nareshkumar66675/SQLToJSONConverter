@@ -170,11 +170,30 @@ namespace Migration.Configuration
 
             return script;
         }
+        /// <summary>
+        /// Get Components of a specific group
+        /// </summary>
+        /// <param name="type">Group Type</param>
+        /// <returns>Components</returns>
         public static Components GetComponentsByGroup(GroupType type)
         {
             Components comp = new Components();
             comp.Group = SourceComponents.Group.Where(t => t.Name == type).ToList();
             return comp;
+        }
+        /// <summary>
+        /// Get Dispaly Name of a specific compoenent
+        /// </summary>
+        /// <param name="componentName">Component Name</param>
+        /// <returns>Dispaly Name</returns>
+        public static string GetDisplayNameByComponentName(string componentName)
+        {
+            foreach (var grp in SourceComponents.Group)
+            {
+                if (grp.Component.Exists(t => t.Name == componentName))
+                    return grp.Component.Select(t => t.DisplayName).FirstOrDefault();
+            }
+            return string.Empty;
         }
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)

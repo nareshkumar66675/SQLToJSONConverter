@@ -19,11 +19,11 @@
   </Group>
   <Group Name="REPORT">
     <Component Name="RPT_ORG" DisplayName="Organization - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />
-    <!--<Component Name="RPT_SITE" DisplayName="Site - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />
+    <Component Name="RPT_SITE" DisplayName="Site - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />
     <Component Name="RPT_TSKGRP" DisplayName="Task Group - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />
-    <Component Name="RPT_ROLE" DisplayName="Role - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />-->
+    <Component Name="RPT_ROLE" DisplayName="Role - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />
     <Component Name="RPT_COMPDATA" DisplayName="Component Data - Report"  DomainType="" GenerateType="AssetData" PersistType="Default" />
-    <!--<Component Name="RPT_ASSET" DisplayName="Asset - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />
-    <Component Name="RPT_ASTLINK" DisplayName="Asset Link - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />-->
+    <Component Name="RPT_ASSET" DisplayName="Asset - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />
+    <Component Name="RPT_ASTLINK" DisplayName="Asset Link - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />
   </Group>
 </ComponentConfig>

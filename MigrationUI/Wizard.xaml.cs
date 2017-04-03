@@ -107,6 +107,11 @@ namespace MigrationTool
                         e.Cancel = true;
                     }
                 }
+                //Reports Process Page -> Migration Report Page
+                else if(Wiz.CurrentPage==ReportComponentsProcessPage)
+                {
+                    ViewMigrationRptCntrl.ShowReport();
+                }
             }
             catch (Exception ex)
             {
@@ -117,28 +122,28 @@ namespace MigrationTool
 
         private bool CanProcessReport()
         {
-            //Auth Check 
-            var authCompledtedComp =DatabaseHelper.GetCompletedComponents(GroupType.AUTH, null).Count;
-            var authAllComp = Configurator.GetComponentListByGroup(GroupType.AUTH).Count;
+            ////Auth Check 
+            //var authCompledtedComp =DatabaseHelper.GetCompletedComponents(GroupType.AUTH, null).Count;
+            //var authAllComp = Configurator.GetComponentListByGroup(GroupType.AUTH).Count;
 
-            if (authCompledtedComp != authAllComp)
-            {
-                Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Auth Components; All Componnets Count - { authAllComp} Completed Components - {authCompledtedComp}");
-                return false;
-            }
+            //if (authCompledtedComp != authAllComp)
+            //{
+            //    Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Auth Components; All Componnets Count - { authAllComp} Completed Components - {authCompledtedComp}");
+            //    return false;
+            //}
 
-            //Asset Check
-            var allSites = DatabaseHelper.GetAllSitesFromLegacy();
+            ////Asset Check
+            //var allSites = DatabaseHelper.GetAllSitesFromLegacy();
 
-            var assetCompletedComp = DatabaseHelper.GetCompletedComponents(GroupType.ASSET, allSites.Select(t => t.Key).ToList()).Count;
+            //var assetCompletedComp = DatabaseHelper.GetCompletedComponents(GroupType.ASSET, allSites.Select(t => t.Key).ToList()).Count;
 
-            var assetAllComp = Configurator.GetComponentListByGroup(GroupType.ASSET).Count;
+            //var assetAllComp = Configurator.GetComponentListByGroup(GroupType.ASSET).Count;
 
-            if (assetCompletedComp != assetAllComp)
-            {
-                Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Asset Components ; All Componnets Count - { assetAllComp} Completed Components - {assetCompletedComp}");
-                return false;
-            }
+            //if (assetCompletedComp != assetAllComp)
+            //{
+            //    Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Asset Components ; All Componnets Count - { assetAllComp} Completed Components - {assetCompletedComp}");
+            //    return false;
+            //}
             return true;
         }
 
@@ -244,6 +249,11 @@ namespace MigrationTool
                 e.Cancel = true;
             }
                 
+        }
+
+        private void assetDBConnectBtn_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Migration.Common;
+using Migration.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -92,6 +93,71 @@ namespace MigrationTool.Helpers
             }
             return SiteList;
         }
+
+        internal static DataTable GetReportSummary(GroupType group)
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add(new DataColumn("Group"));
+            table.Columns.Add(new DataColumn("DisplayName"));
+            table.Columns.Add(new DataColumn("Site Count"));
+            table.Columns.Add(new DataColumn("Legacy Record"));
+            table.Columns.Add(new DataColumn("Unique Records"));
+            table.Columns.Add(new DataColumn("Inserted Records"));
+
+            string query = @"SELECT Component_Name,
+			                        0 as SiteCount,
+			                        SUM (Tot_Rcrds_InLegacy) as Legacy ,
+			                        SUM(Tot_Unique_RcrdsInLegacy) as [Unique],
+			                        SUM(Inserted_Rcrds_InNew) as [InsertedRcrds]
+		                        FROM Migration.Report --LEFT JOIN Migration.SiteGroup on Report.SiteGroupID=SiteGroup.SiteGroupID
+	                                 WHERE [Status]='Success'
+	                                 GROUP BY Component_Name,Report.SiteGroupID";
+
+            if (!string.IsNullOrWhiteSpace(ConnectionStrings.GetConnectionString(group)))
+            {
+                using (SqlConnection con = new SqlConnection(ConnectionStrings.GetConnectionString(group)))
+                {
+                    con.Open();
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        using (IDataReader dr = cmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                table.Rows.Add( group.GetDescription() // Group Name
+                                                , Configurator.GetDisplayNameByComponentName(dr.GetString(0)) // Component_Name -> Display Name
+                                                , dr[1].ToString()  //SiteCount
+                                                , dr[2].ToString()  //Legacy
+                                                , dr[3].ToString()  //Unique
+                                                , dr[4].ToString());//InsertedRcrds
+                            }
+                        }
+                    }
+                }
+            }
+
+            return table;
+        }
+
+        internal static DataTable GetAllReports()
+        {
+            var authTask =Task.Factory.StartNew(() => GetReportSummary(GroupType.AUTH));
+            var assetTask = Task.Factory.StartNew(() => GetReportSummary(GroupType.ASSET));
+            var rptTask = Task.Factory.StartNew(() => GetReportSummary(GroupType.REPORT));
+
+            DataTable table = new DataTable();
+
+            authTask.Wait();
+            table.Merge(authTask.Result, true, MissingSchemaAction.Add);
+            assetTask.Wait();
+            table.Merge(assetTask.Result, true, MissingSchemaAction.Add);
+            rptTask.Wait();
+            table.Merge(rptTask.Result, true, MissingSchemaAction.Add);
+
+            return table;
+        }
+
         public static List<string> GetMigratedSites(string connectionString)
         {
             List<string> SiteList = new List<string>();
