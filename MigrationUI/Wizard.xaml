@@ -21,7 +21,7 @@
           VerticalAlignment="Top">
         <xctk:Wizard x:Name="Wiz"
                      Cancel="LogAppClose"
-                     CurrentPage="{Binding ElementName=ReportConnectionPage}"
+                     CurrentPage="{Binding ElementName=AuthConnectionPage}"
                      FinishButtonClosesWindow="True"
                      Help="Wiz_Help"
                      Next="Wiz_Next">
@@ -94,13 +94,26 @@
                                                             RenderTransformOrigin="1.023,0.523"
                                                             Type="AUTH" />
                         <Button x:Name="SkipAuthButton"
-                                Width="75"
-                                Margin="294,346,0,0"
+                                Width="111"
+                                Margin="272,348,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Click="SkipAuthButton_Click"
-                                Content="Skip Auth"
-                                FontSize="14" />
+                                FontSize="14">
+                            <DockPanel>
+                                <Image Width="32" Height="24">
+                                    <Image.Source>
+                                        <BitmapImage UriSource="/Resources/Skip-Blue.png" />
+                                    </Image.Source>
+                                </Image>
+                                <TextBlock Margin="2,0"
+                                           VerticalAlignment="Center"
+                                           FontFamily="Segoe UI Symbol"
+                                           FontSize="12"
+                                           Text="Skip Auth"
+                                           TextAlignment="Center" />
+                            </DockPanel>
+                        </Button>
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
@@ -140,13 +153,26 @@
                                                             RenderTransformOrigin="1.023,0.523"
                                                             Type="ASSET" />
                         <Button x:Name="SkipAssetButton"
-                                Width="75"
-                                Margin="294,346,0,0"
+                                Width="111"
+                                Margin="272,348,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Click="SkipAssetButton_Click"
-                                Content="Skip Asset"
-                                FontSize="14" />
+                                FontSize="14">
+                            <DockPanel Width="101">
+                                <Image Width="32" Height="24">
+                                    <Image.Source>
+                                        <BitmapImage UriSource="/Resources/Skip-Green.png" />
+                                    </Image.Source>
+                                </Image>
+                                <TextBlock Margin="2,0"
+                                           VerticalAlignment="Center"
+                                           FontFamily="Segoe UI Symbol"
+                                           FontSize="12"
+                                           Text="Skip Asset"
+                                           TextAlignment="Center" />
+                            </DockPanel>
+                        </Button>
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
@@ -177,7 +203,7 @@
             <!--  Asset History Process Block Start  -->
             <xctk:WizardPage x:Name="ReportConnectionPage"
                              Title="STEP 9 : Report Database Connection"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
                              Description="Enter the report database connection details."
                              NextPage="{Binding ElementName=ReportComponentsProcessPage}"
@@ -186,12 +212,34 @@
                 <!--  CanSelectNextPage="False"  -->
                 <xctk:WizardPage.Content>
                     <Grid>
-                        <controls:DatabaseConfigUserControl x:Name="ReportConnectCntrl"
-                                                            Margin="116,75,116,76"
-                                                            BGColor="#c7c0ce"
-                                                            OnConnectComplete="ReportDBCntrl_OnConnectComplete"
-                                                            RenderTransformOrigin="1.023,0.523"
-                                                            Type="REPORT" />
+                        <Grid Margin="120,40,112,111">
+                            <controls:DatabaseConfigUserControl x:Name="ReportConnectCntrl"
+                                                                BGColor="#c7c0ce"
+                                                                OnConnectComplete="ReportDBCntrl_OnConnectComplete"
+                                                                RenderTransformOrigin="1.023,0.523"
+                                                                Type="REPORT" />
+                        </Grid>
+                        <Button x:Name="SkipReportButton"
+                                Width="111"
+                                Margin="275,304,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Click="SkipAssetButton_Click"
+                                FontSize="14">
+                            <DockPanel Width="101">
+                                <Image Width="32" Height="24">
+                                    <Image.Source>
+                                        <BitmapImage UriSource="/Resources/Skip-Pink.png" />
+                                    </Image.Source>
+                                </Image>
+                                <TextBlock Margin="2,0"
+                                           VerticalAlignment="Center"
+                                           FontFamily="Segoe UI Symbol"
+                                           FontSize="12"
+                                           Text="Skip Report"
+                                           TextAlignment="Center" />
+                            </DockPanel>
+                        </Button>
                         <Button x:Name="assetDBConnectBtn"
                                 Width="154"
                                 Height="30"
@@ -231,9 +279,7 @@
                                    VerticalAlignment="Center"
                                    FontStretch="Condensed"
                                    FontStyle="Italic"
-                                   FontWeight="Light">
-                            Note: Report Migration Requires both Auth and Asset Database Connection Details
-                        </TextBlock>
+                                   FontWeight="Light"><Run Text="Note: Report Migration Requires both Auth and Asset Database Connection Details" /></TextBlock>
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>

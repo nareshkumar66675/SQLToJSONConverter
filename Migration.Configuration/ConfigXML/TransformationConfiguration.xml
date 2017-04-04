@@ -8,7 +8,7 @@
       st.SITE_short_NAME as Name,
       st.SITE_LONG_NAME as [Description],
       st.SITE_short_NAME as VenueCode,
-      st.SITE_CODE as Code,
+      MST.SITE_CODE as Code, --ST.SITE_CODE as Code,
       --'Rot' as ParentCode,
       coalesce(PROP_PARENT_CODE,P.PROP_SHORT_NAME) as ParentCode,
       p.PROP_SHORT_NAME as ServiceProviderCode,
@@ -252,10 +252,10 @@
       MD.MDL_CODE as Component_Components_ComponentValues_CC_CC_CC_Options_Code,
       MD.MDL_Name as Component_Components_ComponentValues_CC_CC_CC_Options_Name
 
-      FROM GAM.VIEW_MODEL AS MD
-      join gam.view_MANUFACTURE as mf on mf.manf_id = MD.MDL_MANF_ID and mf.mnf_seq = MD.MDL_SEQ
+      FROM [Migration].[VIEW_MODEL] AS MD
+      join [Migration].[VIEW_MANUFACTURE] as mf on mf.manf_id = MD.MDL_MANF_ID and mf.mnf_seq = MD.MDL_SEQ
       JOIN [GAM].[MODEL_MODELTYPE_MAP] AS mdlMap ON mdlMap.MODL_ID = MD.MDL_ID
-      join gam.VIEW_MODEL_TYPE as MT on MT.MDLTYP_ID = mdlMap.MTYP_ID and md.MDL_SEQ = MDL_TYP_SEQ
+      join [Migration].[VIEW_MODEL_TYPE] as MT on MT.MDLTYP_ID = mdlMap.MTYP_ID and md.MDL_SEQ = MDL_TYP_SEQ
       --where md.MDL_ID in (1,2)
       order by mf.mf_id
 
@@ -335,11 +335,11 @@
       TM.VALUE as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Value,
       TM.THEM_CODE as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Code
 
-      FROM GAM.VIEW_THEME AS TM
-      JOIN GAM.VIEW_MANUFACTURE AS MF ON MF.MANF_ID = TM.MANF_ID AND MNF_SEQ = TM.THEM_SEQ
-      JOIN GAM.VIEW_THEME_CATEGORY AS TC ON TM.THEME_CAT_ID = TC.TCAT_ID AND TM.THEM_SEQ = TC.TCAT_SEQ
-      JOIN GAM.VIEW_THEME_GROUP AS TG ON TG.TGRP_ID = TC.TCAT_TGRP_ID AND TG.THM_GRP_SEQ = TC.TCAT_SEQ
-      JOIN GAM.VIEW_THEME_TYPE AS TT ON TT.TTYP_ID = TG.TGRP_TTYP_ID AND TT.THEM_TYPE_SEQ = TG.THM_GRP_SEQ
+      FROM [Migration].[VIEW_THEME] AS TM
+      JOIN [Migration].[VIEW_MANUFACTURE] AS MF ON MF.MANF_ID = TM.MANF_ID AND MNF_SEQ = TM.THEM_SEQ
+      JOIN [Migration].[VIEW_THEME_CATEGORY] AS TC ON TM.THEME_CAT_ID = TC.TCAT_ID AND TM.THEM_SEQ = TC.TCAT_SEQ
+      JOIN [Migration].[VIEW_THEME_GROUP] AS TG ON TG.TGRP_ID = TC.TCAT_TGRP_ID AND TG.THM_GRP_SEQ = TC.TCAT_SEQ
+      JOIN [Migration].[VIEW_THEME_TYPE] AS TT ON TT.TTYP_ID = TG.TGRP_TTYP_ID AND TT.THEM_TYPE_SEQ = TG.THM_GRP_SEQ
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
@@ -425,6 +425,85 @@
       ) AS T
       ------ EOF Manufacturer ------
 
+    </Source>   
+    <Destination>[COMPONENTS].[ComponentData]</Destination>
+    <KeyFormat Format="57_{0}" Keys="Id" />
+  </Transformation>
+  <Transformation Name="COMPDATA_POS_VENDOR">
+    <Source>
+      SELECT 22051 as Id,
+      22051 as Component_Id,
+      'POS.VENDOR' as Component_Code,
+      --------COMPONENTS---------
+      0 as Component_Components_SiteId,
+      -------Component Values--------
+      '1_root' as Component_Components_ComponentValues_Id,
+      'POS Vendor' as Component_Components_ComponentValues_Name,
+      'POS Vendor' as Component_Components_ComponentValues_DisplayName,
+      'POS.VENDOR' as Component_Components_ComponentValues_Code,
+      ------ChildCompoenents-------
+      CAST(Components_Id as VARCHAR(50)) +'_1' as Component_Components_ComponentValues_ChildComponents_Id,
+      'POS.VENDOR' as  Component_Components_ComponentValues_ChildComponents_Code,
+      Name as Component_Components_ComponentValues_ChildComponents_Name,
+      DisplayName AS Component_Components_ComponentValues_ChildComponents_DisplayName,
+      ----- OPTIONS ----------
+      cast( ROW_NUMBER() OVER (PARTITION BY MANF_ID ORDER BY MANF_ID ) as nvarchar) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
+      CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'Vendor Short Name'
+      WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'Vendor Long Name'
+      WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'Code'
+      END AS Component_Components_ComponentValues_ChildComponents_Options_Name,
+
+      CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'VEND.SHORT.NAME'
+      WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'VEND.LONG.NAME'
+      WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'VEND.CODE'
+      END AS Component_Components_ComponentValues_ChildComponents_Options_Code,
+
+      VALUE as Component_Components_ComponentValues_ChildComponents_Options_Value
+      FROM
+      (SELECT MANF_ID, MANF_SHORT_NAME as Name, MANF_LONG_NAME as DisplayName,
+      ROW_NUMBER() OVER (ORDER BY MF_NEW_ID ) AS Components_Id,
+      CAST(MANF_SHORT_NAME AS NVARCHAR) AS MANF_SHORT_NAME,
+      CAST(MANF_LONG_NAME AS NVARCHAR) AS MANF_LONG_NAME,
+      CAST(MANF_VEND_CODE AS NVARCHAR) AS MANF_VEND_CODE
+      FROM GAM.MANUFACTURER
+      JOIN MIGRATION.GAM_POS_MANUFACTURER ON MNF_LEGCY_ID = MANF_ID
+      WHERE IS_DELETED = 0) MFN
+      UNPIVOT
+      ( VALUE FOR VALUE_DESC IN (MANF_SHORT_NAME, MANF_LONG_NAME, MANF_VEND_CODE)
+      ) AS T
+    </Source>   
+    <Destination>[COMPONENTS].[ComponentData]</Destination>
+    <KeyFormat Format="57_{0}" Keys="Id" />
+  </Transformation>
+  <Transformation Name="COMPDATA_POS_MODEL">
+    <Source>
+      SELECT '22052' as Id,
+     'POS.MODEL' as Code,
+      -------Components--------
+      0 as Components_SiteId,
+      ------ComponentValues------
+      '1_root' as Components_ComponentValues_Id,
+      'POS Model' as Components_ComponentValues_Name,
+      'POS.MODEL' as Components_ComponentValues_Code,
+      'POS Model' as Components_ComponentValues_DisplayName,
+      -------ChildComponents-------
+      cast(Components_Id as nvarchar)+'_1' as Components_ComponentValues_ChildComponents_Id,
+      Name as Components_ComponentValues_ChildComponents_Name,
+      'POS.MODEL' as Components_ComponentValues_ChildComponents_Code,
+      DISPLAY_NAME as Components_ComponentValues_ChildComponents_DisplayName,
+      -------Options---------
+      '1' as Components_ComponentValues_ChildComponents_Options_Id,
+      'POS.MODEL.NAME' as Components_ComponentValues_ChildComponents_Options_Code,
+      MODL_LONG_NAME as Components_ComponentValues_ChildComponents_Options_Value
+      FROM (SELECT MDL.MDL_ID, MDL_MANF_ID, 
+      MDL_NEW_ID,
+      MDL_SHORT_NAME as Name,
+      MDL_LONG_NAME as DISPLAY_NAME,
+      MDL_NEW_ID AS Components_Id,
+      CAST(MDL.MDL_LONG_NAME AS NVARCHAR)  AS MODL_LONG_NAME
+      FROM  GAM.MODEL AS MDL 
+      JOIN MIGRATION.GAM_POS_MODEL AS GD ON GD.MDL_LEGCY_ID = MDL.MDL_ID
+      WHERE MDL.IS_DELETED = 0 ) MDL_TYPE
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
@@ -526,7 +605,7 @@
       JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
       JOIN GAM.ASSET_DETAIL AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
       JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AD.AST_OPTION_ID
-      LEFT JOIN GAM.VIEW_MANUFACTURER AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
+      LEFT JOIN [Migration].[VIEW_MANUFACTURE] AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
       LEFT JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD.ASD_MODL_ID
       LEFT JOIN GAM.MODEL_MODELTYPE_MAP AS MDL_TYPE_MAP ON MDL_TYPE_MAP.[MODEL_MAP_ID] = ASD.ASD_MODL_TYP_MAPiD
       LEFT JOIN GAM.AREA AS AR ON AR.AREA_ID = ASD.ASD_AREA_ID
@@ -609,37 +688,53 @@
   </Transformation>
   <Transformation Name="AST_SLOT">
     <Source>
-select  ASD_STD_NEW_ID as  Id,
+SELECT ASD_STD_NEW_ID as  Id,
       ---ASSET ID -----
       ASD_STD_NEW_ID as AssetId_Id,
        10 as AssetId_AssetTypeDefinitionId,
-       ----SITE----------
+      ---------SITE----------
       SITE_NEW_ID as Site_SiteId,
       SITE_LONG_NAME as Site_SiteName,
       SITE_NUMBER as Site_SiteNumber,
       --st.IS_DELETED as Site_IsDeleted,
       Ast_Optn.PROP_NEW_ID as Site_OrganizationId,
       Ast_Optn.PROP_LONG_NAME as Site_OrganizationName,
-            --   ---- OPTIONS ----------
+      --------- OPTIONS ----------
       Ast_Optn.[OPTION_ID] as Options_Id,
       Ast_Optn.OPTION_CODE as Options_Code,
       Ast_Optn.AST_OPTN_VALUE as Options_Value,
-               -----Components --------
+      --------Components --------
       ComponentId as Components_ComponentId,
       ComponentInstanceId as Components_ComponentInstanceId,
       ComponentName as Components_ComponentName,
       ComponentKey as Components_ComponentKey,
       ComponentValue as Components_ComponentValue,
       ComponentCode as Components_ComponentCode,
-	  ASST_OPTN_ORDER,  Seq_Id 
-from (SELECT ASD.ASD_STD_ID,ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
+         --ASST_OPTN_ORDER,  
+         --Seq_Id ,
+      ------------InlineAssets------------
+      InlineAssets_Id,
+      AssetId_AssetTypeDefinitionId as InlineAssets_AssetId_AssetTypeDefinitionId,
+      AssetId_Id as InlineAssets_AssetId_Id,
+      InlineAssets_Components_ComponentId,
+      InlineAssets_Components_ComponentName,
+      InlineAssets_Components_ComponentValue,
+      InlineAssets_Components_ComponentKey,
+      InlineAssets_Components_ComponentInstanceId,
+      InlineAssets_Components_ComponentCode,
+      gSltMap.IdIndex as InlineAssets_Options_Id,
+      gSltMap.Options_Value as InlineAssets_Options_Value,
+      gSltMap.Options_Code as InlineAssets_Options_Code,
+      --------TypeCode--
+      TypeCode_Id as TypeCode_TypeCodeId,
+      TypeCode_Name as TypeCode_TypeCodeName
+FROM (SELECT ASD.ASD_STD_ID,ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
 fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
-Case when AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' 
-	 when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes' 
-	 else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE, 
+CASE WHEN AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes' 
+else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE, 
  GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_LONG_NAME,
-gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER
-
+gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
+tycod_number as TypeCode_Id, tycod_name as TypeCode_Name
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
 JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
 JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
@@ -647,18 +742,27 @@ JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
 JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
-join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
 JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 left join gam.[OPTION] as optn on optn.[OPTN_ID] = AST_OPTION_ID
 left join gam.ASSET_DEFINITION as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID 
 and optn.[OPTN_ID] = astDfn.[ASTDFN_OPTN_ID]
 left join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on 
 fastDefn.[ASSET_NAME] = AST.asst_name and fastDefn.[OPTION_CODE] = optn.OPTN_CODE
+left join [GAM].[TYPE_CODE_MASTER] as tcm on tcm.tycod_id = [ASD_TCOD_ID]
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 AND ASD.ASD_ASST_ID = 1 
-and [OPTION_ID] is not null and st.SITE_NUMBER in ({0}) ) as Ast_Optn
-left join MIGRATION.GAM_ASSET_COMP_VALUES as ast_comp on Ast_Optn.asd_std_id = AM_LegacyId
-and Ast_Optn.ASST_OPTN_ORDER = Seq_Id 
---WHERE-- Ast_Optn.asd_std_id = 209907247000000408
+and [OPTION_ID] is not null and st.SITE_NUMBER in ({0})
+ ) as Ast_Optn
+LEFT JOIN MIGRATION.GAM_ASSET_COMP_VALUES AS AST_COMP ON AST_OPTN.ASD_STD_ID = AM_LEGACYID and Ast_Optn.ASST_OPTN_ORDER = AST_COMP.Seq_id
+left join (SELECT [GDM_ASTSTD_OR_TYCD_ID],  GMP.* from GAM.GAME_DETAILS_MAPPING AS gmapping
+LEFT JOIN MIGRATION.GAM_GAMES_DETAILS AS GMP ON GMP.GAME_ID = GMAPPING.[GDM_GAME_ID]
+where gmapping.IS_DELETED = 0 ) as gSltMap  on [GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
+and Ast_Optn.ASST_OPTN_ORDER = gSltMap.Seq
+--LEFT JOIN GAM.GAME_DETAILS_MAPPING AS gmapping on gmapping.[GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
+--LEFT JOIN MIGRATION.GAM_GAMES_DETAILS AS GMP ON GMP.GAME_ID = GMAPPING.[GDM_GAME_ID]
+--and Ast_Optn.ASST_OPTN_ORDER = GMP.Seq
+--where ASD_STD_NEW_ID=14507
+--and  Ast_Optn.asd_std_id = 209904728000001428
 order by Ast_Optn.asd_std_id --=209907247000000408
 
     </Source>

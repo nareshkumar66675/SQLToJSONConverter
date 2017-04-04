@@ -242,10 +242,18 @@
   <ItemGroup>
     <Resource Include="AppIcon.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Skip-Blue.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Cross.png" />
     <Resource Include="Resources\Tick.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Skip-Green.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Skip-Pink.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

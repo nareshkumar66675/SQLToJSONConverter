@@ -1,3 +1,15 @@
+/*
+	
+	***************************************************
+	*												  *
+	*   PreRequisite Name - AssetDefinitionParseSP    *
+	*												  *
+	***************************************************
+   
+   Purpose : Insert Asset Definition to Legacy Database
+
+ */
+
 
 DROP PROCEDURE IF EXISTS [MIGRATION].[P_ASSET_DEFINITION]
 GO

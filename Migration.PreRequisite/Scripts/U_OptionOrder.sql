@@ -1,4 +1,18 @@
-﻿UPDATE fastDefn
+﻿/*
+	
+	***************************************************
+	*												  *
+	*    PreRequisite Name - OptionOrderUpdate        *
+	*												  *
+	***************************************************
+   
+   Purpose : Update Legacy Database for Option Order
+
+ */
+
+
+
+UPDATE fastDefn
 SET fastDefn.ASST_OPTN_ORDER = a.OPTN_ORDER
 FROM (SELECT fastDefn.[OPTION_CODE], optn.OPTN_CODE,
 ASTDFN_OPTN_ORDER,

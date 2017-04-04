@@ -1,3 +1,15 @@
+/*
+	
+	***************************************************
+	*												  *
+	*    PreRequisite Name - ReportTruncateTables     *
+	*												  *
+	***************************************************
+   
+   Purpose : To Truncate all Tables Before Inserting Records to Report Database
+
+ */
+
 
 	   TRUNCATE TABLE COMPONENTS.ComponentData
 	   TRUNCATE TABLE DataManagement.Asset

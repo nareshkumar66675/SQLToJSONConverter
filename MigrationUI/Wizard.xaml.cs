@@ -49,7 +49,7 @@ namespace MigrationTool
             AuthCompProcessCntrl.ProcessCompleted += AuthCompProcessCntrl_ProcessCompleted;
             AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
             ReportsCompProcessCntrl.ProcessCompleted += ReportsCompProcessCntrl_ProcessCompleted;
-            UpdateDbConnectButtonIcon();
+            UpdateDbConnectStatus();
         }
 
         private void Wiz_Next(object sender, CancelRoutedEventArgs e)
@@ -157,8 +157,8 @@ namespace MigrationTool
         {
             if (ValidateConnectionString(e.ConnectionString))
             {
+                Wiz.CurrentPage.CanSelectNextPage = true;
                 ConnectionStrings.AuthConnectionString = e.ConnectionString;
-
                 Logger.Instance.LogInfo("Auth Database Connection Completed");
             }      
         }
@@ -166,6 +166,7 @@ namespace MigrationTool
         {
             if (ValidateConnectionString(e.ConnectionString))
             {
+                Wiz.CurrentPage.CanSelectNextPage = true;
                 ConnectionStrings.AssetConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Asset Database Connection Completed");
             }
@@ -174,6 +175,7 @@ namespace MigrationTool
         {
             if (ValidateConnectionString(e.ConnectionString))
             {
+                Wiz.CurrentPage.CanSelectNextPage = true;
                 ConnectionStrings.LegacyConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Source Database Connection Completed");
             }
@@ -184,13 +186,13 @@ namespace MigrationTool
             {
                 ConnectionStrings.ReportConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Report Database Connection Completed");
+                NavigateToReportsProcess();
             }
         }
         private bool ValidateConnectionString(string connectionString)
         {
             if (!string.IsNullOrEmpty(connectionString))
             {
-                Wiz.CurrentPage.CanSelectNextPage = true;
                 return true;
             }
             return false;
@@ -281,8 +283,9 @@ namespace MigrationTool
 
         private void authDBSelect_Closed(object sender, EventArgs e)
         {
-            ConnectionStrings.AuthConnectionString = (sender as DatabaseConfigSubWindow).GetConnectionString();
-            UpdateDbConnectButtonIcon();
+            var conString = (sender as DatabaseConfigSubWindow).GetConnectionString();
+            ConnectionStrings.AuthConnectionString = string.IsNullOrWhiteSpace(conString) ? ConnectionStrings.AuthConnectionString : conString;
+            UpdateDbConnectStatus();
         }
 
         private void assetDBConnectBtn_Click(object sender, RoutedEventArgs e)
@@ -296,20 +299,31 @@ namespace MigrationTool
 
         private void assetDBSelect_Closed(object sender, EventArgs e)
         {
-            ConnectionStrings.AssetConnectionString = (sender as DatabaseConfigSubWindow).GetConnectionString();
-            UpdateDbConnectButtonIcon();
+            var conString = (sender as DatabaseConfigSubWindow).GetConnectionString();
+            ConnectionStrings.AssetConnectionString = string.IsNullOrWhiteSpace(conString) ? ConnectionStrings.AssetConnectionString : conString;  
+            UpdateDbConnectStatus();
         }
-        private void UpdateDbConnectButtonIcon()
+        private void UpdateDbConnectStatus()
         {
             try
             {
                 assetDBStatusIcon.Source = GetDBStatusImage(ConnectionStrings.AssetConnectionString);
                 authDBStatusIcon.Source = GetDBStatusImage(ConnectionStrings.AuthConnectionString);
+                NavigateToReportsProcess();
             }
             catch (Exception)
             {
                 throw;
             }
+        }
+
+        private void NavigateToReportsProcess()
+        {
+            if (!string.IsNullOrEmpty(ConnectionStrings.AssetConnectionString)
+                    && !string.IsNullOrEmpty(ConnectionStrings.AuthConnectionString) && !string.IsNullOrEmpty(ConnectionStrings.ReportConnectionString))
+                ReportConnectionPage.CanSelectNextPage = true;
+            else
+                ReportConnectionPage.CanSelectNextPage = false;
         }
     }
 }

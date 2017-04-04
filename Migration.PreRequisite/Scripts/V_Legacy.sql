@@ -1,12 +1,46 @@
+/*
+	
+	***************************************************
+	*												  *
+	*        PreRequisite Name - LegacyViews          *
+	*												  *
+	***************************************************
+   
+   Purpose : DDL To Create New Views which is necessary for Migration
 
--------------------------
---MANUFACTURE
--------------------------
+ */
 
-DROP VIEW IF EXISTS GAM.VIEW_MANUFACTURE
+
+----------------------------------
+--			SITES				--
+----------------------------------
+
+
+DROP VIEW IF EXISTS [MIGRATION].[VIEW_SITE_INFO]
 GO
 
-CREATE VIEW GAM.VIEW_MANUFACTURE
+CREATE VIEW [MIGRATION].[VIEW_SITE_INFO]
+as
+SELECT INSSYSMAP.INSM_GROUP_ID, st.SITE_LONG_NAME, st.SITE_NUMBER,
+INSYS.INS_CONNECTION_URL
+FROM GAM.SITE AS ST
+JOIN GAM.INSTALLED_SYSTEM_MAP AS INSSYSMAP ON INSSYSMAP.INSM_SITE_ID = ST.SITE_ID
+JOIN GAM.INSTALLED_SYSTEM AS INSYS ON INSYS.INS_SYS_ID = INSSYSMAP.INSM_SYS_ID
+WHERE INSYS.SYS_ID = 3
+GO
+
+
+
+
+
+--------------------------
+--		MANUFACTURE     --
+--------------------------
+
+DROP VIEW IF EXISTS [Migration].[VIEW_MANUFACTURE]
+GO
+
+CREATE VIEW [Migration].[VIEW_MANUFACTURE]
 AS
 SELECT MF_ID, '22002' AS COMP_TYPE_ID, MANF_ID,
 DISPLAY_NAME,
@@ -44,14 +78,14 @@ UNPIVOT
 
 
 
-------------------------
--- Model type
-------------------------
+--------------------------
+--		Model Type      --
+--------------------------
 
-DROP VIEW IF EXISTS GAM.VIEW_MODEL_TYPE
+DROP VIEW IF EXISTS [Migration].[VIEW_MODEL_TYPE]
 GO
 
-CREATE VIEW GAM.VIEW_MODEL_TYPE
+CREATE VIEW [Migration].[VIEW_MODEL_TYPE]
 AS
 SELECT MDLTYP_ID,
 MDLTYPE_NEW_ID,
@@ -81,16 +115,16 @@ UNPIVOT
 
  GO
 
-------------------------
--- VIEW_MODEL
-------------------------
-DROP VIEW IF EXISTS GAM.VIEW_MODEL
+--------------------------
+--		View Model      --
+--------------------------
+DROP VIEW IF EXISTS [Migration].[VIEW_MODEL]
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[GAM].[VIEW_MODEL]'))
+IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[Migration].[VIEW_MODEL]'))
 EXEC dbo.sp_executesql @statement = N'
 
-CREATE VIEW [GAM].[VIEW_MODEL]
+CREATE VIEW [Migration].[VIEW_MODEL]
 AS
 SELECT ''22005'' as COMP_TYPE_ID,
 MDL_ID, MDL_MANF_ID,
@@ -128,14 +162,14 @@ UNPIVOT
 '
 GO
 
-----------------------------
--- THEME TYPE
-----------------------------
+--------------------------
+--		Theme Type      --
+--------------------------
 
-DROP VIEW IF EXISTS GAM.VIEW_THEME_TYPE
+DROP VIEW IF EXISTS [Migration].[VIEW_THEME_TYPE]
 GO
 
-CREATE VIEW GAM.VIEW_THEME_TYPE
+CREATE VIEW [Migration].[VIEW_THEME_TYPE]
 AS
 SELECT TT_ID, '22057' AS COMP_TYPE_ID, TTYP_ID,
 DISPLAY_NAME,
@@ -160,14 +194,14 @@ UNPIVOT
  ( VALUE FOR VALUE_DESC IN (TTYP_SHORT_NAME, TTYP_LONG_NAME)  ) AS T
 GO
 
-----------------------------
--- THEME GROUP
-----------------------------
+--------------------------
+--		Theme Group     --
+--------------------------
 
-DROP VIEW IF EXISTS GAM.VIEW_THEME_GROUP
+DROP VIEW IF EXISTS [Migration].[VIEW_THEME_GROUP]
 GO
 
-CREATE VIEW GAM.VIEW_THEME_GROUP
+CREATE VIEW [Migration].[VIEW_THEME_GROUP]
 AS
 SELECT TG_ID, '22058' AS COMP_TYPE_ID, TGRP_ID, TGRP_TTYP_ID,
 DISPLAY_NAME,
@@ -191,13 +225,13 @@ UNPIVOT
  ( VALUE FOR VALUE_DESC IN (TGRP_SHORT_NAME, TGRP_LONG_NAME)  ) AS T
 GO
 
-----------------------------
--- THEME CATEGORY
-----------------------------
-DROP VIEW IF EXISTS GAM.VIEW_THEME_CATEGORY
+--------------------------
+--   Theme Category     --
+--------------------------
+DROP VIEW IF EXISTS [Migration].[VIEW_THEME_CATEGORY]
 GO
 
-CREATE VIEW GAM.VIEW_THEME_CATEGORY
+CREATE VIEW [Migration].[VIEW_THEME_CATEGORY]
 AS
 SELECT TC_ID, '22059' AS COMP_TYPE_ID, TCAT_ID, TCAT_TGRP_ID,
 DISPLAY_NAME,
@@ -223,13 +257,13 @@ UNPIVOT
  ( VALUE FOR VALUE_DESC IN (TCAT_SHORT_NAME, TCAT_LONG_NAME)  ) AS T
  GO
  
-----------------------------
--- THEME 
-----------------------------
-DROP VIEW IF EXISTS GAM.VIEW_THEME
+--------------------------
+--		Theme           --
+--------------------------
+DROP VIEW IF EXISTS [Migration].[VIEW_THEME]
 GO
 
-CREATE VIEW GAM.VIEW_THEME
+CREATE VIEW [Migration].[VIEW_THEME]
 AS
 SELECT TM_ID, '22060' AS COMP_TYPE_ID, THEM_ID,THEME_CAT_ID, 
 TTYP_ID, MANF_ID,
@@ -262,9 +296,9 @@ UNPIVOT
  ( VALUE FOR VALUE_DESC IN (THEM_SHORT_NAME, THEM_LONG_NAME )  ) AS T
 GO
 
-----------------------------------
---Asset Definition
-----------------------------------
+--------------------------
+--  Asset Definition    --
+--------------------------
 
 
 DROP VIEW IF EXISTS MIGRATION.VIEW_ASSET_DEFN_LIST
@@ -287,9 +321,9 @@ GO
 
 
 
-----------------------
----progressive meter
--------------------------
+--------------------------
+--	Progressive Meter   --
+--------------------------
 
 DROP VIEW IF EXISTS [MIGRATION].[VIEW_PROGRESSIVE_METERS]
 GO
@@ -433,6 +467,11 @@ MTR_OVERFLOW_AMOUNT, JKPT_JACKPOT_ID, PRPM_DESC) ) AS UU
 
 GO
 
+
+--------------------------
+--        Pool          --
+--------------------------
+
 DROP VIEW IF EXISTS [MIGRATION].[VIEW_POOL]
 GO
 
@@ -495,4 +534,41 @@ IsMultipleLevel, IsMysteryPool, IsWAPPool, MeterCount) ) as t
 
 GO
 
+--------------------------
+--	Game Combo Options  --
+--------------------------
 
+
+DROP VIEW IF EXISTS [MIGRATION].[VIEW_GAME_COMBO_OPTIONS]
+GO
+CREATE VIEW [MIGRATION].[VIEW_GAME_COMBO_OPTIONS]
+AS
+SELECT 
+GAME_ID as GO_GAME_ID,
+case when value_desc = 'GAME_HOLD_PER' then 'Hold Percent' 
+	 when value_desc = 'GAME_WAGER' then 'Max Credit Bet' 
+	 when value_desc = 'GAME_PAYLINE' then 'Pay Lines' 
+	 when value_desc = 'GAME_REELS' then 'Reels' 
+	 when value_desc = 'GAME_PAYTABLE_ID' then 'Paytable' end as Options_Code,
+
+case when value_desc = 'GAME_HOLD_PER' then 1
+	 when value_desc = 'GAME_WAGER' then 2
+	 when value_desc = 'GAME_PAYLINE' then 3
+	 when value_desc = 'GAME_REELS' then 4 
+	 when value_desc = 'GAME_PAYTABLE_ID' then 5 end as IdIndex,
+	Value as Options_Value,
+	Value_desc as Options_Code
+--* 
+from (SELECT GAME_ID, GAME_THEM_ID,
+cast(isnull(GAME_WAGER, 0 ) as nvarchar) as GAME_WAGER,
+cast(isnull(GAME_PAYLINE, 0) as nvarchar) as GAME_PAYLINE,
+cast(isnull(GAME_REELS, 0) as nvarchar) as GAME_REELS,
+cast(GAME_HOLD_PER as nvarchar) as GAME_HOLD_PER,
+cast(GAME_PAYTABLE_ID as nvarchar) as GAME_PAYTABLE_ID,
+cast(GAME_PAY_ID as nvarchar) as GAME_PAY_ID,
+cast(isnull(GAME_POSITION, 0 ) as nvarchar) as GAME_POSITION
+FROM GAM.GAME_DETAILS AS GM where is_deleted = 0) as a
+unpivot
+(value for value_desc in (GAME_HOLD_PER, GAME_WAGER, GAME_PAYLINE, GAME_REELS, GAME_PAYTABLE_ID) )as tt
+
+GO

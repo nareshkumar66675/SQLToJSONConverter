@@ -178,7 +178,7 @@ namespace Migration.PreRequisite.Helpers
                         /* Check If table Exits and Empty 
                             1 - Table Exists and Empty - Records will be Inserted
                             0 - Table Exists and Not Empty - Records will not be Inserted
-                           -1 - Table Not Exists - Error will ne thrown
+                           -1 - Table Not Exists - Error will be thrown
                         */
                         command.CommandText = @"IF EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='Migration' AND TABLE_NAME = 'ASSET_TYPE_DEFN')) BEGIN
                                                 SELECT CASE WHEN COUNT(ID) > 0 THEN 0 ELSE 1 END from MIGRATION.ASSET_TYPE_DEFN END

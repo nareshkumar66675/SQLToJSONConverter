@@ -80,7 +80,7 @@ namespace MigrationTool.Helpers
             {
                 con.Open();
 
-                using (SqlCommand cmd = new SqlCommand("SELECT SITE_NUMBER,Site_Long_Name FROM GAM.VIEW_SITE_INFO order by Site_Long_Name", con))
+                using (SqlCommand cmd = new SqlCommand("SELECT SITE_NUMBER,Site_Long_Name FROM MIGRATION.VIEW_SITE_INFO order by Site_Long_Name", con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
                     {
@@ -249,93 +249,6 @@ namespace MigrationTool.Helpers
                 }
             }
             return exists;
-        }
-        public static void InsertComponentDefinition()
-        {
-            try
-            {
-                //Insert Asset Definitions to Legacy Database
-                using (var legConn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
-                {
-                    legConn.Open();
-                    SqlCommand command = legConn.CreateCommand();
-                    SqlTransaction transaction;
-                    transaction = legConn.BeginTransaction("InsertDefiniton");
-                    command.Connection = legConn;
-                    command.Transaction = transaction;
-                    try
-                    {
-
-                        /* Check If table Exits and Empty 
-                            1 - Table Exists and Empty - Records will be Inserted
-                            0 - Table Exists and Not Empty - Records will not be Inserted
-                           -1 - Table Not Exists - Error will ne thrown
-                        */
-                        command.CommandText = @"IF EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='Migration' AND TABLE_NAME = 'ASSET_TYPE_DEFN')) BEGIN
-                                                SELECT CASE WHEN COUNT(ID) > 0 THEN 0 ELSE 1 END from MIGRATION.ASSET_TYPE_DEFN END
-                                                ELSE BEGIN SELECT - 1 END";
-                        command.CommandType = CommandType.Text;
-
-                        var rslt = (int)command.ExecuteScalar();
-
-                        if(rslt==1)
-                        {
-                            List<string> astDefinitions = new List<string>();
-
-                            //Get Asset Definitions - to Map New Options to Legacy
-                            using (var astConn = new SqlConnection(ConnectionStrings.AssetConnectionString))
-                            {
-                                astConn.Open();
-                                var query = "SELECT Value FROM [ASSET_DEF].[ASSETS]";
-                                using (SqlCommand cmd = new SqlCommand(query, astConn))
-                                {
-                                    using (IDataReader dr = cmd.ExecuteReader())
-                                    {
-                                        while (dr.Read())
-                                        {
-                                            astDefinitions.Add(dr.GetString(0));
-                                        }
-                                    }
-                                }
-                            }
-
-                            //Insert Records to MIGRATION.ASSET_TYPE_DEFN
-                            command.CommandText = "MIGRATION.P_ASSET_DEFINITION";
-                            command.CommandType = CommandType.StoredProcedure;
-                            var sqp = new SqlParameter("@pValue", SqlDbType.VarChar);
-                            command.Parameters.Add(sqp);
-
-                            foreach (var item in astDefinitions)
-                            {
-                                sqp.Value = item;
-                                command.ExecuteNonQuery();
-                            }
-                        }
-                        else if(rslt == -1)
-                        {
-                            throw new Exception("Table MIGRATION.ASSET_TYPE_DEFN not Found in Legacy Database");
-                        }
-
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        try
-                        {
-                            transaction.Rollback();
-                            throw new Exception("Error Ocurred - Rollbacked", ex);
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.LogError($"Error Occurred While Inserting Asset Defintion IDs ", ex);
-            }
         }
     }
 }

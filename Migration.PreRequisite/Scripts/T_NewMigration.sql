@@ -1,3 +1,21 @@
+/*
+	
+	***************************************************
+	*												  *
+	*      PreRequisite Name - NewMigrationTables     *
+	*												  *
+	***************************************************
+   
+   Purpose : DDL To Create New Schema and Tables necessary for Migration
+
+   New Schema - [Migration]
+   New Tables
+     * [Migration].[PreRequisite] -> To Track Migration Pre-Requisites
+	 * [Migration].[Report]		  -> To Track Status about completed Items.
+	 * [Migration].[SiteGroup]    -> To Track Status respective to each Site.
+
+ */
+
 
 GO
 

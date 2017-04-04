@@ -1,4 +1,19 @@
-﻿SELECT 'UPDATE MIGRATION.GAM_PROPERTY SET PROP_PARENT_CODE = '''
+﻿/*
+	
+	***************************************************
+	*												  *
+	*    PreRequisite Name - ReportTruncateTables     *
+	*												  *
+	***************************************************
+   
+   Purpose : To Generate Update Scripts from UM Databa
+
+ */
+
+
+
+
+SELECT 'UPDATE MIGRATION.GAM_PROPERTY SET PROP_PARENT_CODE = '''
 + Prop_Short_Name + ''', PROP_TYPE = '''
 + ORG_TYPE_CODE  + ''', PROP_DEPTH_LEVEL = '
 + CAST(Depth_Level AS NVARCHAR) + ' WHERE PROP_SHORT_NAME = '''+Prop_Short_Name+''';'

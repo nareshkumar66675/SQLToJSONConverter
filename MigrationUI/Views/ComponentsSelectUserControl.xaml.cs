@@ -57,6 +57,9 @@ namespace MigrationTool.Views
                 ComponentsCheckList.SelectedItemsOverride = SourceComponents.ToList();
                 SelectedComponents = SourceComponents.ToList();
                 NotifySelectionChanged();
+
+                if(SourceComponents?.Count == 0)
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "All the Items has been migrated. Navigate to Previous Screen to skip this process.", "Components Selection", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
