@@ -1,11 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <PreRequisiteConfig>
   <PreRequisite Name ="NewMigrationTables" ScriptFilePath="Scripts/T_NewMigration.sql" Skip="False"/>
-  <PreRequisite Name ="LegacyMigrationTables" ScriptFilePath="Scripts/T_LegacyMigration.sql" Skip="False"/>
+  <!--<PreRequisite Name ="LegacyMigrationTables" ScriptFilePath="Scripts/T_LegacyMigration.sql" Skip="False"/>-->
   <PreRequisite Name ="AssetDefinitionParseSP" ScriptFilePath="Scripts/SP_AstDefinition.sql" Skip="False"/>
   <PreRequisite Name ="LegacyViews" ScriptFilePath="Scripts/V_Legacy.sql" Skip="False"/>
   <PreRequisite Name ="AuthStaticData" ScriptFilePath="Scripts/D_AuthDefaultInserts.sql" Skip="False"/>
   <PreRequisite Name ="UMDataRetrieval" ScriptFilePath="Scripts/D_UserMatrixData.sql" Skip="False"/>
   <PreRequisite Name ="OptionOrderUpdate" ScriptFilePath="Scripts/U_OptionOrder.sql" Skip="False"/>
   <PreRequisite Name ="ReportTruncateTables" ScriptFilePath="Scripts/D_ReportTruncate.sql" Skip="False"/>
+  <PreRequisite Name ="AssetHistoryInsertSP" ScriptFilePath="Scripts/SP_Asset_History.sql" Skip="False"/>
+  <PreRequisite Name ="LegacyAssetMasterTables" ScriptFilePath="Scripts/T_LegacyMigration_Asset_Master.sql" Skip="False"/>
+  <PreRequisite Name ="LegacyAssetSlotTables" ScriptFilePath="Scripts/T_LegacyMigration_Asset_Slot.sql" Skip="False"/>
+  <PreRequisite Name ="LegacyAssetHistoryDataPopulation" ScriptFilePath="Scripts/T_LegacyMigration_Asset_Slot_History.sql" Skip="False"/>
+  <PreRequisite Name ="LegacyAuthDataTables" ScriptFilePath="Scripts/T_LegacyMigration_Auth.sql" Skip="False"/>
 </PreRequisiteConfig>

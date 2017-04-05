@@ -508,6 +508,72 @@
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
   </Transformation>
+  <Transformation Name="COMPDATA_AZB">
+    <Source>
+--
+SELECT 
+---- Component ----
+'22010' as Component_Id,
+'AZB' as Component_Code,
+---- Components----
+SITE_NUMBER as Component_Components_SiteId,
+
+---- ComponentValues ----
+--SITE_NUMBER as Component_Components_SiteId,
+---- ComponentValues ----
+'1_root' as Component_Components_ComponentValues_Id,
+'Area Zone Bank' as Component_Components_ComponentValues_Name,
+'Area Zone Bank' as Component_Components_ComponentValues_DisplayName,
+'AZB' as Component_Components_ComponentValues_Code,
+--- Area ChildComponents ---
+'1_22007' as Component_Components_ComponentValues_CC_Id,
+AR.DISPLAY_NAME as Component_Components_ComponentValues_CC_Name,
+AR.DISPLAY_NAME as Component_Components_ComponentValues_CC_DisplayName,
+'AREA' as Component_Components_ComponentValues_CC_Code,
+
+--- Area Options---
+AREA_SEQ as Component_Components_ComponentValues_CC_Options_Id,
+AREA_NAME as Component_Components_ComponentValues_CC_Options_Name,
+AREA_CODE as Component_Components_ComponentValues_CC_Options_Code,
+VALUE_AR as Component_Components_ComponentValues_CC_Options_Value,
+
+--- Zone ChildComponents ---
+'1_22008' as Component_Components_ComponentValues_CC_CC_Id,
+ZN.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_Name,
+ZN.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_DisplayName,
+'ZONE' as Component_Components_ComponentValues_CC_CC_Code,
+
+--- Zone Options---
+ZONE_SEQ as Component_Components_ComponentValues_CC_CC_Options_Id,
+ZONE_NAME as Component_Components_ComponentValues_CC_CC_Options_Name,
+ZONE_CODE as Component_Components_ComponentValues_CC_CC_Options_Code,
+VALUE_ZN as Component_Components_ComponentValues_CC_CC_Options_Value,
+
+--- Bank ChildComponents ---
+'1_22007' as Component_Components_ComponentValues_CC_CC_CC_Id,
+BK.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_Name,
+BK.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_DisplayName,
+'BANK' as Component_Components_ComponentValues_CC_CC_CC_Code,
+
+--- Bank Options---
+BANK_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
+BANK_NAME as Component_Components_ComponentValues_CC_CC_CC_Options_Name,
+BANK_CODE as Component_Components_ComponentValues_CC_CC_CC_Options_Code,
+VALUE_BK as Component_Components_ComponentValues_CC_CC_CC_Options_Value
+
+--SELECT
+FROM MIGRATION.VIEW_AREA AS AR
+JOIN MIGRATION.VIEW_ZONE AS ZN ON ZN_AREA_ID = AREA_ID AND AREA_SEQ = ZONE_SEQ
+JOIN MIGRATION.VIEW_BANK AS BK ON BK_ZONE_ID = ZONE_ID AND ZONE_SEQ = BANK_SEQ
+JOIN GAM.[SITE] ON SITE_ID = AR_SITE_ID
+
+    </Source>   
+    <Destination>[COMPONENTS].[ComponentData]</Destination>
+    <KeyFormat Format="57_{0}" Keys="Id" />
+    <ColumnMapping>
+      <ColumnMap Key="CC" ColumnName="ChildComponents"/>
+    </ColumnMapping>
+  </Transformation>
   <Transformation Name="AST_DEFN">
     <Source>
       SELECT AST.ASST_ID as Id,
@@ -605,7 +671,7 @@
       JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
       JOIN GAM.ASSET_DETAIL AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
       JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AD.AST_OPTION_ID
-      LEFT JOIN [Migration].[VIEW_MANUFACTURE] AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
+      LEFT JOIN GAM.MANUFACTURER  AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
       LEFT JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD.ASD_MODL_ID
       LEFT JOIN GAM.MODEL_MODELTYPE_MAP AS MDL_TYPE_MAP ON MDL_TYPE_MAP.[MODEL_MAP_ID] = ASD.ASD_MODL_TYP_MAPiD
       LEFT JOIN GAM.AREA AS AR ON AR.AREA_ID = ASD.ASD_AREA_ID
@@ -688,17 +754,17 @@
   </Transformation>
   <Transformation Name="AST_SLOT">
     <Source>
-SELECT ASD_STD_NEW_ID as  Id,
+      SELECT gSltMap.ASD_STD_NEW_ID as  Id,
       ---ASSET ID -----
-      ASD_STD_NEW_ID as AssetId_Id,
+      gSltMap.ASD_STD_NEW_ID as AssetId_Id,
        10 as AssetId_AssetTypeDefinitionId,
       ---------SITE----------
-      SITE_NEW_ID as Site_SiteId,
-      SITE_LONG_NAME as Site_SiteName,
-      SITE_NUMBER as Site_SiteNumber,
+      isnull(Site_SiteId, SITE_NEW_ID) as Site_SiteId,
+      isnull(Site_SiteName, SITE_LONG_NAME) as Site_SiteName,
+      isnull(Site_SiteNumber, SITE_NUMBER) as Site_SiteNumber,
       --st.IS_DELETED as Site_IsDeleted,
-      Ast_Optn.PROP_NEW_ID as Site_OrganizationId,
-      Ast_Optn.PROP_LONG_NAME as Site_OrganizationName,
+      isnull(OrganizationId, Ast_Optn.PROP_NEW_ID) as Site_OrganizationId,
+      isnull(OrganizationName, Ast_Optn.PROP_LONG_NAME) as Site_OrganizationName,
       --------- OPTIONS ----------
       Ast_Optn.[OPTION_ID] as Options_Id,
       Ast_Optn.OPTION_CODE as Options_Code,
@@ -713,6 +779,7 @@ SELECT ASD_STD_NEW_ID as  Id,
          --ASST_OPTN_ORDER,  
          --Seq_Id ,
       ------------InlineAssets------------
+        --gSltMap.game_id,
       InlineAssets_Id,
       AssetId_AssetTypeDefinitionId as InlineAssets_AssetId_AssetTypeDefinitionId,
       AssetId_Id as InlineAssets_AssetId_Id,
@@ -725,49 +792,129 @@ SELECT ASD_STD_NEW_ID as  Id,
       gSltMap.IdIndex as InlineAssets_Options_Id,
       gSltMap.Options_Value as InlineAssets_Options_Value,
       gSltMap.Options_Code as InlineAssets_Options_Code,
-      --------TypeCode--
-      TypeCode_Id as TypeCode_TypeCodeId,
-      TypeCode_Name as TypeCode_TypeCodeName
-FROM (SELECT ASD.ASD_STD_ID,ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
-fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
-CASE WHEN AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes' 
-else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE, 
- GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_LONG_NAME,
-gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
-tycod_number as TypeCode_Id, tycod_name as TypeCode_Name
-FROM GAM.ASSET_STANDARD_DETAILS AS ASD
-JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
-JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
-JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
-JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
-JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
-JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
-JOIN [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
-JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 and AD.ASD_STD_ID = ASD.ASD_STD_ID
-left join gam.[OPTION] as optn on optn.[OPTN_ID] = AST_OPTION_ID
-left join gam.ASSET_DEFINITION as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID 
-and optn.[OPTN_ID] = astDfn.[ASTDFN_OPTN_ID]
-left join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on 
-fastDefn.[ASSET_NAME] = AST.asst_name and fastDefn.[OPTION_CODE] = optn.OPTN_CODE
-left join [GAM].[TYPE_CODE_MASTER] as tcm on tcm.tycod_id = [ASD_TCOD_ID]
-WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 AND ASD.ASD_ASST_ID = 1 
-and [OPTION_ID] is not null and st.SITE_NUMBER in ({0})
- ) as Ast_Optn
-LEFT JOIN MIGRATION.GAM_ASSET_COMP_VALUES AS AST_COMP ON AST_OPTN.ASD_STD_ID = AM_LEGACYID and Ast_Optn.ASST_OPTN_ORDER = AST_COMP.Seq_id
-left join (SELECT [GDM_ASTSTD_OR_TYCD_ID],  GMP.* from GAM.GAME_DETAILS_MAPPING AS gmapping
-LEFT JOIN MIGRATION.GAM_GAMES_DETAILS AS GMP ON GMP.GAME_ID = GMAPPING.[GDM_GAME_ID]
-where gmapping.IS_DELETED = 0 ) as gSltMap  on [GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
-and Ast_Optn.ASST_OPTN_ORDER = gSltMap.Seq
---LEFT JOIN GAM.GAME_DETAILS_MAPPING AS gmapping on gmapping.[GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
---LEFT JOIN MIGRATION.GAM_GAMES_DETAILS AS GMP ON GMP.GAME_ID = GMAPPING.[GDM_GAME_ID]
---and Ast_Optn.ASST_OPTN_ORDER = GMP.Seq
---where ASD_STD_NEW_ID=14507
---and  Ast_Optn.asd_std_id = 209904728000001428
-order by Ast_Optn.asd_std_id --=209907247000000408
-
+      --------TypeCode--------
+      isnull(TypeCodeNumber, TypeCode_Id) as TypeCode_TypeCodeId,
+      isnull(TypeCodeName, TypeCode_Name) as TypeCode_TypeCodeName
+      FROM (SELECT ASD.ASD_STD_ID,ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
+      fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
+      CASE WHEN AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes' 
+      else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE, 
+       GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_LONG_NAME,
+      gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
+      tycod_number as TypeCode_Id, tycod_name as TypeCode_Name
+      FROM GAM.ASSET_STANDARD_DETAILS AS ASD
+      JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
+      JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+      JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+      JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+      JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
+      JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
+      JOIN [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+      JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+      left join gam.[OPTION] as optn on optn.[OPTN_ID] = AST_OPTION_ID
+      left join gam.ASSET_DEFINITION as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID 
+      and optn.[OPTN_ID] = astDfn.[ASTDFN_OPTN_ID]
+      left join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on 
+      fastDefn.[ASSET_NAME] = AST.asst_name and fastDefn.[OPTION_CODE] = optn.OPTN_CODE
+      left join [GAM].[TYPE_CODE_MASTER] as tcm on tcm.tycod_id = [ASD_TCOD_ID]
+      WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 AND ASD.ASD_ASST_ID = 1 
+      and [OPTION_ID] is not null and st.SITE_NUMBER in ({0})
+      ) as Ast_Optn
+      FULL JOIN MIGRATION.GAM_ASSET_COMP_VALUES AS AST_COMP ON AST_OPTN.ASD_STD_ID = AM_LEGACYID and Ast_Optn.ASST_OPTN_ORDER = AST_COMP.Seq_id
+      FULL JOIN MIGRATION.GAM_GAMES_DETAILS as gSltMap  on [GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
+      and Ast_Optn.ASST_OPTN_ORDER = gSltMap.Ast_Gme_Seq
+      --where 1=1
+      --and gSltMap.ASD_STD_NEW_ID = 8482
+      order by Ast_Optn.asd_std_id, game_id --=209907247000000408
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
+  </Transformation>
+  <Transformation Name="LINK_SLOT2POOL">
+    <Source>
+    SELECT 
+    --'59_10_'+cast(MSLOT.[ASD_STD_NEW_ID] as nvarchar) as [Key],
+    ------Id---------
+    10 as Id_AssetTypeDefinitionId,
+    MSLOT.[ASD_STD_NEW_ID] as Id_Id,
+    -------ActiveAssetLink-------
+    11 as ActiveAssetLink_AssetTypeDefinitionId,
+    MPOOL.[POOL_NEW_ID] as ActiveAssetLink_Id
+    --row_number() over (partition by [ASD_STD_NEW_ID] order by [ASD_STD_NEW_ID]) as rNumber
+    FROM [PROGRESSIVE].[SLOT_POOL_MAPPING] AS PM 
+    JOIN [PROGRESSIVE].[SLOT] AS SLT ON SLT.SLOT_ID = PM.SLOT_ID
+    JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS MSLOT ON MSLOT.ASD_STD_LEGACY_ID = SLT.ASD_STD_ID
+    JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
+    JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
+    JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
+    WHERE PM.[IS_DELETED] = 0 AND ISNULL(ASST_ANCESTOR_ID, ASST_ID)=1
+    ORDER BY MSLOT.[ASD_STD_NEW_ID], [POOL_NEW_ID]
+    </Source>
+    <Destination>[DataManagement].[AssetLink]</Destination>
+    <KeyFormat Format="59_10_{0}" Keys="Id.Id"  />
+  </Transformation>
+  <Transformation Name="LINK_POOL2SLOT">
+    <Source>
+    SELECT 
+    --'59_11_'+cast(PoolId as nvarchar) as [Key],
+    ----Id--
+    11 as Id_AssetTypeDefinitionId,
+    PoolId as Id_Id,
+    --ActiveAssetLink--
+    AssetTypeId as ActiveAssetLink_AssetTypeDefinitionId,
+    AssetId as ActiveAssetLink_Id
+    FROM ( 
+    /* pool to slot */
+    SELECT MPOOL.[POOL_NEW_ID] as PoolId,
+    MSLOT.[ASD_STD_NEW_ID] as AssetId,
+    --row_number() over (partition by [POOL_NEW_ID] order by [POOL_NEW_ID]) as rNumber,
+    10 as AssetTypeId
+    FROM [PROGRESSIVE].[SLOT_POOL_MAPPING] AS PM 
+    JOIN [PROGRESSIVE].[SLOT] AS SLT ON SLT.SLOT_ID = PM.SLOT_ID
+    JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS MSLOT ON MSLOT.ASD_STD_LEGACY_ID = SLT.ASD_STD_ID
+    JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
+    JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
+    JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
+    WHERE PM.[IS_DELETED] = 0 AND ISNULL(ASST_ANCESTOR_ID, ASST_ID)=1
+    UNION ALL
+    /*pool to controller*/
+    SELECT MPOOL.[POOL_NEW_ID] as PoolId,
+    MSLOT.[ASD_STD_NEW_ID] as AssetId,
+    --row_number() over (partition by [POOL_NEW_ID] order by [POOL_NEW_ID]) as rNumber,
+    15 as AssetTypeId
+    FROM [PROGRESSIVE].[pool] as p
+    JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS MSLOT ON MSLOT.ASD_STD_LEGACY_ID = p.PCON_ID
+    JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
+    JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
+    JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
+    WHERE p.[IS_DELETED] = 0  ) as vrAll
+    ORDER BY PoolId
+    </Source>
+    <Destination>[DataManagement].[AssetLink]</Destination>
+    <KeyFormat Format="59_11_{0}" Keys="Id.Id"  />
+  </Transformation>
+  <Transformation Name="LINK_CNTRL2POOL">
+    <Source>
+    --Controller[15] to Pool[11]
+    SELECT 
+    --'59_15_'+cast([ASD_STD_NEW_ID] as nvarchar) as [Key],
+    --Id--
+    15 as Id_AssetTypeDefinitionId,
+    [ASD_STD_NEW_ID] as Id_Id,
+    --ActiveAssetLink--
+    11 as ActiveAssetLink_AssetTypeDefinitionId,
+    [POOL_NEW_ID] as ActiveAssetLink_Id
+    --row_number() over (partition by [POOL_NEW_ID] order by [POOL_NEW_ID]) as rNumber
+    FROM [PROGRESSIVE].[pool] as p
+    JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS MSLOT ON MSLOT.ASD_STD_LEGACY_ID = p.PCON_ID
+    JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
+    JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
+    JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
+    WHERE p.[IS_DELETED] = 0 
+    ORDER BY MSLOT.[ASD_STD_NEW_ID]
+    </Source>
+    <Destination>[DataManagement].[AssetLink]</Destination>
+    <KeyFormat Format="59_15_{0}" Keys="Id.Id"  />
   </Transformation>
 
   <!-- Report Components-->

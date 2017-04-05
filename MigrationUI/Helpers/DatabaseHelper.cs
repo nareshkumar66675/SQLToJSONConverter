@@ -80,7 +80,7 @@ namespace MigrationTool.Helpers
             {
                 con.Open();
 
-                using (SqlCommand cmd = new SqlCommand("SELECT SITE_NUMBER,Site_Long_Name FROM MIGRATION.VIEW_SITE_INFO order by Site_Long_Name", con))
+                using (SqlCommand cmd = new SqlCommand("SELECT SITE_NUMBER,Site_Long_Name FROM GAM.SITE order by Site_Long_Name", con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
                     {

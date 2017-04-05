@@ -186,7 +186,7 @@ namespace Migration.Common
             {
                 get
                 {
-                    return "SELECT SITE_NUMBER,SITE_LONG_NAME FROM [GAM].[view_site_info] WHERE SITE_NUMBER in ({0})";
+                    return "SELECT SITE_NUMBER,SITE_LONG_NAME FROM [GAM].[SITE] WHERE SITE_NUMBER in ({0})";
                 }
                 private set { }
             }
