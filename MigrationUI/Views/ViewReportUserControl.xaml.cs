@@ -29,39 +29,7 @@ namespace MigrationTool.Views
         public ViewReportUserControl()
         {
             InitializeComponent();
-            InitializeDataGrid();
         }
-
-        private void InitializeDataGrid()
-        {
-            try
-            {
-                //DataTable table = new DataTable();
-                //table.Columns.Add(new DataColumn("Group"));
-                //table.Columns.Add(new DataColumn("DisplayName"));
-                //table.Columns.Add(new DataColumn("Site Count"));
-                //table.Columns.Add(new DataColumn("Legacy Record"));
-                //table.Columns.Add(new DataColumn("Unique Records"));
-                //table.Columns.Add(new DataColumn("Inserted Records"));
-                //this.table = table;
-
-                //ProcessGrid.Columns[4].Visible = false;
-                //ProcessGrid.Columns[1].Width = new ColumnWidth(1, ColumnWidthUnitType.Star);
-                //ProcessGrid.Columns[2].Width = new ColumnWidth(2, ColumnWidthUnitType.Star);
-                //ReportGrid.Columns[0].AllowSort = false;
-                //ProcessGrid.Columns[1].AllowSort = false;
-                //ProcessGrid.Columns[2].AllowSort = false;
-                //ProcessGrid.Columns[3].AllowSort = false;
-                //ReportGrid.ItemScrollingBehavior = ItemScrollingBehavior.Deferred;
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.LogError("Error While Initializing DataGrid For Components Process", ex);
-                ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Process Status");
-            }
-        }
-
         public void ShowReport()
         {
             BusyIndicator.IsBusy = true;

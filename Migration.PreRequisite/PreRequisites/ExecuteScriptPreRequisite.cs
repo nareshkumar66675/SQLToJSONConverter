@@ -26,7 +26,10 @@ namespace Migration.PreRequisite.PreRequisites
         }
         public bool Execute()
         {
+            //Get Script File
             string sqlQuery = Configurator.GetScriptFile(_name);
+
+            //Execute the Query
             return SqlOperation.ExecuteQuery(_connectionString, sqlQuery);
         }
     }

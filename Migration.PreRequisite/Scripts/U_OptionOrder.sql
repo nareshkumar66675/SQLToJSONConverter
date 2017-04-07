@@ -21,7 +21,7 @@ ROW_NUMBER() OVER (PARTITION BY AST.ASST_ID ORDER BY AST.ASST_ID, astDfn.ASTDFN_
 from GAM.ASSET AS AST
 join gam.ASSET_DEFINITION as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID
 join gam.[OPTION] as optn on optn.[OPTN_ID] = astdfn.ASTDFN_OPTN_ID
-join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on fastDefn.[ASSET_NAME] = AST.asst_name
+join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on fastDefn.[ASSET_CODE] = upper(AST.asst_name)
 and fastDefn.[OPTION_CODE] = optn.OPTN_CODE ) AS a
 JOIN [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on fastDefn.[ASSET_NAME] = A.assEt_name
 and fastDefn.[OPTION_CODE] = a.OPTN_CODE

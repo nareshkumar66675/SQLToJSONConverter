@@ -22,7 +22,10 @@ namespace Migration.PreRequisite.PreRequisites
 
         public bool Execute()
         {
+            //Get SQL Scripts From User Matrix Data
             var updateScript = SqlOperation.GetDataFromUserMatrix(Configurator.GetScriptFile(_name));
+
+            //Execute the Scripts
             return SqlOperation.ExecuteQuery(ConnectionStrings.LegacyConnectionString, updateScript);
         }
     }

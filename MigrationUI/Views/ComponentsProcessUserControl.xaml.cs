@@ -29,7 +29,7 @@ namespace MigrationTool.Views
     /// </summary>
     public partial class ComponentsProcessUserControl : UserControl
     {
-        public DataTable table { get; set; }
+        public DataTable GridDataTable { get; set; }
         public event EventHandler ProcessCompleted;
         public ComponentsProcessUserControl()
         {
@@ -47,13 +47,14 @@ namespace MigrationTool.Views
                 dataTable.Columns.Add(new DataColumn("Progress", typeof(ProgressBar)));
                 dataTable.Columns.Add(new DataColumn("Status"));
                 dataTable.Columns.Add(new DataColumn("Name"));
-                table = dataTable;
+                GridDataTable = dataTable;
                 ProcessGrid.ItemsSource = dataTable.AsDataView();
                 ProcessGrid.ReadOnly = true;
                 ProcessGrid.Columns[0].Visible = false;
                 ProcessGrid.Columns[4].Visible = false;
-                ProcessGrid.Columns[1].Width = new ColumnWidth(1, ColumnWidthUnitType.Star);
-                ProcessGrid.Columns[2].Width = new ColumnWidth(2, ColumnWidthUnitType.Star);
+                ProcessGrid.Columns[1].Width = new ColumnWidth(180, ColumnWidthUnitType.Pixel);
+                ProcessGrid.Columns[2].Width = new ColumnWidth(230, ColumnWidthUnitType.Pixel);
+                //ProcessGrid.Columns[2].Width = new ColumnWidth(130, ColumnWidthUnitType.Pixel);
                 ProcessGrid.Columns[0].AllowSort = false;
                 ProcessGrid.Columns[1].AllowSort = false;
                 ProcessGrid.Columns[2].AllowSort = false;
@@ -77,7 +78,7 @@ namespace MigrationTool.Views
         {
             try
             {
-                if (table.Rows.Count == 0)
+                if (GridDataTable.Rows.Count == 0)
                 {
                     components.Group.ForEach(grp =>
                     {
@@ -86,7 +87,7 @@ namespace MigrationTool.Views
                             ProgressBar temp = new ProgressBar();
                             temp.Name = COMP.Name + "Progress";
                             temp.Minimum = 0; temp.Maximum = 100;
-                            table.Rows.Add(grp.Name.GetDescription(), COMP.DisplayName, new ProgressBar(), Status.NotStarted.GetDescription(), COMP.Name);
+                            GridDataTable.Rows.Add(grp.Name.GetDescription(), COMP.DisplayName, new ProgressBar(), Status.NotStarted.GetDescription(), COMP.Name);
                         });
                     });
                     ProcessGrid.Items.Refresh();
@@ -108,6 +109,7 @@ namespace MigrationTool.Views
             var components = e.Argument as Components;
             try
             {
+                //Execute PreRequistes
                 await RunPrequisites();
 
                 Generate generate = new Generate();
@@ -148,6 +150,7 @@ namespace MigrationTool.Views
 
         private async Task RunPrequisites()
         {
+            //Execute PreRequisites if Settings allow
             if(AppSettings.RunPreRequisites)
             {
                 var progressPreRequisite = new Progress<PreReqProgress>(PreRequisiteProgress);
@@ -159,11 +162,11 @@ namespace MigrationTool.Views
                 });
                 bool result = false; ;
 
-                if (table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.ASSET.GetDescription())) > 0)
+                if (GridDataTable.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.ASSET.GetDescription())) > 0)
                    result = await Task.Run(() => PreRequisiteFactory.GetPreRequistes(GroupType.ASSET).Start(progressPreRequisite));
-                else if (table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.AUTH.GetDescription())) > 0)
+                else if (GridDataTable.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.AUTH.GetDescription())) > 0)
                    result = await Task.Run(() => PreRequisiteFactory.GetPreRequistes(GroupType.AUTH).Start(progressPreRequisite));
-                else if (table.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.REPORT.GetDescription())) > 0)
+                else if (GridDataTable.AsEnumerable().Count(t => (t.Field<string>("Group") == GroupType.REPORT.GetDescription())) > 0)
                     result = await Task.Run(() => PreRequisiteFactory.GetPreRequistes(GroupType.REPORT).Start(progressPreRequisite));
 
                 if (!result)
@@ -177,7 +180,7 @@ namespace MigrationTool.Views
         {
             try
             {
-                var rcrd = table.AsEnumerable().Where(t => (t.Field<string>("Name") == processStatus.ComponentName)).Single();
+                var rcrd = GridDataTable.AsEnumerable().Where(t => (t.Field<string>("Name") == processStatus.ComponentName)).Single();
                 Dispatcher.Invoke(() =>
                 {
                     var progressBar = rcrd.Field<ProgressBar>("Progress");
@@ -206,7 +209,7 @@ namespace MigrationTool.Views
         {
             try
             {
-                var rcrd = table.AsEnumerable().Where(t => (t.Field<string>("Name") == processStatus.ComponentName)).Single();
+                var rcrd = GridDataTable.AsEnumerable().Where(t => (t.Field<string>("Name") == processStatus.ComponentName)).Single();
                 Dispatcher.Invoke(() =>
                 {
                     var progressBar = rcrd.Field<ProgressBar>("Progress");
@@ -260,10 +263,10 @@ namespace MigrationTool.Views
         private void ShowCompletedMessage()
         {
             string message = string.Empty;
-            var failedCount = table.AsEnumerable().Count(t => (t.Field<string>("Status") == Status.Failed.GetDescription()));
+            var failedCount = GridDataTable.AsEnumerable().Count(t => (t.Field<string>("Status") == Status.Failed.GetDescription()));
             if (failedCount > 0)
             {
-                message = $"Completed with Errors. {failedCount} of { table.AsEnumerable().Count()} failed.";
+                message = $"Completed with Errors. {failedCount} of { GridDataTable.AsEnumerable().Count()} failed.";
                 ErrorHandler.ShowErrorMsgWtLog(Window.GetWindow(this), "Process Status", message);
             }
             else

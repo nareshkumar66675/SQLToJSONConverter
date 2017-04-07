@@ -4,14 +4,17 @@ using MigrationTool.Helpers;
 using MigrationTool.Views;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -41,17 +44,26 @@ namespace MigrationTool
         #endregion
         public Wizard()
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en");
+            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
+                        XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
             InitializeComponent();
             Logger.Instance.LogInfo("Data Migration Tool Initialized.");
+
+            #region EventsRegistration
             AuthCompSelectCntrl.OnComponentsSelectionChanged += AuthCompSelectCntrl_OnComponentsSelectionChanged;
             AssetsCompSelectCntrl.OnComponentsSelectionChanged += AssetsCompSelectCntrl_OnComponentsSelectionChanged;
             AssetSiteCntrl.OnSitesSelectionChanged += AssetSiteCntrl_OnSitesSelectionChanged;
             AuthCompProcessCntrl.ProcessCompleted += AuthCompProcessCntrl_ProcessCompleted;
             AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
-            ReportsCompProcessCntrl.ProcessCompleted += ReportsCompProcessCntrl_ProcessCompleted;
+            ReportsCompProcessCntrl.ProcessCompleted += ReportsCompProcessCntrl_ProcessCompleted; 
+            #endregion
+
             UpdateDbConnectStatus();
         }
 
+        #region WizardEvents
         private void Wiz_Next(object sender, CancelRoutedEventArgs e)
         {
             try
@@ -99,10 +111,10 @@ namespace MigrationTool
                     AssetCompProcessCntrl.StartComponentProcess(comp);
                 }
                 //Report Connection Page -> Reports Process Page
-                else if(Wiz.CurrentPage==ReportConnectionPage)
+                else if (Wiz.CurrentPage == ReportConnectionPage)
                 {
                     AddUserControlToPage(ReportComponentsProcessPage, ReportsCompProcessCntrl);
-                    if(CanProcessReport())
+                    if (CanProcessReport())
                     {
                         CanClose = false;
                         ReportsCompProcessCntrl.StartComponentProcess(Configurator.GetComponentsByGroup(GroupType.REPORT));
@@ -114,7 +126,7 @@ namespace MigrationTool
                     }
                 }
                 //Reports Process Page -> Migration Report Page
-                else if(Wiz.CurrentPage==ReportComponentsProcessPage)
+                else if (Wiz.CurrentPage == ReportComponentsProcessPage)
                 {
                     ViewMigrationRptCntrl.ShowReport();
                 }
@@ -125,34 +137,27 @@ namespace MigrationTool
                 ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Error");
             }
         }
-
-        private bool CanProcessReport()
+        private void Wiz_Help(object sender, RoutedEventArgs e)
         {
-            ////Auth Check 
-            //var authCompledtedComp =DatabaseHelper.GetCompletedComponents(GroupType.AUTH, null).Count;
-            //var authAllComp = Configurator.GetComponentListByGroup(GroupType.AUTH).Count;
-
-            //if (authCompledtedComp != authAllComp)
-            //{
-            //    Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Auth Components; All Componnets Count - { authAllComp} Completed Components - {authCompledtedComp}");
-            //    return false;
-            //}
-
-            ////Asset Check
-            //var allSites = DatabaseHelper.GetAllSitesFromLegacy();
-
-            //var assetCompletedComp = DatabaseHelper.GetCompletedComponents(GroupType.ASSET, allSites.Select(t => t.Key).ToList()).Count;
-
-            //var assetAllComp = Configurator.GetComponentListByGroup(GroupType.ASSET).Count;
-
-            //if (assetCompletedComp != assetAllComp)
-            //{
-            //    Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Asset Components ; All Componnets Count - { assetAllComp} Completed Components - {assetCompletedComp}");
-            //    return false;
-            //}
-            return true;
+            Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Contact Support for Help", "Help", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        private void LogAppClose(object sender, RoutedEventArgs e)
+        {
+            Logger.Instance.LogInfo("Application has been terminated by user");
         }
 
+        private void WizardWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!CanClose)
+            {
+                Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Please wait for the process to complete.", "Close", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                e.Cancel = true;
+            }
+
+        }
+        #endregion
+
+        #region DBConnectCompleteEvents
         private void AuthDB_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
         {
             if (ValidateConnectionString(e.ConnectionString))
@@ -160,7 +165,7 @@ namespace MigrationTool
                 Wiz.CurrentPage.CanSelectNextPage = true;
                 ConnectionStrings.AuthConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Auth Database Connection Completed");
-            }      
+            }
         }
         private void AssetDB_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
         {
@@ -189,14 +194,9 @@ namespace MigrationTool
                 NavigateToReportsProcess();
             }
         }
-        private bool ValidateConnectionString(string connectionString)
-        {
-            if (!string.IsNullOrEmpty(connectionString))
-            {
-                return true;
-            }
-            return false;
-        }
+        #endregion
+
+        #region SkipButtonsEvents
         private void SkipAuthButton_Click(object sender, RoutedEventArgs e)
         {
             Wiz.CurrentPage = AssetConnectionPage;
@@ -205,15 +205,13 @@ namespace MigrationTool
         {
             Wiz.CurrentPage = ReportConnectionPage;
         }
-        private void AddUserControlToPage(WizardPage page,UserControl cntrl)
+        private void SkipReportButton_Click(object sender, RoutedEventArgs e)
         {
-            Grid tempGrid = new Grid();
-            if(page.Content == null)
-            {
-                tempGrid.Children.Add(cntrl);
-                page.Content = tempGrid;
-            }
+            Wiz.CurrentPage = ViewMigrationReportPage;
         }
+        #endregion
+
+        #region SelectionEvents
         private void AssetsCompSelectCntrl_OnComponentsSelectionChanged(object sender, ComponentsSelectUserControl.ComponentsSelectionChangedEventArgs e)
         {
             AssetsComponentsSelectionPage.CanSelectNextPage = !e.IsEmpty;
@@ -222,6 +220,13 @@ namespace MigrationTool
         {
             AuthComponentsSelectionPage.CanSelectNextPage = !e.IsEmpty;
         }
+        private void AssetSiteCntrl_OnSitesSelectionChanged(object sender, SiteSelectUserControl.SitesSelectionChangedEventArgs e)
+        {
+            AssetSiteSelectionPage.CanSelectNextPage = !e.IsEmpty;
+        } 
+        #endregion
+
+        #region ProcessCompletedEvents
         private void AssetCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
         {
             CanClose = true;
@@ -236,42 +241,37 @@ namespace MigrationTool
         {
             CanClose = true;
             Wiz.CurrentPage.CanSelectNextPage = true;
-        }
-        private void AssetSiteCntrl_OnSitesSelectionChanged(object sender, SiteSelectUserControl.SitesSelectionChangedEventArgs e)
-        {
-            AssetSiteSelectionPage.CanSelectNextPage = !e.IsEmpty;
-        }
-        private void Wiz_Help(object sender, RoutedEventArgs e)
-        {
-            Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Contact Support for Help", "Help", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-        private void LogAppClose(object sender, RoutedEventArgs e)
-        {
-            Logger.Instance.LogInfo("Application has been terminated by user");
-        }
+        } 
+        #endregion
 
-        private void WizardWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if(!CanClose)
-            {
-                Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Please wait for the process to complete.", "Close", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                e.Cancel = true;
-            }
-                
-        }
-        private BitmapImage GetDBStatusImage(string connString)
-        {
-            BitmapImage statusIcon = new BitmapImage();
-            statusIcon.BeginInit();
-            if (string.IsNullOrWhiteSpace(connString))
-                statusIcon.UriSource = new Uri(crossImagePath, UriKind.Relative);
-            else
-                statusIcon.UriSource = new Uri(tickImagePath, UriKind.Relative);
-            statusIcon.EndInit();
+        #region ReportDBMigration
 
-            return statusIcon;
-        }
+        private bool CanProcessReport()
+        {
+            ////Auth Check 
+            //var authCompledtedComp =DatabaseHelper.GetCompletedComponents(GroupType.AUTH, null).Count;
+            //var authAllComp = Configurator.GetComponentListByGroup(GroupType.AUTH).Count;
 
+            //if (authCompledtedComp != authAllComp)
+            //{
+            //    Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Auth Components; All Componnets Count - { authAllComp} Completed Components - {authCompledtedComp}");
+            //    return false;
+            //}
+
+            ////Asset Check
+            //var allSites = DatabaseHelper.GetAllSitesFromLegacy();
+
+            //var assetCompletedComp = DatabaseHelper.GetCompletedComponents(GroupType.ASSET, allSites.Select(t => t.Key).ToList()).Count;
+
+            //var assetAllComp = Configurator.GetComponentListByGroup(GroupType.ASSET).Count;
+
+            //if (assetCompletedComp != assetAllComp)
+            //{
+            //    Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Asset Components ; All Componnets Count - { assetAllComp} Completed Components - {assetCompletedComp}");
+            //    return false;
+            //}
+            return true;
+        }
         private void authConnectBtn_Click(object sender, RoutedEventArgs e)
         {
             DatabaseConfigSubWindow win = new DatabaseConfigSubWindow();
@@ -300,7 +300,7 @@ namespace MigrationTool
         private void assetDBSelect_Closed(object sender, EventArgs e)
         {
             var conString = (sender as DatabaseConfigSubWindow).GetConnectionString();
-            ConnectionStrings.AssetConnectionString = string.IsNullOrWhiteSpace(conString) ? ConnectionStrings.AssetConnectionString : conString;  
+            ConnectionStrings.AssetConnectionString = string.IsNullOrWhiteSpace(conString) ? ConnectionStrings.AssetConnectionString : conString;
             UpdateDbConnectStatus();
         }
         private void UpdateDbConnectStatus()
@@ -325,5 +325,38 @@ namespace MigrationTool
             else
                 ReportConnectionPage.CanSelectNextPage = false;
         }
+        #endregion
+
+        #region Helpers
+        private bool ValidateConnectionString(string connectionString)
+        {
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                return true;
+            }
+            return false;
+        }
+        private void AddUserControlToPage(WizardPage page, UserControl cntrl)
+        {
+            Grid tempGrid = new Grid();
+            if (page.Content == null)
+            {
+                tempGrid.Children.Add(cntrl);
+                page.Content = tempGrid;
+            }
+        }
+        private BitmapImage GetDBStatusImage(string connString)
+        {
+            BitmapImage statusIcon = new BitmapImage();
+            statusIcon.BeginInit();
+            if (string.IsNullOrWhiteSpace(connString))
+                statusIcon.UriSource = new Uri(crossImagePath, UriKind.Relative);
+            else
+                statusIcon.UriSource = new Uri(tickImagePath, UriKind.Relative);
+            statusIcon.EndInit();
+
+            return statusIcon;
+        }
+        #endregion
     }
 }

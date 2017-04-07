@@ -10,8 +10,15 @@ namespace Migration.PreRequisite
 {
     public static class PreRequisiteFactory
     {
+        /// <summary>
+        /// Retrieves PreRequisite Executor Based on Group Type
+        /// </summary>
+        /// <param name="grpType">Group Type</param>
+        /// <returns>PreRequisite Executor</returns>
         public static AbstractPreRequisite GetPreRequistes(GroupType grpType)
         {
+            Logger.Instance.LogInfo($"PreRequisites for Group - {grpType.ToString()}");
+
             switch (grpType)
             {
                 case GroupType.AUTH:

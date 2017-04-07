@@ -40,8 +40,10 @@
                 <StackPanel Orientation="Horizontal">
                     <!--<Image Source="pack://application:,,,/Xceed.Wpf.Toolkit.LiveExplorer;component/Samples/BusyIndicator/Images/CdBurning32.png" />-->
                     <StackPanel Margin="5,0">
-                        <TextBlock VerticalAlignment="Center" Text="Generating Report..." />
-                        <!--<TextBlock Text="Madonna - Like a Virgin" VerticalAlignment="Center" Margin="8,0" />-->
+                        <TextBlock Margin="3,0"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Text="Generating Report..." />
                     </StackPanel>
                 </StackPanel>
             </xctk:BusyIndicator.BusyContent>
@@ -56,31 +58,7 @@
                                   Margin="10,10,5,0"
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Top"
-                                  ScrollViewer.CanContentScroll="True">
-                <!--<DataGridTextColumn Binding="{Binding WhateverIWantToDisplay}" >
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="{x:Type TextBlock}">
-
-                        <Setter Property="Background" Value="Green" />
-
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Status}" Value="NotStarted">
-                                <Setter Property="Foreground" Value="Blue" />
-                            </DataTrigger>
-
-                            <DataTrigger Binding="{Binding Status}" Value="Started">
-                                <Setter Property="Foreground" Value="Red" />
-                            </DataTrigger>
-
-                            <DataTrigger Binding="{Binding Status}" Value="Success">
-                                <Setter Property="Foreground" Value="Yellow" />
-                            </DataTrigger>
-
-                        </Style.Triggers>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>-->
-            </xcdg:DataGridControl>
+                                  ScrollViewer.CanContentScroll="True" />
         </xctk:BusyIndicator>
     </Grid>
 </UserControl>

@@ -8,7 +8,7 @@
              xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              Width="600"
-             Height="441"
+             Height="438"
              mc:Ignorable="d">
 
     <Grid>
@@ -40,7 +40,7 @@
                     <TextBlock Height="19"
                                HorizontalAlignment="Center"
                                FontWeight="Bold"
-                               Text="Executing PreRequisites" />
+                               Text="Executing Prerequisites" />
                     <StackPanel Margin="3">
                         <TextBlock Name="processText"
                                    Margin="0,0,0,2"
@@ -64,7 +64,7 @@
             <xcdg:DataGridControl x:Name="ProcessGrid"
                                   Width="580"
                                   Height="421"
-                                  Margin="15,10,5,0"
+                                  Margin="5,8,5,5"
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Top"
                                   ScrollViewer.CanContentScroll="False"

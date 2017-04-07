@@ -93,6 +93,11 @@
     <Compile Include="Helpers\DatabaseHelper.cs" />
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\ErrorHandler.cs" />
+    <Compile Include="Properties\Resources.en.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.en.resx</DependentUpon>
+    </Compile>
     <Compile Include="Views\ComponentsProcessUserControl.xaml.cs">
       <DependentUpon>ComponentsProcessUserControl.xaml</DependentUpon>
     </Compile>
@@ -168,8 +173,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Properties\Resources.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
@@ -221,7 +230,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="AppLogo.png" />
+    <Resource Include="Resources\AppLogo.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="AppIcon.ico" />

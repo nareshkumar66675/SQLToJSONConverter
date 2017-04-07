@@ -6,6 +6,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:MigrationTool"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:res="clr-namespace:MigrationTool.Properties"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         Title="Asset Matrix Data Migrate Tool"
         Width="706.17"
@@ -41,10 +42,10 @@
                              Title="Asset Matrix Data Migrate Tool"
                              Description="Migrate Legacy Data to New Database"
                              FontSize="14"
-                             HeaderImage="AppLogo.png">
+                             HeaderImage="Resources/AppLogo.png">
                 <xctk:WizardPage.Content>
                     <Grid>
-                        <Image Margin="24,108,304,129" Source="AppLogo.png" />
+                        <Image Margin="24,108,304,129" Source="Resources/AppLogo.png" />
                         <TextBlock Height="53"
                                    Margin="202,161,10,176"
                                    VerticalAlignment="Center"
@@ -224,7 +225,7 @@
                                 Margin="275,304,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
-                                Click="SkipAssetButton_Click"
+                                Click="SkipReportButton_Click"
                                 FontSize="14">
                             <DockPanel Width="101">
                                 <Image Width="32" Height="24">
