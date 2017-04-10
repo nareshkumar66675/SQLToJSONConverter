@@ -251,6 +251,17 @@ FROM GAM.MODEL AS MT
 WHERE IS_DELETED = 0  AND MT.MDL_SHORT_NAME = 'POS' ORDER BY MDL_ID
 
 
+--Denomination
+
+SELECT DENM_ID, ROW_NUMBER() OVER (ORDER BY DENM_ID ) AS Components_Id,
+'Denom Value' as CODE, 'DENOMINATION' as ComponentCode,
+cast ( CONVERT(DECIMAL(10,2),cast(denm_amount as float)/100) as nvarchar) as DENM_AMOUNT
+INTO MIGRATION.GAM_DENOMINATION
+FROM GAM.DENOMINATION WHERE IS_DELETED = 0 
+
+
+
+
 --Type Descrition
 
 
@@ -285,17 +296,132 @@ FROM  MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET ) as tt
 GO
 
 
---Denomination
+--adding Id Columns
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  TypeDescription_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  Manufacturer_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  ModelType_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  Model_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  GameHoldPC_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  HoldPC_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  MaxBet_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  LineConfiguration_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  GameCategory_Id INT;
+GO
 
-SELECT DENM_ID, ROW_NUMBER() OVER (ORDER BY DENM_ID ) AS Components_Id,
-'Denom Value' as CODE, 'DENOMINATION' as ComponentCode,
-cast ( CONVERT(DECIMAL(10,2),cast(denm_amount as float)/100) as nvarchar) as DENM_AMOUNT
-INTO MIGRATION.GAM_DENOMINATION
-FROM GAM.DENOMINATION WHERE IS_DELETED = 0 
+--updating id columns
+
+--TypeDescription
+UPDATE M 
+SET m.TypeDescription_Id = R_1
+--select *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION) R_1, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION FROM MIGRATION.GAM_TYPE_DESCRIPTION) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription
+GO
+
+--Manufacturer
+UPDATE M
+SET m.Manufacturer_Id = R_2
+--select *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer) R_2, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer FROM MIGRATION.GAM_TYPE_DESCRIPTION) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+GO
+
+--ModelType
+UPDATE M
+SET m.ModelType_Id = R_3
+--select *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer, ModelType) R_3, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer, ModelType FROM MIGRATION.GAM_TYPE_DESCRIPTION) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+and m.ModelType = a.ModelType
+GO
+
+--Model
+UPDATE M
+SET m.Model_Id = R_4
+--select *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer, ModelType, Model) R_4, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer, ModelType, Model FROM MIGRATION.GAM_TYPE_DESCRIPTION) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+and m.ModelType = a.ModelType and m.model = a.model
+GO
+
+--GameHoldPC_Id
+UPDATE M
+SET m.GameHoldPC_Id = R_5
+--select *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC) R_5, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC FROM MIGRATION.GAM_TYPE_DESCRIPTION) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+and m.ModelType = a.ModelType and m.model = a.model and m.GameHoldPC = a.GameHoldPC
+GO
+
+--HoldPC_Id
+UPDATE M
+SET m.HoldPC_Id = R_6
+--select *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC, HoldPC) R_6, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC,HoldPC
+FROM MIGRATION.GAM_TYPE_DESCRIPTION) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+and m.ModelType = a.ModelType and m.model = a.model and m.GameHoldPC = a.GameHoldPC
+and m.HoldPC = a.HoldPC
+GO
+
+--MaxBet_Id
+UPDATE M
+SET m.MaxBet_Id = R_7
+--select *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet) R_7, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet
+FROM MIGRATION.GAM_TYPE_DESCRIPTION) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+and m.ModelType = a.ModelType and m.model = a.model and m.GameHoldPC = a.GameHoldPC
+and m.HoldPC = a.HoldPC and m.MaxBet = a.MaxBet
+GO
+
+--LineConfiguration_Id
+UPDATE M
+SET m.LineConfiguration_Id = R_8
+--SELECT *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration) R_8, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration
+FROM MIGRATION.GAM_TYPE_DESCRIPTION) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+and m.ModelType = a.ModelType and m.model = a.model and m.GameHoldPC = a.GameHoldPC
+and m.HoldPC = a.HoldPC and m.MaxBet = a.MaxBet and m.LineConfiguration = a.LineConfiguration
+GO
+
+--GameCategory_Id
+UPDATE M
+SET m.GameCategory_Id = R_9
+--SELECT *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration, GameCategory) R_9, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration,GameCategory
+FROM MIGRATION.GAM_TYPE_DESCRIPTION) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+and m.ModelType = a.ModelType and m.model = a.model and m.GameHoldPC = a.GameHoldPC
+and m.HoldPC = a.HoldPC and m.MaxBet = a.MaxBet and m.LineConfiguration = a.LineConfiguration
+and m.GameCategory = a.GameCategory
+GO
+
 
 
 
 ----select * from MIGRATION.GAM_TYPE_DESCRIPTION
+
+--TODO
 
 ---- Asset to Type Description
 --UPDATE ASTMAP
@@ -813,7 +939,7 @@ CREATE VIEW [MIGRATION].[VIEW_AREA]
 AS
 SELECT AREA_ID, AR_SITE_ID,
 '22007' AS AR_COMP_ID,
-DISPLAY_NAME,
+DISPLAY_NAME, AR_Indx,
 CASE  WHEN VALUE_DESC_AR = 'AR_SHORT_NAME' then 1
 	  WHEN VALUE_DESC_AR = 'AR_LONG_NAME' then 2
 END AS AREA_SEQ,
@@ -824,6 +950,7 @@ CASE  WHEN VALUE_DESC_AR = 'AR_SHORT_NAME' then 'AREA.ID'
 	  WHEN VALUE_DESC_AR = 'AR_LONG_NAME' then 'AREA.NAME'
 END AS AREA_CODE, VALUE_AR 
 FROM (SELECT AR.AREA_ID, AR.SITE_ID AS AR_SITE_ID ,
+ROW_NUMBER () over (partition by SITE_ID order by SITE_ID, AREA_ID) as AR_Indx,
 AR_LONG_NAME as DISPLAY_NAME,
 cast(AR.AR_LONG_NAME as nvarchar) as AR_LONG_NAME,
 cast(AR.AR_SHORT_NAME as nvarchar) as AR_SHORT_NAME
@@ -842,7 +969,7 @@ CREATE VIEW [MIGRATION].[VIEW_ZONE]
 AS
 SELECT ZONE_ID, ZN_AREA_ID,
 '22008' AS ZN_COMP_ID,
-DISPLAY_NAME,
+DISPLAY_NAME, ZN_Indx,
 CASE  WHEN VALUE_DESC_ZN = 'ZN_SHORT_NAME' then 1
 	  WHEN VALUE_DESC_ZN = 'ZN_LONG_NAME' then 2
 END AS ZONE_SEQ,
@@ -854,14 +981,18 @@ CASE  WHEN VALUE_DESC_ZN = 'ZN_SHORT_NAME' then 'ZONE.ID'
 END AS ZONE_CODE, VALUE_ZN 
 FROM (SELECT ZN.ZONE_ID, ZN.ZN_AREA_ID,
 ZN_LONG_NAME as DISPLAY_NAME,
+ROW_NUMBER () over (partition by SITE_ID order by SITE_ID, ZN_AREA_ID, ZONE_ID) as ZN_Indx,
 cast(ZN.ZN_LONG_NAME as nvarchar) as ZN_LONG_NAME,
 cast(ZN.ZN_SHORT_NAME as nvarchar) as ZN_SHORT_NAME
-FROM GAM.ZONE AS ZN WHERE ZN.IS_DELETED = 0) AR_ZN_BK
+FROM GAM.ZONE AS ZN 
+JOIN GAM.AREA AS AR ON AR.AREA_ID = ZN.ZN_AREA_ID
+where ZN.IS_DELETED = 0) AR_ZN_BK
 UNPIVOT
 ( VALUE_ZN FOR VALUE_DESC_ZN IN ( ZN_SHORT_NAME, ZN_LONG_NAME) ) AS T
 
-
 GO
+
+
 
 DROP VIEW IF EXISTS [MIGRATION].[VIEW_BANK]
 
@@ -871,23 +1002,30 @@ CREATE VIEW [MIGRATION].[VIEW_BANK]
 AS
 SELECT BANK_ID, BK_ZONE_ID,
 '22009' AS BK_COMP_ID,
-DISPLAY_NAME,
+DISPLAY_NAME,BK_Indx,
 CASE  WHEN VALUE_DESC_BK = 'BK_SHORT_NAME' then 1
 	  WHEN VALUE_DESC_BK = 'BK_LONG_NAME' then 2
 END AS BANK_SEQ,
 CASE  WHEN VALUE_DESC_BK = 'BK_SHORT_NAME' then 'Bank Short Name'
 	  WHEN VALUE_DESC_BK = 'BK_LONG_NAME' then 'Bank Long Name'
 END AS BANK_NAME,
-CASE  WHEN VALUE_DESC_BK = 'BK_SHORT_NAME' then 'BANK.ID'
-	  WHEN VALUE_DESC_BK = 'BK_LONG_NAME' then 'BANK.NAME'
+CASE  WHEN VALUE_DESC_BK = 'BK_SHORT_NAME' then 'Bank.Id'
+	  WHEN VALUE_DESC_BK = 'BK_LONG_NAME' then 'Bank.Name'
 END AS BANK_CODE, VALUE_BK 
-FROM (SELECT BK.BANK_ID, BK_ZONE_ID,
+FROM (
+SELECT BK.BANK_ID, BK_ZONE_ID,
+row_number() over( partition by SITE_ID order by AREA_ID, BK_ZONE_ID, BANK_ID) as BK_Indx,
 BK_LONG_NAME as DISPLAY_NAME,
 cast(BK.BK_LONG_NAME as nvarchar) as BK_LONG_NAME,
 cast(BK.BK_SHORT_NAME as nvarchar) as BK_SHORT_NAME
- FROM GAM.BANK AS BK WHERE BK.IS_DELETED = 0) AR_ZN_BK
+ FROM GAM.BANK AS BK 
+ JOIN GAM.ZONE AS ZN ON ZN.ZONE_ID = BK.BK_ZONE_ID
+ JOIN GAM.AREA AS AR ON AR.AREA_ID = ZN.ZN_AREA_ID
+ WHERE BK.IS_DELETED = 0 ) AR_ZN_BK
 UNPIVOT
 ( VALUE_BK FOR VALUE_DESC_BK IN ( BK_SHORT_NAME, BK_LONG_NAME) ) AS T
+
+
 
 
 GO

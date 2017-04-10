@@ -94,9 +94,9 @@
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\ErrorHandler.cs" />
     <Compile Include="Properties\Resources.en.Designer.cs">
+      <DependentUpon>Resources.en.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.en.resx</DependentUpon>
     </Compile>
     <Compile Include="Views\ComponentsProcessUserControl.xaml.cs">
       <DependentUpon>ComponentsProcessUserControl.xaml</DependentUpon>

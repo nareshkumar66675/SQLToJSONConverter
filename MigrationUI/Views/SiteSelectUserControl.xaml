@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:MigrationTool.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:res="clr-namespace:MigrationTool.Properties"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              Height="400"
              d:DesignWidth="450"
@@ -138,7 +139,7 @@
                            FontSize="14"
                            FontWeight="Medium"
                            Foreground="#FF4F3D3D"
-                           Text="All Sites"
+                           Text="{x:Static res:Resources.SiteSelectUserControl_AllSites_Label}"
                            TextWrapping="Wrap" />
                 <xctk:WatermarkTextBox x:Name="srcSitesFltrTxtBox"
                                        Width="168"
@@ -148,7 +149,7 @@
                                        VerticalAlignment="Top"
                                        TextChanged="srcSitesFltrTxtBox_TextChanged"
                                        TextWrapping="Wrap"
-                                       Watermark="Search Sites" />
+                                       Watermark="{x:Static res:Resources.SiteSelectUserControl_SearchSite_Watermark}" />
             </Grid>
             <Grid Margin="265,26,20,46">
                 <ListBox x:Name="selectedListBox"
@@ -180,7 +181,7 @@
                            FontSize="14"
                            FontWeight="Medium"
                            Foreground="#FF4F3D3D"
-                           Text="Selected Sites"
+                           Text="{x:Static res:Resources.SiteSelectUserControl_SelectedSites_Label}"
                            TextAlignment="Right"
                            TextWrapping="Wrap" />
                 <xctk:WatermarkTextBox x:Name="selectedSitesFltrTxtBox"
@@ -225,11 +226,12 @@
                     </LinearGradientBrush>
                 </Button.Background>
             </Button>
-            <StatusBar Background="Transparent" Width="413"
+            <StatusBar Width="413"
                        Height="29"
                        Margin="17,361,0,0"
                        HorizontalAlignment="Left"
-                       VerticalAlignment="Top">
+                       VerticalAlignment="Top"
+                       Background="Transparent">
                 <StatusBarItem Width="280" HorizontalAlignment="Right">
                     <TextBlock x:Name="statusTextBlock"
                                Width="270"

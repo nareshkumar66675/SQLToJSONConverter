@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:MigrationTool.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:res="clr-namespace:MigrationTool.Properties"
              xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              Width="600"
@@ -40,7 +41,7 @@
                     <TextBlock Height="19"
                                HorizontalAlignment="Center"
                                FontWeight="Bold"
-                               Text="Executing Prerequisites" />
+                               Text="{x:Static res:Resources.ComponentsProcessUserControl_PreRequisite_Busy_Text}" />
                     <StackPanel Margin="3">
                         <TextBlock Name="processText"
                                    Margin="0,0,0,2"

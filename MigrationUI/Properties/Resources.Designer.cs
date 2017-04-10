@@ -61,6 +61,447 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter the asset database connection details..
+        /// </summary>
+        public static string AssetConnectionPage_Description {
+            get {
+                return ResourceManager.GetString("AssetConnectionPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 5 : Asset Database Connection.
+        /// </summary>
+        public static string AssetConnectionPage_Title {
+            get {
+                return ResourceManager.GetString("AssetConnectionPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait until the Migration is Complete..
+        /// </summary>
+        public static string AssetsComponentsProcessPage_Description {
+            get {
+                return ResourceManager.GetString("AssetsComponentsProcessPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 8 : Assets Migration.
+        /// </summary>
+        public static string AssetsComponentsProcessPage_Title {
+            get {
+                return ResourceManager.GetString("AssetsComponentsProcessPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the Components which needs to be migrated..
+        /// </summary>
+        public static string AssetsComponentsSelectionPage_Description {
+            get {
+                return ResourceManager.GetString("AssetsComponentsSelectionPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 7 : Assets Components Selection.
+        /// </summary>
+        public static string AssetsComponentsSelectionPage_Title {
+            get {
+                return ResourceManager.GetString("AssetsComponentsSelectionPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the Sites which needs to be migrated..
+        /// </summary>
+        public static string AssetSiteSelectionPage_Description {
+            get {
+                return ResourceManager.GetString("AssetSiteSelectionPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 6 : Asset Sites Selection.
+        /// </summary>
+        public static string AssetSiteSelectionPage_Title {
+            get {
+                return ResourceManager.GetString("AssetSiteSelectionPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait until the Migration is Complete..
+        /// </summary>
+        public static string AuthComponentsProcessPage_Description {
+            get {
+                return ResourceManager.GetString("AuthComponentsProcessPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 4 : Auth Components Migration.
+        /// </summary>
+        public static string AuthComponentsProcessPage_Title {
+            get {
+                return ResourceManager.GetString("AuthComponentsProcessPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the Authentication Components that needs to be migrated..
+        /// </summary>
+        public static string AuthComponentsSelectionPage_Description {
+            get {
+                return ResourceManager.GetString("AuthComponentsSelectionPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 3 : Auth Components Selection.
+        /// </summary>
+        public static string AuthComponentsSelectionPage_Title {
+            get {
+                return ResourceManager.GetString("AuthComponentsSelectionPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the Authentication database connection details..
+        /// </summary>
+        public static string AuthConnectionPage_Description {
+            get {
+                return ResourceManager.GetString("AuthConnectionPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 2 : Authentication Database Connection.
+        /// </summary>
+        public static string AuthConnectionPage_Title {
+            get {
+                return ResourceManager.GetString("AuthConnectionPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel_Button_Text {
+            get {
+                return ResourceManager.GetString("Cancel_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executing Prerequisites.
+        /// </summary>
+        public static string ComponentsProcessUserControl_PreRequisite_Busy_Text {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_PreRequisite_Busy_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed Components.
+        /// </summary>
+        public static string ComponentsSelectUserControl_CompDetails_Label {
+            get {
+                return ResourceManager.GetString("ComponentsSelectUserControl_CompDetails_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database Details.
+        /// </summary>
+        public static string ComponentsSelectUserControl_DBDetails_Label {
+            get {
+                return ResourceManager.GetString("ComponentsSelectUserControl_DBDetails_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database :.
+        /// </summary>
+        public static string ComponentsSelectUserControl_DBName_Label {
+            get {
+                return ResourceManager.GetString("ComponentsSelectUserControl_DBName_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deselect All.
+        /// </summary>
+        public static string ComponentsSelectUserControl_DeSelectAll_Button {
+            get {
+                return ResourceManager.GetString("ComponentsSelectUserControl_DeSelectAll_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select All.
+        /// </summary>
+        public static string ComponentsSelectUserControl_SelectAll_Button {
+            get {
+                return ResourceManager.GetString("ComponentsSelectUserControl_SelectAll_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server Name :.
+        /// </summary>
+        public static string ComponentsSelectUserControl_Server_Label {
+            get {
+                return ResourceManager.GetString("ComponentsSelectUserControl_Server_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authentication.
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_Authentication_Label {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_Authentication_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connecting....
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_Busy_Text {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_Busy_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect.
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_Connect_Button {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_Connect_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected Database.
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_Database_Label {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_Database_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_Password_Label {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_Password_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter Password.
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_Password_Watermark {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_Password_Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset.
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_Reset_Button {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_Reset_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server Name.
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_ServerName_Label {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_ServerName_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter Server Name.
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_ServerName_Watermark {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_ServerName_Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login.
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_UserName_Label {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_UserName_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter User Name.
+        /// </summary>
+        public static string DatabaseConfigUserCntrl_UserName_Watermark {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserCntrl_UserName_Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection Successful..
+        /// </summary>
+        public static string DatabaseSelectModal_Connect_Success_Text {
+            get {
+                return ResourceManager.GetString("DatabaseSelectModal_Connect_Success_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Database.
+        /// </summary>
+        public static string DatabaseSelectModal_DatabaseSelect_Text {
+            get {
+                return ResourceManager.GetString("DatabaseSelectModal_DatabaseSelect_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a Valid {0} Database.
+        /// </summary>
+        public static string DatabaseSelectModal_NotAValidDB_Error {
+            get {
+                return ResourceManager.GetString("DatabaseSelectModal_NotAValidDB_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a Database.
+        /// </summary>
+        public static string DatabaseSelectModal_SelectDB_Error {
+            get {
+                return ResourceManager.GetString("DatabaseSelectModal_SelectDB_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Migrate Legacy Data to New Database.
+        /// </summary>
+        public static string IntroPage_Description {
+            get {
+                return ResourceManager.GetString("IntroPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Asset Matrix Data Migrate Tool.
+        /// </summary>
+        public static string IntroPage_Title {
+            get {
+                return ResourceManager.GetString("IntroPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ok.
+        /// </summary>
+        public static string Ok_Button_Text {
+            get {
+                return ResourceManager.GetString("Ok_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait until the Migration is Complete..
+        /// </summary>
+        public static string ReportComponentsProcessPage_Description {
+            get {
+                return ResourceManager.GetString("ReportComponentsProcessPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 10 : Report Migration.
+        /// </summary>
+        public static string ReportComponentsProcessPage_Title {
+            get {
+                return ResourceManager.GetString("ReportComponentsProcessPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the report database connection details..
+        /// </summary>
+        public static string ReportConnectionPage_Description {
+            get {
+                return ResourceManager.GetString("ReportConnectionPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 9 : Report Database Connection.
+        /// </summary>
+        public static string ReportConnectionPage_Title {
+            get {
+                return ResourceManager.GetString("ReportConnectionPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Sites.
+        /// </summary>
+        public static string SiteSelectUserControl_AllSites_Label {
+            get {
+                return ResourceManager.GetString("SiteSelectUserControl_AllSites_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search Sites.
+        /// </summary>
+        public static string SiteSelectUserControl_SearchSite_Watermark {
+            get {
+                return ResourceManager.GetString("SiteSelectUserControl_SearchSite_Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected Sites.
+        /// </summary>
+        public static string SiteSelectUserControl_SelectedSites_Label {
+            get {
+                return ResourceManager.GetString("SiteSelectUserControl_SelectedSites_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the Legacy database connection details..
+        /// </summary>
+        public static string SourceConnectionPage_Description {
+            get {
+                return ResourceManager.GetString("SourceConnectionPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 1 : Legacy Database Connection.
+        /// </summary>
+        public static string SourceConnectionPage_Title {
+            get {
+                return ResourceManager.GetString("SourceConnectionPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Data Migrate Tool.
         /// </summary>
         public static string ToolName {
@@ -70,11 +511,29 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to utyhgj.
+        ///   Looks up a localized string similar to Please find the overall migration status.
         /// </summary>
-        public static string ytgu {
+        public static string ViewMigrationReportPage_Description {
             get {
-                return ResourceManager.GetString("ytgu", resourceCulture);
+                return ResourceManager.GetString("ViewMigrationReportPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Migration Report.
+        /// </summary>
+        public static string ViewMigrationReportPage_Title {
+            get {
+                return ResourceManager.GetString("ViewMigrationReportPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generating Report....
+        /// </summary>
+        public static string ViewReportUserControl_Report_Busy_Text {
+            get {
+                return ResourceManager.GetString("ViewReportUserControl_Report_Busy_Text", resourceCulture);
             }
         }
     }

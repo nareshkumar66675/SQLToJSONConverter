@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:MigrationTool.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:res="clr-namespace:MigrationTool.Properties"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              Width="400"
              Height="380"
@@ -72,14 +73,16 @@
                     <Grid Margin="10,173,10,19" RenderTransformOrigin="0.586,8.671">
                         <Button x:Name="selectAllButton"
                                 Margin="51,-1,220,-1"
-                                Content="Select All"
+                                Click="selectAllButton_Click"
+                                Content="{x:Static res:Resources.ComponentsSelectUserControl_SelectAll_Button}"
                                 FontSize="12"
-                                FontWeight="Normal" Click="selectAllButton_Click" />
+                                FontWeight="Normal" />
                         <Button x:Name="deselectAllButton"
                                 Margin="205,-1,66,-1"
-                                Content="Deselect All"
+                                Click="deselectAllButton_Click"
+                                Content="{x:Static res:Resources.ComponentsSelectUserControl_DeSelectAll_Button}"
                                 FontSize="12"
-                                FontWeight="Normal" Click="deselectAllButton_Click" />
+                                FontWeight="Normal" />
                     </Grid>
                 </Grid>
             </Expander>
@@ -121,7 +124,7 @@
                            Width="83"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Top"
-                           Content="Server Name :" />
+                           Content="{x:Static res:Resources.ComponentsSelectUserControl_Server_Label}" />
                     <TextBox x:Name="serverTextBlock"
                              Width="161"
                              Margin="10,26,0,0"
@@ -140,7 +143,7 @@
                            Margin="0,42,0,0"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Top"
-                           Content="Database :" />
+                           Content="{x:Static res:Resources.ComponentsSelectUserControl_DBName_Label}" />
                     <TextBox x:Name="databaseTextBlock"
                              Width="161"
                              Margin="10,67,0,0"
@@ -159,13 +162,13 @@
                        Margin="196,5,0,0"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Top"
-                       Content="Completed Components" />
+                       Content="{x:Static res:Resources.ComponentsSelectUserControl_CompDetails_Label}" />
                 <Label x:Name="dbDetailsLabel"
                        Width="116"
                        Margin="10,5,0,0"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Top"
-                       Content="Database Details"
+                       Content="{x:Static res:Resources.ComponentsSelectUserControl_DBDetails_Label}"
                        RenderTransformOrigin="1.263,1.5" />
             </Grid>
         </StackPanel>

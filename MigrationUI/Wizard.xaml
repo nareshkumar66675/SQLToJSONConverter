@@ -39,8 +39,8 @@
                 </Style>
             </xctk:Wizard.Resources>
             <xctk:WizardPage x:Name="IntroPage"
-                             Title="Asset Matrix Data Migrate Tool"
-                             Description="Migrate Legacy Data to New Database"
+                             Title="{x:Static res:Resources.IntroPage_Title}"
+                             Description="{x:Static res:Resources.IntroPage_Description}"
                              FontSize="14"
                              HeaderImage="Resources/AppLogo.png">
                 <xctk:WizardPage.Content>
@@ -52,15 +52,15 @@
                                    FontFamily="Segoe UI Symbol"
                                    FontSize="34"
                                    Foreground="#2D75A3"
-                                   Text="Data Migrate Tool"
+                                   Text="{x:Static res:Resources.ToolName}"
                                    TextAlignment="Center" />
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="SourceConnectionPage"
-                             Title="STEP 1 : Legacy Database Connection"
+                             Title="{x:Static res:Resources.SourceConnectionPage_Title}"
                              CanSelectNextPage="True"
-                             Description="Enter the Legacy database connection details."
+                             Description="{x:Static res:Resources.SourceConnectionPage_Description}"
                              NextPage="{Binding ElementName=AuthConnectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=IntroPage}">
@@ -79,9 +79,9 @@
             </xctk:WizardPage>
             <!--  Auth Process Block Start  -->
             <xctk:WizardPage x:Name="AuthConnectionPage"
-                             Title="STEP 2 : Authentication Database Connection"
+                             Title="{x:Static res:Resources.AuthConnectionPage_Title}"
                              CanSelectNextPage="True"
-                             Description="Enter the Authentication database connection details."
+                             Description="{x:Static res:Resources.AuthConnectionPage_Description}"
                              NextPage="{Binding ElementName=AuthComponentsSelectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=SourceConnectionPage}">
@@ -119,28 +119,28 @@
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="AuthComponentsSelectionPage"
-                             Title="STEP 3 : Auth Components Selection"
+                             Title="{x:Static res:Resources.AuthComponentsSelectionPage_Title}"
                              CanSelectNextPage="False"
-                             Description="Select the Authentication Components that needs to be migrated."
+                             Description="{x:Static res:Resources.AuthComponentsSelectionPage_Description}"
                              NextPage="{Binding ElementName=AuthComponentsProcessPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AuthConnectionPage}" />
             <xctk:WizardPage x:Name="AuthComponentsProcessPage"
-                             Title="STEP 4 : Auth Components Migration"
+                             Title="{x:Static res:Resources.AuthComponentsProcessPage_Title}"
                              CanCancel="False"
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
-                             Description="Please wait until the Migration is Complete."
+                             Description="{x:Static res:Resources.AuthComponentsProcessPage_Description}"
                              NextPage="{Binding ElementName=AssetConnectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AuthComponentsSelectionPage}" />
             <!--  EOF Auth Process Block  -->
             <!--  Asset Process Block Start  -->
             <xctk:WizardPage x:Name="AssetConnectionPage"
-                             Title="STEP 5 : Asset Database Connection"
+                             Title="{x:Static res:Resources.AssetConnectionPage_Title}"
                              CanSelectNextPage="True"
                              CanSelectPreviousPage="False"
-                             Description="Enter the asset database connection details."
+                             Description="{x:Static res:Resources.AssetConnectionPage_Description}"
                              NextPage="{Binding ElementName=AssetSiteSelectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AuthComponentsProcessPage}">
@@ -178,35 +178,35 @@
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="AssetSiteSelectionPage"
-                             Title="STEP 6 : Asset Sites Selection"
+                             Title="{x:Static res:Resources.AssetSiteSelectionPage_Title}"
                              CanSelectNextPage="False"
-                             Description="Select the Sites which needs to be migrated."
+                             Description="{x:Static res:Resources.AssetSiteSelectionPage_Description}"
                              NextPage="{Binding ElementName=AssetsComponentsSelectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AssetConnectionPage}" />
             <xctk:WizardPage x:Name="AssetsComponentsSelectionPage"
-                             Title="STEP 7 : Assets Components Selection"
+                             Title="{x:Static res:Resources.AssetsComponentsSelectionPage_Title}"
                              CanSelectNextPage="True"
-                             Description="Select the Components which needs to be migrated."
+                             Description="{x:Static res:Resources.AssetsComponentsSelectionPage_Description}"
                              NextPage="{Binding ElementName=ComponentsProcessPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AssetSiteSelectionPage}" />
             <xctk:WizardPage x:Name="AssetsComponentsProcessPage"
-                             Title="STEP 8 : Assets Migration"
+                             Title="{x:Static res:Resources.AssetsComponentsProcessPage_Title}"
                              CanCancel="False"
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
-                             Description="Please wait until the Migration is Complete."
+                             Description="{x:Static res:Resources.AssetsComponentsProcessPage_Description}"
                              NextPage="{Binding ElementName=ReportConnectionPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AssetsComponentsSelectionPage}" />
             <!--  EOF Asset Process Block  -->
             <!--  Asset History Process Block Start  -->
             <xctk:WizardPage x:Name="ReportConnectionPage"
-                             Title="STEP 9 : Report Database Connection"
+                             Title="{x:Static res:Resources.ReportConnectionPage_Title}"
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
-                             Description="Enter the report database connection details."
+                             Description="{x:Static res:Resources.ReportConnectionPage_Description}"
                              NextPage="{Binding ElementName=ReportComponentsProcessPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AssetsComponentsProcessPage}">
@@ -285,21 +285,22 @@
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="ReportComponentsProcessPage"
-                             Title="STEP 10 : Report Migration"
+                             Title="{x:Static res:Resources.ReportComponentsProcessPage_Title}"
                              CanCancel="False"
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
-                             Description="Please wait until the Migration is Complete."
+                             Description="{x:Static res:Resources.ReportComponentsProcessPage_Description}"
                              NextPage="{Binding ElementName=ViewMigrationReportPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=ReportConnectionPage}" />
             <!--  EOF Asset History Process Block  -->
             <xctk:WizardPage x:Name="ViewMigrationReportPage"
-                             Title="Migration Report"
+                             Title="{x:Static res:Resources.ViewMigrationReportPage_Title}"
                              CanCancel="False"
+                             CanFinish="True"
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
-                             Description="Please find the overall migration status"
+                             Description="{x:Static res:Resources.ViewMigrationReportPage_Description}"
                              NextPage="{Binding ElementName=LastPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=ReportComponentsProcessPage}">
@@ -309,11 +310,11 @@
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>
-            <xctk:WizardPage x:Name="LastPage"
+            <!--<xctk:WizardPage x:Name="LastPage"
                              Title="Last Page"
                              CanFinish="True"
                              Description="This is the last page in the process"
-                             PageType="Interior" />
+                             PageType="Interior" />-->
         </xctk:Wizard>
     </Grid>
 </Window>

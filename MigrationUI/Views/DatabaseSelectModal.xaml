@@ -5,6 +5,7 @@
         xmlns:local="clr-namespace:MigrationTool.Views"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:res="clr-namespace:MigrationTool.Properties"
         Title="DatabaseSelectModal"
         Width="276.404"
         Height="144.944"
@@ -19,7 +20,8 @@
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Foreground="#FF423737"
-                   TextWrapping="Wrap"><Run Text="Connection Successful." /></TextBlock>
+                   TextWrapping="Wrap">
+            <Run Text="{x:Static res:Resources.DatabaseSelectModal_Connect_Success_Text}" /></TextBlock>
         <ComboBox x:Name="DatabaseComboBox"
                   Width="213"
                   Margin="31,59,0,0"
@@ -44,7 +46,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Click="ok_Click"
-                Content="Ok"
+                Content="{x:Static res:Resources.Ok_Button_Text}"
                 IsDefault="True">
             <Button.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -71,7 +73,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Click="cancelButton_Click"
-                Content="Cancel">
+                Content="{x:Static res:Resources.Cancel_Button_Text}">
             <Button.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                     <GradientStop Offset="0" Color="#FFF3F3F3" />

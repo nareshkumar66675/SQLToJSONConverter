@@ -191,7 +191,7 @@ namespace Migration.Configuration
             foreach (var grp in SourceComponents.Group)
             {
                 if (grp.Component.Exists(t => t.Name == componentName))
-                    return grp.Component.Select(t => t.DisplayName).FirstOrDefault();
+                    return grp.Component.Where(u => u.Name == componentName).Select(t => t.DisplayName).FirstOrDefault();
             }
             return string.Empty;
         }

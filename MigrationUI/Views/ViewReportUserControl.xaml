@@ -7,6 +7,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:res="clr-namespace:MigrationTool.Properties"
              Width="600"
              Height="400"
              mc:Ignorable="d">
@@ -43,7 +44,7 @@
                         <TextBlock Margin="3,0"
                                    VerticalAlignment="Center"
                                    FontWeight="SemiBold"
-                                   Text="Generating Report..." />
+                                   Text="{x:Static res:Resources.ViewReportUserControl_Report_Busy_Text}" />
                     </StackPanel>
                 </StackPanel>
             </xctk:BusyIndicator.BusyContent>

@@ -44,10 +44,11 @@ namespace MigrationTool
         #endregion
         public Wizard()
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en");
-            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
-                        XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
+            //MigrationTool.Properties.Resources.
+            //Thread.CurrentThread.CurrentCulture = new CultureInfo("en");
+            //Thread.CurrentThread.CurrentUICulture = new CultureInfo("en");
+            //FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
+            //            XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
             InitializeComponent();
             Logger.Instance.LogInfo("Data Migration Tool Initialized.");
 
@@ -208,6 +209,7 @@ namespace MigrationTool
         private void SkipReportButton_Click(object sender, RoutedEventArgs e)
         {
             Wiz.CurrentPage = ViewMigrationReportPage;
+            ViewMigrationRptCntrl.ShowReport();
         }
         #endregion
 

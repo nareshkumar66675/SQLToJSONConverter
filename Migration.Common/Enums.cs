@@ -30,7 +30,7 @@ namespace Migration.Common
         /// <summary>
         /// Asset History Database
         /// </summary>
-        [Description("REPORT Database")]
+        [Description("Report Database")]
        [XmlEnum("REPORT")]
         REPORT
     }

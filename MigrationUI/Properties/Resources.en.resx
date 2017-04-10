@@ -117,10 +117,164 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ToolName" xml:space="preserve">
-    <value>Data Migration Tool</value>
+  <data name="AssetConnectionPage_Description" xml:space="preserve">
+    <value>Enter the asset database connection details.</value>
   </data>
-  <data name="vj" xml:space="preserve">
-    <value>jhgjkvhk</value>
+  <data name="AssetConnectionPage_Title" xml:space="preserve">
+    <value>STEP 5 : Asset Database Connection</value>
+  </data>
+  <data name="AssetsComponentsProcessPage_Description" xml:space="preserve">
+    <value>Please wait until the Migration is Complete.</value>
+  </data>
+  <data name="AssetsComponentsProcessPage_Title" xml:space="preserve">
+    <value>STEP 8 : Assets Migration</value>
+  </data>
+  <data name="AssetsComponentsSelectionPage_Description" xml:space="preserve">
+    <value>Select the Components which needs to be migrated.</value>
+  </data>
+  <data name="AssetsComponentsSelectionPage_Title" xml:space="preserve">
+    <value>STEP 7 : Assets Components Selection</value>
+  </data>
+  <data name="AssetSiteSelectionPage_Description" xml:space="preserve">
+    <value>Select the Sites which needs to be migrated.</value>
+  </data>
+  <data name="AssetSiteSelectionPage_Title" xml:space="preserve">
+    <value>STEP 6 : Asset Sites Selection</value>
+  </data>
+  <data name="AuthComponentsProcessPage_Description" xml:space="preserve">
+    <value>Please wait until the Migration is Complete.</value>
+  </data>
+  <data name="AuthComponentsProcessPage_Title" xml:space="preserve">
+    <value>STEP 4 : Auth Components Migration</value>
+  </data>
+  <data name="AuthComponentsSelectionPage_Description" xml:space="preserve">
+    <value>Select the Authentication Components that needs to be migrated.</value>
+  </data>
+  <data name="AuthComponentsSelectionPage_Title" xml:space="preserve">
+    <value>STEP 3 : Auth Components Selection</value>
+  </data>
+  <data name="AuthConnectionPage_Description" xml:space="preserve">
+    <value>Enter the Authentication database connection details.</value>
+  </data>
+  <data name="AuthConnectionPage_Title" xml:space="preserve">
+    <value>STEP 2 : Authentication Database Connection</value>
+  </data>
+  <data name="Cancel_Button_Text" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ComponentsProcessUserControl_PreRequisite_Busy_Text" xml:space="preserve">
+    <value>Executing Prerequisites</value>
+  </data>
+  <data name="ComponentsSelectUserControl_CompDetails_Label" xml:space="preserve">
+    <value>Completed Components</value>
+  </data>
+  <data name="ComponentsSelectUserControl_DBDetails_Label" xml:space="preserve">
+    <value>Database Details</value>
+  </data>
+  <data name="ComponentsSelectUserControl_DBName_Label" xml:space="preserve">
+    <value>Database :</value>
+  </data>
+  <data name="ComponentsSelectUserControl_DeSelectAll_Button" xml:space="preserve">
+    <value>Deselect All</value>
+  </data>
+  <data name="ComponentsSelectUserControl_SelectAll_Button" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="ComponentsSelectUserControl_Server_Label" xml:space="preserve">
+    <value>Server Name :</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_Authentication_Label" xml:space="preserve">
+    <value>Authentication</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_Busy_Text" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_Connect_Button" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_Database_Label" xml:space="preserve">
+    <value>Selected Database</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_Password_Label" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_Password_Watermark" xml:space="preserve">
+    <value>Enter Password</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_Reset_Button" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_ServerName_Label" xml:space="preserve">
+    <value>Server Name</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_ServerName_Watermark" xml:space="preserve">
+    <value>Enter Server Name</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_UserName_Label" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="DatabaseConfigUserCntrl_UserName_Watermark" xml:space="preserve">
+    <value>Enter User Name</value>
+  </data>
+  <data name="DatabaseSelectModal_Connect_Success_Text" xml:space="preserve">
+    <value>Connection Successful.</value>
+  </data>
+  <data name="DatabaseSelectModal_DatabaseSelect_Text" xml:space="preserve">
+    <value>Select Database</value>
+  </data>
+  <data name="DatabaseSelectModal_NotAValidDB_Error" xml:space="preserve">
+    <value>Not a Valid {0} Database</value>
+    <comment>Ex: Not a Valid Asset Database</comment>
+  </data>
+  <data name="DatabaseSelectModal_SelectDB_Error" xml:space="preserve">
+    <value>Select a Database</value>
+  </data>
+  <data name="IntroPage_Description" xml:space="preserve">
+    <value>Migrate Legacy Data to New Database</value>
+  </data>
+  <data name="IntroPage_Title" xml:space="preserve">
+    <value>Asset Matrix Data Migrate Tool</value>
+  </data>
+  <data name="Ok_Button_Text" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="ReportComponentsProcessPage_Description" xml:space="preserve">
+    <value>Please wait until the Migration is Complete.</value>
+  </data>
+  <data name="ReportComponentsProcessPage_Title" xml:space="preserve">
+    <value>STEP 10 : Report Migration</value>
+  </data>
+  <data name="ReportConnectionPage_Description" xml:space="preserve">
+    <value>Enter the report database connection details.</value>
+  </data>
+  <data name="ReportConnectionPage_Title" xml:space="preserve">
+    <value>STEP 9 : Report Database Connection</value>
+  </data>
+  <data name="SiteSelectUserControl_AllSites_Label" xml:space="preserve">
+    <value>All Sites</value>
+  </data>
+  <data name="SiteSelectUserControl_SearchSite_Watermark" xml:space="preserve">
+    <value>Search Sites</value>
+  </data>
+  <data name="SiteSelectUserControl_SelectedSites_Label" xml:space="preserve">
+    <value>Selected Sites</value>
+  </data>
+  <data name="SourceConnectionPage_Description" xml:space="preserve">
+    <value>Enter the Legacy database connection details.</value>
+  </data>
+  <data name="SourceConnectionPage_Title" xml:space="preserve">
+    <value>STEP 1 : Legacy Database Connection</value>
+  </data>
+  <data name="ToolName" xml:space="preserve">
+    <value>Data Migrate Tool</value>
+  </data>
+  <data name="ViewMigrationReportPage_Description" xml:space="preserve">
+    <value>Please find the overall migration status</value>
+  </data>
+  <data name="ViewMigrationReportPage_Title" xml:space="preserve">
+    <value>Migration Report</value>
+  </data>
+  <data name="ViewReportUserControl_Report_Busy_Text" xml:space="preserve">
+    <value>Generating Report...</value>
   </data>
 </root>

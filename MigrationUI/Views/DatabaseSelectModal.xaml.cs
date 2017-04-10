@@ -24,7 +24,7 @@ namespace MigrationTool.Views
         public string ConnectionString { get; set; }
         public string DatabaseName { get; private set; }
         public string Type;
-        private string comboDefaultText = "Select Database";
+        private string comboDefaultText = Properties.Resources.DatabaseSelectModal_DatabaseSelect_Text;
         public DatabaseSelectModal()
         {
             InitializeComponent();
@@ -57,12 +57,12 @@ namespace MigrationTool.Views
             this.DatabaseName= DatabaseComboBox.SelectedValue as string;
             if (this.DatabaseName == comboDefaultText)
             {
-                errorTextBlock.Text = "Select a Database";
+                errorTextBlock.Text = Properties.Resources.DatabaseSelectModal_SelectDB_Error;
                 errorTextBlock.Visibility = Visibility.Visible;
             }
             else if(!ValidateDatabase())
             {
-                errorTextBlock.Text = "Not a Valid " + Type + " Database";
+                errorTextBlock.Text = string.Format(Properties.Resources.DatabaseSelectModal_NotAValidDB_Error,Type);//Not a Valid {0} Database
                 errorTextBlock.Visibility = Visibility.Visible;
             }
             else
@@ -73,7 +73,7 @@ namespace MigrationTool.Views
         {
             if ((DatabaseComboBox.SelectedValue as string) == comboDefaultText)
             {
-                errorTextBlock.Text = "Select a Database";
+                errorTextBlock.Text = Properties.Resources.DatabaseSelectModal_SelectDB_Error;
                 errorTextBlock.Visibility = Visibility.Visible;
             }
             else

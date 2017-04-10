@@ -100,18 +100,19 @@ namespace MigrationTool.Helpers
             table.Columns.Add(new DataColumn("Group"));
             table.Columns.Add(new DataColumn("DisplayName"));
             table.Columns.Add(new DataColumn("Site Count"));
-            table.Columns.Add(new DataColumn("Legacy Record"));
+            table.Columns.Add(new DataColumn("Legacy Records"));
             table.Columns.Add(new DataColumn("Unique Records"));
             table.Columns.Add(new DataColumn("Inserted Records"));
 
             string query = @"SELECT Component_Name,
-			                        0 as SiteCount,
-			                        SUM (Tot_Rcrds_InLegacy) as Legacy ,
-			                        SUM(Tot_Unique_RcrdsInLegacy) as [Unique],
-			                        SUM(Inserted_Rcrds_InNew) as [InsertedRcrds]
-		                        FROM Migration.Report --LEFT JOIN Migration.SiteGroup on Report.SiteGroupID=SiteGroup.SiteGroupID
-	                                 WHERE [Status]='Success'
-	                                 GROUP BY Component_Name,Report.SiteGroupID";
+                                            MAX(SiteCount) as SiteCount,
+                                            SUM (Tot_Rcrds_InLegacy) as Legacy ,
+                                            SUM(Tot_Unique_RcrdsInLegacy) as [Unique],
+                                            SUM(Inserted_Rcrds_InNew) as [InsertedRcrds]
+                             FROM Migration.Report LEFT JOIN (SELECT SiteGroupID, COUNT(SiteID) as SiteCount FROM Migration.SiteGroup GROUP BY SiteGroupID) as Sg
+							 on Report.SiteGroupID=sg.SiteGroupID
+                             WHERE [Status]='Success'
+                             GROUP BY Component_Name,Report.SiteGroupID";
 
             if (!string.IsNullOrWhiteSpace(ConnectionStrings.GetConnectionString(group)))
             {

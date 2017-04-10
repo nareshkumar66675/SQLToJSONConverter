@@ -36,6 +36,16 @@ namespace MigrationTool.Views
             ReportGrid.ItemsSource = DatabaseHelper.GetAllReports().AsDataView();
             ReportGrid.ReadOnly = true;
             ReportGrid.Columns[0].Visible = false;
+            ReportGrid.Columns[1].Width = new ColumnWidth(170, ColumnWidthUnitType.Pixel);
+            ReportGrid.Columns[2].Width = new ColumnWidth(74, ColumnWidthUnitType.Pixel);
+            ReportGrid.Columns[3].Width = new ColumnWidth(91, ColumnWidthUnitType.Pixel);
+            ReportGrid.Columns[4].Width = new ColumnWidth(92, ColumnWidthUnitType.Pixel);
+            ReportGrid.Columns[5].Width = new ColumnWidth(99, ColumnWidthUnitType.Pixel);
+            ReportGrid.Columns[2].CellHorizontalContentAlignment = HorizontalAlignment.Center;
+            ReportGrid.Columns[3].CellHorizontalContentAlignment = HorizontalAlignment.Center;
+            ReportGrid.Columns[4].CellHorizontalContentAlignment = HorizontalAlignment.Center;
+            ReportGrid.Columns[5].CellHorizontalContentAlignment = HorizontalAlignment.Center;
+            ReportGrid.ItemScrollingBehavior = ItemScrollingBehavior.Immediate;
             ICollectionView cvTasks = CollectionViewSource.GetDefaultView(ReportGrid.ItemsSource);
             if (cvTasks != null && cvTasks.CanGroup == true)
             {
