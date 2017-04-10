@@ -22,7 +22,7 @@
           VerticalAlignment="Top">
         <xctk:Wizard x:Name="Wiz"
                      Cancel="LogAppClose"
-                     CurrentPage="{Binding ElementName=AuthConnectionPage}"
+                     CurrentPage="{Binding ElementName=IntroPage}"
                      FinishButtonClosesWindow="True"
                      Help="Wiz_Help"
                      Next="Wiz_Next">
@@ -54,6 +54,25 @@
                                    Foreground="#2D75A3"
                                    Text="{x:Static res:Resources.ToolName}"
                                    TextAlignment="Center" />
+                        <ComboBox x:Name="CultureSelectComboBox"
+                                  Width="79"
+                                  Height="23"
+                                  Margin="412,357,0,0"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Top"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                  SelectionChanged="CultureSelectComboBox_SelectionChanged">
+                            <ComboBox.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Offset="0" Color="White" />
+                                    <GradientStop Offset="0.5" Color="#FFEBEBEB" />
+                                    <GradientStop Offset="0.13" Color="White" />
+                                    <GradientStop Offset="1" Color="#FFF1F1F1" />
+                                    <GradientStop Offset="0.954" Color="White" />
+                                </LinearGradientBrush>
+                            </ComboBox.Background>
+                        </ComboBox>
                     </Grid>
                 </xctk:WizardPage.Content>
             </xctk:WizardPage>

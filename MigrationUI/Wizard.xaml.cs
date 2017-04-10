@@ -4,6 +4,7 @@ using MigrationTool.Helpers;
 using MigrationTool.Views;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -45,13 +46,10 @@ namespace MigrationTool
         public Wizard()
         {
             //MigrationTool.Properties.Resources.
-            //Thread.CurrentThread.CurrentCulture = new CultureInfo("en");
-            //Thread.CurrentThread.CurrentUICulture = new CultureInfo("en");
-            //FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
-            //            XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
             InitializeComponent();
             Logger.Instance.LogInfo("Data Migration Tool Initialized.");
-
+            CultureSelectComboBox.ItemsSource = AppSettings.Cultures;
+            CultureSelectComboBox.SelectedItem = Thread.CurrentThread.CurrentUICulture.Name;
             #region EventsRegistration
             AuthCompSelectCntrl.OnComponentsSelectionChanged += AuthCompSelectCntrl_OnComponentsSelectionChanged;
             AssetsCompSelectCntrl.OnComponentsSelectionChanged += AssetsCompSelectCntrl_OnComponentsSelectionChanged;
@@ -135,12 +133,12 @@ namespace MigrationTool
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error While Navigating to Next Page", ex);
-                ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Error");
+                ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), Properties.Resources.Error_Text);
             }
         }
         private void Wiz_Help(object sender, RoutedEventArgs e)
         {
-            Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Contact Support for Help", "Help", MessageBoxButton.OK, MessageBoxImage.Information);
+            Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), Properties.Resources.Wizard_Help_Message, Properties.Resources.Help_Text, MessageBoxButton.OK, MessageBoxImage.Information);
         }
         private void LogAppClose(object sender, RoutedEventArgs e)
         {
@@ -151,7 +149,7 @@ namespace MigrationTool
         {
             if (!CanClose)
             {
-                Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Please wait for the process to complete.", "Close", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), Properties.Resources.Wizard_CannotClose_Message,Properties.Resources.Close_Text, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 e.Cancel = true;
             }
 
@@ -360,5 +358,27 @@ namespace MigrationTool
             return statusIcon;
         }
         #endregion
+
+        private void CultureSelectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var cul = (string)CultureSelectComboBox.SelectedItem;
+            if (Thread.CurrentThread.CurrentUICulture.Name != cul)
+            {
+                var rslt=Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), string.Format(Properties.Resources.IntroPage_ChangeLanguage_Message,cul), "Close", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+                if(rslt == MessageBoxResult.Yes)
+                {
+                    // Run the program again
+                    Process.Start(Application.ResourceAssembly.Location, cul);
+
+                    // Close the Current one
+                    Process.GetCurrentProcess().Kill();
+                }
+                else
+                {
+                    CultureSelectComboBox.SelectedItem = Thread.CurrentThread.CurrentUICulture.Name;
+                }
+
+            }
+        }
     }
 }

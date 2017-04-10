@@ -42,11 +42,11 @@ namespace MigrationTool.Views
             try
             {
                 DataTable dataTable = new DataTable();
-                dataTable.Columns.Add(new DataColumn("Group"));
-                dataTable.Columns.Add(new DataColumn("DisplayName"));
-                dataTable.Columns.Add(new DataColumn("Progress", typeof(ProgressBar)));
-                dataTable.Columns.Add(new DataColumn("Status"));
-                dataTable.Columns.Add(new DataColumn("Name"));
+                dataTable.Columns.Add(new DataColumn(Properties.Resources.ComponentsProcessUserControl_Group_ColName));
+                dataTable.Columns.Add(new DataColumn(Properties.Resources.ComponentsProcessUserControl_DisplayName_ColName));
+                dataTable.Columns.Add(new DataColumn(Properties.Resources.ComponentsProcessUserControl_Progress_ColName, typeof(ProgressBar)));
+                dataTable.Columns.Add(new DataColumn(Properties.Resources.ComponentsProcessUserControl_Status_ColName));
+                dataTable.Columns.Add(new DataColumn(Properties.Resources.ComponentsProcessUserControl_Name_ColName));
                 GridDataTable = dataTable;
                 ProcessGrid.ItemsSource = dataTable.AsDataView();
                 ProcessGrid.ReadOnly = true;
@@ -70,7 +70,7 @@ namespace MigrationTool.Views
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error While Initializing DataGrid For Components Process",ex);
-                ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Process Status");
+                ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), Properties.Resources.ComponentsProcessUserControl_MessageBox_Title);
             }
         }
 
@@ -141,9 +141,9 @@ namespace MigrationTool.Views
                     ProcessingIndicator.IsBusy = false;
                     ProcessCompleted?.Invoke(sender, e);
                     if (ex.Message == "PreRequisites Execution Failed")
-                        ErrorHandler.ShowErrorMsgWtLog(Window.GetWindow(this), "PreRequsites Failed", "One of the PreRequistes Failed.");
+                        ErrorHandler.ShowErrorMsgWtLog(Window.GetWindow(this), Properties.Resources.ComponentsProcessUserControl_PreReqFailed_Title, Properties.Resources.ComponentsProcessUserControl_PreReqFailed_Message);
                     else
-                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Process Failed", "Process Status", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), Properties.Resources.ComponentsProcessUserControl_ProcessFailed_Error, Properties.Resources.ComponentsProcessUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 });
             }
         }
@@ -252,7 +252,7 @@ namespace MigrationTool.Views
                     else
                     {
                         preReqProcessBar.Visibility = Visibility.Visible;
-                        processText.Text = $"Completed {preReqStatus.CompletedCount} of {preReqStatus.TotalCount} ";
+                        processText.Text = string.Format(Properties.Resources.ComponentsProcessUserControl_PreReqStatus_Message, preReqStatus.CompletedCount, preReqStatus.TotalCount);
                         preReqProcessBar.Maximum = preReqStatus.TotalCount;
                         preReqProcessBar.Value = preReqStatus.CompletedCount;
                     }
@@ -266,13 +266,13 @@ namespace MigrationTool.Views
             var failedCount = GridDataTable.AsEnumerable().Count(t => (t.Field<string>("Status") == Status.Failed.GetDescription()));
             if (failedCount > 0)
             {
-                message = $"Completed with Errors. {failedCount} of { GridDataTable.AsEnumerable().Count()} failed.";
-                ErrorHandler.ShowErrorMsgWtLog(Window.GetWindow(this), "Process Status", message);
+                message = string.Format(Properties.Resources.ComponentsProcessUserControl_ProcessFailed_Message, failedCount, GridDataTable.AsEnumerable().Count());
+                ErrorHandler.ShowErrorMsgWtLog(Window.GetWindow(this), Properties.Resources.ComponentsProcessUserControl_MessageBox_Title, message);
             }
             else
             {
-                message = "Completed Successfully.";
-                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), message, "Process Status", MessageBoxButton.OK, MessageBoxImage.Information);
+                message = Properties.Resources.ComponentsProcessUserControl_ProcessSuccess_Message;
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), message, Properties.Resources.ComponentsProcessUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Information);
             }        
             Logger.Instance.LogInfo(message);
         }

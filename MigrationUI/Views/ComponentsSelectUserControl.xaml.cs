@@ -44,7 +44,7 @@ namespace MigrationTool.Views
                 catch (InvalidOperationException ex)
                 {
                     Logger.Instance.LogError("Error Occurred", ex);
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Migration Report Tables Not Found.\nTerminating Application", "Components Selection", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), string.Format(Properties.Resources.ComponentsSelectUserControl_MigrationTabNotFound_Message,Environment.NewLine), Properties.Resources.ComponentsSelectUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Error);
                     Application.Current.Shutdown();
                 }
                 completedListBox.ItemsSource = SourceComponents.Where(t => completedList.Contains(t.Name)).Select(u => u.DisplayName);
@@ -59,12 +59,12 @@ namespace MigrationTool.Views
                 NotifySelectionChanged();
 
                 if(SourceComponents?.Count == 0)
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "All the Items has been migrated.\nNavigate to Previous Screen to skip this process.", "Components Selection", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), string.Format(Properties.Resources.ComponentsSelectUserControl_AllItemsCompleted_Message,Environment.NewLine), Properties.Resources.ComponentsSelectUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error Occurred While Initializing DataGrid For Components Selection", ex);
-                ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Components Selection");
+                ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), Properties.Resources.ComponentsSelectUserControl_MessageBox_Title);
             }
         }
         public ComponentsSelectUserControl()

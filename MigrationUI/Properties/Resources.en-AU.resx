@@ -162,8 +162,47 @@
   <data name="Cancel_Button_Text" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="ComponentsProcessUserControl_DisplayName_ColName" xml:space="preserve">
+    <value>Display Name</value>
+  </data>
+  <data name="ComponentsProcessUserControl_Group_ColName" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="ComponentsProcessUserControl_MessageBox_Title" xml:space="preserve">
+    <value>Process Status</value>
+  </data>
+  <data name="ComponentsProcessUserControl_Name_ColName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ComponentsProcessUserControl_PreReqFailed_Message" xml:space="preserve">
+    <value>One of the PreRequistes Failed.</value>
+  </data>
+  <data name="ComponentsProcessUserControl_PreReqFailed_Title" xml:space="preserve">
+    <value>PreRequsites Failed</value>
+  </data>
+  <data name="ComponentsProcessUserControl_PreReqStatus_Message" xml:space="preserve">
+    <value>Completed {0} of {1}</value>
+  </data>
   <data name="ComponentsProcessUserControl_PreRequisite_Busy_Text" xml:space="preserve">
     <value>Executing Prerequisites</value>
+  </data>
+  <data name="ComponentsProcessUserControl_ProcessFailed_Error" xml:space="preserve">
+    <value>Process Failed</value>
+  </data>
+  <data name="ComponentsProcessUserControl_ProcessFailed_Message" xml:space="preserve">
+    <value>Completed with Errors. {0} of {1} failed.</value>
+  </data>
+  <data name="ComponentsProcessUserControl_ProcessSuccess_Message" xml:space="preserve">
+    <value>Completed Successfully.</value>
+  </data>
+  <data name="ComponentsProcessUserControl_Progress_ColName" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="ComponentsProcessUserControl_Status_ColName" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ComponentsSelectUserControl_AllItemsCompleted_Message" xml:space="preserve">
+    <value>All the Items has been migrated.{0}Navigate to Previous Screen to skip this process.</value>
   </data>
   <data name="ComponentsSelectUserControl_CompDetails_Label" xml:space="preserve">
     <value>Completed Components</value>
@@ -176,6 +215,12 @@
   </data>
   <data name="ComponentsSelectUserControl_DeSelectAll_Button" xml:space="preserve">
     <value>Deselect All</value>
+  </data>
+  <data name="ComponentsSelectUserControl_MessageBox_Title" xml:space="preserve">
+    <value>Components Selection</value>
+  </data>
+  <data name="ComponentsSelectUserControl_MigrationTabNotFound_Message" xml:space="preserve">
+    <value>Migration Report Tables Not Found.{0}Terminating Application</value>
   </data>
   <data name="ComponentsSelectUserControl_SelectAll_Button" xml:space="preserve">
     <value>Select All</value>
@@ -216,6 +261,21 @@
   <data name="DatabaseConfigUserCntrl_UserName_Watermark" xml:space="preserve">
     <value>Enter User Name</value>
   </data>
+  <data name="DatabaseConfigUserControl_ConnectionFailed_Error" xml:space="preserve">
+    <value>Cannot Establish a Connection</value>
+  </data>
+  <data name="DatabaseConfigUserControl_InvalidPassword_Error" xml:space="preserve">
+    <value>Please enter a valid Password</value>
+  </data>
+  <data name="DatabaseConfigUserControl_InvalidServerName_Error" xml:space="preserve">
+    <value>Please enter a valid server name.</value>
+  </data>
+  <data name="DatabaseConfigUserControl_InvalidUserName_Error" xml:space="preserve">
+    <value>Please enter a valid User Name.</value>
+  </data>
+  <data name="DatabaseConfigUserControl_MessageBox_Title" xml:space="preserve">
+    <value>Database Connection</value>
+  </data>
   <data name="DatabaseSelectModal_Connect_Success_Text" xml:space="preserve">
     <value>Connection Successful.</value>
   </data>
@@ -228,6 +288,12 @@
   </data>
   <data name="DatabaseSelectModal_SelectDB_Error" xml:space="preserve">
     <value>Select a Database</value>
+  </data>
+  <data name="ErrorWithLog_Message" xml:space="preserve">
+    <value>{0} {1}Click Yes to View Log</value>
+  </data>
+  <data name="FatalErrorWithLog_Message" xml:space="preserve">
+    <value>Error Occurred. Terminating Application.{0}Click Yes to View Log</value>
   </data>
   <data name="IntroPage_Description" xml:space="preserve">
     <value>Migrate Legacy Data to New Database</value>
@@ -259,6 +325,9 @@
   <data name="SiteSelectUserControl_SelectedSites_Label" xml:space="preserve">
     <value>Selected Sites</value>
   </data>
+  <data name="SiteSelectUserControl_Status_Message" xml:space="preserve">
+    <value>{0} of {1} sites selected.</value>
+  </data>
   <data name="SourceConnectionPage_Description" xml:space="preserve">
     <value>Enter the Legacy database connection details.</value>
   </data>
@@ -276,5 +345,23 @@
   </data>
   <data name="ViewReportUserControl_Report_Busy_Text" xml:space="preserve">
     <value>Generating Report...</value>
+  </data>
+  <data name="Close_Text" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Error_Text" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Help_Text" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="IntroPage_ChangeLanguage_Message" xml:space="preserve">
+    <value>Do you want to change the language to {0} ?</value>
+  </data>
+  <data name="Wizard_CannotClose_Message" xml:space="preserve">
+    <value>Please wait for the process to complete.</value>
+  </data>
+  <data name="Wizard_Help_Message" xml:space="preserve">
+    <value>Contact Support for Help</value>
   </data>
 </root>

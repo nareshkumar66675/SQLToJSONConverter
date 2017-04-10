@@ -18,7 +18,7 @@ namespace MigrationTool.Helpers
         /// <param name="messageBoxTitle">Message Box Title</param>
         public static void ShowFatalErrorMsgWtLog(Window window,string messageBoxTitle)
         {
-            var result= Xceed.Wpf.Toolkit.MessageBox.Show(window, "Error Occurred. Terminating Application.\nClick Yes to View Log", messageBoxTitle, MessageBoxButton.YesNo, MessageBoxImage.Error);
+            var result= Xceed.Wpf.Toolkit.MessageBox.Show(window,string.Format(Properties.Resources.FatalErrorWithLog_Message,Environment.NewLine), messageBoxTitle, MessageBoxButton.YesNo, MessageBoxImage.Error);
 
             Logger.Instance.LogInfo("Application Terminated Abnormally");
 
@@ -36,7 +36,7 @@ namespace MigrationTool.Helpers
         /// <param name="message">Custom Message</param>
         public static void ShowErrorMsgWtLog(Window window, string messageBoxTitle,string message)
         {
-            var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, $"{message} \nClick Yes to View Log", messageBoxTitle, MessageBoxButton.YesNo, MessageBoxImage.Error);
+            var result = Xceed.Wpf.Toolkit.MessageBox.Show(window, string.Format(Properties.Resources.ErrorWithLog_Message, message,Environment.NewLine), messageBoxTitle, MessageBoxButton.YesNo, MessageBoxImage.Error);
 
             if (result == MessageBoxResult.Yes)
                 ShowLog();

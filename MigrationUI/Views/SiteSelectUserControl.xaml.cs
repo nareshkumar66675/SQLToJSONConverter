@@ -183,7 +183,7 @@ namespace MigrationTool.Views
         }
         private void UpdateStatusBar()
         {
-            statusTextBlock.Text = $"{selectedListBox.Items.Count} of {srcListBox.Items.Count + selectedListBox.Items.Count} sites selected.";
+            statusTextBlock.Text = string.Format(Properties.Resources.SiteSelectUserControl_Status_Message, selectedListBox.Items.Count, srcListBox.Items.Count + selectedListBox.Items.Count);
         }
     }
 }

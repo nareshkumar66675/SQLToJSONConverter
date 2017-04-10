@@ -196,11 +196,137 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Close_Text {
+            get {
+                return ResourceManager.GetString("Close_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Display Name.
+        /// </summary>
+        public static string ComponentsProcessUserControl_DisplayName_ColName {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_DisplayName_ColName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group.
+        /// </summary>
+        public static string ComponentsProcessUserControl_Group_ColName {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_Group_ColName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Process Status.
+        /// </summary>
+        public static string ComponentsProcessUserControl_MessageBox_Title {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_MessageBox_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string ComponentsProcessUserControl_Name_ColName {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_Name_ColName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the PreRequistes Failed..
+        /// </summary>
+        public static string ComponentsProcessUserControl_PreReqFailed_Message {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_PreReqFailed_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PreRequsites Failed.
+        /// </summary>
+        public static string ComponentsProcessUserControl_PreReqFailed_Title {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_PreReqFailed_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed {0} of {1}.
+        /// </summary>
+        public static string ComponentsProcessUserControl_PreReqStatus_Message {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_PreReqStatus_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Executing Prerequisites.
         /// </summary>
         public static string ComponentsProcessUserControl_PreRequisite_Busy_Text {
             get {
                 return ResourceManager.GetString("ComponentsProcessUserControl_PreRequisite_Busy_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Process Failed.
+        /// </summary>
+        public static string ComponentsProcessUserControl_ProcessFailed_Error {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_ProcessFailed_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed with Errors. {0} of {1} failed..
+        /// </summary>
+        public static string ComponentsProcessUserControl_ProcessFailed_Message {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_ProcessFailed_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed Successfully..
+        /// </summary>
+        public static string ComponentsProcessUserControl_ProcessSuccess_Message {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_ProcessSuccess_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Progress.
+        /// </summary>
+        public static string ComponentsProcessUserControl_Progress_ColName {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_Progress_ColName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string ComponentsProcessUserControl_Status_ColName {
+            get {
+                return ResourceManager.GetString("ComponentsProcessUserControl_Status_ColName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All the Items has been migrated.{0}Navigate to Previous Screen to skip this process..
+        /// </summary>
+        public static string ComponentsSelectUserControl_AllItemsCompleted_Message {
+            get {
+                return ResourceManager.GetString("ComponentsSelectUserControl_AllItemsCompleted_Message", resourceCulture);
             }
         }
         
@@ -237,6 +363,24 @@ namespace MigrationTool.Properties {
         public static string ComponentsSelectUserControl_DeSelectAll_Button {
             get {
                 return ResourceManager.GetString("ComponentsSelectUserControl_DeSelectAll_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Components Selection.
+        /// </summary>
+        public static string ComponentsSelectUserControl_MessageBox_Title {
+            get {
+                return ResourceManager.GetString("ComponentsSelectUserControl_MessageBox_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Migration Report Tables Not Found.{0}Terminating Application.
+        /// </summary>
+        public static string ComponentsSelectUserControl_MigrationTabNotFound_Message {
+            get {
+                return ResourceManager.GetString("ComponentsSelectUserControl_MigrationTabNotFound_Message", resourceCulture);
             }
         }
         
@@ -358,6 +502,51 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot Establish a Connection.
+        /// </summary>
+        public static string DatabaseConfigUserControl_ConnectionFailed_Error {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserControl_ConnectionFailed_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please enter a valid Password.
+        /// </summary>
+        public static string DatabaseConfigUserControl_InvalidPassword_Error {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserControl_InvalidPassword_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please enter a valid server name..
+        /// </summary>
+        public static string DatabaseConfigUserControl_InvalidServerName_Error {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserControl_InvalidServerName_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please enter a valid User Name..
+        /// </summary>
+        public static string DatabaseConfigUserControl_InvalidUserName_Error {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserControl_InvalidUserName_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database Connection.
+        /// </summary>
+        public static string DatabaseConfigUserControl_MessageBox_Title {
+            get {
+                return ResourceManager.GetString("DatabaseConfigUserControl_MessageBox_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connection Successful..
         /// </summary>
         public static string DatabaseSelectModal_Connect_Success_Text {
@@ -390,6 +579,51 @@ namespace MigrationTool.Properties {
         public static string DatabaseSelectModal_SelectDB_Error {
             get {
                 return ResourceManager.GetString("DatabaseSelectModal_SelectDB_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string Error_Text {
+            get {
+                return ResourceManager.GetString("Error_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} {1}Click Yes to View Log.
+        /// </summary>
+        public static string ErrorWithLog_Message {
+            get {
+                return ResourceManager.GetString("ErrorWithLog_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Occurred. Terminating Application.{0}Click Yes to View Log.
+        /// </summary>
+        public static string FatalErrorWithLog_Message {
+            get {
+                return ResourceManager.GetString("FatalErrorWithLog_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        public static string Help_Text {
+            get {
+                return ResourceManager.GetString("Help_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to change the language to {0} ?.
+        /// </summary>
+        public static string IntroPage_ChangeLanguage_Message {
+            get {
+                return ResourceManager.GetString("IntroPage_ChangeLanguage_Message", resourceCulture);
             }
         }
         
@@ -484,6 +718,15 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} of {1} sites selected..
+        /// </summary>
+        public static string SiteSelectUserControl_Status_Message {
+            get {
+                return ResourceManager.GetString("SiteSelectUserControl_Status_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter the Legacy database connection details..
         /// </summary>
         public static string SourceConnectionPage_Description {
@@ -534,6 +777,24 @@ namespace MigrationTool.Properties {
         public static string ViewReportUserControl_Report_Busy_Text {
             get {
                 return ResourceManager.GetString("ViewReportUserControl_Report_Busy_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait for the process to complete..
+        /// </summary>
+        public static string Wizard_CannotClose_Message {
+            get {
+                return ResourceManager.GetString("Wizard_CannotClose_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contact Support for Help.
+        /// </summary>
+        public static string Wizard_Help_Message {
+            get {
+                return ResourceManager.GetString("Wizard_Help_Message", resourceCulture);
             }
         }
     }

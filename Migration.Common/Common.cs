@@ -127,6 +127,15 @@ namespace Migration.Common
                 }
                 private set { }
             }
+            public static List<string> Cultures
+            {
+                get
+                {
+                    var culture=ConfigurationManager.AppSettings.Get("Cultures").Split(';').ToList();
+                    return culture != null && culture.Count() > 0 ? culture : new List<string> { "en-AU"};
+                }
+                private set { }
+            }
         }
 
         public static class Queries

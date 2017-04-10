@@ -923,7 +923,7 @@
       SELECT gSltMap.ASD_STD_NEW_ID as  Id,
       ---ASSET ID -----
       gSltMap.ASD_STD_NEW_ID as AssetId_Id,
-       10 as AssetId_AssetTypeDefinitionId,
+      10 as AssetId_AssetTypeDefinitionId,
       ---------SITE----------
       isnull(Site_SiteId, SITE_NEW_ID) as Site_SiteId,
       isnull(Site_SiteName, SITE_LONG_NAME) as Site_SiteName,
@@ -942,10 +942,10 @@
       ComponentKey as Components_ComponentKey,
       ComponentValue as Components_ComponentValue,
       ComponentCode as Components_ComponentCode,
-         --ASST_OPTN_ORDER,  
-         --Seq_Id ,
+      --ASST_OPTN_ORDER,
+      --Seq_Id ,
       ------------InlineAssets------------
-        --gSltMap.game_id,
+      --gSltMap.game_id,
       InlineAssets_Id,
       AssetId_AssetTypeDefinitionId as InlineAssets_AssetId_AssetTypeDefinitionId,
       AssetId_Id as InlineAssets_AssetId_Id,
@@ -963,9 +963,9 @@
       isnull(TypeCodeName, TypeCode_Name) as TypeCode_TypeCodeName
       FROM (SELECT ASD.ASD_STD_ID,ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
       fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
-      CASE WHEN AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes' 
-      else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE, 
-       GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_LONG_NAME,
+      CASE WHEN AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes'
+      else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE,
+      GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_LONG_NAME,
       gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
       tycod_number as TypeCode_Id, tycod_name as TypeCode_Name
       FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -978,20 +978,20 @@
       JOIN [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
       JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 and AD.ASD_STD_ID = ASD.ASD_STD_ID
       left join gam.[OPTION] as optn on optn.[OPTN_ID] = AST_OPTION_ID
-      left join gam.ASSET_DEFINITION as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID 
+      left join gam.ASSET_DEFINITION as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID
       and optn.[OPTN_ID] = astDfn.[ASTDFN_OPTN_ID]
-      left join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on 
+      left join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on
       fastDefn.[ASSET_NAME] = AST.asst_name and fastDefn.[OPTION_CODE] = optn.OPTN_CODE
       left join [GAM].[TYPE_CODE_MASTER] as tcm on tcm.tycod_id = [ASD_TCOD_ID]
-      WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 AND ASD.ASD_ASST_ID = 1 
-      and [OPTION_ID] is not null and st.SITE_NUMBER in ({0})
-      ) as Ast_Optn
+      WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 AND ASD.ASD_ASST_ID = 1
+      and [OPTION_ID] is not null     ) as Ast_Optn
       FULL JOIN MIGRATION.GAM_ASSET_COMP_VALUES AS AST_COMP ON AST_OPTN.ASD_STD_ID = AM_LEGACYID and Ast_Optn.ASST_OPTN_ORDER = AST_COMP.Seq_id
       FULL JOIN MIGRATION.GAM_GAMES_DETAILS as gSltMap  on [GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
       and Ast_Optn.ASST_OPTN_ORDER = gSltMap.Ast_Gme_Seq
-      --where 1=1
+      where 1=1 and isnull(Site_SiteNumber, SITE_NUMBER) in ( {0} )
       --and gSltMap.ASD_STD_NEW_ID = 8482
       order by Ast_Optn.asd_std_id, game_id --=209907247000000408
+
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />

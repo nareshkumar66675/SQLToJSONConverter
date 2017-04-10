@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
+
 namespace MigrationTool.Views
 {
     /// <summary>
@@ -60,7 +61,7 @@ namespace MigrationTool.Views
                         if (rsltString == "")
                         {
                             Logger.Instance.LogInfo("Cannot Establish a Connection");
-                            Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Cannot Establish a Connection", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Error);
+                            Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), Properties.Resources.DatabaseConfigUserControl_ConnectionFailed_Error, Properties.Resources.DatabaseConfigUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                         else
                         {
@@ -88,7 +89,7 @@ namespace MigrationTool.Views
                     catch (Exception ex)
                     {
                         Logger.Instance.LogError("Error occurred while selecting database", ex);
-                        ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), "Database Connection");
+                        ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this), Properties.Resources.DatabaseConfigUserControl_MessageBox_Title);
                     }
                 };
                 worker.RunWorkerAsync();
@@ -108,19 +109,19 @@ namespace MigrationTool.Views
         {
             if(string.IsNullOrWhiteSpace(serverNameTextBox.Text))
             {
-                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Please enter a valid server name.", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), Properties.Resources.DatabaseConfigUserControl_InvalidServerName_Error, Properties.Resources.DatabaseConfigUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
             else if((AuthenticationType)AuthTypeComboBox.SelectedItem == AuthenticationType.SQLServer)
             {
                 if(string.IsNullOrWhiteSpace(loginTextBox.Text))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Please enter a valid User Name.", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), Properties.Resources.DatabaseConfigUserControl_InvalidUserName_Error, Properties.Resources.DatabaseConfigUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return false;
                 }
                 else if(string.IsNullOrWhiteSpace(passwordBox.Text))
                 {
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Please enter a valid Password", "Database Connection", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), Properties.Resources.DatabaseConfigUserControl_InvalidPassword_Error, Properties.Resources.DatabaseConfigUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return false;
                 }
             }
