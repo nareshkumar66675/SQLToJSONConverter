@@ -91,7 +91,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\DatabaseHelper.cs" />
-    <Compile Include="Helpers\Enums.cs" />
+    <Compile Include="Helpers\Common.cs" />
     <Compile Include="Helpers\ErrorHandler.cs" />
     <Compile Include="Properties\Resources.en-AU.Designer.cs">
       <DependentUpon>Resources.en-AU.resx</DependentUpon>

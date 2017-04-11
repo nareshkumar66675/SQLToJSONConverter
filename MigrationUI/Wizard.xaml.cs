@@ -48,8 +48,7 @@ namespace MigrationTool
             //MigrationTool.Properties.Resources.
             InitializeComponent();
             Logger.Instance.LogInfo("Data Migration Tool Initialized.");
-            CultureSelectComboBox.ItemsSource = AppSettings.Cultures;
-            CultureSelectComboBox.SelectedItem = Thread.CurrentThread.CurrentUICulture.Name;
+            InitializeCultureComboBox();
             #region EventsRegistration
             AuthCompSelectCntrl.OnComponentsSelectionChanged += AuthCompSelectCntrl_OnComponentsSelectionChanged;
             AssetsCompSelectCntrl.OnComponentsSelectionChanged += AssetsCompSelectCntrl_OnComponentsSelectionChanged;
@@ -357,27 +356,54 @@ namespace MigrationTool
 
             return statusIcon;
         }
+        private void InitializeCultureComboBox()
+        {
+            try
+            {
+                List<string> cultureNames = new List<string>();
+                AppSettings.Cultures.ForEach(item => cultureNames.Add(CultureInfo.GetCultureInfo(item).DisplayName));
+                CultureSelectComboBox.ItemsSource = cultureNames;
+                CultureSelectComboBox.SelectedItem = Thread.CurrentThread.CurrentUICulture.DisplayName;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error Occurred while changing Culture",ex);
+            }
+        }
         #endregion
 
         private void CultureSelectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var cul = (string)CultureSelectComboBox.SelectedItem;
-            if (Thread.CurrentThread.CurrentUICulture.Name != cul)
+            try
             {
-                var rslt=Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), string.Format(Properties.Resources.IntroPage_ChangeLanguage_Message,cul), "Close", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
-                if(rslt == MessageBoxResult.Yes)
+                var cultureDispName = (string)CultureSelectComboBox.SelectedItem;
+                if (Thread.CurrentThread.CurrentUICulture.DisplayName != cultureDispName)
                 {
-                    // Run the program again
-                    Process.Start(Application.ResourceAssembly.Location, cul);
+                    var rslt = Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), string.Format(Properties.Resources.IntroPage_ChangeLanguage_Message, cultureDispName), Properties.Resources.Close_Text, MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
 
-                    // Close the Current one
-                    Process.GetCurrentProcess().Kill();
-                }
-                else
-                {
-                    CultureSelectComboBox.SelectedItem = Thread.CurrentThread.CurrentUICulture.Name;
-                }
+                    if (rslt == MessageBoxResult.Yes)
+                    {
+                        List<CultureInfo> cultures = new List<CultureInfo>();
+                        AppSettings.Cultures.ForEach(item => cultures.Add(CultureInfo.GetCultureInfo(item)));
 
+                        var name = cultures.Where(t => t.DisplayName == cultureDispName).FirstOrDefault().Name;
+
+                        // Run the program again
+                        Process.Start(Application.ResourceAssembly.Location, name);
+
+                        // Close the Current one
+                        Process.GetCurrentProcess().Kill();
+                    }
+                    else
+                    {
+                        CultureSelectComboBox.SelectedItem = Thread.CurrentThread.CurrentUICulture.DisplayName;
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Error Occurred while changing Culture", ex);
             }
         }
     }

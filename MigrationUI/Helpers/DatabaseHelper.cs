@@ -13,6 +13,14 @@ namespace MigrationTool.Helpers
 {
     public static class DatabaseHelper
     {
+        /// <summary>
+        /// Validates the Server Details and Generates a Connection String
+        /// </summary>
+        /// <param name="serverName">SQL Server Name</param>
+        /// <param name="user">Login Name</param>
+        /// <param name="password">Password</param>
+        /// <param name="type">Authentication Type</param>
+        /// <returns>If Success, Connection String else <see cref="string.Empty"/></returns>
         public static string CheckAndGenerateConnectionString(string serverName, string user, string password, AuthenticationType type)
         {
 
@@ -33,46 +41,71 @@ namespace MigrationTool.Helpers
             }
             catch (SqlException)
             {
-                return "";
+                return string.Empty;
             }
 
         }
+        /// <summary>
+        /// Returns Server Name from Connection String
+        /// </summary>
+        /// <param name="connectionString">Connection String</param>
+        /// <returns>Server Name</returns>
         public static string GetServerName(string connectionString)
         {
             return new SqlConnectionStringBuilder(connectionString).DataSource;
         }
+        /// <summary>
+        /// Returns Database Name from Connection String
+        /// </summary>
+        /// <param name="connectionString">Connection String</param>
+        /// <returns>Database Name</returns>
         public static string GetDatabaseName(string connectionString)
         {
             return new SqlConnectionStringBuilder(connectionString).InitialCatalog;
         }
+        /// <summary>
+        /// Add Database to Connection String
+        /// </summary>
+        /// <param name="connectionString">Connection String</param>
+        /// <param name="databaseName">Database Name</param>
+        /// <returns>Connection String</returns>
         public static string AddDatabaseToConnString(string connectionString, string databaseName)
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString);
             builder.InitialCatalog = databaseName;
             return builder.ConnectionString;
         }
+        /// <summary>
+        /// Retrieves all Active Database in Server
+        /// </summary>
+        /// <param name="connectionString">Connection String</param>
+        /// <returns>List of Databases</returns>
         public static List<string> GetDatabaseList(string connectionString)
         {
-            List<string> list = new List<string>();
+            List<string> databases = new List<string>();
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 con.Open();
 
-                using (SqlCommand cmd = new SqlCommand("SELECT name from sys.databases where state_desc<>'OFFLINE'", con))
+                using (SqlCommand cmd = new SqlCommand(Queries.GETALLACTIVEDBS, con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
-                            list.Add(dr[0].ToString());
+                            databases.Add(dr[0].ToString());
                         }
                     }
                 }
             }
-            return list;
+            return databases;
 
         }
+        /// <summary>
+        /// Retrieves all Sites from Legacy
+        /// </summary>
+        /// <returns>Site Id & Site Name</returns>
         public static Dictionary<string, string> GetAllSitesFromLegacy()
         {
             Dictionary<string, string> SiteList = new Dictionary<string, string>();
@@ -80,7 +113,7 @@ namespace MigrationTool.Helpers
             {
                 con.Open();
 
-                using (SqlCommand cmd = new SqlCommand("SELECT SITE_NUMBER,Site_Long_Name FROM GAM.SITE order by Site_Long_Name", con))
+                using (SqlCommand cmd = new SqlCommand(Queries.GETALLACTIVESITES, con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
                     {
@@ -93,7 +126,11 @@ namespace MigrationTool.Helpers
             }
             return SiteList;
         }
-
+        /// <summary>
+        /// Retrieves Report Summary of a particular Group
+        /// </summary>
+        /// <param name="group">Group Type</param>
+        /// <returns>Report Data</returns>
         internal static DataTable GetReportSummary(GroupType group)
         {
             DataTable table = new DataTable();
@@ -104,23 +141,13 @@ namespace MigrationTool.Helpers
             table.Columns.Add(new DataColumn("Unique Records"));
             table.Columns.Add(new DataColumn("Inserted Records"));
 
-            string query = @"SELECT Component_Name,
-                                            MAX(SiteCount) as SiteCount,
-                                            SUM (Tot_Rcrds_InLegacy) as Legacy ,
-                                            SUM(Tot_Unique_RcrdsInLegacy) as [Unique],
-                                            SUM(Inserted_Rcrds_InNew) as [InsertedRcrds]
-                             FROM Migration.Report LEFT JOIN (SELECT SiteGroupID, COUNT(SiteID) as SiteCount FROM Migration.SiteGroup GROUP BY SiteGroupID) as Sg
-							 on Report.SiteGroupID=sg.SiteGroupID
-                             WHERE [Status]='Success'
-                             GROUP BY Component_Name,Report.SiteGroupID";
-
             if (!string.IsNullOrWhiteSpace(ConnectionStrings.GetConnectionString(group)))
             {
                 using (SqlConnection con = new SqlConnection(ConnectionStrings.GetConnectionString(group)))
                 {
                     con.Open();
 
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand(Queries.GETREPORTSUMMARY, con))
                     {
                         using (IDataReader dr = cmd.ExecuteReader())
                         {
@@ -140,7 +167,11 @@ namespace MigrationTool.Helpers
 
             return table;
         }
-
+        /// <summary>
+        /// Retrieves all Reports.
+        /// Union of all Groups by invoking <see cref="GetReportSummary(GroupType)"/>
+        /// </summary>
+        /// <returns>Overall Report Data</returns>
         internal static DataTable GetAllReports()
         {
             //Get All Reports From Databases asynchronously
@@ -160,20 +191,23 @@ namespace MigrationTool.Helpers
 
             return table;
         }
-
+        /// <summary>
+        /// Retrieves all migrated sites
+        /// </summary>
+        /// <param name="connectionString">Connection String</param>
+        /// <returns>List of Migrated Site Id's</returns>
         public static List<string> GetMigratedSites(string connectionString)
         {
             List<string> SiteList = new List<string>();
 
-            if (!CheckIfTableExists(connectionString, "Migration.SiteGroup"))
+            if (!CheckIfTableExists(connectionString, Queries.SITEGRPTABNAME))
                 return SiteList;
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 con.Open();
-                string query = @"SELECT Distinct SiteID FROM [Migration].[SiteGroup] grp 
-                                LEFT JOIN[Migration].[Report] rpt on grp.SiteGroupID = rpt.SiteGroupID WHERE rpt.[Status] = 'Success'";
-                using (SqlCommand cmd = new SqlCommand(query, con))
+
+                using (SqlCommand cmd = new SqlCommand(Queries.GETMIGRATEDSITES, con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
                     {
@@ -186,6 +220,12 @@ namespace MigrationTool.Helpers
             }
             return SiteList;
         }
+        /// <summary>
+        /// Retrieves Completed Components
+        /// </summary>
+        /// <param name="group">Group Type</param>
+        /// <param name="Sites">Selected Sites</param>
+        /// <returns>List of Completed Compoennts</returns>
         public static List<string> GetCompletedComponents(GroupType group, List<string> Sites)
         {
             List<string> completedComp = new List<string>();
@@ -195,15 +235,14 @@ namespace MigrationTool.Helpers
                 string conString = string.Empty;
                 if (group == GroupType.AUTH)
                 {
-                    query = "SELECT DISTINCT Component_Name from Migration.Report where Status = 'Success'";
+                    query = Queries.GETCOMPITEMSWITHOUTSITE;
                     conString = Common.ConnectionStrings.AuthConnectionString;
                 }
                 else if (group == GroupType.ASSET)
                 {
-                    query = @"SELECT DISTINCT Component_Name FROM Migration.Report rpt
-                                LEFT JOIN Migration.SiteGroup grp ON rpt.SiteGroupID=grp.SiteGroupID 
-                                WHERE Status='Success' ";
-                    conString = Common.ConnectionStrings.AssetConnectionString;
+                    query = Queries.GETCOMPITEMSWITHSITE;
+                    conString = ConnectionStrings.AssetConnectionString;
+
                     if (Sites != null && Sites.Count > 0)
                         query += " AND  (rpt.SiteGroupID IS NULL  OR SiteID IN (" + string.Join(",", Sites) + "))";
                     else
@@ -231,17 +270,22 @@ namespace MigrationTool.Helpers
             }
             return completedComp;
         }
+        /// <summary>
+        /// To Check if table exists in a given Database
+        /// </summary>
+        /// <param name="connectionString">Connection String</param>
+        /// <param name="tableName">Table Name</param>
+        /// <returns></returns>
         public static bool CheckIfTableExists(string connectionString, string tableName)
         {
             bool exists;
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 con.Open();
-                string query = @"SELECT CASE WHEN EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=@Schema AND TABLE_NAME = @TableName)) THEN 1 ELSE 0 END";
-                var temp = tableName.Split('.');
-                string schema = temp.Length == 2 ? temp[0] : "dbo";
-                string tabName = temp.Length == 2 ? temp[1] : temp[0];
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                var fullTabName = tableName.Split('.');
+                string schema = fullTabName.Length == 2 ? fullTabName[0] : "dbo";
+                string tabName = fullTabName.Length == 2 ? fullTabName[1] : fullTabName[0];
+                using (SqlCommand cmd = new SqlCommand(Queries.CHECKTABLEEXISTS, con))
                 {
                     cmd.Parameters.Add(new SqlParameter("@Schema", schema));
                     cmd.Parameters.Add(new SqlParameter("@TableName", tabName));

@@ -356,7 +356,7 @@
     <value>Help</value>
   </data>
   <data name="IntroPage_ChangeLanguage_Message" xml:space="preserve">
-    <value>Do you want to change the language to {0} ?</value>
+    <value>Do you wish to change the language to {0} ?</value>
   </data>
   <data name="Wizard_CannotClose_Message" xml:space="preserve">
     <value>Please wait for the process to complete.</value>

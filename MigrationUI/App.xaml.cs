@@ -18,9 +18,13 @@ namespace MigrationTool
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            //Set Defualt Culture to en-AU
             string culture = "en-AU";
-            if (e.Args != null && e.Args.Count() > 0)
-                culture = e.Args[0];
+            if (e.Args != null && e.Args.Count() > 0 )
+            {
+                if(e.Args[0] != null && !string.IsNullOrWhiteSpace(e.Args[0]))
+                    culture = e.Args[0];
+            }
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(culture);

@@ -619,7 +619,7 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you want to change the language to {0} ?.
+        ///   Looks up a localized string similar to Do you wish to change the language to {0} ?.
         /// </summary>
         public static string IntroPage_ChangeLanguage_Message {
             get {

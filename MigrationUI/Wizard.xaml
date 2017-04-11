@@ -55,11 +55,13 @@
                                    Text="{x:Static res:Resources.ToolName}"
                                    TextAlignment="Center" />
                         <ComboBox x:Name="CultureSelectComboBox"
-                                  Width="79"
+                                  Width="128"
                                   Height="23"
-                                  Margin="412,357,0,0"
+                                  Margin="363,357,0,0"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Top"
+                                  FontSize="12"
+                                  FontWeight="Light"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   ScrollViewer.VerticalScrollBarVisibility="Disabled"
                                   SelectionChanged="CultureSelectComboBox_SelectionChanged">
