@@ -20,6 +20,14 @@ namespace Migration.Test.Generate
         [SetUp]
         public void GenerateInitailze()
         {
+
+            #region SetDirectory
+            var binDir = Path.GetDirectoryName(typeof(GenerateTest).Assembly.Location);
+            Environment.CurrentDirectory = binDir;
+
+            Directory.SetCurrentDirectory(binDir); 
+            #endregion
+
             #region ComponentsDeclaration
             var compList = new List<Component>();
             //Component 1
@@ -96,7 +104,7 @@ namespace Migration.Test.Generate
             #endregion
 
             #region DatabaseDeclaration
-            string file = Path.Combine(Directory.GetCurrentDirectory() + @"\Migration.Test\TestDatabase.mdf");
+            string file = Path.Combine(Directory.GetCurrentDirectory() , "TestDatabase.mdf");
 
             Common.Common.ConnectionStrings.LegacyConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = """ + file + @"""; Integrated Security = True;"; 
             #endregion
@@ -106,6 +114,8 @@ namespace Migration.Test.Generate
         {
             Assert.IsInstanceOf(typeof(GenericGenerator), GenerateFactory.GetGenerator("default"));
             Assert.IsInstanceOf(typeof(GenericGeneratorWtParams), GenerateFactory.GetGenerator("DEFAULTWITHPARAMS"));
+            Assert.IsInstanceOf(typeof(AuthReportData), GenerateFactory.GetGenerator("AUTHDATA"));
+            Assert.IsInstanceOf(typeof(AssetReportData), GenerateFactory.GetGenerator("ASSETDATA"));
             Assert.IsInstanceOf(typeof(GenericGenerator), GenerateFactory.GetGenerator("XXX"));
         }
         [Test(Description = "To Check Default Generate type - GenericGenerator")]

@@ -14,6 +14,11 @@ using System.Threading.Tasks;
 
 namespace Migration.Test
 {
+    public class TestEntity
+    {
+        public int Id { get; set; }
+        public Dictionary<string,string> Data { get; set; }
+    }
     class Program
     {
         static void Main(string[] args)
@@ -66,18 +71,30 @@ namespace Migration.Test
             //       }
             //   }
 
-            Migration.Generate.Generate gen = new Migration.Generate.Generate();
-            //await gen.Start(Configuration.Configurator.Components, null);
-            Task a = gen.Start(Migration.Configuration.Configurator.SourceComponents, null);
-            //Task.Run(()=>gen.Start(Configuration.Configurator.Components, null));
-            a.Wait();
-            Persistence.Persist per = new Persistence.Persist();
-            Task b =  per.Start(null);
-            b.Wait();
+            //Migration.Generate.Generate gen = new Migration.Generate.Generate();
+            ////await gen.Start(Configuration.Configurator.Components, null);
+            //Task a = gen.Start(Migration.Configuration.Configurator.SourceComponents, null);
+            ////Task.Run(()=>gen.Start(Configuration.Configurator.Components, null));
+            //a.Wait();
+            //Persistence.Persist per = new Persistence.Persist();
+            //Task b =  per.Start(null);
+            //b.Wait();
 
             //AuthFacade fc = new AuthFacade();
             //fc.Start(null);
 
+            IDictionary<string, object> temp = new Dictionary<string, object>();
+            temp.Add("Id", "1");
+            
+            IDictionary<string, string> temp1 = new Dictionary<string, string>();
+            //temp1.Add("1", "2");
+            //temp1.Add("2", "2");
+            //temp1.Add("3", "2");
+            temp.Add("Data_Key_$", new List<string>() { "1","2"});
+            temp.Add("Data_Value_$", new List<string>() { "1", "2" });
+            //temp.Add("$.Data_Value", "dfvc");
+
+            var t=Slapper.AutoMapper.Map<TestEntity>(temp);
 
         }
     }

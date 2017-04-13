@@ -326,36 +326,7 @@ namespace MigrationTool
         }
         #endregion
 
-        #region Helpers
-        private bool ValidateConnectionString(string connectionString)
-        {
-            if (!string.IsNullOrEmpty(connectionString))
-            {
-                return true;
-            }
-            return false;
-        }
-        private void AddUserControlToPage(WizardPage page, UserControl cntrl)
-        {
-            Grid tempGrid = new Grid();
-            if (page.Content == null)
-            {
-                tempGrid.Children.Add(cntrl);
-                page.Content = tempGrid;
-            }
-        }
-        private BitmapImage GetDBStatusImage(string connString)
-        {
-            BitmapImage statusIcon = new BitmapImage();
-            statusIcon.BeginInit();
-            if (string.IsNullOrWhiteSpace(connString))
-                statusIcon.UriSource = new Uri(crossImagePath, UriKind.Relative);
-            else
-                statusIcon.UriSource = new Uri(tickImagePath, UriKind.Relative);
-            statusIcon.EndInit();
-
-            return statusIcon;
-        }
+        #region CultureChange
         private void InitializeCultureComboBox()
         {
             try
@@ -367,11 +338,9 @@ namespace MigrationTool
             }
             catch (Exception ex)
             {
-                Logger.Instance.LogError("Error Occurred while changing Culture",ex);
+                Logger.Instance.LogError("Error Occurred while changing Culture", ex);
             }
         }
-        #endregion
-
         private void CultureSelectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -405,6 +374,39 @@ namespace MigrationTool
             {
                 Logger.Instance.LogError("Error Occurred while changing Culture", ex);
             }
+        } 
+        #endregion
+
+        #region Helpers
+        private bool ValidateConnectionString(string connectionString)
+        {
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                return true;
+            }
+            return false;
         }
+        private void AddUserControlToPage(WizardPage page, UserControl cntrl)
+        {
+            Grid tempGrid = new Grid();
+            if (page.Content == null)
+            {
+                tempGrid.Children.Add(cntrl);
+                page.Content = tempGrid;
+            }
+        }
+        private BitmapImage GetDBStatusImage(string connString)
+        {
+            BitmapImage statusIcon = new BitmapImage();
+            statusIcon.BeginInit();
+            if (string.IsNullOrWhiteSpace(connString))
+                statusIcon.UriSource = new Uri(crossImagePath, UriKind.Relative);
+            else
+                statusIcon.UriSource = new Uri(tickImagePath, UriKind.Relative);
+            statusIcon.EndInit();
+
+            return statusIcon;
+        }
+        #endregion
     }
 }

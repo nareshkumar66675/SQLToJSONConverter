@@ -18,10 +18,7 @@ namespace Migration.Generate.Generators
         /// </summary>
         /// <param name="componentName">Component Name</param>
         /// <returns>Query</returns>
-        public virtual string GetSourceQuery(string componentName)
-        {
-            return Configuration.Configurator.GetSourceByComponentName(componentName);
-        }
+        public virtual string GetSourceQuery(string componentName) => Configuration.Configurator.GetSourceByComponentName(componentName);
         /// <summary>
         /// Generates Entities from Old Data and adds it to the Process Queue
         /// </summary>

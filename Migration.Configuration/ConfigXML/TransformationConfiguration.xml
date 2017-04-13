@@ -693,7 +693,7 @@
 		LEFT JOIN MIGRATION.VIEW_MANUFACTURE AS MNF ON MNF.display_name = TYP.MANUFACTURER 
 		LEFT JOIN migration.VIEW_MODEL AS MDL ON MDL.DISPLAY_NAME = TYP.MODEL and mnf_seq = MDL_seq
 		LEFT JOIN migration.VIEW_MODEL_TYPE AS MDLTYPE ON MDLTYPE.DISPLAY_NAME = TYP.ModelType and mnf_seq = MDL_TYP_SEQ
-		where Id between 2 and 150
+		--where Id between 2 and 150
     </Source>
     <Destination>[Components].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id"  />
@@ -864,12 +864,13 @@
       --------TypeCodeOption------
       ---------Options------------
       [OPTION_ID] as TypeCodeOption_Options_OptionId,
-	  CASE WHEN TYCV_OPTN_VALUE = 'FLAG.NO' then 'No'
+	  CASE WHEN [OPTION_ID] is NULL THEN NULL ELSE 
+	  (CASE WHEN TYCV_OPTN_VALUE = 'FLAG.NO' then 'No'
 		   when TYCV_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
 		   WHEN TYCV_OPTN_VALUE = 'FLAG.YES' then 'Yes' 
 		   when TYCV_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.NORMAL' then 'Normal'
 		   when TYCV_OPTN_VALUE = 'VALIDATION.SYSTEM' then 'System'
-		   else TYCV_OPTN_VALUE end as TypeCodeOption_Options_Value,
+		   else TYCV_OPTN_VALUE end) END as TypeCodeOption_Options_Value,
       ---------ComponentOptions---------
 	  CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 22002 
 		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 22063 

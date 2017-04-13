@@ -18,19 +18,7 @@ namespace Migration.PreRequisite.Facades
             _authPreRequisites.AddRange(new LegacyFacade().PreRequisites);
             _authPreRequisites.Add(new ExecuteScriptPreRequisite("AuthStaticData", _connectionString));
         }
-        public override FacadeType Type
-        {
-            get
-            {
-                return FacadeType.Auth;
-            }
-        }
-        public override List<IPreRequisite> PreRequisites
-        {
-            get
-            {
-                return _authPreRequisites;
-            }
-        }
+        public override FacadeType Type => FacadeType.Auth;
+        public override List<IPreRequisite> PreRequisites => _authPreRequisites;
     }
 }

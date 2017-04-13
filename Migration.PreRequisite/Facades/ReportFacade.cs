@@ -8,29 +8,17 @@ using static Migration.Common.Common;
 
 namespace Migration.PreRequisite.Facades
 {
-    class ReportFacade:AbstractPreRequisite
+    public class ReportFacade:AbstractPreRequisite
     {
-        private List<IPreRequisite> _historyPreRequisites = new List<IPreRequisite>();
+        private List<IPreRequisite> _reportPreRequisites = new List<IPreRequisite>();
         private string _connectionString = ConnectionStrings.ReportConnectionString;
         public ReportFacade()
         {
-            _historyPreRequisites.Add(new ExecuteScriptPreRequisite("NewMigrationTables", _connectionString));
-            _historyPreRequisites.Add(new ExecuteScriptPreRequisite("ReportTruncateTables", _connectionString));
+            _reportPreRequisites.Add(new ExecuteScriptPreRequisite("NewMigrationTables", _connectionString));
+            _reportPreRequisites.Add(new ExecuteScriptPreRequisite("ReportTruncateTables", _connectionString));
         }
-        public override FacadeType Type
-        {
-            get
-            {
-                return FacadeType.Report;
-            }
-        }
+        public override FacadeType Type => FacadeType.Report;
 
-        public override List<IPreRequisite> PreRequisites
-        {
-            get
-            {
-                return _historyPreRequisites;
-            }
-        }
+        public override List<IPreRequisite> PreRequisites => _reportPreRequisites;
     }
 }

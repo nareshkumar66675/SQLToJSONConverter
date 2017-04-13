@@ -17,13 +17,8 @@ namespace Migration.PreRequisite.PreRequisites
             _name = name;
             _connectionString = connString;
         }
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-        }
+        public string Name => _name;
+
         public bool Execute()
         {
             //Get Script File

@@ -116,6 +116,7 @@ SiteNumber bigint,
 SiteName nvarchar(128),
 OrgId int,
 OrgName nvarchar(128),
+ModelName nvarchar(128),
 Seq_Id int,
 ComponentId nvarchar(128),
 ComponentName nvarchar(128),
@@ -146,7 +147,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---sequenceId----
 1 as Seq_Id,
 -- Area --
@@ -164,9 +165,11 @@ JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
 JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
-join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.AREA AS AR ON AR.IS_DELETED = 0 AND AR.AREA_ID = ASD.ASD_AREA_ID
 left join migration.gam_area as gar on gar.[AREA_LEGCY_ID] = ASD.ASD_AREA_ID
+
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
 Order by gsd.ASD_STD_NEW_ID
@@ -178,7 +181,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 2 as Seq_Id,
 -- Zone --
@@ -197,6 +200,7 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ZONE AS ZN ON ZN.IS_DELETED = 0 AND ZN.ZONE_ID = ASD.ASD_ZONE_ID
 left join migration.gam_zone as gzn on gzn.[AREA_LEGCY_ID] = ASD.ASD_ZONE_ID
 left join migration.GAM_AREA as gar on gar.[AREA_LEGCY_ID] = ASD.ASD_AREA_ID
@@ -210,7 +214,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 3 as Seq_Id,
 -- Bank --
@@ -229,6 +233,7 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.BANK AS BK ON bk.IS_DELETED = 0 AND BK.BANK_ID = ASD.ASD_BANK_ID
 left join migration.gam_bank as gbk on gbk.[AREA_LEGCY_ID] = ASD.ASD_BANK_ID
 left join migration.GAM_AREA as gar on gar.[AREA_LEGCY_ID] = ASD.ASD_AREA_ID
@@ -242,7 +247,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 4 as Seq_Id,
 -- Manufacturer --
@@ -262,6 +267,7 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 JOIN [MIGRATION].[GAM_PROPERTY] AS GPT ON GPT.[PROP_LEGCY_ID] = PT.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
 LEFT JOIN [MIGRATION].[GAM_MANUFACTURER] AS GMNF ON MNF.MANF_ID = GMNF.MNF_LEGCY_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
@@ -276,7 +282,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 5 as Seq_Id,
 --Model Type--
@@ -295,6 +301,7 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 126 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 LEFT JOIN [GAM].MODEL_TYPE AS MTYP ON  MTYP.IS_DELETED = 0 AND  MDLTYP_LONG_NAME = AST_OPTN_VALUE
 left join [MIGRATION].[GAM_MODEL_TYPE] as gmty on gmty.MDLTYPE_LEGCY_ID = [MDLTYP_ID]
@@ -309,14 +316,15 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 6 as Seq_Id,
 --Model--
 '22005' as ComponentId,
 cast('Model' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-cast('0_2_22005' as nvarchar) as ComponentKey,
+'0_'+CAST(MDL_NEW_ID AS NVARCHAR)+'_22005' as ComponentKey,
+--cast('0_2_22005' as nvarchar) as ComponentKey,
 '22005' as ComponentInstanceId,
 'MODEL' as ComponentCode 
 
@@ -330,6 +338,7 @@ JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
 JOIN GAM.ASSET_DETAIL AS AD ON AD.IS_DELETED = 0 AND  ad.[AST_OPTION_ID] = 108 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 LEFT JOIN [GAM].MODEL AS MDL ON MDL.IS_DELETED = 0 AND [MDL_LONG_NAME] = AST_OPTN_VALUE
+LEFT JOIN MIGRATION.GAM_MODEL AS GDML ON MDL.MDL_ID = GDML.MDL_LEGCY_ID --MDL_NEW_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
 GO
@@ -341,7 +350,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 7 as Seq_Id,
 
@@ -349,7 +358,7 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
 '22011' as ComponentId,
 cast('Denomination' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-cast('0_1_1' as nvarchar) as ComponentKey,
+'0_'+cast(Components_Id as nvarchar)+'_1' as ComponentKey,
 '220113' as ComponentInstanceId,
 'ASSET.DENOMINATION' as ComponentCode
 
@@ -361,10 +370,13 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 202 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_DENOMINATION AS GD ON GD.DENM_AMOUNT = AST_OPTN_VALUE
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
 GO
+
 -------------------
 --GMU Denomination
 -------------------
@@ -372,7 +384,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 8 as Seq_Id,
 
@@ -380,7 +392,8 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
 '22011' as ComponentId,
 cast('GMU Denom' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-cast('0_1_1' as nvarchar) as ComponentKey,
+--cast('0_1_1' as nvarchar) as ComponentKey,
+'0_'+cast(Components_Id as nvarchar)+'_1' as ComponentKey,
 '220114' as ComponentInstanceId,
 'ASSET.GMU.DENOM' as ComponentCode
 
@@ -392,7 +405,9 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 203 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_DENOMINATION AS GD ON GD.DENM_AMOUNT = AST_OPTN_VALUE
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
 GO
@@ -404,7 +419,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 9 as Seq_Id,
 
@@ -424,6 +439,7 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 204 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
@@ -436,16 +452,17 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 10 as Seq_Id,
 
 -- Type Description ---
-'22068' as ComponentId,
+'22069' as ComponentId,
 cast('Type Description' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-cast('0_5_22068' as nvarchar) as ComponentKey,
-'22068' as ComponentInstanceId,
+--cast('0_5_22069' as nvarchar) as ComponentKey,
+'0_'+ cast(TYPEDESCP_ID as nvarchar)+'_22069' as ComponentKey,
+'22069' as ComponentInstanceId,
 'ASSET.TYPE.DESCRIPTION' as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -456,7 +473,9 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 210 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS TYAST ON TYAST.ASD_STD_ID = ASD.ASD_STD_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
 GO
@@ -468,7 +487,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 11 as Seq_Id,
 
@@ -488,6 +507,7 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 206 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
@@ -500,7 +520,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 12 as Seq_Id,
 
@@ -520,6 +540,7 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 207 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
@@ -531,7 +552,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 13 as Seq_Id,
 
@@ -551,6 +572,7 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 244 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
@@ -563,7 +585,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 14 as Seq_Id,
 
@@ -583,6 +605,7 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 246 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
@@ -594,7 +617,7 @@ INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 15 as Seq_Id,
 
@@ -614,19 +637,20 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 247 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
 GO
 
--------------------
+/*-------------------
 -- Type Description
 -------------------
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
 gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 16 as Seq_Id,
 -- Type Description --
@@ -644,17 +668,16 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS TYAST ON TYAST.ASD_STD_ID = ASD.ASD_STD_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) 
-GO
+GO */
 
 
-
-
---------------------------
+------------------------------
 --	Game Combo Options  --
---------------------------
+------------------------------
 
 
 DROP VIEW IF EXISTS [MIGRATION].[VIEW_GAME_COMBO_OPTIONS]

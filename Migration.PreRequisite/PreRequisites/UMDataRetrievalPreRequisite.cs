@@ -12,14 +12,7 @@ namespace Migration.PreRequisite.PreRequisites
     class UMDataRetrievalPreRequisite : IPreRequisite
     {
         private const string _name = "UMDataRetrieval";
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-        }
-
+        public string Name => _name;
         public bool Execute()
         {
             //Get SQL Scripts From User Matrix Data

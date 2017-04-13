@@ -7,11 +7,9 @@ using static Migration.Common.Common;
 
 namespace Migration.Generate.Generators
 {
-    class AssetReportData : GenerateData
+    public class AssetReportData : GenerateData
     {
-        public override string GetConnectionString()
-        {
-            return ConnectionStrings.AssetConnectionString;
-        }
+        public override string GetConnectionString() => ConnectionStrings.AssetConnectionString;
+
     }
 }

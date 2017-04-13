@@ -18,20 +18,7 @@ namespace Migration.PreRequisite.Facades
             _assetPreRequisites.Add(new InsertCompDefinitionIdPreRequisite(_connectionString));
             _assetPreRequisites.Add(new ExecuteScriptPreRequisite("OptionOrderUpdate", ConnectionStrings.LegacyConnectionString));
         }
-        public override FacadeType Type
-        {
-            get
-            {
-                return FacadeType.Asset;
-            }
-        }
-
-        public override List<IPreRequisite> PreRequisites
-        {
-            get
-            {
-                return _assetPreRequisites;
-            }
-        }
+        public override FacadeType Type => FacadeType.Asset;
+        public override List<IPreRequisite> PreRequisites => _assetPreRequisites;
     }
 }

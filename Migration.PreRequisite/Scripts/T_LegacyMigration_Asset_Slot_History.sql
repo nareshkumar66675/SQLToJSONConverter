@@ -68,7 +68,11 @@ CREATE TABLE [MIGRATION].[GAM_ASSET_SLOT_HISTORY_SUMMARY](
 	[CREATED_USER] [nvarchar](32) NOT NULL,
 	[CLST_AUTH_USER] [nvarchar](32) NULL,
 	[CLST_AUTH_USER_SECOND] [nvarchar](32) NULL,
-	[CLST_DET_ID] bigint
+	[CLST_DET_ID] bigint,
+	[Site_OrganizationId] bigint,
+	[Site_OrganizationName] [nvarchar](64) NULL,
+	[SiteId] bigint,
+	[SiteNumber] bigint
 ) ON [PRIMARY]
 
 GO

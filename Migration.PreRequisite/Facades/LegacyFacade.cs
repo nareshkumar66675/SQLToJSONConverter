@@ -23,21 +23,7 @@ namespace Migration.PreRequisite.Facades
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("AssetHistoryInsertSP", _connectionString));
             _legacyPreRequisites.Add(new UMDataRetrievalPreRequisite()); 
         }
-
-        public override FacadeType Type
-        {
-            get
-            {
-                return FacadeType.Legacy;
-            }
-        }
-
-        public override List<IPreRequisite> PreRequisites
-        {
-            get
-            {
-                return _legacyPreRequisites;
-            }
-        }
+        public override FacadeType Type => FacadeType.Legacy;
+        public override List<IPreRequisite> PreRequisites => _legacyPreRequisites;
     }
 }

@@ -16,13 +16,7 @@ namespace Migration.PreRequisite.PreRequisites
         {
             _connetionString = connectionString;
         }
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-        }
+        public string Name => _name;
 
         public bool Execute()
         {

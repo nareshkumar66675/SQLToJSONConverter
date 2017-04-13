@@ -1,0 +1,1 @@
+﻿INSERT INTO GOT (CharacterName,[Role],PlayedBy,Age,HouseId) values ('Sansa Stark','Eldest Daughter of Stark','Sophie Turner',21,4)

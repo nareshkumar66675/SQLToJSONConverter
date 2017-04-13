@@ -24,6 +24,11 @@ namespace Migration.Test
         [SetUp]
         public void GenerateInitailze()
         {
+            var dir = Path.GetDirectoryName(typeof(PersistenceTest).Assembly.Location);
+            Environment.CurrentDirectory = dir;
+
+            Directory.SetCurrentDirectory(dir);
+
             #region ComponentsDeclaration
             XMLHelper.Components = new Components();
 
@@ -64,7 +69,7 @@ namespace Migration.Test
 
             #region DatabaseDeclaration
             //DB Configurations
-            string file = Path.Combine(Directory.GetCurrentDirectory() + @"\Migration.Test\TestDatabase.mdf");
+            string file = Path.Combine(Directory.GetCurrentDirectory() , "TestDatabase.mdf");
 
             Common.Common.ConnectionStrings.LegacyConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = """ + file + @"""; Integrated Security = True;";
             Common.Common.ConnectionStrings.AuthConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = """ + file + @"""; Integrated Security = True;";
@@ -87,7 +92,7 @@ namespace Migration.Test
             comp.GroupName = Common.GroupType.ASSET;
             Assert.IsInstanceOf(typeof(SqlGenericPersistence), PersistenceFactory.GetPersistenceType(comp));
             comp.GroupName = Common.GroupType.REPORT;
-            Assert.IsInstanceOf(typeof(ElasticGenericPersistence), PersistenceFactory.GetPersistenceType(comp));
+            Assert.IsInstanceOf(typeof(SqlGenericPersistence), PersistenceFactory.GetPersistenceType(comp));
         }
         [Test]
         public void GenericSQLPersistenceTest()
@@ -140,7 +145,7 @@ namespace Migration.Test
             using (SqlConnection con = new SqlConnection(Common.Common.ConnectionStrings.AuthConnectionString))
             {
                 con.Open();
-                using (SqlCommand cmd = new SqlCommand("Truncate Table dbo.GOTv2", con))
+                using (SqlCommand cmd = new SqlCommand(@"IF EXISTS(SELECT * FROM  dbo.GOTv2) Truncate Table dbo.GOTv2", con))
                 {
                     cmd.ExecuteNonQuery();
                 }
