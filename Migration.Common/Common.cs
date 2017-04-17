@@ -40,7 +40,14 @@ namespace Migration.Common
                 }
             }
         }
-
+        public static class Constants
+        {
+            public const string DEFAULTGENERATE = "DEFAULT";
+            public const string DEFAULTWTPARAMSGENERATE = "DEFAULTWITHPARAMS";
+            public const string AUTHDATAGENERATE = "AUTHDATA";
+            public const string ASSETDATAGENERATE = "ASSETDATA";
+            public const string DEFAULTPERSIST = "DEFAULT";
+        }
         public static class AppSettings
         {
             public static int BulkCopyBatchSize

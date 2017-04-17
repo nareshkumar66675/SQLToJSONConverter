@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Migration.Common.Common;
 
 namespace Migration.Generate
 {
@@ -19,13 +20,13 @@ namespace Migration.Generate
         {
             switch (generateType.ToUpper())
             {
-                case "DEFAULT":
+                case Constants.DEFAULTGENERATE:
                     return new GenericGenerator();
-                case "DEFAULTWITHPARAMS":
+                case Constants.DEFAULTWTPARAMSGENERATE:
                     return new GenericGeneratorWtParams();
-                case "AUTHDATA":
+                case Constants.AUTHDATAGENERATE:
                     return new AuthReportData();
-                case "ASSETDATA":
+                case Constants.ASSETDATAGENERATE:
                     return new AssetReportData();
                 default:
                     return new GenericGenerator();

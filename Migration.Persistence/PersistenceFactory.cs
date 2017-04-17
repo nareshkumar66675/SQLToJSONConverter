@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Migration.Common.Common;
 
 namespace Migration.Persistence
 {
@@ -32,7 +33,7 @@ namespace Migration.Persistence
             //{
                 switch (component.PersistType.ToUpper())
                 {
-                    case "DEFAULT":
+                    case Constants.DEFAULTPERSIST:
                         return new SqlGenericPersistence();
                     default:
                         return new SqlGenericPersistence();

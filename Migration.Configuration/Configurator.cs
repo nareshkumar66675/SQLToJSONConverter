@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Migration.Common.Common;
 
 namespace Migration.Configuration
 {
@@ -130,7 +131,7 @@ namespace Migration.Configuration
             List<string> rslt = new List<string>();
             SourceComponents.Group.ForEach(grp =>
             {
-                var te=grp.Component.Where(t => string.Equals(t.GenerateType, "DEFAULTWITHPARAMS", StringComparison.OrdinalIgnoreCase)).Select(t => t.Name);
+                var te=grp.Component.Where(t => string.Equals(t.GenerateType, Constants.DEFAULTWTPARAMSGENERATE, StringComparison.OrdinalIgnoreCase)).Select(t => t.Name);
                 rslt.AddRange(te);
             });
             return rslt;
