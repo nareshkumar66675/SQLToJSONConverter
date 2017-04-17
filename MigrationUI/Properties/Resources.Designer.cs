@@ -781,6 +781,24 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt; Back.
+        /// </summary>
+        public static string Wizard_Back_Button {
+            get {
+                return ResourceManager.GetString("Wizard_Back_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Wizard_Cancel_Button {
+            get {
+                return ResourceManager.GetString("Wizard_Cancel_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please wait for the process to complete..
         /// </summary>
         public static string Wizard_CannotClose_Message {
@@ -790,11 +808,38 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Finish.
+        /// </summary>
+        public static string Wizard_Finish_Button {
+            get {
+                return ResourceManager.GetString("Wizard_Finish_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        public static string Wizard_Help_Button {
+            get {
+                return ResourceManager.GetString("Wizard_Help_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Contact Support for Help.
         /// </summary>
         public static string Wizard_Help_Message {
             get {
                 return ResourceManager.GetString("Wizard_Help_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Next &gt;.
+        /// </summary>
+        public static string Wizard_Next_Button {
+            get {
+                return ResourceManager.GetString("Wizard_Next_Button", resourceCulture);
             }
         }
     }

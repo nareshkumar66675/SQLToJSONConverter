@@ -25,6 +25,11 @@
                      CurrentPage="{Binding ElementName=IntroPage}"
                      FinishButtonClosesWindow="True"
                      Help="Wiz_Help"
+                     HelpButtonContent="{x:Static res:Resources.Wizard_Help_Button}"
+                     CancelButtonContent="{x:Static res:Resources.Wizard_Cancel_Button}"
+                     BackButtonContent="{x:Static res:Resources.Wizard_Back_Button}"
+                     NextButtonContent="{x:Static res:Resources.Wizard_Next_Button}"
+                     FinishButtonContent="{x:Static res:Resources.Wizard_Finish_Button}"
                      Next="Wiz_Next">
             <xctk:Wizard.Resources>
                 <Style TargetType="{x:Type Button}">
@@ -55,9 +60,9 @@
                                    Text="{x:Static res:Resources.ToolName}"
                                    TextAlignment="Center" />
                         <ComboBox x:Name="CultureSelectComboBox"
-                                  Width="128"
+                                  Width="129"
                                   Height="23"
-                                  Margin="363,357,0,0"
+                                  Margin="362,357,0,0"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Top"
                                   FontSize="12"

@@ -364,4 +364,19 @@
   <data name="Wizard_Help_Message" xml:space="preserve">
     <value>Contact Support for Help</value>
   </data>
+  <data name="Wizard_Back_Button" xml:space="preserve">
+    <value>&lt; Back</value>
+  </data>
+  <data name="Wizard_Cancel_Button" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Wizard_Finish_Button" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="Wizard_Help_Button" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Wizard_Next_Button" xml:space="preserve">
+    <value>Next &gt;</value>
+  </data>
 </root>
