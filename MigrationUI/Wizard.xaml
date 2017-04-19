@@ -21,16 +21,16 @@
           HorizontalAlignment="Left"
           VerticalAlignment="Top">
         <xctk:Wizard x:Name="Wiz"
+                     BackButtonContent="{x:Static res:Resources.Wizard_Back_Button}"
                      Cancel="LogAppClose"
-                     CurrentPage="{Binding ElementName=IntroPage}"
+                     CancelButtonContent="{x:Static res:Resources.Wizard_Cancel_Button}"
+                     CurrentPage="{Binding ElementName=HistoryProcessPage}"
                      FinishButtonClosesWindow="True"
+                     FinishButtonContent="{x:Static res:Resources.Wizard_Finish_Button}"
                      Help="Wiz_Help"
                      HelpButtonContent="{x:Static res:Resources.Wizard_Help_Button}"
-                     CancelButtonContent="{x:Static res:Resources.Wizard_Cancel_Button}"
-                     BackButtonContent="{x:Static res:Resources.Wizard_Back_Button}"
-                     NextButtonContent="{x:Static res:Resources.Wizard_Next_Button}"
-                     FinishButtonContent="{x:Static res:Resources.Wizard_Finish_Button}"
-                     Next="Wiz_Next">
+                     Next="Wiz_Next"
+                     NextButtonContent="{x:Static res:Resources.Wizard_Next_Button}">
             <xctk:Wizard.Resources>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background">
@@ -233,7 +233,7 @@
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
                              Description="{x:Static res:Resources.ReportConnectionPage_Description}"
-                             NextPage="{Binding ElementName=ReportComponentsProcessPage}"
+                             NextPage="{Binding ElementName=HistoryProcessPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AssetsComponentsProcessPage}">
                 <!--  CanSelectNextPage="False"  -->
@@ -319,6 +319,17 @@
                              NextPage="{Binding ElementName=ViewMigrationReportPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=ReportConnectionPage}" />
+            <xctk:WizardPage x:Name="HistoryProcessPage"
+                             Title="{x:Static res:Resources.AssetSiteSelectionPage_Title}"
+                             CanSelectNextPage="False"
+                             Description="{x:Static res:Resources.AssetSiteSelectionPage_Description}"
+                             NextPage="{Binding ElementName=AssetsComponentsSelectionPage}"
+                             PageType="Interior"
+                             PreviousPage="{Binding ElementName=ReportComponentsProcessPage}">
+                <xctk:WizardPage.Content>
+                    <controls:HistoryProcessUserControl x:Name="HistoryProcessCntrl" />
+                </xctk:WizardPage.Content>
+            </xctk:WizardPage>
             <!--  EOF Asset History Process Block  -->
             <xctk:WizardPage x:Name="ViewMigrationReportPage"
                              Title="{x:Static res:Resources.ViewMigrationReportPage_Title}"

@@ -118,6 +118,9 @@
     <Compile Include="Views\DatabaseSelectModal.xaml.cs">
       <DependentUpon>DatabaseSelectModal.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\HistoryProcessUserControl.xaml.cs">
+      <DependentUpon>HistoryProcessUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SiteSelectUserControl.xaml.cs">
       <DependentUpon>SiteSelectUserControl.xaml</DependentUpon>
     </Compile>
@@ -148,6 +151,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DatabaseSelectModal.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\HistoryProcessUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

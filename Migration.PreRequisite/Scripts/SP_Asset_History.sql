@@ -77,8 +77,8 @@ GO
 
 CREATE PROCEDURE MIGRATION.P_ASSET_SLOT_HISTORY_SUMMARY (@P_AM_UID BIGINT)
 AS
---DECLARE @P_AM_UID BIGINT;
---SET @P_AM_UID = 34;
+--DECLARE @P_AM_UID BIGINT
+--SET @P_AM_UID = 34
 INSERT INTO MIGRATION.GAM_ASSET_SLOT_HISTORY_SUMMARY
 SELECT CL.CLST_NAME AS CLST_NAME,
 CL.CLST_ID AS CLST_ID,
@@ -103,7 +103,18 @@ CAD.CLST_DET_ID,
 GPT.[PROP_NEW_ID] as Site_OrganizationId,
 PT.PROP_LONG_NAME as Site_OrganizationName,
 ST.SITE_NUMBER as SiteId,
-ST.SITE_NUMBER as SiteNumber
+ST.SITE_NUMBER as SiteNumber,
+case when CL.CREATED_USER = 'Auto Sync' then 'Sync' else cUsr.actr_user_id end as CreatedBy_UserId,
+case when CL.CREATED_USER = 'Auto Sync' then 'Sync' else cUsr.actr_login end as CreatedBy_LoginName,
+case when CL.CREATED_USER = 'Auto Sync' then 'Sync' else cUsr.actr_First_name end as CreatedBy_FirstName,
+case when CL.CREATED_USER = 'Auto Sync' then 'Sync' else cUsr.actr_middle_name end as CreatedBy_MiddleName,
+case when CL.CREATED_USER = 'Auto Sync' then 'Sync' else cUsr.actr_last_name end as CreatedBy_LastName,
+
+case when CL.CLST_AUTH_USER = 'Auto Sync' then 'Sync' else aUsr.actr_user_id end as ApprovedBy_UserId,
+case when CL.CLST_AUTH_USER = 'Auto Sync' then 'Sync' else aUsr.actr_login end as ApprovedBy_LoginName,
+case when CL.CLST_AUTH_USER = 'Auto Sync' then 'Sync' else aUsr.actr_First_name end as ApprovedBy_FirstName,
+case when CL.CLST_AUTH_USER = 'Auto Sync' then 'Sync' else aUsr.actr_middle_name end as ApprovedBy_MiddleName,
+case when CL.CLST_AUTH_USER = 'Auto Sync' then 'Sync' else aUsr.actr_last_name end as ApprovedBy_LastName
 FROM GAM.CHANGE_LIST AS CL
 LEFT JOIN GAM.CHANGE_LIST_STATUS AS STS ON CL.CLST_STAT_ID = STS.CLST_STAT_ID
 LEFT JOIN GAM.INSTALLED_SYSTEM_MAP AS CISM ON CL.CLST_INSMAP_ID = CISM.INSM_ID
@@ -125,11 +136,13 @@ LEFT JOIN MIGRATION.GAM_SITE AS dest_GST ON dest_GST.[SITE_LEGCY_ID] = dest_ST.S
 LEFT JOIN GAM.PROPERTY AS dest_pt ON dest_pt.PROP_ID = dest_ST.SITE_PROP_ID
 LEFT join [MIGRATION].[GAM_PROPERTY] as dest_gpt on dest_gpt.[PROP_LEGCY_ID] = dest_pt.PROP_ID
 LEFT JOIN PROGRESSIVE.SLOT as prgSlot on prgSlot.asd_std_id = CAD.ASD_STD_ID 
+left join COMMON.USER_ACTOR as aUsr on isnull(aUsr.ACTR_ACTIVE_DIR_USER, aUsr.actr_login) = CLST_AUTH_USER
+left join COMMON.USER_ACTOR as bUsr on isnull(bUsr.ACTR_ACTIVE_DIR_USER, bUsr.actr_login) = CLST_AUTH_USER_SECOND
+left join COMMON.USER_ACTOR as cUsr on isnull(cUsr.ACTR_ACTIVE_DIR_USER, cUsr.actr_login) = CL.CREATED_USER
 WHERE ASD.ASD_CLST_STAT_ID = 5 AND ASSET.ASST_ID = 1
 AND ASD.ASD_AM_UID = @P_AM_UID
 ORDER BY CL.CLST_EXECTUED_DATE 
 GO
-
 
 DROP PROCEDURE IF EXISTS MIGRATION.P_ASSET_SLOT_HISTORY_OPTIONS
 GO

@@ -71,7 +71,7 @@ namespace Migration.Generate.Helpers
                     try
                     {
                         int? siteGrpID=null;
-                        if (type == GroupType.ASSET)
+                        if (type == GroupType.ASSET || type == GroupType.HISTORY)
                         {
                             var qryParams = Configurator.GetQueryParams(componentName);
                             if (qryParams != null && qryParams.Count == 1)

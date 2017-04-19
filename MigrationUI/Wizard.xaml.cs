@@ -94,7 +94,7 @@ namespace MigrationTool
                 else if (Wiz.CurrentPage == AssetSiteSelectionPage)
                 {
                     var siteList = AssetSiteCntrl.GetSelectedSites().Select(t => t.Key);
-                    Configurator.SetQueryParamsFrTrnsfrmWtParams(new List<string> { string.Join(",", siteList) });
+                    Configurator.SetQueryParamsFrTrnsfrmWtParams(GroupType.ASSET,new List <string> { string.Join(",", siteList) });
                     AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentListByGroup(GroupType.ASSET);
                     AssetsCompSelectCntrl.SelectedSiteIDList = siteList.ToList();
                     AssetsCompSelectCntrl.InitializeData(GroupType.ASSET);
@@ -111,17 +111,18 @@ namespace MigrationTool
                 //Report Connection Page -> Reports Process Page
                 else if (Wiz.CurrentPage == ReportConnectionPage)
                 {
-                    AddUserControlToPage(ReportComponentsProcessPage, ReportsCompProcessCntrl);
-                    if (CanProcessReport())
-                    {
-                        CanClose = false;
-                        ReportsCompProcessCntrl.StartComponentProcess(Configurator.GetComponentsByGroup(GroupType.REPORT));
-                    }
-                    else
-                    {
-                        Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Please Migrate all Data before proceeding to Report", "Report Migration", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        e.Cancel = true;
-                    }
+                    //AddUserControlToPage(ReportComponentsProcessPage, ReportsCompProcessCntrl);
+                    //if (CanProcessReport())
+                    //{
+                    //    CanClose = false;
+                    //    ReportsCompProcessCntrl.StartComponentProcess(Configurator.GetComponentsByGroup(GroupType.REPORT));
+                    //}
+                    //else
+                    //{
+                    //    Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Please Migrate all Data before proceeding to Report", "Report Migration", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    //    e.Cancel = true;
+                    //}
+                    HistoryProcessCntrl.InitializeData();
                 }
                 //Reports Process Page -> Migration Report Page
                 else if (Wiz.CurrentPage == ReportComponentsProcessPage)

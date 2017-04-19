@@ -51,6 +51,7 @@
     <Compile Include="Generators\AssetReportData.cs" />
     <Compile Include="Generators\AuthReportData.cs" />
     <Compile Include="Generators\GenerateData.cs" />
+    <Compile Include="Generators\GenerateHistoryData.cs" />
     <Compile Include="Generators\GenericGenerator.cs" />
     <Compile Include="Generators\GenericGeneratorWtParams.cs" />
     <Compile Include="Helpers\Mapper.cs" />

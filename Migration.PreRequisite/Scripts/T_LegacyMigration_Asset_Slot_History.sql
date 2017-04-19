@@ -72,7 +72,17 @@ CREATE TABLE [MIGRATION].[GAM_ASSET_SLOT_HISTORY_SUMMARY](
 	[Site_OrganizationId] bigint,
 	[Site_OrganizationName] [nvarchar](64) NULL,
 	[SiteId] bigint,
-	[SiteNumber] bigint
+	[SiteNumber] bigint,	
+	[CreatedBy_UserId] [nvarchar](32) NULL,
+	[CreatedBy_LoginName] [nvarchar](30) NULL,
+	[CreatedBy_FirstName] [nvarchar](30) NULL,
+	[CreatedBy_MiddleName] [nvarchar](30) NULL,
+	[CreatedBy_LastName] [nvarchar](30) NULL,
+	[ApprovedBy_UserId] [nvarchar](32) NULL,
+	[ApprovedBy_LoginName] [nvarchar](30) NULL,
+	[ApprovedBy_FirstName] [nvarchar](30) NULL,
+	[ApprovedBy_MiddleName] [nvarchar](30) NULL,
+	[ApprovedBy_LastName] [nvarchar](30) NULL
 ) ON [PRIMARY]
 
 GO

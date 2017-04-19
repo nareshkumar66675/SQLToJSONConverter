@@ -4,6 +4,7 @@
     <xs:enumeration value="AUTH" />
     <xs:enumeration value="ASSET" />
     <xs:enumeration value="REPORT" />
+    <xs:enumeration value="HISTORY" />
   </xs:restriction>
 </xs:simpleType>  
 <xs:element name="ComponentConfig">

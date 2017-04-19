@@ -153,7 +153,7 @@
     <KeyFormat Format="51_{0}" Keys="Id"  />
   </Transformation>
   
-  <!-- Asset Components-->
+  <!-- Asset Components -->
  
   <Transformation Name="COMPDATA_MODEL_TYPE">
     <Source>
@@ -1146,7 +1146,7 @@
     <KeyFormat Format="59_15_{0}" Keys="Id.Id"  />
   </Transformation>
 
-  <!-- Report Components-->
+  <!-- Report Components -->
 
   <Transformation Name="RPT_ORG">
     <Source> SELECT [key],[value] from Organization.Organization </Source>
@@ -1175,6 +1175,73 @@
   <Transformation Name="RPT_ASTLINK">
     <Source> SELECT [key],[value] from DataManagement.AssetLink </Source>
     <Destination>DataManagement.AssetLink</Destination>
+  </Transformation>
+  
+  <!-- History Components -->
+
+  <Transformation Name="AST_HISTORY">
+    <Source>
+      --SP
+      EXEC MIGRATION.P_ASSET_SLOT_HISTORY {0}
+
+
+      --Query
+
+      SELECT
+      ----Id
+      0 as Id,
+      SMY.[Action] as [Action],
+      clst_name as MasterListName,
+      clst_name as ChangeListName,
+      SMY.astl_data_source  as DataTriggerSource,
+      ----CreatedBy----
+      SMY.created_user as CreatedBy_UserId,
+      SMY.created_user as CreatedBy_LoginName,
+      SMY.created_user as CreatedBy_FirstName,
+      SMY.created_user as CreatedBy_MiddleName,
+      SMY.created_user as CreatedBy_LastName,
+      ----ApprovedBy----
+      SMY.CLST_AUTH_USER as ApprovedBy_UserId,
+      SMY.CLST_AUTH_USER as ApprovedBy_LoginName,
+      SMY.CLST_AUTH_USER as ApprovedBy_FirstName,
+      SMY.CLST_AUTH_USER as ApprovedBy_MiddleName,
+      SMY.CLST_AUTH_USER as ApprovedBy_LastName,
+
+      SMY.clst_exectued_date as ExecutedAt,
+      -----Asset----
+      10 as Asset_AssetTypeDefinitionId,
+      asset_type as Asset_AssetType,
+      10 as Asset_Id,
+
+      ----Site---
+      SiteId as Site_SiteId,
+      SOURCE_SITE as Site_SiteName,
+      SiteNumber as Site_SiteNumber,
+      Site_OrganizationId as Site_OrganizationId,
+      Site_OrganizationName as Site_OrganizationName,
+
+      --optn_code,
+      OPTN.OPTN_CODE as Option_Code,
+      OPTN.IS_UPDATED,
+
+      -----ChangedOptions_Value----
+      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTION_ORDER ELSE NULL END AS ChangedOptions_Value_Id,
+      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OPTN_CODE ELSE NULL END AS ChangedOptions_Value_Name,
+      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OLD_VALUE ELSE NULL END AS ChangedOptions_Value_OldValue,
+      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.CURRENT_VALUE ELSE NULL END AS ChangedOptions_Value_NewValue
+      --, *
+
+      --select *
+      FROM MIGRATION.GAM_ASSET_SLOT_HISTORY_SUMMARY AS SMY --WHERE SMY.ASD_NUMBER = '3668'
+      LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_OPTIONS AS OPTN ON OPTN.CLST_ASD_ID = SMY.CLST_DET_ID
+      LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_GAMES AS GMS ON GMS.CLST_DET_ID = SMY.CLST_DET_ID
+      LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_PROGRESSIVE AS PROG ON PROG.CLST_DET_ID = SMY.CLST_DET_ID
+      WHERE SMY.ASD_NUMBER = '3668'
+      ORDER BY SMY.CLST_EXECTUED_DATE
+
+    </Source>
+    <Destination>[Report].[Asset]</Destination>
+    <KeyFormat Format="59_{0}" Keys="Id"  />
   </Transformation>
   
 </TransformationConfig>

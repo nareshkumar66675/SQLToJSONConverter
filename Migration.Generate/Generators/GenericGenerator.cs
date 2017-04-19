@@ -85,7 +85,7 @@ namespace Migration.Generate.Generators
         /// <param name="componentName">Component Name</param>
         /// <param name="resultSet">Source Set</param>
         /// <returns>Updated Result Set</returns>
-        private dynamic MapColumns(string componentName,dynamic resultSet)
+        public virtual dynamic MapColumns(string componentName,dynamic resultSet)
         {
             var mapping = Configuration.Configurator.GetColumnMapping(componentName);
 

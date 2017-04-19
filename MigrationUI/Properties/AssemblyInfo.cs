@@ -8,7 +8,7 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("MigrationTool")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Asset Matrix Data Migration tool")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Scientific Games")]
 [assembly: AssemblyProduct("Asset Matrix - Data Migrate")]
@@ -53,3 +53,5 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.3")]
 [assembly: AssemblyFileVersion("1.0.0.3")]
+[assembly: NeutralResourcesLanguage("en")]
+

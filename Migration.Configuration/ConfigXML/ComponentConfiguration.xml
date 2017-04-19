@@ -23,6 +23,7 @@
    <Component Name="LINK_SLOT2POOL" DisplayName="Asset Link - Slot To Pool"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetLinkEntity,BallyTech.Library.Persistence.MSSql.Asset" GenerateType="Default" PersistType="Default" />
    <Component Name="LINK_POOL2SLOT" DisplayName="Asset Link - Pool To Slot"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetLinkEntity,BallyTech.Library.Persistence.MSSql.Asset" GenerateType="Default" PersistType="Default" />
    <Component Name="LINK_CNTRL2POOL" DisplayName="Asset Link - Controller To Pool"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetLinkEntity,BallyTech.Library.Persistence.MSSql.Asset" GenerateType="Default" PersistType="Default" />
+   <!--<Component Name="AST_HISTORY" DisplayName="Asset History"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetHistory.AssetHistoryEntity,BallyTech.Library.Persistence.MSSql.Asset" GenerateType="DefaultWithParams" PersistType="Default" />-->
   </Group>
   <Group Name="REPORT">
     <Component Name="RPT_ORG" DisplayName="Organization - Report"  DomainType="" GenerateType="AuthData" PersistType="Default" />
@@ -32,5 +33,8 @@
     <Component Name="RPT_COMPDATA" DisplayName="Component Data - Report"  DomainType="" GenerateType="AssetData" PersistType="Default" />
     <Component Name="RPT_ASSET" DisplayName="Asset - Report"  DomainType="" GenerateType="AssetData" PersistType="Default" />
     <Component Name="RPT_ASTLINK" DisplayName="Asset Link - Report"  DomainType="" GenerateType="AssetData" PersistType="Default" />
+  </Group>
+  <Group Name="HISTORY">
+    <Component Name="AST_HISTORY" DisplayName="Asset History"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetHistory.AssetHistoryEntity,BallyTech.Library.Persistence.MSSql.Asset" GenerateType="DefaultWithParams" PersistType="Default" />
   </Group>
 </ComponentConfig>

@@ -14,7 +14,7 @@ namespace Migration.Common
         {
             public static string AuthConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Auth_Migration";
             public static string AssetConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Asset_Migration";
-            public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=PROD0121_AssetMatrix14";
+            public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=ALH_AssetMatrix14";
             public static string ReportConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Report_Migration";
             //public static string AuthConnectionString = @"";
             //public static string AssetConnectionString = @"";
@@ -34,6 +34,8 @@ namespace Migration.Common
                     case GroupType.ASSET:
                         return AssetConnectionString;
                     case GroupType.REPORT:
+                        return ReportConnectionString;
+                    case GroupType.HISTORY:
                         return ReportConnectionString;
                     default:
                         return "";

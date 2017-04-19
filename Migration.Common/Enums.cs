@@ -32,7 +32,13 @@ namespace Migration.Common
         /// </summary>
         [Description("Report Database")]
        [XmlEnum("REPORT")]
-        REPORT
+        REPORT,
+        /// <summary>
+        /// Asset History Database - same DB as <see cref="REPORT"/>
+        /// </summary>
+        [Description("History Database")]
+        [XmlEnum("HISTORY")]
+        HISTORY
     }
     public class EnumDescription<T>
     {
