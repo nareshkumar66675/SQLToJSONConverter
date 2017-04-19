@@ -149,7 +149,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Content="Stop"
-                IsEnabled="False" />
+                IsEnabled="False" Click="stopButton_Click" />
             <Grid Margin="10,325,10,49">
                 <TextBlock
                     x:Name="statusBar"

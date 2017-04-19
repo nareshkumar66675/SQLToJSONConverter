@@ -56,7 +56,7 @@ namespace Migration.Generate.Generators
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 NotifyGenerateStatus(resultSet, resultEntities, component, startTime, "Failed");
                 throw;

@@ -36,6 +36,8 @@ namespace MigrationTool.Views
         DateTime siteStartTime;
         DateTime overallStartTime;
 
+        private bool terminate = false;
+
         private string siteCompletedText= "{0} of {1} Completed";
 
         public Dictionary<string, string> NotMigratedSites { get; set; }
@@ -83,7 +85,6 @@ namespace MigrationTool.Views
 
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
-            //ProgressGrid.IsEnabled = true;
             BackgroundWorker worker = new BackgroundWorker();
             //worker.WorkerReportsProgress = true;
             worker.DoWork += Worker_StartProcess;
@@ -91,41 +92,54 @@ namespace MigrationTool.Views
             worker.RunWorkerAsync();
         }
 
-        private void Worker_StartProcess(object sender, DoWorkEventArgs e)
+        private async void Worker_StartProcess(object sender, DoWorkEventArgs e)
         {
-            Dispatcher.Invoke(() => { startButton.IsEnabled = false; stopButton.IsEnabled = true; });
+            Dispatcher.Invoke(() => 
+            {
+                startButton.IsEnabled = false;
+                stopButton.IsEnabled = true;
+                statusBar.Text = "Press Stop Button to Terminate the Process";
+            });
             overallStartTime = DateTime.Now;
             overallTimer.Start();
             foreach (var site in NotMigratedSites)
             {
-                siteStartTime = DateTime.Now;
-                siteTimer.Start();
-                CurrentSite = site;
-                Dispatcher.Invoke(() => SiteNameText.Text = CurrentSite.Value);
-                //Configurator.SetQueryParamsFrTrnsfrmWtParams(GroupType.HISTORY, new List<string> { string.Join(",", site.Key) });
+                if(!terminate)
+                {
+                    siteStartTime = DateTime.Now;
+                    siteTimer.Start();
+                    CurrentSite = site;
+                    Dispatcher.Invoke(() => SiteNameText.Text = CurrentSite.Value);
+                    Configurator.SetQueryParamsFrTrnsfrmWtParams(GroupType.HISTORY, new List<string> { string.Join(",", site.Key) });
 
-                //Generate generate = new Generate();
-                //Persist persist = new Persist();
+                    Generate generate = new Generate();
+                    Persist persist = new Persist();
 
-                //var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
-                //var progressPersist = new Progress<ProcessStatus>(PersistProgress);
+                    var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
+                    var progressPersist = new Progress<ProcessStatus>(PersistProgress);
 
-                ////Starting Generate and Persist Parallely
-                //Task genTask = generate.Start(Configurator.GetComponentsByGroup(GroupType.HISTORY), progressGenerate);
-                //Task persisTask = persist.Start(progressPersist);
+                    //Starting Generate and Persist Parallely
+                    Task genTask = generate.Start(Configurator.GetComponentsByGroup(GroupType.HISTORY), progressGenerate);
+                    Task persisTask = persist.Start(progressPersist);
 
-                //await genTask;
-                //await persisTask;
-                //Thread.Sleep(1000);
-                GenerateProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
-                Thread.Sleep(1000);
-                GenerateProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
-                //Thread.Sleep(1000);
-                PersistProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
-                Thread.Sleep(1000);
-                PersistProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
-                Thread.Sleep(100);
-                siteTimer.Stop();
+                    await genTask;
+                    await persisTask;
+                    Thread.Sleep(100);
+                    //GenerateProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
+                    //Thread.Sleep(1000);
+                    //GenerateProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
+                    ////Thread.Sleep(1000);
+                    //PersistProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
+                    //Thread.Sleep(1000);
+                    //PersistProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
+                    //Thread.Sleep(100);
+                    siteTimer.Stop();
+                }
+                else
+                {
+                    Dispatcher.Invoke(() => statusBar.Text = "Process Stopped Successfully");
+                    break;
+                }
             }
             overallTimer.Stop();
             Dispatcher.Invoke(() => { startButton.IsEnabled = false; stopButton.IsEnabled = false; });
@@ -171,17 +185,29 @@ namespace MigrationTool.Views
 
         private Dictionary<string, string> GetNotMigratedSites(GroupType group, Dictionary<string, string> allSites)
         {
+            Dictionary<string, string> allSiteTemp =new Dictionary<string, string>();
             try
             {
+                allSiteTemp = allSites.ToDictionary(t=>t.Key,t=>t.Value);
                 var migratedSites = DatabaseHelper.GetMigratedSites(ConnectionStrings.GetConnectionString(group));
-                migratedSites.ForEach(t => allSites.Remove(t));
+                migratedSites.ForEach(t => allSiteTemp.Remove(t));
             }
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Error occurred While retrieving not migrated Sites", ex);
             }
-            allSites.OrderBy(t => t.Value);
-            return allSites;
+            allSiteTemp.OrderBy(t => t.Value);
+            return allSiteTemp;
+        }
+
+        private void stopButton_Click(object sender, RoutedEventArgs e)
+        {
+            var rslt =Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "Do you wish to terminate the process ?", "History Process", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+            if(rslt== MessageBoxResult.Yes)
+            {
+                terminate = true;
+                statusBar.Text = "Stopping Process!!! Please Wait....";
+            }
         }
     }
 }

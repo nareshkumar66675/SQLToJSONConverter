@@ -1182,32 +1182,37 @@
   <Transformation Name="AST_HISTORY">
     <Source>
       --SP
-      EXEC MIGRATION.P_ASSET_SLOT_HISTORY {0}
+      --EXEC MIGRATION.P_ASSET_SLOT_HISTORY {0}
 
 
       --Query
 
       SELECT
       ----Id
-      0 as Id,
-      SMY.[Action] as [Action],
+      RIGHT(Cast(SMY.CLST_DET_ID as VARCHAR(30)),5) as Id,
+      --SMY.[Action] as [Action],
+      CASE WHEN SMY.[Action] = 'ADD' THEN 'Add'
+      WHEN SMY.[Action] = 'EDIT' THEN 'Edit'
+      WHEN SMY.[Action] = 'MOVE' THEN 'Move'
+      WHEN SMY.[Action] = 'MOVE &#038; EDIT' THEN 'MoveEdit'
+      ELSE 'None' END AS [Action],
       clst_name as MasterListName,
       clst_name as ChangeListName,
       SMY.astl_data_source  as DataTriggerSource,
       ----CreatedBy----
-      SMY.created_user as CreatedBy_UserId,
+      0 as CreatedBy_UserId,
       SMY.created_user as CreatedBy_LoginName,
       SMY.created_user as CreatedBy_FirstName,
       SMY.created_user as CreatedBy_MiddleName,
       SMY.created_user as CreatedBy_LastName,
       ----ApprovedBy----
-      SMY.CLST_AUTH_USER as ApprovedBy_UserId,
+      0 as ApprovedBy_UserId,
       SMY.CLST_AUTH_USER as ApprovedBy_LoginName,
       SMY.CLST_AUTH_USER as ApprovedBy_FirstName,
       SMY.CLST_AUTH_USER as ApprovedBy_MiddleName,
       SMY.CLST_AUTH_USER as ApprovedBy_LastName,
 
-      SMY.clst_exectued_date as ExecutedAt,
+      cast(SMY.clst_exectued_date as varchar(50)) as ExecutedAt,
       -----Asset----
       10 as Asset_AssetTypeDefinitionId,
       asset_type as Asset_AssetType,
@@ -1221,12 +1226,12 @@
       Site_OrganizationName as Site_OrganizationName,
 
       --optn_code,
-      OPTN.OPTN_CODE as Option_Code,
-      OPTN.IS_UPDATED,
+      --OPTN.OPTN_CODE as Option_Code,
+      --OPTN.IS_UPDATED,
 
       -----ChangedOptions_Value----
-      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTION_ORDER ELSE NULL END AS ChangedOptions_Value_Id,
-      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OPTN_CODE ELSE NULL END AS ChangedOptions_Value_Name,
+      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTION_ORDER ELSE NULL END AS ChangedOptions_Id,
+      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OPTN_CODE ELSE NULL END AS ChangedOptions_Name,
       CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OLD_VALUE ELSE NULL END AS ChangedOptions_Value_OldValue,
       CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.CURRENT_VALUE ELSE NULL END AS ChangedOptions_Value_NewValue
       --, *
@@ -1236,12 +1241,12 @@
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_OPTIONS AS OPTN ON OPTN.CLST_ASD_ID = SMY.CLST_DET_ID
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_GAMES AS GMS ON GMS.CLST_DET_ID = SMY.CLST_DET_ID
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_PROGRESSIVE AS PROG ON PROG.CLST_DET_ID = SMY.CLST_DET_ID
-      WHERE SMY.ASD_NUMBER = '3668'
+      --WHERE SMY.ASD_NUMBER = '3668'
       ORDER BY SMY.CLST_EXECTUED_DATE
 
     </Source>
     <Destination>[Report].[Asset]</Destination>
-    <KeyFormat Format="59_{0}" Keys="Id"  />
+    <KeyFormat Format="68_{0}" Keys="Id"  />
   </Transformation>
   
 </TransformationConfig>
