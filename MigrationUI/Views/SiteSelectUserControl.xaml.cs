@@ -26,7 +26,8 @@ namespace MigrationTool.Views
         #region Variable Initialization
         public Dictionary<string, string> SourceSites = new Dictionary<string, string>();
         public static Dictionary<string, string> SelectedSites = new Dictionary<string, string>();
-        public event EventHandler<SitesSelectionChangedEventArgs> OnSitesSelectionChanged; 
+        public event EventHandler<SitesSelectionChangedEventArgs> OnSitesSelectionChanged;
+        private int allSiteCount;
         #endregion
         public class SitesSelectionChangedEventArgs : EventArgs
         {
@@ -43,6 +44,7 @@ namespace MigrationTool.Views
         public void LoadSites(GroupType group)
         {
             SourceSites = GetNotMigratedSites(group);
+            allSiteCount = SourceSites.Count;
             srcListBox.DisplayMemberPath = "Value";
             selectedListBox.DisplayMemberPath = "Value";
 
@@ -183,7 +185,7 @@ namespace MigrationTool.Views
         }
         private void UpdateStatusBar()
         {
-            statusTextBlock.Text = string.Format(Properties.Resources.SiteSelectUserControl_Status_Message, selectedListBox.Items.Count, srcListBox.Items.Count + selectedListBox.Items.Count);
+            statusTextBlock.Text = string.Format(Properties.Resources.SiteSelectUserControl_Status_Message, selectedListBox.Items.Count, allSiteCount);
         }
     }
 }

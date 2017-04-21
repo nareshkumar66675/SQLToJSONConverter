@@ -35,7 +35,7 @@
                 </xcdg:DataGridCollectionViewSource.GroupDescriptions>
             </xcdg:DataGridCollectionViewSource>-->
         </Grid.Resources>
-        <xctk:BusyIndicator x:Name="ProcessingIndicator" IsBusy="True">
+        <xctk:BusyIndicator x:Name="ProcessingIndicator" IsBusy="False">
             <xctk:BusyIndicator.BusyContent>
                 <StackPanel Margin="1">
                     <TextBlock Height="19"

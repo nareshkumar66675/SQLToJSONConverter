@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,17 @@ namespace Migration.Test
     {
         public int Id { get; set; }
         public Dictionary<string,string> Data { get; set; }
+    }
+    public class TestEntity1
+    {
+        public TestEntityID Id { get; set; }
+        public List<string> List { get; set; }
+    }
+    public class TestEntityID
+    {
+        [Slapper.AutoMapper.Id]
+        public int Id { get; set; }
+        public int TestId { get; set; }
     }
     class Program
     {
@@ -93,7 +105,7 @@ namespace Migration.Test
             ////temp1.Add("1", "2");
             ////temp1.Add("2", "2");
             ////temp1.Add("3", "2");
-            //temp.Add("Data_$", new Dictionary<string, string>() { {"Key1","Value1" }, { "Key2","Value2"} });
+            //temp.Add("Data_$", new Dictionary<string, string>() { { "Key1", "Value1" }, { "Key2", "Value2" } });
             ////temp.Add("Data_$", new List<string>() { "1", "2" });
             ////temp.Add("$.Data_Value", "dfvc");
 
@@ -104,35 +116,49 @@ namespace Migration.Test
             //entity.Add("Id", "1");
             //entity.Add("Data_Key", new List<string>() { "Key1", "Key2" });
             //entity.Add("Data_Value", new List<string>() { "Value1", "Value2" });
-            //var result=Slapper.AutoMapper.Map<TestEntity>(entity);
+            //var result = Slapper.AutoMapper.Map<TestEntity>(entity);
 
 
             //Migration.Generate.Generate gen = new Migration.Generate.Generate();
             //gen.Start()
 
-            IGenerator gen = new GenericGeneratorWtParams();
-            Migration.Configuration.ConfigObject.Component temp = new Migration.Configuration.ConfigObject.Component();
+            //IGenerator gen = new GenericGeneratorWtParams();
+            //Migration.Configuration.ConfigObject.Component temp = new Migration.Configuration.ConfigObject.Component();
 
-            temp.Name = "dsfgdf";
-            temp.DomainType = "BallyTech.Library.Persistence.MSSql.Entity.AssetHistory.AssetHistoryEntity,BallyTech.Library.Persistence.MSSql.Asset";
-            temp.GenerateType = "DefaultWithParams";
-            temp.PersistType = "Default";
-            //Transform 1
-            Transformation trnsfrm = new Transformation();
-            trnsfrm.Name = "dsfgdf";
+            //temp.Name = "dsfgdf";
+            //temp.DomainType = "BallyTech.Library.Persistence.MSSql.Entity.AssetHistory.AssetHistoryEntity,BallyTech.Library.Persistence.MSSql.Asset";
+            //temp.GenerateType = "DefaultWithParams";
+            //temp.PersistType = "Default";
+            ////Transform 1
+            //Transformation trnsfrm = new Transformation();
+            //trnsfrm.Name = "dsfgdf";
 
-            trnsfrm.Source = @"select GOT.Id,CharacterName,[Role],PlayedBy,Age,hs.Id as House_Id,HouseName as House_HouseName,HouseMotto as House_HouseMotto from GOT 
-                                inner Join Houses hs on Got.HouseId = hs.Id";
-            trnsfrm.Destination = "dbo.GOTv2";
-            trnsfrm.KeyFormat = new KeyFormat();
-            trnsfrm.KeyFormat.Format = "100_{0}";
-            trnsfrm.KeyFormat.Keys = "Id";
+            //trnsfrm.Source = @"select GOT.Id,CharacterName,[Role],PlayedBy,Age,hs.Id as House_Id,HouseName as House_HouseName,HouseMotto as House_HouseMotto from GOT 
+            //                    inner Join Houses hs on Got.HouseId = hs.Id";
+            //trnsfrm.Destination = "dbo.GOTv2";
+            //trnsfrm.KeyFormat = new KeyFormat();
+            //trnsfrm.KeyFormat.Format = "100_{0}";
+            //trnsfrm.KeyFormat.Keys = "Id";
 
-            var trnsfrmList = new List<Transformation>();
-            trnsfrmList.Add(trnsfrm);
-            XMLHelper.Transforms.Transformation = trnsfrmList;
+            //var trnsfrmList = new List<Transformation>();
+            //trnsfrmList.Add(trnsfrm);
+            //XMLHelper.Transforms.Transformation = trnsfrmList;
 
-            gen.Generate(temp);
+            //gen.Generate(temp);
+
+            dynamic dynamicCustomer = new ExpandoObject();
+            dynamicCustomer.Id_Id = 1;
+            dynamicCustomer.Id_TestId = 10;
+
+            dynamic dynamicCustomer2 = new ExpandoObject();
+            dynamicCustomer2.Id_Id = 1;
+            dynamicCustomer2.Id_TestId = 11;
+
+
+            var list = new List<dynamic> { dynamicCustomer, dynamicCustomer2 };
+            var customer = Slapper.AutoMapper.MapDynamic<TestEntity1>(list);
+
+            //var result = Slapper.AutoMapper.Map<TestEntity1>(list);
         }
     }
 }

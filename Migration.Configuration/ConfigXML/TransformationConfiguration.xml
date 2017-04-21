@@ -1064,11 +1064,13 @@
     SELECT 
     --'59_10_'+cast(MSLOT.[ASD_STD_NEW_ID] as nvarchar) as [Key],
     ------Id---------
+    MSLOT.[ASD_STD_NEW_ID] as AssetId,
     10 as Id_AssetTypeDefinitionId,
     MSLOT.[ASD_STD_NEW_ID] as Id_Id,
     -------ActiveAssetLink-------
     11 as ActiveAssetLink_AssetTypeDefinitionId,
-    MPOOL.[POOL_NEW_ID] as ActiveAssetLink_Id
+    MPOOL.[POOL_NEW_ID] as ActiveAssetLink_Id,
+    0 as DataRowVersion
     --row_number() over (partition by [ASD_STD_NEW_ID] order by [ASD_STD_NEW_ID]) as rNumber
     FROM [PROGRESSIVE].[SLOT_POOL_MAPPING] AS PM 
     JOIN [PROGRESSIVE].[SLOT] AS SLT ON SLT.SLOT_ID = PM.SLOT_ID
@@ -1087,11 +1089,13 @@
     SELECT 
     --'59_11_'+cast(PoolId as nvarchar) as [Key],
     ----Id--
+    PoolId as AssetId,
     11 as Id_AssetTypeDefinitionId,
     PoolId as Id_Id,
     --ActiveAssetLink--
     AssetTypeId as ActiveAssetLink_AssetTypeDefinitionId,
-    AssetId as ActiveAssetLink_Id
+    AssetId as ActiveAssetLink_Id,
+    0 as DataRowVersion
     FROM ( 
     /* pool to slot */
     SELECT MPOOL.[POOL_NEW_ID] as PoolId,
@@ -1128,11 +1132,13 @@
     SELECT 
     --'59_15_'+cast([ASD_STD_NEW_ID] as nvarchar) as [Key],
     --Id--
+    [ASD_STD_NEW_ID] as AssetId,
     15 as Id_AssetTypeDefinitionId,
     [ASD_STD_NEW_ID] as Id_Id,
     --ActiveAssetLink--
     11 as ActiveAssetLink_AssetTypeDefinitionId,
-    [POOL_NEW_ID] as ActiveAssetLink_Id
+    [POOL_NEW_ID] as ActiveAssetLink_Id,
+    0 as DataRowVersion
     --row_number() over (partition by [POOL_NEW_ID] order by [POOL_NEW_ID]) as rNumber
     FROM [PROGRESSIVE].[pool] as p
     JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS MSLOT ON MSLOT.ASD_STD_LEGACY_ID = p.PCON_ID

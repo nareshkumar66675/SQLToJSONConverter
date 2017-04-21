@@ -200,6 +200,29 @@ namespace Migration.Configuration
             }
             return string.Empty;
         }
+        public static Components Except(this Components sourceItems,Components removeItems)
+        {
+            var temp = sourceItems;
+            removeItems.Group.ForEach(grp =>
+            {
+                if (grp.Component.Count > 0)
+                {
+                    temp.Group.Where(g => g.Name == grp.Name).FirstOrDefault().Component.RemoveAll(u => grp.Component.Contains(u));
+                }
+            });
+            return temp;
+        }
+        public static Components Remove(this Components sourceItems, List<string> items)
+        {
+            var temp =(Components) sourceItems.Clone();
+            items.ForEach(item =>
+            {
+                 //temp.Group.ForEach(grp=>grp.Component.RemoveAll(comp=>comp.Name==item));
+
+
+            });
+            return temp;
+        }
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)
         {

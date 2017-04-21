@@ -109,28 +109,41 @@ namespace MigrationTool.Views
             var components = e.Argument as Components;
             try
             {
-                //Execute PreRequistes
-                await RunPrequisites();
 
-                Generate generate = new Generate();
-                Persist persist = new Persist();
-
-                var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
-                var progressPersist = new Progress<ProcessStatus>(PersistProgress);
-
-                //Starting Generate and Persist Parallely
-                Task genTask = generate.Start(components, progressGenerate);
-                Task persisTask = persist.Start(progressPersist);
-
-                await genTask;
-                await persisTask;
-
-                Thread.Sleep(100);
-                Dispatcher.Invoke(() =>
+                if(components!=null && components.HasElements())
                 {
-                    ProcessCompleted?.Invoke(sender, e);
-                    ShowCompletedMessage();
-                });
+                    //Execute PreRequistes
+                    await RunPrequisites();
+
+                    Generate generate = new Generate();
+                    Persist persist = new Persist();
+
+                    var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
+                    var progressPersist = new Progress<ProcessStatus>(PersistProgress);
+
+                    //Starting Generate and Persist Parallely
+                    Task genTask = generate.Start(components, progressGenerate);
+                    Task persisTask = persist.Start(progressPersist);
+
+                    await genTask;
+                    await persisTask;
+
+                    Thread.Sleep(100);
+                    Dispatcher.Invoke(() =>
+                    {
+                        ProcessCompleted?.Invoke(sender, e);
+                        ShowCompletedMessage();
+                    });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "All Items has been Migrated.\nPlease Proceed to Next page.", Properties.Resources.ComponentsProcessUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                        ProcessCompleted?.Invoke(sender, e);
+                    });
+                }
+
             }
             catch (Exception ex)
             {

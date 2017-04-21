@@ -29,6 +29,7 @@
                      FinishButtonContent="{x:Static res:Resources.Wizard_Finish_Button}"
                      Help="Wiz_Help"
                      HelpButtonContent="{x:Static res:Resources.Wizard_Help_Button}"
+                     HelpButtonVisibility="Hidden"
                      Next="Wiz_Next"
                      NextButtonContent="{x:Static res:Resources.Wizard_Next_Button}">
             <xctk:Wizard.Resources>
@@ -233,7 +234,7 @@
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
                              Description="{x:Static res:Resources.ReportConnectionPage_Description}"
-                             NextPage="{Binding ElementName=HistoryProcessPage}"
+                             NextPage="{Binding ElementName=ReportComponentsProcessPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=AssetsComponentsProcessPage}">
                 <!--  CanSelectNextPage="False"  -->
@@ -316,14 +317,15 @@
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
                              Description="{x:Static res:Resources.ReportComponentsProcessPage_Description}"
-                             NextPage="{Binding ElementName=ViewMigrationReportPage}"
+                             NextPage="{Binding ElementName=HistoryProcessPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=ReportConnectionPage}" />
             <xctk:WizardPage x:Name="HistoryProcessPage"
                              Title="{x:Static res:Resources.AssetSiteSelectionPage_Title}"
                              CanSelectNextPage="False"
+                             CanSelectPreviousPage="False"
                              Description="{x:Static res:Resources.AssetSiteSelectionPage_Description}"
-                             NextPage="{Binding ElementName=AssetsComponentsSelectionPage}"
+                             NextPage="{Binding ElementName=ViewMigrationReportPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=ReportComponentsProcessPage}">
                 <xctk:WizardPage.Content>

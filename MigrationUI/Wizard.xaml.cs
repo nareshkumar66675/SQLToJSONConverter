@@ -1,5 +1,6 @@
 ﻿using Migration.Common;
 using Migration.Configuration;
+using Migration.Configuration.ConfigObject;
 using MigrationTool.Helpers;
 using MigrationTool.Views;
 using System;
@@ -55,7 +56,8 @@ namespace MigrationTool
             AssetSiteCntrl.OnSitesSelectionChanged += AssetSiteCntrl_OnSitesSelectionChanged;
             AuthCompProcessCntrl.ProcessCompleted += AuthCompProcessCntrl_ProcessCompleted;
             AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
-            ReportsCompProcessCntrl.ProcessCompleted += ReportsCompProcessCntrl_ProcessCompleted; 
+            ReportsCompProcessCntrl.ProcessCompleted += ReportsCompProcessCntrl_ProcessCompleted;
+            HistoryProcessCntrl.ProcessCompleted += HistoryProcessCntrl_ProcessCompleted;
             #endregion
 
             UpdateDbConnectStatus();
@@ -111,21 +113,26 @@ namespace MigrationTool
                 //Report Connection Page -> Reports Process Page
                 else if (Wiz.CurrentPage == ReportConnectionPage)
                 {
-                    //AddUserControlToPage(ReportComponentsProcessPage, ReportsCompProcessCntrl);
-                    //if (CanProcessReport())
-                    //{
-                    //    CanClose = false;
-                    //    ReportsCompProcessCntrl.StartComponentProcess(Configurator.GetComponentsByGroup(GroupType.REPORT));
-                    //}
-                    //else
-                    //{
-                    //    Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Please Migrate all Data before proceeding to Report", "Report Migration", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    //    e.Cancel = true;
-                    //}
+                    AddUserControlToPage(ReportComponentsProcessPage, ReportsCompProcessCntrl);
+                    if (CanProcessReport())
+                    {
+                        CanClose = false;
+                        ReportsCompProcessCntrl.StartComponentProcess(GetHistoryNotCompletedCompoennts());
+                    }
+                    else
+                    {
+                        Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "Please Migrate all Data before proceeding to Report", "Report Migration", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        e.Cancel = true;
+                    }
+                }
+                //Reports Process Page -> Histroy Migration Page
+                else if (Wiz.CurrentPage == ReportComponentsProcessPage)
+                {
+                    CanClose = false;
                     HistoryProcessCntrl.InitializeData();
                 }
                 //Reports Process Page -> Migration Report Page
-                else if (Wiz.CurrentPage == ReportComponentsProcessPage)
+                else if (Wiz.CurrentPage == HistoryProcessPage)
                 {
                     ViewMigrationRptCntrl.ShowReport();
                 }
@@ -241,7 +248,12 @@ namespace MigrationTool
         {
             CanClose = true;
             Wiz.CurrentPage.CanSelectNextPage = true;
-        } 
+        }
+        private void HistoryProcessCntrl_ProcessCompleted(object sender, EventArgs e)
+        {
+            CanClose = true;
+            Wiz.CurrentPage.CanSelectNextPage = true;
+        }
         #endregion
 
         #region ReportDBMigration
@@ -407,6 +419,14 @@ namespace MigrationTool
             statusIcon.EndInit();
 
             return statusIcon;
+        }
+        private Components GetHistoryNotCompletedCompoennts()
+        {
+            var allComp=Configurator.GetComponentsByGroup(GroupType.REPORT);
+
+            var completedList = DatabaseHelper.GetCompletedComponents(GroupType.REPORT, new List<string>());
+
+            return allComp.Remove(completedList);
         }
         #endregion
     }

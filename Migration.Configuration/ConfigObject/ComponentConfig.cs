@@ -74,12 +74,19 @@ namespace Migration.Configuration.ConfigObject
     /// Components Configuration
     /// </summary>
     [XmlRoot(ElementName = "ComponentConfig")]
-    public class Components
+    public class Components:ICloneable
     {
         /// <summary>
         /// List Of Groups
         /// </summary>
         [XmlElement(ElementName = "Group")]
         public List<Group> Group { get; set; }
+
+        public object Clone()
+        {
+            var comp =(Components) this.MemberwiseClone();
+            comp.Group = new List<Group>(this.Group);
+            return comp;
+        }
     }
 }

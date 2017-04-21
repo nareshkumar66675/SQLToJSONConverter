@@ -9,6 +9,7 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Width="450"
     Height="400"
+    Loaded="UserControl_Loaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <Style TargetType="{x:Type Button}">
@@ -26,15 +27,22 @@
     <Viewbox Stretch="Uniform" StretchDirection="Both">
 
         <Grid Width="450" Height="400">
-            <Grid x:Name="ProgressGrid" Margin="10,136,10,109">
+            <Grid x:Name="ProgressGrid" Margin="10,10,10,235">
                 <Border
                     Width="422"
                     Height="147"
                     Margin="4"
-                    Background="LightGray"
                     BorderBrush="#FFBBB8B8"
                     BorderThickness="1,1,1,1"
                     CornerRadius="8,8,8,8">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                            <GradientStop Offset="0.008" Color="#FFB4B4B4" />
+                            <GradientStop Offset="1" Color="#FFB8B8B8" />
+                            <GradientStop Offset="0.657" Color="#FFEAE8E8" />
+                            <GradientStop Offset="0.322" Color="#FFDEDEDE" />
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <Border.Effect>
                         <DropShadowEffect Opacity="0.5" Color="Gray" />
                     </Border.Effect>
@@ -48,8 +56,7 @@
                     Value="0" />
                 <ProgressBar
                     x:Name="OverallProgress"
-                    Height="30"
-                    Margin="10,115,10,10"
+                    Margin="10,115,10,11"
                     Maximum="300"
                     Minimum="0"
                     Value="0" />
@@ -95,7 +102,7 @@
                     VerticalAlignment="Top"
                     FontFamily="Microsoft JhengHei"
                     FontSize="13"
-                    FontWeight="Medium"
+                    FontWeight="SemiBold"
                     Foreground="#2D75A3"
                     Text="Site : "
                     TextWrapping="Wrap" />
@@ -132,36 +139,267 @@
                     TextAlignment="Right"
                     TextWrapping="Wrap" />
             </Grid>
-            <Button
-                x:Name="startButton"
-                Width="101"
-                Height="30.96"
-                Margin="73,56,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Click="startButton_Click"
-                Content="Start" />
-            <Button
-                x:Name="stopButton"
-                Width="101"
-                Height="30.96"
-                Margin="268,56,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Content="Stop"
-                IsEnabled="False" Click="stopButton_Click" />
-            <Grid Margin="10,325,10,49">
+            <Grid Margin="10,170,10,199">
+                <Button
+                    x:Name="startButton"
+                    Width="101"
+                    Height="31"
+                    Margin="75,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Click="startButton_Click"
+                    Content="Start">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="Background">
+                                <Setter.Value>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Offset="0" Color="#FFABE4F9" />
+                                        <GradientStop Offset="0.971" Color="#FF8AD5F1" />
+                                        <GradientStop Offset="0.536" Color="#FFB0DDEE" />
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Border
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="#80ccff"
+                                            BorderThickness="1"
+                                            CornerRadius="5">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Offset="0" Color="#FF91CEE6" />
+                                                <GradientStop Offset="1" Color="#FF8AD5F1" />
+                                                <GradientStop Offset="0.69" Color="#FFC3E5F2" />
+                                                <GradientStop Offset="0.314" Color="#FFDDECF2" />
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="true">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Offset="0" Color="#FFF3F3F3" />
+                                                <GradientStop Offset="0.971" Color="#FF8AD5F1" />
+                                                <GradientStop Offset="0.435" Color="#FFC3E5F2" />
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Background" Value="#FFD4D1D1" />
+                                    <Setter Property="BorderBrush" Value="Gray" />
+                                    <Setter Property="Foreground" Value="Gray" />
+                                </Trigger>
+                            </Style.Triggers>
+
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button
+                    x:Name="stopButton"
+                    Width="101"
+                    Height="31"
+                    Margin="267,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Click="stopButton_Click"
+                    Content="Stop"
+                    IsEnabled="True">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="Background">
+                                <Setter.Value>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Offset="0" Color="#FFF5D2D2" />
+                                        <GradientStop Offset="0.946" Color="#FFF7ABAB" />
+                                        <GradientStop Offset="0.51" Color="#FFF7ADAD" />
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Border
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="#ff9999"
+                                            BorderThickness="1"
+                                            CornerRadius="5">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                                <GradientStop Offset="0" Color="#FFDCA2A2" />
+                                                <GradientStop Offset="1" Color="#FFE45656" />
+                                                <GradientStop Offset="1" Color="#FFD82F2F" />
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="true">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                                <GradientStop Offset="0" Color="#FFE49797" />
+                                                <GradientStop Offset="1" Color="#FFEA7B7B" />
+                                                <GradientStop Offset="0.527" Color="#FFEAB5B5" />
+                                                <GradientStop Offset="0.958" Color="#FFE08F8F" />
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Background" Value="#FFD4D1D1" />
+                                    <Setter Property="BorderBrush" Value="Gray" />
+                                    <Setter Property="Foreground" Value="Gray" />
+                                </Trigger>
+                            </Style.Triggers>
+
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+            <Grid Margin="10,206,10,173">
                 <TextBlock
                     x:Name="statusBar"
                     Width="430"
-                    Height="26"
+                    Height="20"
                     HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
+                    VerticalAlignment="Top"
                     FontSize="13"
                     Foreground="#FF554A4A"
                     Text="Click Start to Begin the Process"
                     TextAlignment="Center"
                     TextWrapping="Wrap" />
+            </Grid>
+            <Grid Margin="10,226,10,10">
+                <Border
+                    Margin="5,5,5,5"
+                    BorderBrush="White"
+                    BorderThickness="2,2,2,2"
+                    CornerRadius="8,8,8,8">
+                    <Border.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FF8F8F8F" />
+                            <GradientStop Offset="0.996" Color="#FFAAAAAA" />
+                            <GradientStop Offset="0.582" Color="#FFC9C7C7" />
+                            <GradientStop Offset="0.356" Color="#FFC1C1C1" />
+                        </RadialGradientBrush>
+                    </Border.Background>
+                    <Border.Effect>
+                        <DropShadowEffect Opacity="0.3" Color="Gray" />
+                    </Border.Effect>
+                </Border>
+                <Grid
+                    Width="129"
+                    Margin="10,10,0,12"
+                    HorizontalAlignment="Left">
+                    <Border
+                        BorderBrush="#cbcbcb"
+                        BorderThickness="1"
+                        CornerRadius="5" />
+                    <Label
+                        x:Name="completedLabel"
+                        Width="119"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="Completed Sites" />
+                    <ListBox
+                        x:Name="CompletedListBox"
+                        Height="110"
+                        Margin="4.98,27,6.073,0"
+                        VerticalAlignment="Top"
+                        Background="#f2f2f2"
+                        RenderTransformOrigin="0.5,0.5">
+                        <ListBox.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="5" />
+                            </Style>
+                        </ListBox.Resources>
+                    </ListBox>
+                    <Border
+                        BorderBrush="#cbcbcb"
+                        BorderThickness="1"
+                        CornerRadius="5" />
+                </Grid>
+                <Grid Margin="147,12,151,10">
+                    <Border
+                        BorderBrush="#cbcbcb"
+                        BorderThickness="1"
+                        CornerRadius="5" />
+                    <Label
+                        x:Name="NotCompletedSitesLabel"
+                        Width="122"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="Not Completed Sites" />
+                    <ListBox
+                        x:Name="NotCompletedListBox"
+                        Height="110"
+                        Margin="4.98,27,6.073,0"
+                        VerticalAlignment="Top"
+                        Background="#f2f2f2"
+                        RenderTransformOrigin="0.5,0.5">
+                        <ListBox.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="5" />
+                            </Style>
+                        </ListBox.Resources>
+                    </ListBox>
+                    <Border
+                        BorderBrush="#cbcbcb"
+                        BorderThickness="1"
+                        CornerRadius="5" />
+                </Grid>
+                <Grid
+                    Width="129"
+                    Margin="0,12,10,10"
+                    HorizontalAlignment="Right">
+                    <Border
+                        BorderBrush="#cbcbcb"
+                        BorderThickness="1"
+                        CornerRadius="5" />
+                    <Label
+                        x:Name="FailedSitesLabel"
+                        Width="119"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="Failed Sites" />
+                    <ListBox
+                        x:Name="FailedSitesListBox"
+                        Height="110"
+                        Margin="4.98,27,6.073,0"
+                        VerticalAlignment="Top"
+                        Background="#f2f2f2"
+                        RenderTransformOrigin="0.5,0.5">
+                        <ListBox.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="5" />
+                            </Style>
+                        </ListBox.Resources>
+                    </ListBox>
+                    <Border
+                        BorderBrush="#cbcbcb"
+                        BorderThickness="1"
+                        CornerRadius="5" />
+                </Grid>
             </Grid>
         </Grid>
     </Viewbox>

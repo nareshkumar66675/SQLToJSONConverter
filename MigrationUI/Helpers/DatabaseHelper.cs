@@ -232,23 +232,20 @@ namespace MigrationTool.Helpers
             try
             {
                 string query = string.Empty;
-                string conString = string.Empty;
-                if (group == GroupType.AUTH)
+                if (group == GroupType.AUTH || group == GroupType.REPORT)
                 {
                     query = Queries.GETCOMPITEMSWITHOUTSITE;
-                    conString = Common.ConnectionStrings.AuthConnectionString;
                 }
                 else if (group == GroupType.ASSET)
                 {
                     query = Queries.GETCOMPITEMSWITHSITE;
-                    conString = ConnectionStrings.AssetConnectionString;
 
                     if (Sites != null && Sites.Count > 0)
                         query += " AND  (rpt.SiteGroupID IS NULL  OR SiteID IN (" + string.Join(",", Sites) + "))";
                     else
                         query += " AND  (rpt.SiteGroupID IS NULL)";
                 }
-                using (SqlConnection con = new SqlConnection(conString))
+                using (SqlConnection con = new SqlConnection(ConnectionStrings.GetConnectionString(group)))
                 {
                     con.Open();
                     using (SqlCommand cmd = new SqlCommand(query, con))
