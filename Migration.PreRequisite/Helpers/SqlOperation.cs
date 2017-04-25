@@ -42,28 +42,114 @@ namespace Migration.PreRequisite.Helpers
                 throw;
             }
         }
-
-        internal static string GetDataFromUserMatrix(string query)
+        internal static void ExecuteBulkCopy(DataTable data, string connectionString, string destinationTableName)
         {
-            StringBuilder dataScript = new StringBuilder();
-
-            using (var conn = new SqlConnection(GetUMConnectionString()))
+            using (SqlConnection destinationConnection =
+                       new SqlConnection(connectionString))
             {
-                conn.Open();
-                using (SqlCommand legacyCommand = new SqlCommand(query, conn))
+                destinationConnection.Open();
+                using (SqlTransaction transaction = destinationConnection.BeginTransaction())
                 {
-                    using (IDataReader dr = legacyCommand.ExecuteReader())
+                    using (SqlBulkCopy bulkCopy =
+                               new SqlBulkCopy(destinationConnection, SqlBulkCopyOptions.Default, transaction))
                     {
-                        while (dr.Read())
+                        bulkCopy.DestinationTableName = destinationTableName;
+                        bulkCopy.BatchSize = AppSettings.BulkCopyBatchSize;
+                        bulkCopy.BulkCopyTimeout = AppSettings.SqlCommandTimeout;
+                        try
                         {
-                            dataScript.Append(dr.GetString(0));
+                            bulkCopy.WriteToServer(data);
+                            transaction.Commit();
+                            Logger.Instance.LogInfo($"Bulk Copy Completed for table { destinationTableName }");
+                        }
+                        catch (Exception ex)
+                        {
+                            try
+                            {
+                                transaction.Rollback();
+                                throw new Exception($"Bulk Copy Failed for table { destinationTableName } ", ex);
+                            }
+                            catch (Exception ex1)
+                            {
+                                throw new Exception("Rollback Failed", ex1);
+                            }
                         }
                     }
                 }
             }
-            return dataScript.ToString();
+        }
+        internal static bool InsertCustomAssetID(string connectionString,string legacyQuery)
+        {
+            DataTable table = new DataTable();
+            /* Retrieves Unused Custom Asset ID From Legacy */
+            try
+            {
+                using (var conn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand legacyCommand = new SqlCommand(legacyQuery, conn))
+                    {
+                        using (IDataReader reader = legacyCommand.ExecuteReader())
+                        {
+                            table.Load(reader);
+                        }
+                    }
+                }
+
+
+
+                /* Insert Unused Custom Id to New Database */
+                ExecuteBulkCopy(table, connectionString, "[IDGEN].[CustomID_VALUES]");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return true;
         }
 
+        internal static string GetDataFromUserMatrix(string query)
+        {
+            string dataScript = string.Empty;
+            try
+            {
+                dataScript = GetScriptsFromQuery(GetUMConnectionString(), query);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("UserMatrix Retrieval Failed",ex);
+            }
+            return dataScript;
+        }
+        internal static string GetScriptsFromQuery(string connectionString,string query)
+        {
+            StringBuilder dataScript = new StringBuilder();
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand command = new SqlCommand(query, conn))
+                    {
+                        command.CommandTimeout= AppSettings.SqlCommandTimeout;
+
+                        using (IDataReader dr = command.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                dataScript.Append(dr.GetString(0));
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return dataScript.ToString();
+        }
         internal static List<string> GetAllCompletedPreRequisites(string connectionString)
         {
             try
@@ -77,9 +163,9 @@ namespace Migration.PreRequisite.Helpers
                 {
                     conn.Open();
                     var query = Queries.GetCompletedPreRequisites;
-                    using (SqlCommand legacyCommand = new SqlCommand(query, conn))
+                    using (SqlCommand command = new SqlCommand(query, conn))
                     {
-                        using (IDataReader dr = legacyCommand.ExecuteReader())
+                        using (IDataReader dr = command.ExecuteReader())
                         {
                             while (dr.Read())
                             {
@@ -111,9 +197,9 @@ namespace Migration.PreRequisite.Helpers
                     command.Parameters.Add(new SqlParameter("@Status", status));
                     command.ExecuteNonQuery();
                 }
-                catch
+                catch (Exception)
                 {
-
+                    throw;
                 }
             }
         }
@@ -132,7 +218,7 @@ namespace Migration.PreRequisite.Helpers
                     try
                     {
                         server = new Server(new ServerConnection(conn));
-                        server.ConnectionContext.StatementTimeout = 500;
+                        server.ConnectionContext.StatementTimeout = AppSettings.SqlCommandTimeout;
                         server.ConnectionContext.BeginTransaction();
                         server.ConnectionContext.ExecuteNonQuery(query);
                         server.ConnectionContext.CommitTransaction();
@@ -144,9 +230,9 @@ namespace Migration.PreRequisite.Helpers
                             server.ConnectionContext.RollBackTransaction();
                             throw new Exception("Error Ocurred while Executing PreRequisites - Rollbacked", ex);
                         }
-                        catch (Exception)
+                        catch (Exception ex1)
                         {
-                            throw;
+                            throw new Exception("Rollback Failed.", ex1);
                         }
                     }
 
@@ -234,9 +320,9 @@ namespace Migration.PreRequisite.Helpers
                             transaction.Rollback();
                             throw new Exception("Error Ocurred - Rollbacked", ex);
                         }
-                        catch (Exception)
+                        catch (Exception ex1)
                         {
-                            throw;
+                            throw new Exception("Rollback Failed.", ex1);
                         }
                     }
                 }
@@ -264,13 +350,15 @@ namespace Migration.PreRequisite.Helpers
                     return "";
             }
         }
+        #region PrivateMethods
         private static string GetUMConnectionString()
         {
-            var temp =ConfigurationManager.ConnectionStrings["UserMatrixDB"]?.ConnectionString;
+            var temp = ConfigurationManager.ConnectionStrings["UserMatrixDB"]?.ConnectionString;
             if (temp == null || string.IsNullOrWhiteSpace(temp))
                 throw new Exception("User Matrix DB details not found");
             return temp;
-        }
+        } 
+        #endregion
 
     }
 }

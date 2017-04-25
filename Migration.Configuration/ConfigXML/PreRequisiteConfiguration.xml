@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <PreRequisiteConfig>
   <PreRequisite Name ="NewMigrationTables" ScriptFilePath="Scripts/T_NewMigration.sql" Skip="False"/>
-  <!--<PreRequisite Name ="LegacyMigrationTables" ScriptFilePath="Scripts/T_LegacyMigration.sql" Skip="False"/>-->
   <PreRequisite Name ="AssetDefinitionParseSP" ScriptFilePath="Scripts/SP_AstDefinition.sql" Skip="False"/>
   <PreRequisite Name ="LegacyViews" ScriptFilePath="Scripts/V_Legacy.sql" Skip="False"/>
   <PreRequisite Name ="AuthStaticData" ScriptFilePath="Scripts/D_AuthDefaultInserts.sql" Skip="False"/>
@@ -13,4 +12,7 @@
   <PreRequisite Name ="LegacyAssetSlotTables" ScriptFilePath="Scripts/T_LegacyMigration_Asset_Slot.sql" Skip="False"/>
   <PreRequisite Name ="LegacyAssetHistoryDataPopulation" ScriptFilePath="Scripts/T_LegacyMigration_Asset_Slot_History.sql" Skip="False"/>
   <PreRequisite Name ="LegacyAuthDataTables" ScriptFilePath="Scripts/T_LegacyMigration_Auth.sql" Skip="False"/>
+  <PreRequisite Name ="InsertCustomAssetID" ScriptFilePath="Scripts/D_CustomAssetIdInsert.sql" Skip="False"/>
+  <PreRequisite Name ="NumberMasterInsert" ScriptFilePath="Scripts/D_NumberMasterInsert.sql" Skip="False"/>
+  <PreRequisite Name ="AssetDefault" ScriptFilePath="Scripts/D_AssetDefault.sql" Skip="False"/>
 </PreRequisiteConfig>

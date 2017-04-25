@@ -271,21 +271,22 @@
   <Transformation Name="COMPDATA_THEME">
     <Source>
       SELECT
-      '122061' as Id,
+      '22061' as Id,
+       0 as DataRowVersion,
       '22061' as Component_Id,
       'THEME.RELATION' as Component_Code,
       '0'as Component_Components_SiteId,
       '1_root' as Component_Components_ComponentValues_Id,
       'Theme' as Component_Components_ComponentValues_Name,
-      'Theme'  as Component_Components_ComponentValues_DisplayName,
+      'Theme'  as Component_Components_ComponentValues_DisplayName,
       'THEME.RELATION' as Component_Components_ComponentValues_Code,
       
       ---- Theme Type -----
-      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      CAST ( ThemeType_ID  AS NVARCHAR) + '_'+
       TT.COMP_TYPE_ID as Component_Components_ComponentValues_CC_Id,
       TT.DISPLAY_NAME as Component_Components_ComponentValues_CC_Name,
       'THEME.TYPE' as Component_Components_ComponentValues_CC_Code,
-      TT.value as Component_Components_ComponentValues_CC_DisplayName,
+      TT.DISPLAY_NAME as Component_Components_ComponentValues_CC_DisplayName,
 
       ---Theme Type Options ----
       tt.THEM_TYPE_SEQ as Component_Components_ComponentValues_CC_Options_Id,
@@ -294,10 +295,12 @@
 
       ---Theme Group ----
       --ROW_NUMBER() OVER (ORDER BY TG.DISPLAY_NAME) AS TG_RW_NM,
-      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      CAST ( ThemeGroup_Id  AS NVARCHAR) + '_'+
       TG.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_Id,
       TG.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_Name,
       'THEME.GROUP' as Component_Components_ComponentValues_CC_CC_Code,
+              tg.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_DisplayName,
+
       ---Theme Options ----
       tg.THM_GRP_SEQ as Component_Components_ComponentValues_CC_CC_Options_Id,
       tg.VALUE as Component_Components_ComponentValues_CC_CC_Options_Value,
@@ -305,10 +308,12 @@
 
       --- Theme Category ---
       --ROW_NUMBER() OVER (ORDER BY TC.TCAT_CODE) AS TC_RW_NM,
-      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      CAST ( ThemeCategory_Id  AS NVARCHAR) + '_'+
       tc.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_CC_Id,
       TC.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_Name,
       'THEME.CATEGORY' as Component_Components_ComponentValues_CC_CC_CC_Code,
+              TC.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_DisplayName,
+
       ---- Theme Category Options ----
       tc.TCAT_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
       tc.VALUE as Component_Components_ComponentValues_CC_CC_CC_Options_Value,
@@ -316,30 +321,37 @@
 
       --- Manfacturer ----
       --ROW_NUMBER() OVER (PARTITION BY mf.DISPLAY_NAME ORDER BY mf.DISPLAY_NAME) AS MF_RW_NM,
-      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      CAST ( Manfacture_Id  AS NVARCHAR) + '_'+
       mf.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_CC_CC_Id,
       MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_CC_Name,
       'MANUFACTURER' as Component_Components_ComponentValues_CC_CC_CC_CC_Code,
-      --- MAnufacturer Options
+              MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_CC_DisplayName,
+
+      --- Manufacturer Options
       MF.MNF_CODE_SEQ as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Id,
       mf.VALUE as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Value,
       mf.MNF_CODE as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Code,
-      --- theme ---
+     --- theme ---
       --ROW_NUMBER() OVER (ORDER BY TM.DISPLAY_NAME) AS TM_RW_NM,
-      CAST ( TM_ID  AS NVARCHAR) + '_'+
+      CAST ( Theme_Id  AS NVARCHAR) + '_'+
       TM.COMP_TYPE_ID as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Id,
       TM.DISPLAY_NAME as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Name,
       'THEME' as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Code,
+              TM.DISPLAY_NAME as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_DisplayName,
       --- Theme Options ------
       TM.THEM_CODE_SEQ as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Id,
       TM.VALUE as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Value,
       TM.THEM_CODE as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Code
+              FROM [Migration].[VIEW_THEME_TYPE] AS TT 
+              JOIN [Migration].[VIEW_THEME_GROUP] AS TG ON TG.TGRP_TTYP_ID = TT.TTYP_ID  AND TG.THM_GRP_SEQ = TT.THEM_TYPE_SEQ 
+              JOIN [Migration].[VIEW_THEME_CATEGORY] AS TC ON TC.TCAT_TGRP_ID = TG.TGRP_ID AND TG.THM_GRP_SEQ = TC.TCAT_SEQ
+              JOIN [Migration].[VIEW_THEME] AS TM on TM.THEME_CAT_ID = TC.TCAT_ID AND TM.THEM_SEQ = TC.TCAT_SEQ
+              JOIN [Migration].[VIEW_MANUFACTURE] AS MF ON MF.MANF_ID = TM.MANF_ID AND MNF_SEQ = TM.THEM_SEQ
+              LEFT JOIN MIGRATION.GAM_THEME_DETAILS AS GTD 
+              on gtd.them_id = tm.them_id and gtd.manf_id = MF.MANF_ID and gtd.TCAT_ID = TM.THEME_CAT_ID 
+              and gtd.TGRP_ID = tg.TGRP_ID and gtd.TTYP_ID = TT.TTYP_ID 
+              ORDER BY THEMETYPE_ID, THEMEGROUP_ID, THEMECATEGORY_ID, MANFACTURE_ID, THEME_ID
 
-      FROM [Migration].[VIEW_THEME] AS TM
-      JOIN [Migration].[VIEW_MANUFACTURE] AS MF ON MF.MANF_ID = TM.MANF_ID AND MNF_SEQ = TM.THEM_SEQ
-      JOIN [Migration].[VIEW_THEME_CATEGORY] AS TC ON TM.THEME_CAT_ID = TC.TCAT_ID AND TM.THEM_SEQ = TC.TCAT_SEQ
-      JOIN [Migration].[VIEW_THEME_GROUP] AS TG ON TG.TGRP_ID = TC.TCAT_TGRP_ID AND TG.THM_GRP_SEQ = TC.TCAT_SEQ
-      JOIN [Migration].[VIEW_THEME_TYPE] AS TT ON TT.TTYP_ID = TG.TGRP_TTYP_ID AND TT.THEM_TYPE_SEQ = TG.THM_GRP_SEQ
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />

@@ -145,6 +145,15 @@ namespace Migration.Common
                 }
                 private set { }
             }
+            public static int SqlCommandTimeout
+            {
+                get
+                {
+                    int sqlCommandTimeout;
+                    return int.TryParse(ConfigurationManager.AppSettings.Get("SqlCommandTimeout"), out sqlCommandTimeout) ? sqlCommandTimeout : 500;
+                }
+                private set { }
+            }
         }
 
         public static class Queries

@@ -8,6 +8,7 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              Width="400"
              Height="380"
+             Loaded="UserControl_Loaded"
              mc:Ignorable="d">
     <Grid>
         <Border Background="White" BorderBrush="DarkGray" BorderThickness="2" />

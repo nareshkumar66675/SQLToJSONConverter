@@ -25,7 +25,7 @@ namespace Migration.Persistence.Helpers
                     {
                         bulkCopy.DestinationTableName = destinationTableName;
                         bulkCopy.BatchSize = AppSettings.BulkCopyBatchSize;
-                        bulkCopy.BulkCopyTimeout = 0;
+                        bulkCopy.BulkCopyTimeout = AppSettings.SqlCommandTimeout;
                         try
                         {
                             bulkCopy.WriteToServer(data);
@@ -34,9 +34,15 @@ namespace Migration.Persistence.Helpers
                         }
                         catch (Exception ex)
                         {
-                            transaction.Rollback();
-                            Logger.Instance.LogError($"Bulk Copy Failed for table { destinationTableName } ", ex);
-                            throw;
+                            try
+                            {
+                                transaction.Rollback();
+                                throw new Exception($"Bulk Copy Failed for table { destinationTableName } ", ex);
+                            }
+                            catch (Exception ex1)
+                            {
+                                throw new Exception("Rollback Failed", ex1);
+                            }
                         }
                     }
                 }

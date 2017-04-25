@@ -26,7 +26,7 @@ namespace Migration.Generate.Helpers
                 dynamic result;
                 using (var conn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
                 {
-                    result = conn.Query<dynamic>(query,commandTimeout:500);
+                    result = conn.Query<dynamic>(query,commandTimeout:AppSettings.SqlCommandTimeout);
                 }
                 return result;
             }
@@ -46,7 +46,7 @@ namespace Migration.Generate.Helpers
                     conn.Open();
 
                     SqlCommand cmd = new SqlCommand(query, conn);
-
+                    cmd.CommandTimeout = AppSettings.SqlCommandTimeout;
                     rsltTable.Load(cmd.ExecuteReader());
                 }
                 return rsltTable;

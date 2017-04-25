@@ -214,14 +214,21 @@ namespace Migration.Configuration
         }
         public static Components Remove(this Components sourceItems, List<string> items)
         {
-            var temp =(Components) sourceItems.Clone();
-            items.ForEach(item =>
+            //var temp =(Components) sourceItems.Clone();
+            Components components = new Components();
+            List<Group> grps = new List<Group>();
+            sourceItems.Group.ForEach(grp =>
             {
-                 //temp.Group.ForEach(grp=>grp.Component.RemoveAll(comp=>comp.Name==item));
-
-
+                List<Component> compsTemp = new List<Component>();
+                grp.Component.ForEach(comp =>
+                {
+                    if (!items.Contains(comp.Name))
+                        compsTemp.Add(comp);
+                });
+                grps.Add(new Group(compsTemp, grp.Name));
             });
-            return temp;
+            components.Group = grps;
+            return components;
         }
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)

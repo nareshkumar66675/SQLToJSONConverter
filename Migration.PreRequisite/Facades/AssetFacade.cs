@@ -15,8 +15,11 @@ namespace Migration.PreRequisite.Facades
         public AssetFacade()
         {
             _assetPreRequisites.Add(new ExecuteScriptPreRequisite("NewMigrationTables", _connectionString));
+            _assetPreRequisites.Add(new ExecuteScriptPreRequisite("AssetDefault", _connectionString));
             _assetPreRequisites.Add(new InsertCompDefinitionIdPreRequisite(_connectionString));
             _assetPreRequisites.Add(new ExecuteScriptPreRequisite("OptionOrderUpdate", ConnectionStrings.LegacyConnectionString));
+            _assetPreRequisites.Add(new InsertCustomAssetIDPreRequisite(_connectionString));
+            _assetPreRequisites.Add(new InsertNumberMasterPreRequisite(_connectionString));
         }
         public override FacadeType Type => FacadeType.Asset;
         public override List<IPreRequisite> PreRequisites => _assetPreRequisites;

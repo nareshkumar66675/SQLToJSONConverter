@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Migration.Common.Common;
 
 namespace Migration.PreRequisite.PreRequisites
 {
@@ -12,12 +11,11 @@ namespace Migration.PreRequisite.PreRequisites
     {
         private const string _name = "InsertCompDefinitionId";
         private readonly string _connetionString = string.Empty;
+        public string Name => _name;
         public InsertCompDefinitionIdPreRequisite(string connectionString)
         {
             _connetionString = connectionString;
         }
-        public string Name => _name;
-
         public bool Execute()
         {
             return SqlOperation.InsertComponentDefinition(_connetionString);

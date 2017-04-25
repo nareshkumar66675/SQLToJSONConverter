@@ -57,6 +57,8 @@
     <Compile Include="PreRequisiteFactory.cs" />
     <Compile Include="PreRequisites\ExecuteScriptPreRequisite.cs" />
     <Compile Include="PreRequisites\InsertCompDefinitionIdPreRequisite.cs" />
+    <Compile Include="PreRequisites\InsertCustomAssetIDPreRequisite.cs" />
+    <Compile Include="PreRequisites\InsertNumberMasterPreRequisite.cs" />
     <Compile Include="PreRequisites\UMDataRetrievalPreRequisite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -71,7 +73,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\D_AssetDefault.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\D_AuthDefaultInserts.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\D_CustomAssetIdInsert.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\D_NumberMasterInsert.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\SP_Asset_History.sql">

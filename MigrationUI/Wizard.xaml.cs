@@ -54,10 +54,10 @@ namespace MigrationTool
             AuthCompSelectCntrl.OnComponentsSelectionChanged += AuthCompSelectCntrl_OnComponentsSelectionChanged;
             AssetsCompSelectCntrl.OnComponentsSelectionChanged += AssetsCompSelectCntrl_OnComponentsSelectionChanged;
             AssetSiteCntrl.OnSitesSelectionChanged += AssetSiteCntrl_OnSitesSelectionChanged;
-            AuthCompProcessCntrl.ProcessCompleted += AuthCompProcessCntrl_ProcessCompleted;
-            AssetCompProcessCntrl.ProcessCompleted += AssetCompProcessCntrl_ProcessCompleted;
-            ReportsCompProcessCntrl.ProcessCompleted += ReportsCompProcessCntrl_ProcessCompleted;
-            HistoryProcessCntrl.ProcessCompleted += HistoryProcessCntrl_ProcessCompleted;
+            AuthCompProcessCntrl.ProcessCompleted += ProcessCntrl_ProcessCompleted;
+            AssetCompProcessCntrl.ProcessCompleted += ProcessCntrl_ProcessCompleted;
+            ReportsCompProcessCntrl.ProcessCompleted += ProcessCntrl_ProcessCompleted;
+            HistoryProcessCntrl.ProcessCompleted += ProcessCntrl_ProcessCompleted;
             #endregion
 
             UpdateDbConnectStatus();
@@ -117,7 +117,7 @@ namespace MigrationTool
                     if (CanProcessReport())
                     {
                         CanClose = false;
-                        ReportsCompProcessCntrl.StartComponentProcess(GetHistoryNotCompletedCompoennts());
+                        ReportsCompProcessCntrl.StartComponentProcess(GetHistoryNotCompletedComponents());
                     }
                     else
                     {
@@ -234,25 +234,11 @@ namespace MigrationTool
         #endregion
 
         #region ProcessCompletedEvents
-        private void AssetCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
+        private void ProcessCntrl_ProcessCompleted(object sender, EventArgs e)
         {
             CanClose = true;
             Wiz.CurrentPage.CanSelectNextPage = true;
-        }
-        private void AuthCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
-        {
-            CanClose = true;
-            Wiz.CurrentPage.CanSelectNextPage = true;
-        }
-        private void ReportsCompProcessCntrl_ProcessCompleted(object sender, EventArgs e)
-        {
-            CanClose = true;
-            Wiz.CurrentPage.CanSelectNextPage = true;
-        }
-        private void HistoryProcessCntrl_ProcessCompleted(object sender, EventArgs e)
-        {
-            CanClose = true;
-            Wiz.CurrentPage.CanSelectNextPage = true;
+            Wiz.CurrentPage.CanCancel = true;
         }
         #endregion
 
@@ -420,7 +406,7 @@ namespace MigrationTool
 
             return statusIcon;
         }
-        private Components GetHistoryNotCompletedCompoennts()
+        private Components GetHistoryNotCompletedComponents()
         {
             var allComp=Configurator.GetComponentsByGroup(GroupType.REPORT);
 

@@ -57,9 +57,6 @@ namespace MigrationTool.Views
                 ComponentsCheckList.SelectedItemsOverride = SourceComponents.ToList();
                 SelectedComponents = SourceComponents.ToList();
                 NotifySelectionChanged();
-
-                if(SourceComponents?.Count == 0)
-                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), string.Format(Properties.Resources.ComponentsSelectUserControl_AllItemsCompleted_Message,Environment.NewLine), Properties.Resources.ComponentsSelectUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -119,6 +116,12 @@ namespace MigrationTool.Views
             SelectedComponents.Clear();
             ComponentsCheckList.Items.Refresh();
             NotifySelectionChanged();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (SourceComponents?.Count == 0)
+                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), string.Format(Properties.Resources.ComponentsSelectUserControl_AllItemsCompleted_Message, Environment.NewLine), Properties.Resources.ComponentsSelectUserControl_MessageBox_Title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
