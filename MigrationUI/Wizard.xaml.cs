@@ -35,6 +35,7 @@ namespace MigrationTool
         private ComponentsSelectUserControl AuthCompSelectCntrl = new ComponentsSelectUserControl();
         private ComponentsSelectUserControl AssetsCompSelectCntrl = new ComponentsSelectUserControl();
         private SiteSelectUserControl AssetSiteCntrl = new SiteSelectUserControl();
+        private SiteSelectUserControl HistorySiteCntrl = new SiteSelectUserControl();
         private ComponentsProcessUserControl AuthCompProcessCntrl = new ComponentsProcessUserControl();
         private ComponentsProcessUserControl AssetCompProcessCntrl = new ComponentsProcessUserControl();
         private ComponentsProcessUserControl ReportsCompProcessCntrl = new ComponentsProcessUserControl();
@@ -54,6 +55,7 @@ namespace MigrationTool
             AuthCompSelectCntrl.OnComponentsSelectionChanged += AuthCompSelectCntrl_OnComponentsSelectionChanged;
             AssetsCompSelectCntrl.OnComponentsSelectionChanged += AssetsCompSelectCntrl_OnComponentsSelectionChanged;
             AssetSiteCntrl.OnSitesSelectionChanged += AssetSiteCntrl_OnSitesSelectionChanged;
+            HistorySiteCntrl.OnSitesSelectionChanged += AssetSiteCntrl_OnSitesSelectionChanged;
             AuthCompProcessCntrl.ProcessCompleted += ProcessCntrl_ProcessCompleted;
             AssetCompProcessCntrl.ProcessCompleted += ProcessCntrl_ProcessCompleted;
             ReportsCompProcessCntrl.ProcessCompleted += ProcessCntrl_ProcessCompleted;
@@ -89,7 +91,7 @@ namespace MigrationTool
                 // Asset Connection Page -> Asset Sites Selection Page
                 else if (Wiz.CurrentPage == AssetConnectionPage)
                 {
-                    Grid AssetSiteSelectGrid = new Grid();
+                    //Grid AssetSiteSelectGrid = new Grid();
                     AssetSiteCntrl.LoadSites(GroupType.ASSET);
                     AddUserControlToPage(AssetSiteSelectionPage, AssetSiteCntrl);
                 }
@@ -126,12 +128,19 @@ namespace MigrationTool
                         e.Cancel = true;
                     }
                 }
-                //Reports Process Page -> Histroy Migration Page
+                //Reports Process Page -> History Site Selection Page
                 else if (Wiz.CurrentPage == ReportComponentsProcessPage)
                 {
+                    HistorySiteCntrl.LoadSites(GroupType.HISTORY);
+                    AddUserControlToPage(HistorySiteSelectionPage, HistorySiteCntrl);
+                }
+                //History Site Selection Page -> Histroy Migration Page
+                else if (Wiz.CurrentPage==HistorySiteSelectionPage)
+                {
+                    HistoryProcessCntrl.SelectedSites = HistorySiteCntrl.GetSelectedSites();
                     HistoryProcessCntrl.InitializeData();
                 }
-                //Reports Process Page -> Migration Report Page
+                //Histroy Migration Page -> Migration Report Page
                 else if (Wiz.CurrentPage == HistoryProcessPage)
                 {
                     ViewMigrationRptCntrl.ShowReport();
@@ -229,7 +238,7 @@ namespace MigrationTool
         }
         private void AssetSiteCntrl_OnSitesSelectionChanged(object sender, SiteSelectUserControl.SitesSelectionChangedEventArgs e)
         {
-            AssetSiteSelectionPage.CanSelectNextPage = !e.IsEmpty;
+            Wiz.CurrentPage.CanSelectNextPage = !e.IsEmpty;
         } 
         #endregion
 

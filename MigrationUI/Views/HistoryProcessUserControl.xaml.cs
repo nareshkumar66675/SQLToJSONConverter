@@ -38,12 +38,12 @@ namespace MigrationTool.Views
         DateTime overallStartTime;
 
         private bool terminate = false;
-
+        private int selctedSiteCount;
         private string siteCompletedText = "{0} of {1} Completed";
         public event EventHandler ProcessStarted;
         public event EventHandler ProcessCompleted;
-        public Dictionary<string, string> NotMigratedSites { get; set; }
-        public Dictionary<string, string> AllSites { get; set; }
+        //public Dictionary<string, string> NotMigratedSites { get; set; }
+        public Dictionary<string, string> SelectedSites { get; set; }
         public KeyValuePair<string, string> CurrentSite { get; set; }
         public Dictionary<string, string> FailedSites { get; set; }
         public Dictionary<string, string> MigratedSites { get; set; } 
@@ -71,20 +71,21 @@ namespace MigrationTool.Views
         {
             FailedSites = new Dictionary<string, string>();
             MigratedSites = new Dictionary<string, string>();
-            NotMigratedSites = new Dictionary<string, string>();
-            AllSites = DatabaseHelper.GetAllSitesFromLegacy();//.Where(t=> t.Key=="233").ToDictionary(u=>u.Key,v=>v.Value);
-            OverallProgress.Maximum = AllSites.Count();
+            //NotMigratedSites = new Dictionary<string, string>();
+            //SelectedSites = DatabaseHelper.GetAllSitesFromLegacy();//.Where(t=> t.Key=="233").ToDictionary(u=>u.Key,v=>v.Value);
+            selctedSiteCount= SelectedSites.Count();
+            OverallProgress.Maximum = selctedSiteCount;
 
-            NotMigratedSites = GetNotMigratedSites(GroupType.HISTORY, AllSites);
+            //NotMigratedSites = GetNotMigratedSites(GroupType.HISTORY, SelectedSites);
             CompletedListBox.ItemsSource = MigratedSites;
-            NotCompletedListBox.ItemsSource = NotMigratedSites;//.ToDictionary(t=>t.Key,t=>t.Value);
+            NotCompletedListBox.ItemsSource = SelectedSites;//.ToDictionary(t=>t.Key,t=>t.Value);
             FailedSitesListBox.ItemsSource = FailedSites;
             NotCompletedListBox.DisplayMemberPath = "Value";
             CompletedListBox.DisplayMemberPath = "Value";
             FailedSitesListBox.DisplayMemberPath = "Value";
-            OverallProgress.Value = AllSites.Count() - NotMigratedSites.Count();
+            OverallProgress.Value = 0;//SelectedSites.Count() - NotMigratedSites.Count();
 
-            OverallStatusText.Text = string.Format(siteCompletedText, AllSites.Count() - NotMigratedSites.Count(), AllSites.Count());
+            OverallStatusText.Text = string.Format(siteCompletedText, 0, selctedSiteCount);
 
         }
 
@@ -113,7 +114,7 @@ namespace MigrationTool.Views
         {
             overallStartTime = DateTime.Now;
             overallTimer.Start();
-            foreach (var site in NotMigratedSites.ToDictionary(t => t.Key, t => t.Value))
+            foreach (var site in SelectedSites.ToDictionary(t => t.Key, t => t.Value))
             {
                 if(!terminate)
                 {
@@ -123,29 +124,29 @@ namespace MigrationTool.Views
                     siteTimer.Start();
                     CurrentSite = site;
                     Dispatcher.Invoke(() => SiteNameText.Text = CurrentSite.Value);
-                    Configurator.SetQueryParamsFrTrnsfrmWtParams(GroupType.HISTORY, new List<string> { string.Join(",", site.Key) });
+                    //Configurator.SetQueryParamsFrTrnsfrmWtParams(GroupType.HISTORY, new List<string> { string.Join(",", site.Key) });
 
-                    Generate generate = new Generate();
-                    Persist persist = new Persist();
+                    //Generate generate = new Generate();
+                    //Persist persist = new Persist();
 
-                    var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
-                    var progressPersist = new Progress<ProcessStatus>(PersistProgress);
+                    //var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
+                    //var progressPersist = new Progress<ProcessStatus>(PersistProgress);
 
-                    //Starting Generate and Persist Parallely
-                    Task genTask = generate.Start(Configurator.GetComponentsByGroup(GroupType.HISTORY), progressGenerate);
-                    Task persisTask = persist.Start(progressPersist);
+                    ////Starting Generate and Persist Parallely
+                    //Task genTask = generate.Start(Configurator.GetComponentsByGroup(GroupType.HISTORY), progressGenerate);
+                    //Task persisTask = persist.Start(progressPersist);
 
-                    await genTask;
-                    await persisTask;
-                    //Thread.Sleep(100);
-                    //GenerateProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
-                    //Thread.Sleep(1500);
-                    //if (int.Parse(site.Key) % 2 == 0) GenerateProgress(new ProcessStatus("AST_HISTORY", 100, Status.Failed)); else GenerateProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
-                    ////Thread.Sleep(1000);
-                    //PersistProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
-                    //Thread.Sleep(1500);
-                    //if (int.Parse(site.Key) % 2 == 0) PersistProgress(new ProcessStatus("AST_HISTORY", 100, Status.Failed));else PersistProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
-                    //Thread.Sleep(100);
+                    //await genTask;
+                    //await persisTask;
+                    Thread.Sleep(100);
+                    GenerateProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
+                    Thread.Sleep(1500);
+                    if (int.Parse(site.Key) % 2 == 0) GenerateProgress(new ProcessStatus("AST_HISTORY", 100, Status.Failed)); else GenerateProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
+                    //Thread.Sleep(1000);
+                    PersistProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
+                    Thread.Sleep(1500);
+                    if (int.Parse(site.Key) % 2 == 0) PersistProgress(new ProcessStatus("AST_HISTORY", 100, Status.Failed)); else PersistProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
+                    Thread.Sleep(100);
                     siteTimer.Stop();
                 }
                 else
@@ -168,6 +169,7 @@ namespace MigrationTool.Views
                 else if(FailedSites.Count > 0)
                 {
                     string message = $"{ FailedSites.Count} Sites Failed.";
+                    statusBar.Text = "History Migration Completed With Errors";
                     ErrorHandler.ShowErrorMsgWtLog(Window.GetWindow(this), "History Process", message);
                 }
             });
@@ -183,13 +185,15 @@ namespace MigrationTool.Views
                 {
                     SiteProgress.Value = 100;
                     SiteProgress.Foreground = Brushes.Red;
+                    OverallProgress.Value++;
+                    OverallStatusText.Text = string.Format(siteCompletedText, OverallProgress.Value, selctedSiteCount);
                     UpdateFailedSiteList();
                 }
                 else if (processStatus.Status == Status.Success)
                 {
-                    UpdateCompletedSiteList();
                     OverallProgress.Value++;
-                    OverallStatusText.Text = string.Format(siteCompletedText, OverallProgress.Value, AllSites.Count());
+                    OverallStatusText.Text = string.Format(siteCompletedText, OverallProgress.Value, selctedSiteCount);
+                    UpdateCompletedSiteList();
                 }
             });
         }
@@ -245,14 +249,14 @@ namespace MigrationTool.Views
         }
         private void UpdateCompletedSiteList()
         {
-            NotMigratedSites.Remove(CurrentSite.Key);
+            SelectedSites.Remove(CurrentSite.Key);
             MigratedSites.Add(CurrentSite.Key, CurrentSite.Value);
             CompletedListBox.Items.Refresh();
             NotCompletedListBox.Items.Refresh();
         }
         private void UpdateFailedSiteList()
         {
-            NotMigratedSites.Remove(CurrentSite.Key);
+            SelectedSites.Remove(CurrentSite.Key);
             NotCompletedListBox.Items.Refresh();
             if (!FailedSites.ContainsKey(CurrentSite.Key))
             {
@@ -272,8 +276,8 @@ namespace MigrationTool.Views
         }
         private void HistoryProcessUserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (AllSites != null && MigratedSites != null)
-                if (AllSites.Count == MigratedSites.Count)
+            if (SelectedSites != null && MigratedSites != null)
+                if (SelectedSites.Count == MigratedSites.Count)
                 {
                     Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "All Items has been Migrated.\nPlease Proceed to Next page.", "History Process", MessageBoxButton.OK, MessageBoxImage.Information);
                     startButton.IsEnabled = false;
