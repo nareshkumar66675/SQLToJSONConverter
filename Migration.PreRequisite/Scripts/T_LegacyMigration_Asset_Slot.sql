@@ -48,12 +48,24 @@ DROP Table MIGRATION.GAM_ASSET_COMP_VALUES
 END
 GO
 
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAME_DETAIL_COMPONENTS') AND type in (N'U'))
+BEGIN
+DROP TABLE MIGRATION.GAME_DETAIL_COMPONENTS
+END
+GO
 
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_GAMES_DETAILS') AND type in (N'U'))
 BEGIN
 DROP Table MIGRATION.GAM_GAMES_DETAILS
 END
 GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.DATAMANAGEMENT_ASSET_DATA') AND type in (N'U'))
+BEGIN
+DROP Table MIGRATION.DATAMANAGEMENT_ASSET_DATA
+END
+GO
+
 
 
 -------------- DDL Index ----------------
@@ -145,6 +157,7 @@ OPTION_NAME NVARCHAR(128),
 OPTION_CODE NVARCHAR(128),
 ASST_OPTN_ORDER INT
 )
+GO
 
 --- Asset Comp Values
 CREATE TABLE MIGRATION.GAM_ASSET_COMP_VALUES
@@ -169,6 +182,7 @@ ComponentKey nvarchar(128),
 ComponentInstanceId nvarchar(128),
 ComponentCode nvarchar(128)
 )
+GO
 
 
 DROP INDEX IF EXISTS [GAM_ASSET_COMP_VALUES_INDX] ON [MIGRATION].[GAM_ASSET_COMP_VALUES]
@@ -200,7 +214,7 @@ cast('Area' as nvarchar) as ComponentName,
 cast(ar.AR_LONG_NAME as nvarchar)  as ComponentValue,
 cast(ST.site_number as nvarchar) +'_'+ cast(ar_new_id as nvarchar)+'_22007' as ComponentKey,
 --cast('110_2_22007' as nvarchar)  as ComponentKey, 
-cast('22007' as nvarchar) as ComponentInstanceId,
+cast('AREA' as nvarchar) as ComponentInstanceId,
 cast('AREA'as nvarchar)  as ComponentCode
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
 join MIGRATION.GAM_ASSET_STANDARD_DETAILS as gsd on asd.ASD_STD_ID = gsd.ASD_STD_LEGACY_ID
@@ -211,11 +225,12 @@ JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 JOIN [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 LEFT JOIN GAM.AREA AS AR ON AR.IS_DELETED = 0 AND AR.AREA_ID = ASD.ASD_AREA_ID
 left join migration.gam_area as gar on gar.[AREA_LEGCY_ID] = ASD.ASD_AREA_ID
 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
 Order by gsd.ASD_STD_NEW_ID
 GO
 -------------------
@@ -233,8 +248,8 @@ cast('22008' as nvarchar) as ComponentId,
 cast('Zone' as nvarchar) as ComponentName,
 cast(zn.zn_LONG_NAME as nvarchar) as ComponentValue,
 --cast('110_2_22008' as nvarchar) as ComponentKey,
-cast(ST.site_number as nvarchar) +'_'+ cast(ar_new_id as nvarchar)+'_22008' as ComponentKey,
-cast('22008' as nvarchar)  as ComponentInstanceId,
+cast(ST.site_number as nvarchar) +'_'+ cast(zn_new_id as nvarchar)+'_22008' as ComponentKey,
+cast('ZONE' as nvarchar)  as ComponentInstanceId,
 cast('ZONE' as nvarchar)  as ComponentCode
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
 JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
@@ -245,11 +260,12 @@ JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 LEFT JOIN GAM.ZONE AS ZN ON ZN.IS_DELETED = 0 AND ZN.ZONE_ID = ASD.ASD_ZONE_ID
-left join migration.gam_zone as gzn on gzn.[AREA_LEGCY_ID] = ASD.ASD_ZONE_ID
+left join migration.gam_zone as gzn on gzn.[ZONE_LEGCY_ID] = ASD.ASD_ZONE_ID
 left join migration.GAM_AREA as gar on gar.[AREA_LEGCY_ID] = ASD.ASD_AREA_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
 GO
 -------------------
 -- Bank
@@ -262,12 +278,12 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 ---SequenceId----
 3 as Seq_Id,
 -- Bank --
-cast('22008' as nvarchar) as ComponentId,
+cast('22009' as nvarchar) as ComponentId,
 cast('Bank' as nvarchar) as ComponentName,
 cast(bk.bk_LONG_NAME as nvarchar) as ComponentValue,
 --cast('110_2_22009' as nvarchar) as ComponentKey,
-cast(ST.site_number as nvarchar) +'_'+ cast(ar_new_id as nvarchar)+'_22009' as ComponentKey,
-cast('22009' as nvarchar) as ComponentInstanceId,
+cast(ST.site_number as nvarchar) +'_'+ cast(BK_new_id as nvarchar)+'_22009' as ComponentKey,
+cast('BANK' as nvarchar) as ComponentInstanceId,
 cast('BANK' as nvarchar)  as ComponentCode
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
 JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
@@ -278,11 +294,12 @@ JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 LEFT JOIN GAM.BANK AS BK ON bk.IS_DELETED = 0 AND BK.BANK_ID = ASD.ASD_BANK_ID
-left join migration.gam_bank as gbk on gbk.[AREA_LEGCY_ID] = ASD.ASD_BANK_ID
+left join migration.gam_bank as gbk on gbk.[BANK_LEGCY_ID] = ASD.ASD_BANK_ID
 left join migration.GAM_AREA as gar on gar.[AREA_LEGCY_ID] = ASD.ASD_AREA_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
 GO
 -------------------
 --Manufacturer
@@ -298,9 +315,9 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 cast('22002'as nvarchar)  as ComponentId,
 cast('Manufacturer' as nvarchar) as ComponentName,
 cast(MNF.MANF_LONG_NAME as nvarchar)  as ComponentValue,
---cast('0_5_22002' as nvarchar) as ComponentKey,
-'0_'+ cast(mf_new_id as nvarchar)+'_22002' as ComponentKey,
-cast('22002' as nvarchar) as ComponentInstanceId,
+--'0_'+ cast(mf_new_id as nvarchar)+'_22002' as ComponentKey,
+'0_'+ cast(Manufacturer_Id as nvarchar)+'_22002' as ComponentKey,
+cast('MANUFACTURER' as nvarchar) as ComponentInstanceId,
 cast('MANUFACTURER' as nvarchar)  as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -314,8 +331,11 @@ JOIN [MIGRATION].[GAM_PROPERTY] AS GPT ON GPT.[PROP_LEGCY_ID] = PT.PROP_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
 LEFT JOIN [MIGRATION].[GAM_MANUFACTURER] AS GMNF ON MNF.MANF_ID = GMNF.MNF_LEGCY_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MNF.IS_DELETED = 0
+AND MANF_LONG_NAME NOT IN ('POS')
 GO
 
 
@@ -334,8 +354,8 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 cast('Model Type' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
 --cast('0_2_22003' as nvarchar) as ComponentKey,
-'0_'+ cast(MDLTYPE_NEW_ID as nvarchar)+'_22003' as ComponentKey,
-'22003' as ComponentInstanceId,
+'0_'+ cast(ModelType_Id as nvarchar)+'_22003' as ComponentKey,
+'MODELTYPE' as ComponentInstanceId,
 'MODEL.TYPE' as ComponentCode
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
 JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
@@ -345,12 +365,15 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 126 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 LEFT JOIN [GAM].MODEL_TYPE AS MTYP ON  MTYP.IS_DELETED = 0 AND  MDLTYP_LONG_NAME = AST_OPTN_VALUE
 left join [MIGRATION].[GAM_MODEL_TYPE] as gmty on gmty.MDLTYPE_LEGCY_ID = [MDLTYP_ID]
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 )
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
 GO
 
 -------------------
@@ -367,9 +390,9 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 '22005' as ComponentId,
 cast('Model' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-'0_'+CAST(MDL_NEW_ID AS NVARCHAR)+'_22005' as ComponentKey,
+'0_'+CAST(Model_Id AS NVARCHAR)+'_22005' as ComponentKey,
 --cast('0_2_22005' as nvarchar) as ComponentKey,
-'22005' as ComponentInstanceId,
+'MODEL' as ComponentInstanceId,
 'MODEL' as ComponentCode 
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -380,11 +403,14 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 JOIN GAM.ASSET_DETAIL AS AD ON AD.IS_DELETED = 0 AND  ad.[AST_OPTION_ID] = 108 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 LEFT JOIN [GAM].MODEL AS MDL ON MDL.IS_DELETED = 0 AND [MDL_LONG_NAME] = AST_OPTN_VALUE
 LEFT JOIN MIGRATION.GAM_MODEL AS GDML ON MDL.MDL_ID = GDML.MDL_LEGCY_ID --MDL_NEW_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
 GO
 
 -------------------
@@ -403,7 +429,7 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 cast('Denomination' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
 '0_'+cast(Components_Id as nvarchar)+'_1' as ComponentKey,
-'220113' as ComponentInstanceId,
+'ASSETDENOMINATION' as ComponentInstanceId,
 'ASSET.DENOMINATION' as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -415,10 +441,11 @@ JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 202 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 LEFT JOIN MIGRATION.GAM_DENOMINATION AS GD ON GD.DENM_AMOUNT = AST_OPTN_VALUE
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
 GO
 
 -------------------
@@ -438,7 +465,7 @@ cast('GMU Denom' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
 --cast('0_1_1' as nvarchar) as ComponentKey,
 '0_'+cast(Components_Id as nvarchar)+'_1' as ComponentKey,
-'220114' as ComponentInstanceId,
+'ASSETGMUDENOM' as ComponentInstanceId,
 'ASSET.GMU.DENOM' as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -449,11 +476,12 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 203 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 LEFT JOIN MIGRATION.GAM_DENOMINATION AS GD ON GD.DENM_AMOUNT = AST_OPTN_VALUE
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
 GO
 
 -------------------
@@ -471,8 +499,9 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 '22011' as ComponentId,
 cast('Fill Denom' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-cast('0_1_1' as nvarchar) as ComponentKey,
-'220115' as ComponentInstanceId,
+--cast('0_1_1' as nvarchar) as ComponentKey,
+'0_'+cast(components_id as nvarchar)+'_1' as ComponentKey,
+'ASSETFILLDENOM' as ComponentInstanceId,
 'ASSET.FILL.DENOM' as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -483,10 +512,12 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 204 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_DENOMINATION AS GDM ON GDM.DENM_AMOUNT = AD.AST_OPTN_VALUE
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
 GO
 
 -------------------
@@ -501,12 +532,12 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 10 as Seq_Id,
 
 -- Type Description ---
-'22069' as ComponentId,
+'22068' as ComponentId,
 cast('Type Description' as nvarchar) as ComponentName,
-cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
+cast(upper(ad.AST_OPTN_VALUE) as nvarchar)  as ComponentValue,
 --cast('0_5_22069' as nvarchar) as ComponentKey,
-'0_'+ cast(TYPEDESCP_ID as nvarchar)+'_22069' as ComponentKey,
-'22069' as ComponentInstanceId,
+'0_'+ cast(TypeDescription_Id as nvarchar)+'_22068' as ComponentKey,
+'ASSETTYPEDESCRIPTION' as ComponentInstanceId,
 'ASSET.TYPE.DESCRIPTION' as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -517,11 +548,13 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 210 and AD.ASD_STD_ID = ASD.ASD_STD_ID
 LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS TYAST ON TYAST.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS TDSC ON TDSC.ID = TYAST.TYPEDESCP_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
 GO
 
 -------------------
@@ -539,8 +572,8 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 '22063' as ComponentId,
 cast('Hold Percentage' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-cast('0_5_22063' as nvarchar) as ComponentKey,
-'22063' as ComponentInstanceId,
+'0_'+cast(HoldPC_Id as nvarchar) +'_22063' as ComponentKey,
+'ASSETHOLDPERCENTAGE' as ComponentInstanceId,
 'ASSET.HOLD.PERCENTAGE' as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -551,10 +584,13 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 206 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
 GO
 
 ----------------------
@@ -572,8 +608,8 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 '22064' as ComponentId,
 cast('Game Hold Percentage' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-cast('0_5_22064' as nvarchar) as ComponentKey,
-'22064' as ComponentInstanceId,
+'0_'+cast(GameHoldPC_Id as nvarchar) +'_22064' as ComponentKey,
+'ASSETGAMEHOLDPERCENT' as ComponentInstanceId,
 'ASSET.GAME.HOLD.PERCENT' as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -584,11 +620,15 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 207 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
 GO
+
 -------------------
 --Max Bet
 -------------------
@@ -604,8 +644,8 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 '22065' as ComponentId,
 cast('Max Bet' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-cast('0_5_22065' as nvarchar) as ComponentKey,
-'22065' as ComponentInstanceId,
+'0_'+cast(MaxBet_Id as nvarchar) +'_22065' as ComponentKey,
+'ASSETUSERCUSTOM1' as ComponentInstanceId,
 'ASSET.USER.CUSTOM.1' as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -617,9 +657,12 @@ JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 244 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
 GO
 
 ---------------------
@@ -637,8 +680,8 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 '22066' as ComponentId,
 cast('Line Configuration' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-cast('0_5_22066' as nvarchar) as ComponentKey,
-'22066' as ComponentInstanceId,
+'0_'+cast(LineConfiguration_Id as nvarchar) +'_22066' as ComponentKey,
+'ASSETUSERCUSTOM3' as ComponentInstanceId,
 'ASSET.USER.CUSTOM.3' as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -649,11 +692,15 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 246 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
 GO
+
 -------------------
 --Game Category
 -------------------
@@ -669,8 +716,8 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 '22067' as ComponentId,
 cast('Game Category' as nvarchar) as ComponentName,
 cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
-cast('0_5_22067' as nvarchar) as ComponentKey,
-'22067' as ComponentInstanceId,
+'0_'+cast(GameCategory_Id as nvarchar) +'_22067' as ComponentKey,
+'ASSETUSERCUSTOM4' as ComponentInstanceId,
 'ASSET.USER.CUSTOM.4' as ComponentCode
 
 FROM GAM.ASSET_STANDARD_DETAILS AS ASD
@@ -682,9 +729,15 @@ JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
 JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 247 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
+GO
+
+SELECT GETDATE() AS END_DATE_TIME
 GO
 
 /*-------------------
@@ -768,13 +821,145 @@ SELECT GETDATE() AS END_dAT_TIME
 --DROP TABLE MIGRATION.GAM_GAMES_DETAILS
 GO
 
+-- GAME DETAILS - COMPONENT DATA
+
+SELECT * 
+INTO MIGRATION.GAME_DETAIL_COMPONENTS
+FROM ( SELECT GM.GAME_ID, 1 as Seq,
+22011 as InlineAssets_Components_ComponentId,
+'Denom' as InlineAssets_Components_ComponentName,
+gdm.DENM_AMOUNT as InlineAssets_Components_ComponentValue,
+'0_'+cast(gdm.Components_Id as nvarchar)+'_1' as InlineAssets_Components_ComponentKey,
+'Inline260DENOMINATION' as InlineAssets_Components_ComponentInstanceId,
+'DENOMINATION' as InlineAssets_Components_ComponentCode,
+ row_number() over (order by GAME_ID) Row_Num,
+ 6 as Htry_Indx,
+ GM.IS_DELETED as Game_Deleted
+--, *
+FROM GAM.GAME_DETAILS AS GM
+JOIN GAM.DENOMINATION AS D ON D.DENM_ID = GAME_DENOM
+JOIN MIGRATION.GAM_DENOMINATION as gdm on gdm.DENM_ID = D.DENM_ID
+
+Union All
+
+-- theme type
+SELECT GM.GAME_ID, 2 as Seq,
+22057 as ComponentId,
+'Theme Type' as ComponentName,
+tt.TTYP_LONG_NAME as ComponentValue,
+'0_'+ CAST(GTD.ThemeType_Id as nvarchar) +'_22057' as ComponentKey,
+'Inline260THEMETYPE' as ComponentInstanceId,
+'THEME.TYPE' as ComponentCode,
+ row_number() over (order by GAME_ID) Row_Num,
+ 7 as Htry_Indx,
+ GM.IS_DELETED as Game_Deleted
+FROM GAM.GAME_DETAILS AS GM
+JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
+LEFT JOIN MIGRATION.GAM_THEME AS GTH ON GTH.TME_LEGCY_ID = TH.THEM_ID
+JOIN GAM.THEME_TYPE AS TT ON TT.TTYP_ID = TH.TTYP_ID
+JOIN GAM.THEME_CATEGORY AS TC ON TC.TCAT_ID = TH.THEME_CAT_ID
+JOIN GAM.THEME_GROUP AS TG ON TG.TGRP_ID = TC.TCAT_TGRP_ID
+JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
+LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMF ON GMF.MNF_LEGCY_ID = MNF.MANF_ID 
+LEFT JOIN MIGRATION.GAM_THEME_DETAILS AS GTD ON gtd.TTYP_ID = TT.TTYP_ID AND GTD.THEM_ID = TH.THEM_ID
+--WHERE GM.IS_DELETED = 0
+
+union all
+-- theme group
+SELECT GM.GAME_ID, 3 as Seq,
+22058 as ComponentId,
+'Theme Group' as ComponentName,
+TG.TGRP_LONG_NAME as ComponentValue,
+'0_'+ CAST(GTD.ThemeGroup_Id as nvarchar) +'_22058' as ComponentKey,
+'Inline260THEMEGROUP' as ComponentInstanceId,
+'THEME.GROUP' as ComponentCode,
+ row_number() over (order by GAME_ID) Row_Num,
+ 8 as Htry_Indx,
+ GM.IS_DELETED as Game_Deleted
+FROM GAM.GAME_DETAILS AS GM
+JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
+LEFT JOIN MIGRATION.GAM_THEME AS GTH ON GTH.TME_LEGCY_ID = TH.THEM_ID
+JOIN GAM.THEME_CATEGORY AS TC ON TC.TCAT_ID = TH.THEME_CAT_ID
+JOIN GAM.THEME_GROUP AS TG ON TG.TGRP_ID = TC.TCAT_TGRP_ID
+JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
+LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMF ON GMF.MNF_LEGCY_ID = MNF.MANF_ID 
+LEFT JOIN MIGRATION.GAM_THEME_DETAILS AS GTD ON gtd.TGRP_ID = TG.TGRP_ID AND GTD.THEM_ID = TH.THEM_ID
+--where GM.IS_DELETED = 0
+
+union all
+-- theme category
+SELECT GM.GAME_ID, 4 as Seq,
+22059 as ComponentId,
+'Theme Category' as ComponentName,
+TC.TCAT_LONG_NAME as ComponentValue,
+'0_'+ CAST(GTD.ThemeCategory_Id as nvarchar) +'_22059' as ComponentKey,
+'Inline260THEMECATEGORY' as ComponentInstanceId,
+'THEME CATEGORY' as ComponentCode,
+ row_number() over (order by GAME_ID) Row_Num,
+ 9 as Htry_Indx,
+ GM.IS_DELETED as Game_Deleted
+FROM GAM.GAME_DETAILS AS GM
+JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
+LEFT JOIN MIGRATION.GAM_THEME AS GTH ON GTH.TME_LEGCY_ID = TH.THEM_ID
+JOIN GAM.THEME_CATEGORY AS TC ON TC.TCAT_ID = TH.THEME_CAT_ID
+JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
+LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMF ON GMF.MNF_LEGCY_ID = MNF.MANF_ID 
+LEFT JOIN MIGRATION.GAM_THEME_DETAILS AS GTD ON gtd.TCAT_ID = TC.TCAT_ID AND GTD.THEM_ID = TH.THEM_ID
+--where GM.IS_DELETED = 0
+
+union all
+--Manufacturer
+SELECT GM.GAME_ID, 5 as Seq,
+22002 as ComponentId,
+'Manufacturer' as ComponentName,
+MNF.MANF_LONG_NAME as ComponentValue,
+'0_'+ CAST(GTD.Manfacture_Id as nvarchar) +'_22002' as ComponentKey,
+'Inline260MANUFACTURER' as ComponentInstanceId,
+'MANUFACTURER' as ComponentCode,
+ row_number() over (order by GAME_ID) Row_Num,
+ 10 as Htry_Indx,
+ GM.IS_DELETED as Game_Deleted
+FROM GAM.GAME_DETAILS AS GM
+JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
+LEFT JOIN MIGRATION.GAM_THEME AS GTH ON GTH.TME_LEGCY_ID = TH.THEM_ID
+JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
+LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMF ON GMF.MNF_LEGCY_ID = MNF.MANF_ID 
+LEFT JOIN MIGRATION.GAM_THEME_DETAILS AS GTD ON gtd.MANF_ID = MNF.MANF_ID AND GTD.THEM_ID = TH.THEM_ID
+
+--WHERE GM.IS_DELETED = 0
+
+UNION ALL
+--Theme
+SELECT GM.GAME_ID, 6 as Seq,
+22060 as ComponentId,
+'Theme Attributes' as ComponentName,
+TH.THEM_NAME as ComponentValue,
+'0_'+ CAST(Theme_Id as nvarchar) +'_22060' as ComponentKey,
+'Inline260THEME' as ComponentInstanceId,
+'THEME' as ComponentCode,
+ row_number() over (order by GAME_ID) Row_Num,
+ 11 as Htry_Indx,
+ GM.IS_DELETED as Game_Deleted
+FROM GAM.GAME_DETAILS AS GM
+JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
+LEFT JOIN MIGRATION.GAM_THEME AS GTH ON GTH.TME_LEGCY_ID = TH.THEM_ID
+JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
+LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMF ON GMF.MNF_LEGCY_ID = MNF.MANF_ID 
+LEFT JOIN MIGRATION.GAM_THEME_DETAILS AS GTD ON gtd.THEM_ID = TH.THEM_ID AND GTD.THEM_ID = TH.THEM_ID
+--where GM.IS_DELETED = 0
+) as gam_Comp 
+
+
+--DROP TABLE MIGRATION.GAM_GAMES_DETAILS
+GO
+
 
 SELECT ROW_NUMBER()OVER (partition by [GDM_ASTSTD_OR_TYCD_ID] Order by [GDM_ASTSTD_OR_TYCD_ID], mainT.game_id, mainT.seq) as Ast_Gme_Seq,
 * 
 INTO MIGRATION.GAM_GAMES_DETAILS
-from (SELECT 0 as InlineAssets_Id,
+FROM (SELECT AST_GAME_IDX as InlineAssets_Id,
 260 as AssetId_AssetTypeDefinitionId,
-0 as AssetId_Id,
+AST_GAME_IDX as AssetId_Id,
 ROW_NUMBER() OVER (partition by GMP.[GDM_ASTSTD_OR_TYCD_ID], gam_Comp.game_id Order by GMP.[GDM_ASTSTD_OR_TYCD_ID], gam_Comp.game_id, gam_Comp.seq) as Rw_Nm,
 SITE_NEW_ID as Site_SiteId,
 SITE_LONG_NAME as Site_SiteName,
@@ -786,124 +971,26 @@ TYCOD_NUMBER as TypeCodeNumber,
 GDM_ASTSTD_OR_TYCD_ID,
 gam_Comp.*,
 GOPTN.*,
-GSD.* FROM ( SELECT GM.GAME_ID, 1 as Seq,
-22011 as InlineAssets_Components_ComponentId,
-'Denomination' as InlineAssets_Components_ComponentName,
-gdm.DENM_AMOUNT as InlineAssets_Components_ComponentValue,
-'0_1_'+cast(gdm.Components_Id as nvarchar) as InlineAssets_Components_ComponentKey,
-'DENOMINATION' as InlineAssets_Components_ComponentInstanceId,
-'DENOMINATION' as InlineAssets_Components_ComponentCode,
- row_number() over (order by GAME_ID) Row_Num
---, *
-FROM GAM.GAME_DETAILS AS GM
-JOIN GAM.DENOMINATION AS D ON D.DENM_ID = GAME_DENOM
-join MIGRATION.GAM_DENOMINATION as gdm on gdm.DENM_ID = D.DENM_ID
-
-Union All
--- theme type
-SELECT GM.GAME_ID, 2 as Seq,
-22057 as ComponentId,
-'Theme Type' as ComponentName,
-tt.TTYP_LONG_NAME as ComponentValue,
-'0_'+ CAST(GTH.TME_NEW_ID as nvarchar) +'_22057' as ComponentKey,
-'22057' as ComponentInstanceId,
-'THEME.TYPE' as ComponentCode,
- row_number() over (order by GAME_ID) Row_Num
-FROM GAM.GAME_DETAILS AS GM
-JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
-LEFT JOIN MIGRATION.GAM_THEME AS GTH ON GTH.TME_LEGCY_ID = TH.THEM_ID
-JOIN GAM.THEME_TYPE AS TT ON TT.TTYP_ID = TH.TTYP_ID
-JOIN GAM.THEME_CATEGORY AS TC ON TC.TCAT_ID = TH.THEME_CAT_ID
-JOIN GAM.THEME_GROUP AS TG ON TG.TGRP_ID = TC.TCAT_TGRP_ID
-JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
-LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMF ON GMF.MNF_LEGCY_ID = MNF.MANF_ID 
-where GM.IS_DELETED = 0
-
-union all
--- theme group
-SELECT GM.GAME_ID, 3 as Seq,
-22058 as ComponentId,
-'Theme Group' as ComponentName,
-TG.TGRP_LONG_NAME as ComponentValue,
-'0_'+ CAST(GTH.TME_NEW_ID as nvarchar) +'_22058' as ComponentKey,
-'22058' as ComponentInstanceId,
-'THEME.GROUP' as ComponentCode,
- row_number() over (order by GAME_ID) Row_Num
-FROM GAM.GAME_DETAILS AS GM
-JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
-LEFT JOIN MIGRATION.GAM_THEME AS GTH ON GTH.TME_LEGCY_ID = TH.THEM_ID
-JOIN GAM.THEME_CATEGORY AS TC ON TC.TCAT_ID = TH.THEME_CAT_ID
-JOIN GAM.THEME_GROUP AS TG ON TG.TGRP_ID = TC.TCAT_TGRP_ID
-JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
-LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMF ON GMF.MNF_LEGCY_ID = MNF.MANF_ID 
-where GM.IS_DELETED = 0
-
-union all
--- theme category
-SELECT GM.GAME_ID, 4 as Seq,
-22059 as ComponentId,
-'Theme Category' as ComponentName,
-TC.TCAT_LONG_NAME as ComponentValue,
-'0_'+ CAST(GTH.TME_NEW_ID as nvarchar) +'_22059' as ComponentKey,
-'22059' as ComponentInstanceId,
-'THEME CATEGORY' as ComponentCode,
- row_number() over (order by GAME_ID) Row_Num
-FROM GAM.GAME_DETAILS AS GM
-JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
-LEFT JOIN MIGRATION.GAM_THEME AS GTH ON GTH.TME_LEGCY_ID = TH.THEM_ID
-JOIN GAM.THEME_CATEGORY AS TC ON TC.TCAT_ID = TH.THEME_CAT_ID
-JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
-LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMF ON GMF.MNF_LEGCY_ID = MNF.MANF_ID 
-where GM.IS_DELETED = 0
-
-union all
---Manufacturer
-SELECT GM.GAME_ID, 5 as Seq,
-22002 as ComponentId,
-'Theme Category' as ComponentName,
-MNF.MANF_LONG_NAME as ComponentValue,
-'0_'+ CAST(GTH.TME_NEW_ID as nvarchar) +'_22002' as ComponentKey,
-'22002' as ComponentInstanceId,
-'MANUFACTURER' as ComponentCode,
- row_number() over (order by GAME_ID) Row_Num
-FROM GAM.GAME_DETAILS AS GM
-JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
-LEFT JOIN MIGRATION.GAM_THEME AS GTH ON GTH.TME_LEGCY_ID = TH.THEM_ID
-JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
-LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMF ON GMF.MNF_LEGCY_ID = MNF.MANF_ID 
-WHERE GM.IS_DELETED = 0
-
-UNION ALL
---Theme
-SELECT GM.GAME_ID, 6 as Seq,
-22060 as ComponentId,
-'Theme Attributes' as ComponentName,
-MNF.MANF_LONG_NAME as ComponentValue,
-'0_'+ CAST(GTH.TME_NEW_ID as nvarchar) +'_22060' as ComponentKey,
-'22060' as ComponentInstanceId,
-'THEME' as ComponentCode,
- row_number() over (order by GAME_ID) Row_Num
-FROM GAM.GAME_DETAILS AS GM
-JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
-LEFT JOIN MIGRATION.GAM_THEME AS GTH ON GTH.TME_LEGCY_ID = TH.THEM_ID
-JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
-LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMF ON GMF.MNF_LEGCY_ID = MNF.MANF_ID 
-where GM.IS_DELETED = 0 ) as gam_Comp 
-LEFT JOIN GAM.GAME_DETAILS_MAPPING AS GMP ON GMP.[GDM_GAME_ID]= GAM_COMP.GAME_ID 
+GSD.* FROM MIGRATION.GAME_DETAIL_COMPONENTS as gam_Comp 
+LEFT JOIN (SELECT ROW_NUMBER()OVER ( ORDER BY [GDM_ASTSTD_OR_TYCD_ID],GDM_GAME_ID) AS AST_GAME_IDX, *
+ FROM GAM.GAME_DETAILS_MAPPING WHERE IS_DELETED = 0) AS GMP ON GMP.[GDM_GAME_ID]= GAM_COMP.GAME_ID 
 LEFT JOIN GAM.ASSET_STANDARD_DETAILS as asd on asd.asd_std_id = [GDM_ASTSTD_OR_TYCD_ID]
 LEFT JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON GSD.ASD_STD_LEGACY_ID = [GDM_ASTSTD_OR_TYCD_ID] 
+LEFT JOIN GAM.MANUFACTURER AS MF ON MF.MANF_ID = ASD_MANF_ID
 LEFT JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
 LEFT JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
 LEFT JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 LEFT JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
 LEFT join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
 LEFT JOIN GAM.TYPE_CODE_MASTER AS TCM ON TCM.TYCOD_ID = ASD_TCOD_ID
-LEFT JOIN MIGRATION.VIEW_GAME_COMBO_OPTIONS AS GOPTN
-on goptn.GO_GAME_ID = gam_Comp.game_id and gOptn.IdIndex = gam_Comp.seq 
+LEFT JOIN MIGRATION.VIEW_GAME_COMBO_OPTIONS AS GOPTN 
+ON GOPTN.GO_GAME_ID = GAM_COMP.GAME_ID AND GOPTN.IDINDEX = GAM_COMP.SEQ 
 --order by GMP.[GDM_ASTSTD_OR_TYCD_ID], gam_Comp.game_id, gam_Comp.seq
-WHERE asd.is_deleted = 0 and GMP.IS_DELETED = 0 AND ASD.ASD_CLST_STAT_ID = 5 ) as mainT
+WHERE asd.is_deleted = 0 and GMP.IS_DELETED = 0 AND ASD.ASD_CLST_STAT_ID = 5
+AND gam_Comp.Game_Deleted = 0
+AND MANF_LONG_NAME NOT IN ('POS') ) as mainT
 --where ASD_STD_NEW_ID = 14507
-order by mainT.[GDM_ASTSTD_OR_TYCD_ID], mainT.game_id, mainT.Rw_Nm
+ORDER BY mainT.[GDM_ASTSTD_OR_TYCD_ID], mainT.game_id, mainT.Rw_Nm
 GO
 
 

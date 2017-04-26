@@ -58,6 +58,7 @@ namespace MigrationTool
             AssetCompProcessCntrl.ProcessCompleted += ProcessCntrl_ProcessCompleted;
             ReportsCompProcessCntrl.ProcessCompleted += ProcessCntrl_ProcessCompleted;
             HistoryProcessCntrl.ProcessCompleted += ProcessCntrl_ProcessCompleted;
+            HistoryProcessCntrl.ProcessStarted += HistoryProcessCntrl_ProcessStarted;
             #endregion
 
             UpdateDbConnectStatus();
@@ -128,7 +129,6 @@ namespace MigrationTool
                 //Reports Process Page -> Histroy Migration Page
                 else if (Wiz.CurrentPage == ReportComponentsProcessPage)
                 {
-                    CanClose = false;
                     HistoryProcessCntrl.InitializeData();
                 }
                 //Reports Process Page -> Migration Report Page
@@ -239,6 +239,10 @@ namespace MigrationTool
             CanClose = true;
             Wiz.CurrentPage.CanSelectNextPage = true;
             Wiz.CurrentPage.CanCancel = true;
+        }
+        private void HistoryProcessCntrl_ProcessStarted(object sender, EventArgs e)
+        {
+            CanClose = false;
         }
         #endregion
 

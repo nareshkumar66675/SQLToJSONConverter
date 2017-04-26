@@ -106,6 +106,7 @@
       ROLE_NAME AS Name,
       ROLE_CODE AS Code,
       ROLE_DESCRIPTION AS [Description],
+	    0 as DataRowVersion,
       CAST(MG.FUNCGRP_NEW_ID as int) as TaskGroups_$
       FROM [COMMON].[USER_ROLE] as rl
       left join MIGRATION.COMMON_USER_ROLE as mrRle on mrRle.ROLE_ID = rl.ROLE_ID
@@ -143,7 +144,9 @@
       MG.FUNCGRP_NEW_ID as Id,
       FUNCGRP_NAME as Code,
       FUNCGRP_NAME as Name,
-      FUNCGRP_DESCRIPTION as [Description]
+      FUNCGRP_DESCRIPTION as [Description],
+	    0 as DataRowVersion,
+	    99 as Sites_$
       FROM [COMMON].[USER_FUNCTION_GROUP] AS FG
       JOIN MIGRATION.COMMON_USER_FUNCTION_GROUP AS MG ON MG.FUNCGRP_ID = FG.FUNCGRP_ID
       WHERE FG.FUNCGRP_ID NOT IN (1)
@@ -153,12 +156,13 @@
     <KeyFormat Format="51_{0}" Keys="Id"  />
   </Transformation>
   
-  <!-- Asset Components -->
+  <!-- Asset Components-->
  
   <Transformation Name="COMPDATA_MODEL_TYPE">
     <Source>
       ----------- MODEL TYPE----------
-      SELECT 122003 as Id,
+      SELECT 22003 as Id,
+	    0 as DataRowVersion,
       22003 as cc_1,
       --COMPONENTS---
       0 as Component_Components_SiteId,
@@ -209,7 +213,8 @@
   <Transformation Name="COMPDATA_MODEL">
     <Source>
       ----------- MODEL ---------------
-      Select 122006 as Id,
+      Select 22006 as Id,
+	    0 as DataRowVersion,
       22006 as Component_Id,
       'MODEL.RELATION' as Component_Code,
       --COMPONENTS---
@@ -258,8 +263,6 @@
       join [Migration].[VIEW_MODEL_TYPE] as MT on MT.MDLTYP_ID = mdlMap.MTYP_ID and md.MDL_SEQ = MDL_TYP_SEQ
       --where md.MDL_ID in (1,2)
       order by mf.mf_id
-
-
       -------- EOF MODEL ----------
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
@@ -271,8 +274,8 @@
   <Transformation Name="COMPDATA_THEME">
     <Source>
       SELECT
-      '22061' as Id,
-       0 as DataRowVersion,
+	  '22061' as Id,
+	  0 as DataRowVersion,
       '22061' as Component_Id,
       'THEME.RELATION' as Component_Code,
       '0'as Component_Components_SiteId,
@@ -299,7 +302,7 @@
       TG.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_Id,
       TG.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_Name,
       'THEME.GROUP' as Component_Components_ComponentValues_CC_CC_Code,
-              tg.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_DisplayName,
+      tg.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_DisplayName,
 
       ---Theme Options ----
       tg.THM_GRP_SEQ as Component_Components_ComponentValues_CC_CC_Options_Id,
@@ -312,7 +315,7 @@
       tc.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_CC_Id,
       TC.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_Name,
       'THEME.CATEGORY' as Component_Components_ComponentValues_CC_CC_CC_Code,
-              TC.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_DisplayName,
+      TC.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_DisplayName,
 
       ---- Theme Category Options ----
       tc.TCAT_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
@@ -325,7 +328,7 @@
       mf.COMP_TYPE_ID as Component_Components_ComponentValues_CC_CC_CC_CC_Id,
       MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_CC_Name,
       'MANUFACTURER' as Component_Components_ComponentValues_CC_CC_CC_CC_Code,
-              MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_CC_DisplayName,
+      MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_CC_DisplayName,
 
       --- Manufacturer Options
       MF.MNF_CODE_SEQ as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Id,
@@ -337,21 +340,20 @@
       TM.COMP_TYPE_ID as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Id,
       TM.DISPLAY_NAME as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Name,
       'THEME' as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Code,
-              TM.DISPLAY_NAME as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_DisplayName,
+      TM.DISPLAY_NAME as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_DisplayName,
       --- Theme Options ------
       TM.THEM_CODE_SEQ as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Id,
       TM.VALUE as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Value,
       TM.THEM_CODE as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Code
-              FROM [Migration].[VIEW_THEME_TYPE] AS TT 
-              JOIN [Migration].[VIEW_THEME_GROUP] AS TG ON TG.TGRP_TTYP_ID = TT.TTYP_ID  AND TG.THM_GRP_SEQ = TT.THEM_TYPE_SEQ 
-              JOIN [Migration].[VIEW_THEME_CATEGORY] AS TC ON TC.TCAT_TGRP_ID = TG.TGRP_ID AND TG.THM_GRP_SEQ = TC.TCAT_SEQ
-              JOIN [Migration].[VIEW_THEME] AS TM on TM.THEME_CAT_ID = TC.TCAT_ID AND TM.THEM_SEQ = TC.TCAT_SEQ
-              JOIN [Migration].[VIEW_MANUFACTURE] AS MF ON MF.MANF_ID = TM.MANF_ID AND MNF_SEQ = TM.THEM_SEQ
-              LEFT JOIN MIGRATION.GAM_THEME_DETAILS AS GTD 
-              on gtd.them_id = tm.them_id and gtd.manf_id = MF.MANF_ID and gtd.TCAT_ID = TM.THEME_CAT_ID 
-              and gtd.TGRP_ID = tg.TGRP_ID and gtd.TTYP_ID = TT.TTYP_ID 
-              ORDER BY THEMETYPE_ID, THEMEGROUP_ID, THEMECATEGORY_ID, MANFACTURE_ID, THEME_ID
-
+	  FROM [Migration].[VIEW_THEME_TYPE] AS TT 
+	  JOIN [Migration].[VIEW_THEME_GROUP] AS TG ON TG.TGRP_TTYP_ID = TT.TTYP_ID  AND TG.THM_GRP_SEQ = TT.THEM_TYPE_SEQ 
+	  JOIN [Migration].[VIEW_THEME_CATEGORY] AS TC ON TC.TCAT_TGRP_ID = TG.TGRP_ID AND TG.THM_GRP_SEQ = TC.TCAT_SEQ
+	  JOIN [Migration].[VIEW_THEME] AS TM on TM.THEME_CAT_ID = TC.TCAT_ID AND TM.THEM_SEQ = TC.TCAT_SEQ
+	  JOIN [Migration].[VIEW_MANUFACTURE] AS MF ON MF.MANF_ID = TM.MANF_ID AND MNF_SEQ = TM.THEM_SEQ
+	  LEFT JOIN MIGRATION.GAM_THEME_DETAILS AS GTD 
+	  on gtd.them_id = tm.them_id and gtd.manf_id = MF.MANF_ID and gtd.TCAT_ID = TM.THEME_CAT_ID 
+	  and gtd.TGRP_ID = tg.TGRP_ID and gtd.TTYP_ID = TT.TTYP_ID 
+	  ORDER BY THEMETYPE_ID, THEMEGROUP_ID, THEMECATEGORY_ID, MANFACTURE_ID, THEME_ID
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
@@ -364,6 +366,7 @@
       ----------- Denoms ---------------
       SELECT  22011 as Id,
       22011 as Component_Id,
+	    0 as DataRowVersion,
       --COMPONENTS---
       0 as Component_Components_SiteId,
       'DENOMINATION' as Component_Code,
@@ -382,12 +385,8 @@
       CODE AS Component_Components_ComponentValues_ChildComponents_Options_Name,
       DENM_AMOUNT as Component_Components_ComponentValues_ChildComponents_Options_Value,
       'DENOM.AMOUNT' as Component_Components_ComponentValues_ChildComponents_Options_Code
-      from ( SELECT DENM_ID,
-      ROW_NUMBER() OVER (ORDER BY DENM_ID ) AS Components_Id,
-      'Denom Value' as CODE,
-      cast ( CONVERT(DECIMAL(10,2),cast(denm_amount as float)/100) as nvarchar) as DENM_AMOUNT
-      from gam.denomination where IS_DELETED = 0 ) as den
-
+      from [MIGRATION].[GAM_DENOMINATION] as den
+		order by DENM_AMOUNT_Cents
       -------- EOF Denoms -----------
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
@@ -395,7 +394,8 @@
   </Transformation>
   <Transformation Name="COMPDATA_MNF">
     <Source>
-      SELECT 122002 as Id,
+      SELECT 22002 as Id,
+	    0 as DataRowVersion,
       22002 as Component_Id,
       'MANUFACTURER' as Component_Code,
       --COMPONENTS---
@@ -444,6 +444,7 @@
   <Transformation Name="COMPDATA_POS_VENDOR">
     <Source>
       SELECT 22051 as Id,
+	    0 as DataRowVersion,
       22051 as Component_Id,
       'POS.VENDOR' as Component_Code,
       --------COMPONENTS---------
@@ -490,6 +491,7 @@
   <Transformation Name="COMPDATA_POS_MODEL">
     <Source>
       SELECT '22052' as Id,
+	    0 as DataRowVersion,
       22052 as Component_Id,
       'POS.MODEL' as Component_Code,
       -------Components--------
@@ -525,6 +527,7 @@
     <Source>
     SELECT 
     '22010' as Id,
+	  0 as DataRowVersion,
     ---- Component ----
     '22010' as Component_Id,
     'AZB' as Component_Code,
@@ -579,7 +582,9 @@
     JOIN MIGRATION.VIEW_ZONE AS ZN ON ZN_AREA_ID = AREA_ID AND AREA_SEQ = ZONE_SEQ
     JOIN MIGRATION.VIEW_BANK AS BK ON BK_ZONE_ID = ZONE_ID AND ZONE_SEQ = BANK_SEQ
     JOIN GAM.[SITE] ON SITE_ID = AR_SITE_ID
-    --WHERE ARea_ID = -1256000001181
+    WHERE 1=1 
+    --	and site_number in ( {0})
+	--ARea_ID = -1256000001181
     order by SITE_ID, AR.AREA_ID, ZN.ZONE_ID, BK.BANK_ID
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
@@ -591,6 +596,7 @@
   <Transformation Name="COMPDATA_TYPE_DESC">
     <Source>
 	  SELECT 22069 as Id,
+	  0 as DataRowVersion,
 		--Component
 		22069 as Component_Id,
 		0 as Component_ScopeLevel,
@@ -752,6 +758,7 @@
   <Transformation Name="AST">
     <Source>
       SELECT MG.ASD_STD_NEW_ID as  Id,
+	    0 as DataRowVersion,
       ---ASSET ID -----
       MG.ASD_STD_NEW_ID as AssetId_Id,
       CASE WHEN AST.ASST_ID = 1 THEN 10
@@ -760,7 +767,7 @@
       WHEN AST.ASST_ID = 4 THEN 8
       WHEN AST.ASST_ID = 5 THEN 7
       WHEN AST.ASST_ID = 6 THEN 9
-      --WHEN AST.ASST_ID = 7 THEN
+      WHEN AST.ASST_ID = 7 THEN 15
       WHEN AST.ASST_ID = 8 THEN 2
       WHEN AST.ASST_ID = 9 THEN 13
       WHEN AST.ASST_ID = 10 THEN 14
@@ -779,13 +786,25 @@
       ---- OPTIONS ----------
       case when ogrp_id = 1 then OPTN.OPTN_ID else null end as Options_Id,
       case when ogrp_id = 1 then OPTN.OPTN_CODE else null end as Options_Code,
-      case when ogrp_id = 1 then AST_OPTN_VALUE else null end as Options_Value,
+      case when ogrp_id = 1 then (CASE WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'No'
+			WHEN AST_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
+			WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Yes' 
+			WHEN AST_OPTN_VALUE = 'CONTROLLER.TYPE.THIRDPARTY' then 'Third Party'
+			WHEN AST_OPTN_VALUE = 'KIOSK.TYPE.K' THEN 'K'
+			when AST_OPTN_VALUE = 'CONTROLLER.TYPE.STANDALONE' then 'Standalone'
+	  ELSE AST_OPTN_VALUE end) else null end as Options_Value,
+
       -----Components --------
-      case when ogrp_id > 1 then OPTN.OPTN_ID else null end as Components_ComponentId,
-      case when ogrp_id > 1 then CAST(OPTN.OPTN_ID as varchar(50)) else null end as Components_ComponentInstanceId,
-      case when ogrp_id > 1 then OPTN.OPTN_NAME else null end as Components_ComponentName,
-      case when ogrp_id > 1 then OPTN.OPTN_NAME else null end as Components_ComponentKey,
-      case when ogrp_id > 1 then
+	  CASE WHEN OGRP_ID > 1 THEN
+		(CASE WHEN OPTN.OPTN_ID IN (122) THEN '22002' ELSE NULL END) ELSE NULL END AS Components_ComponentId,
+	  CASE WHEN OGRP_ID > 1 THEN UPPER(OPTN.OPTN_NAME) ELSE NULL END AS Components_ComponentInstanceId,
+	  CASE WHEN OGRP_ID > 1 THEN OPTN.OPTN_NAME ELSE NULL END AS Components_ComponentName,
+	  CASE WHEN OGRP_ID > 1 THEN UPPER(OPTN.OPTN_NAME) ELSE NULL END AS Components_ComponentCode,
+
+	  CASE WHEN OGRP_ID > 1 THEN 
+		(CASE WHEN OPTN.OPTN_ID IN (122) THEN '0_'+ CAST(MF_NEW_ID AS NVARCHAR) + '_1' ELSE NULL END) ELSE NULL END AS Components_ComponentKey,
+
+	  case when ogrp_id > 1 then
       ( case ogrp_id
       when 90023 then  mdl.mdl_long_name
       when 90011 then  ar.ar_long_name
@@ -796,11 +815,11 @@
       when 90021 then  MANF_LONG_NAME
       when 90014 then  COL_LONG_NAME
       when 90023 then  MDLTYP_LONG_NAME end)  else null end as Components_ComponentValue,
-      case when ogrp_id > 1 then OPTN.OPTN_CODE else null end as Components_ComponentCode,
-      ----- Inline assets ------ Need to discuss
+
+
 
       ------Type Code -----
-      0 as TypeCode_TypeCodeId, -- mapping needed
+      TCODE.TYCOD_NUMBER as TypeCode_TypeCodeId, -- mapping needed
       TCODE.TYCOD_NAME as TypeCode_TypeCodeName
       FROM GAM.ASSET_STANDARD_DETAILS AS ASD
       JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS MG on MG.ASD_STD_LEGACY_ID=ASD.ASD_STD_ID
@@ -811,6 +830,7 @@
       JOIN GAM.ASSET_DETAIL AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
       JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AD.AST_OPTION_ID
       LEFT JOIN GAM.MANUFACTURER  AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
+	    LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMNF ON GMNF.[MNF_LEGCY_ID] = ASD.ASD_MANF_ID
       LEFT JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD.ASD_MODL_ID
       LEFT JOIN GAM.MODEL_MODELTYPE_MAP AS MDL_TYPE_MAP ON MDL_TYPE_MAP.[MODEL_MAP_ID] = ASD.ASD_MODL_TYP_MAPiD
       LEFT JOIN GAM.AREA AS AR ON AR.AREA_ID = ASD.ASD_AREA_ID
@@ -822,15 +842,89 @@
       LEFT JOIN [GAM].[COLLECTION] AS COL ON COL.[COLLECTION_ID] = ASD.ASD_COLLECTION_ID
       LEFT JOIN [GAM].MODEL_TYPE AS MTYP ON COL.[COLLECTION_ID] = ASD.ASD_COLLECTION_ID
       WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-      AND AST.ASST_ID not in( 1,14,7)
+      AND AST.ASST_ID not in ( 1 )
       AND SITE_NUMBER in ({0})
     </Source>
+    <Destination>[DataManagement].[Asset]</Destination>
+    <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
+  </Transformation>
+  <Transformation Name="AST_POS_ASSET">
+    <Source>
+		SELECT  
+		-----Id--------
+		ASD_STD_NEW_ID as Id,
+		-----AssetId--------
+		305 as AssetId_AssetTypeDefinitionId,
+		ASD_STD_NEW_ID as AssetId_Id,
+		-------Site-----
+		ST.SITE_NUMBER as Site_SiteId,
+		ST.SITE_LONG_NAME as Site_SiteName,
+		ST.SITE_NUMBER as Site_SiteNumber,
+		GPT.prop_new_id as Site_OrganizationId,
+		PT.PROP_LONG_NAME as Site_OrganizationName,
+		--AST.ASST_NAME, ASD.ASD_NUMBER as SlotNumber, ASD.ASD_AM_UID, 
+		CASE when OPTN_CODE = 'ASSET.NUMBER' THEN 'AST.NON.SLOT.ID'
+			   WHEN OPTN_CODE = 'ASSET.LOCATION' THEN 'AST.NON.TERMINAL.NAME' 
+				WHEN OPTN_CODE = 'ASSET.SERIAL.NUMBER' THEN 'ASSET.SERIAL.NUMBER' 
+				WHEN OPTN_CODE = 'ASSET.PROG.RATE' THEN 'POS.VERSION'
+			   WHEN OPTN_CODE = 'ASSET.NJ.SEAL' THEN 'POS.FIRMWARE.VERSION' 
+				WHEN OPTN_CODE = 'ASSET.ASL.POSITION' THEN 'AST.NON.TERMINAL.LOCATION' END AS Options_Code,
+
+		CASE when OPTN_CODE = 'ASSET.NUMBER' THEN 1
+			   WHEN OPTN_CODE = 'ASSET.LOCATION' THEN 6
+			   WHEN OPTN_CODE = 'ASSET.SERIAL.NUMBER' THEN 5
+			   WHEN OPTN_CODE = 'ASSET.PROG.RATE' THEN 2
+			   WHEN OPTN_CODE = 'ASSET.NJ.SEAL' THEN 3
+			   WHEN OPTN_CODE = 'ASSET.ASL.POSITION' THEN 7 END AS Options_Id,
+
+		CASE when OPTN_CODE = 'ASSET.NUMBER' THEN ASD_NUMBER
+			   WHEN OPTN_CODE = 'ASSET.LOCATION' THEN ASD_LOCATION
+			   WHEN OPTN_CODE = 'ASSET.SERIAL.NUMBER' THEN ASD_SERIAL_NUM
+			   WHEN OPTN_CODE = 'ASSET.PROG.RATE' THEN '1.0'
+			   WHEN OPTN_CODE = 'ASSET.NJ.SEAL' THEN AST_OPTN_VALUE 
+				WHEN OPTN_CODE = 'ASSET.ASL.POSITION' THEN ASD_LOCATION END as Options_Value,
+		tycod_number as TypeCode_Id, tycod_name as TypeCode_Name,
+		ComponentId as Components_ComponentId,
+		ComponentName as Components_ComponentName,
+		ComponentValue as Components_ComponentValue,
+		ComponentKey as Components_ComponentKey,
+		ComponentInstanceId as Components_ComponentInstanceId,
+		ComponentCode as Components_ComponentCode
+		--, OPTN.[OPTN_CODE] , ad.AST_OPTN_VALUE, ad.*
+		FROM GAM.ASSET_STANDARD_DETAILS AS ASD
+		JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
+		JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+		JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+		JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+		JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
+		JOIN GAM.PROPERTY AS PT ON PT.PROP_ID = ST.SITE_PROP_ID
+		JOIN [MIGRATION].[GAM_PROPERTY] AS GPT ON GPT.[PROP_LEGCY_ID] = PT.PROP_ID
+		JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+		LEFT JOIN GAM.ASSET_DETAIL AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
+		left JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID  = ad.[AST_OPTION_ID]
+		LEFT JOIN [MIGRATION].[ASSET_TYPE_DEFN] AS TOPTN ON TOPTN.[OPTION_CODE] = OPTN.[OPTN_CODE] and TOPTN.asset_code = AST.asst_name
+		left join [GAM].[TYPE_CODE_MASTER] as tcm on tcm.tycod_id = [ASD_TCOD_ID]
+		left join (select 101 as SeqId, 22002 as ComponentId, 'Manufacturer' as ComponentName, 'POS' as ComponentValue, '0_1_1' as ComponentKey, '220022' as ComponentInstanceId, '22002.1' as ComponentCode
+		UNION ALL
+		select 102 as SeqId, 22051 as ComponentId, 'POS Vendor' as ComponentName, 'POS' as ComponentValue, '0_1_22051' as ComponentKey, 'POSVENDOR' as ComponentInstanceId, 'POS.VENDOR' as ComponentCode
+		UNION ALL
+		select 103 as SeqId, 22052 as ComponentId, 'POS Model Attributes' as ComponentName, 'POS' as ComponentValue, '0_1_22052' as ComponentKey, 'POSMODEL' as ComponentInstanceId, 'POS.MODEL' as ComponentCode
+		) as mas_comp on mas_comp.SeqId = AST_OPTION_ID
+		WHERE ASD.IS_DELETED = 0 AND ASD.ASD_CLST_STAT_ID = 5
+		AND ASD.ASD_ASST_ID = 1 
+		--AND ST.SITE_NUMBER = 201
+		AND MDL.MDL_SHORT_NAME in ('POS')
+		--and ASD.ASD_NUMBER = 97902
+		AND AST_OPTION_ID IN (101,102,103,263,215,125)
+		ORDER BY ASD_STD_NEW_ID, AST_OPTION_ID
+    </Source>   
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
   </Transformation>
   <Transformation Name="PROGRESSIVE">
     <Source>
       select mtr.POOL_NEW_ID  as Id,
+	    0 as DataRowVersion,
       ---ASSET ID -----
       --1 as AssetId_Id,
       mtr.POOL_NEW_ID  as AssetId_Id,
@@ -860,6 +954,7 @@
       --select *
       from MIGRATION.VIEW_PROGRESSIVE_METERS as mtr
       left join MIGRATION.VIEW_POOL AS P on p.prgp_id = mtr.PRGP_ID and mtr.InlineAssets_Id = Options_Id
+	  where Mtr_Deleted = 0 and Pool_Deleted = 0
       order by mtr.PRGP_ID, mtr.InlineAssets_Id
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
@@ -867,74 +962,80 @@
   </Transformation>
   <Transformation Name="TYPCODE">
     <Source>
-      SELECT TYCOD_Number as Id,
-      TYCOD_NAME as Name,
-      TYCOD_DESC as [Desc],
-      CAST(0 as VARCHAR(50)) as SelectedInlines,
-      case when TYCOD_NAME like 'POS%' then 305 else 10 end as AssetTypeId,
-      case when TYCOD_NAME like 'POS%' then 'POS' else 'Slot' end as Asset_Type,
-      --------TypeCodeOption------
-      ---------Options------------
-      [OPTION_ID] as TypeCodeOption_Options_OptionId,
-	  CASE WHEN [OPTION_ID] is NULL THEN NULL ELSE 
-	  (CASE WHEN TYCV_OPTN_VALUE = 'FLAG.NO' then 'No'
-		   when TYCV_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
-		   WHEN TYCV_OPTN_VALUE = 'FLAG.YES' then 'Yes' 
-		   when TYCV_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.NORMAL' then 'Normal'
-		   when TYCV_OPTN_VALUE = 'VALIDATION.SYSTEM' then 'System'
-		   else TYCV_OPTN_VALUE end) END as TypeCodeOption_Options_Value,
-      ---------ComponentOptions---------
-	  CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 22002 
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 22063 
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 22068
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 220113
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 220114
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 220115
-	  ELSE null end as TypeCodeOption_ComponentOptions_ComponentId,
-	  
-	  CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 'MANUFACTURER' 
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 'ASSET.HOLD.PERCENTAGE' 
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 'ASSET.TYPE.DESCRIPTION'
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 'ASSET.DENOMINATION'
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 'ASSET.GMU.DENOM'
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 'ASSET.FILL.DENOM'
-	  ELSE null end as TypeCodeOption_ComponentOptions_ComponentCode,
+      	SELECT TYCOD_Number as Id,
+		0 as DataRowVersion,
+		TYCOD_NAME as Name,
+		TYCOD_DESC as [Desc],
+		CAST(0 as VARCHAR(50)) as SelectedInlines,
+		case when TYCOD_NAME like 'POS%' then 305 else 10 end as AssetTypeId,
+		case when TYCOD_NAME like 'POS%' then 'POS' else 'Slot' end as Asset_Type,
+		--------TypeCodeOption------
+		---------Options------------
+		[OPTION_ID] as TypeCodeOption_Options_OptionId,
+		CASE WHEN [OPTION_ID] is NULL THEN NULL 
+		ELSE 
+			(CASE WHEN TYCV_OPTN_VALUE = 'FLAG.NO' then 'No'
+			when TYCV_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
+			WHEN TYCV_OPTN_VALUE = 'FLAG.YES' then 'Yes' 
+			when TYCV_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.NORMAL' then 'Normal'
+			when TYCV_OPTN_VALUE = 'VALIDATION.SYSTEM' then 'System'
+			else TYCV_OPTN_VALUE end) END as TypeCodeOption_Options_Value,
+		---------ComponentOptions---------
+		CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 22002 
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 22063 
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 22069
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 220113
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 220114
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 220115
+		ELSE null end as TypeCodeOption_ComponentOptions_ComponentId,
 
-	  CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 'Manufacturer' 
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 'Hold Percentage' 
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 'Type Description'
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 'Denomination'
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 'GMU Denom'
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 'Fill Denom'
-	  ELSE null end as TypeCodeOption_ComponentOptions_Instance,
+		CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 'MANUFACTURER' 
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 'ASSET.HOLD.PERCENTAGE' 
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 'ASSET.TYPE.DESCRIPTION'
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 'ASSET.DENOMINATION'
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 'ASSET.GMU.DENOM'
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 'ASSET.FILL.DENOM'
+		ELSE null end as TypeCodeOption_ComponentOptions_ComponentCode,
 
-	  CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN TYCV_OPTN_VALUE
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN TYCV_OPTN_VALUE
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN TYCV_OPTN_VALUE
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN TYCV_OPTN_VALUE
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN TYCV_OPTN_VALUE
-		   WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN TYCV_OPTN_VALUE
-	  ELSE null end as TypeCodeOption_ComponentOptions_Value
-	  
-      ----------InlineOptions-----------
-	  --Game
-      FROM GAM.TYPE_CODE_MASTER AS MS
-      JOIN GAM.TYPE_CODE_VALUES AS VAL ON VAL.[TYCV_TYCOD_ID] = MS.TYCOD_ID
-      JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID  = TYCV_OPTN_ID
-      LEFT JOIN [MIGRATION].[ASSET_TYPE_DEFN] AS TOPTN ON TOPTN.[OPTION_CODE] = OPTN.[OPTN_CODE]
-	  LEFT JOIN MIGRATION.GAM_DENOMINATION AS GDN ON GDN.DENM_AMOUNT = TYCV_OPTN_VALUE
-	  LEFT JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_LONG_NAME = TYCV_OPTN_VALUE
-	  LEFT JOIN [MIGRATION].[GAM_MANUFACTURER] AS GMNF ON GMNF.MNF_LEGCY_ID = MNF.MANF_ID
-      where ms.[TYCOD_TYPE] = 2
-      order by  ms.[TYCOD_ID]
+		CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 'Manufacturer' 
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 'Hold Percentage' 
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 'Type Description'
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 'Denomination'
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 'GMU Denom'
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 'Fill Denom'
+		ELSE null end as TypeCodeOption_ComponentOptions_Instance,
+
+		CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN cast(GMNF.MF_NEW_ID as nvarchar)+'_1'
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN TYCV_OPTN_VALUE
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN TYCV_OPTN_VALUE
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN cast(GDN.Components_Id as nvarchar)+'_1'
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN cast(GDN.Components_Id as nvarchar)+'_1'
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN cast(GDN.Components_Id as nvarchar)+'_1'
+		ELSE null end as TypeCodeOption_ComponentOptions_Value
+
+		----------InlineOptions-----------
+		--Game
+		--select  typ.TypeDescription ,  TYCV_OPTN_VALUE, * 
+		FROM GAM.TYPE_CODE_MASTER AS MS
+		JOIN GAM.TYPE_CODE_VALUES AS VAL ON VAL.[TYCV_TYCOD_ID] = MS.TYCOD_ID
+		JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID  = TYCV_OPTN_ID
+		LEFT JOIN [MIGRATION].[ASSET_TYPE_DEFN] AS TOPTN ON TOPTN.[OPTION_CODE] = OPTN.[OPTN_CODE]
+		LEFT JOIN MIGRATION.GAM_DENOMINATION AS GDN ON GDN.DENM_AMOUNT = TYCV_OPTN_VALUE
+		LEFT JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_LONG_NAME = TYCV_OPTN_VALUE
+		LEFT JOIN [MIGRATION].[GAM_MANUFACTURER] AS GMNF ON GMNF.MNF_LEGCY_ID = MNF.MANF_ID
+		left join migration.GAM_TYPE_DESCRIPTION as typ on upper(typ.TypeDescription) = upper(TYCV_OPTN_VALUE)
+		where ms.[TYCOD_TYPE] = 2
+		order by  ms.[TYCOD_ID]
+
     </Source>
     <Destination>[DataManagement].[TypeCode]</Destination>
     <KeyFormat Format="56_{0}" Keys="Id"  />
   </Transformation>
   <Transformation Name="AST_SLOT">
     <Source>
-      SELECT
+     SELECT
       Id,
+	    0 as DataRowVersion,
       ---ASSET ID -----
       AssetId_Id,
       AssetId_AssetTypeDefinitionId,
@@ -970,103 +1071,10 @@
       InlineAssets_Options_Code,
       --------TypeCode--------
       TypeCode_TypeCodeId,
-      TypeCode_TypeCodeName,
-      Ast_std_Id,
-      game_id
-
-      FROM (SELECT isnull(gSltMap.ASD_STD_NEW_ID, Ast_Optn.ASD_STD_NEW_ID)  as  Id,
-      ---ASSET ID -----
-      isnull(gSltMap.ASD_STD_NEW_ID, Ast_Optn.ASD_STD_NEW_ID)  as AssetId_Id,
-      10 as AssetId_AssetTypeDefinitionId,
-      ---------SITE----------
-      isnull(Site_SiteId, SITE_NEW_ID) as Site_SiteId,
-      isnull(Site_SiteName, SITE_LONG_NAME) as Site_SiteName,
-      isnull(Site_SiteNumber, SITE_NUMBER) as Site_SiteNumber,
-      --st.IS_DELETED as Site_IsDeleted,
-      isnull(OrganizationId, Ast_Optn.PROP_NEW_ID) as Site_OrganizationId,
-      isnull(OrganizationName, Ast_Optn.PROP_LONG_NAME) as Site_OrganizationName,
-      --------- OPTIONS ----------
-      Ast_Optn.[OPTION_ID] as Options_Id,
-      Ast_Optn.OPTION_CODE as Options_Code,
-      Ast_Optn.AST_OPTN_VALUE as Options_Value,
-      --------Components --------
-      ComponentId as Components_ComponentId,
-      ComponentInstanceId as Components_ComponentInstanceId,
-      ComponentName as Components_ComponentName,
-      ComponentKey as Components_ComponentKey,
-      ComponentValue as Components_ComponentValue,
-      ComponentCode as Components_ComponentCode,
-      --ASST_OPTN_ORDER,
-      --Seq_Id ,
-      ------------InlineAssets------------
-      --gSltMap.game_id,
-      InlineAssets_Id,
-      AssetId_AssetTypeDefinitionId as InlineAssets_AssetId_AssetTypeDefinitionId,
-      AssetId_Id as InlineAssets_AssetId_Id,
-      InlineAssets_Components_ComponentId,
-      InlineAssets_Components_ComponentName,
-      InlineAssets_Components_ComponentValue,
-      InlineAssets_Components_ComponentKey,
-      InlineAssets_Components_ComponentInstanceId,
-      InlineAssets_Components_ComponentCode,
-      gSltMap.IdIndex as InlineAssets_Options_Id,
-      gSltMap.Options_Value as InlineAssets_Options_Value,
-      gSltMap.Options_Code as InlineAssets_Options_Code,
-      --------TypeCode--------
-      isnull(TypeCodeNumber, TypeCode_Id) as TypeCode_TypeCodeId,
-      isnull(TypeCodeName, TypeCode_Name) as TypeCode_TypeCodeName,
-      isnull(GDM_ASTSTD_OR_TYCD_ID, Ast_Optn.ASD_STD_ID)  as Ast_std_Id,
-      gSltMap.game_id
-      FROM (SELECT ASD.ASD_STD_ID, ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
-      fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
-      --CASE WHEN AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes'
-      --else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE,
-      CASE WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'No'
-      WHEN AST_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
-      WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Yes'
-      WHEN AST_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.NORMAL' then 'Normal'
-      WHEN AST_OPTN_VALUE = 'VALIDATION.SYSTEM' then 'System'
-      WHEN AST_OPTN_VALUE = 'ETHERNET' then 'Ethernet'
-      WHEN AST_OPTN_VALUE = 'PROTOCOL.TYPE.SAS' then 'SAS'
-      WHEN AST_OPTN_VALUE = 'ASSET.CONFIG.STATUS.OFFLINE' then 'Offline'
-      WHEN AST_OPTN_VALUE = 'ASSET.CONFIG.STATUS.ONLINE' then 'Online'
-      WHEN AST_OPTN_VALUE = 'CONTROLLER.TYPE.THIRDPARTY' then 'Third Party'
-      WHEN AST_OPTN_VALUE = 'ASSET.TYPE.EGM' THEN 'EGM'
-      WHEN AST_OPTN_VALUE = 'PROTOCOL.TYPE.QCOMM' THEN 'QCOMM'
-      WHEN AST_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.WITH.CCCE' THEN 'With CCCE'
-      WHEN AST_OPTN_VALUE = 'KIOSK.TYPE.K' THEN 'K'
-      WHEN AST_OPTN_VALUE = 'VALIDATION.ENHANCED' THEN 'Enhanced'
-      ELSE AST_OPTN_VALUE end as AST_OPTN_VALUE,
-      GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_LONG_NAME,
-      gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
-      tycod_number as TypeCode_Id, tycod_name as TypeCode_Name
-      FROM GAM.ASSET_STANDARD_DETAILS AS ASD
-      JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
-      JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
-      JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
-      JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
-      JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
-      JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
-      JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
-      JOIN [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
-      left JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 and AD.ASD_STD_ID = ASD.ASD_STD_ID
-      left join gam.[OPTION] as optn on optn.[OPTN_ID] = AST_OPTION_ID
-      left join gam.ASSET_DEFINITION as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID
-      and optn.[OPTN_ID] = astDfn.[ASTDFN_OPTN_ID]
-      left join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on
-      fastDefn.[ASSET_NAME] = AST.asst_name and fastDefn.[OPTION_CODE] = optn.OPTN_CODE
-      left join [GAM].[TYPE_CODE_MASTER] as tcm on tcm.tycod_id = [ASD_TCOD_ID]
-      WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 AND ASD.ASD_ASST_ID = 1
-      and [OPTION_ID] is not null  AND MDL.MDL_SHORT_NAME not in ('POS')   ) as Ast_Optn
-      FULL JOIN MIGRATION.GAM_ASSET_COMP_VALUES AS AST_COMP ON AST_OPTN.ASD_STD_ID = AM_LEGACYID and Ast_Optn.ASST_OPTN_ORDER = AST_COMP.Seq_id
-      FULL JOIN MIGRATION.GAM_GAMES_DETAILS as gSltMap  on [GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
-      and Ast_Optn.ASST_OPTN_ORDER = gSltMap.Ast_Gme_Seq
-      ) as overAll
-      where 1=1
-      and isnull(Site_SiteNumber, Site_SiteNumber) in ( {0} )
-      --and AssetId_Id = 13335 --and isnull(Site_SiteNumber, SITE_NUMBER) in ( 233 )
-      --and isnull(gSltMap.ASD_STD_NEW_ID, Ast_Optn.ASD_STD_NEW_ID) = 13335
-      order by Ast_std_Id, game_id --=209907247000000408
+      TypeCode_TypeCodeName
+	from migration.Datamanagement_asset_data
+	--where Site_SiteNumber = 201
+	ORDER BY ID, Asset_optn_val_seqId, asset_comp_seqId, Inline_asset_seqId
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />

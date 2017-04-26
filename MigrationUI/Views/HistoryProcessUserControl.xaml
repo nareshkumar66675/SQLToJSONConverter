@@ -1,16 +1,15 @@
-﻿<UserControl
-    x:Class="MigrationTool.Views.HistoryProcessUserControl"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:MigrationTool.Views"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-    Width="450"
-    Height="400"
-    Loaded="UserControl_Loaded"
-    mc:Ignorable="d">
+﻿<UserControl x:Class="MigrationTool.Views.HistoryProcessUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:MigrationTool.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             Width="450"
+             Height="400"
+             Loaded="HistoryProcessUserControl_Loaded"
+             mc:Ignorable="d">
     <UserControl.Resources>
         <Style TargetType="{x:Type Button}">
             <Setter Property="Background">
@@ -28,13 +27,12 @@
 
         <Grid Width="450" Height="400">
             <Grid x:Name="ProgressGrid" Margin="10,10,10,235">
-                <Border
-                    Width="422"
-                    Height="147"
-                    Margin="4"
-                    BorderBrush="#FFBBB8B8"
-                    BorderThickness="1,1,1,1"
-                    CornerRadius="8,8,8,8">
+                <Border Width="422"
+                        Height="147"
+                        Margin="4"
+                        BorderBrush="#FFBBB8B8"
+                        BorderThickness="1,1,1,1"
+                        CornerRadius="8,8,8,8">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
                             <GradientStop Offset="0.008" Color="#FFB4B4B4" />
@@ -47,108 +45,98 @@
                         <DropShadowEffect Opacity="0.5" Color="Gray" />
                     </Border.Effect>
                 </Border>
-                <ProgressBar
-                    x:Name="SiteProgress"
-                    Height="30"
-                    Margin="10,56,10,69"
-                    Maximum="100"
-                    Minimum="0"
-                    Value="0" />
-                <ProgressBar
-                    x:Name="OverallProgress"
-                    Margin="10,115,10,11"
-                    Maximum="300"
-                    Minimum="0"
-                    Value="0" />
-                <TextBlock
-                    x:Name="OverallStatusText"
-                    Width="410"
-                    Height="22"
-                    Margin="10,122,10,11"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    FontStretch="SemiExpanded"
-                    Foreground="#FF403C3C"
-                    Text=""
-                    TextAlignment="Center" />
-                <TextBlock
-                    Width="106"
-                    Height="19"
-                    Margin="10,91,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    FontSize="13"
-                    FontWeight="Medium"
-                    Foreground="#FF6C5F5F"
-                    Text="Overall Progress"
-                    TextWrapping="Wrap" />
-                <TextBlock
-                    Width="106"
-                    Height="19"
-                    Margin="10,32,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    FontSize="13"
-                    FontWeight="Medium"
-                    Foreground="#FF6C5F5F"
-                    Text="Site Progress"
-                    TextWrapping="Wrap" />
-                <TextBlock
-                    x:Name="SiteLabelText"
-                    Width="31"
-                    Height="22"
-                    Margin="10,10,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    FontFamily="Microsoft JhengHei"
-                    FontSize="13"
-                    FontWeight="SemiBold"
-                    Foreground="#2D75A3"
-                    Text="Site : "
-                    TextWrapping="Wrap" />
-                <TextBlock
-                    x:Name="SiteNameText"
-                    Height="22"
-                    Margin="46,10,10,0"
-                    VerticalAlignment="Top"
-                    FontSize="13"
-                    FontWeight="Medium"
-                    Foreground="#FFF07474"
-                    Text=""
-                    TextWrapping="Wrap" />
-                <TextBlock
-                    x:Name="siteProgressDuration"
-                    Width="115"
-                    Height="19"
-                    Margin="0,32,10,0"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Foreground="#FFAA4B4B"
-                    Text="00:00:00"
-                    TextAlignment="Right"
-                    TextWrapping="Wrap" />
-                <TextBlock
-                    x:Name="overallProgressDuration"
-                    Width="115"
-                    Height="19"
-                    Margin="0,92,10,0"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Foreground="#FFAA4B4B"
-                    Text="00:00:00"
-                    TextAlignment="Right"
-                    TextWrapping="Wrap" />
+                <ProgressBar x:Name="SiteProgress"
+                             Height="30"
+                             Margin="10,56,10,69"
+                             Maximum="100"
+                             Minimum="0"
+                             Value="0" />
+                <ProgressBar x:Name="OverallProgress"
+                             Margin="10,115,10,11"
+                             Maximum="300"
+                             Minimum="0"
+                             Value="0" />
+                <TextBlock x:Name="OverallStatusText"
+                           Width="410"
+                           Height="22"
+                           Margin="10,122,10,11"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontStretch="SemiExpanded"
+                           Foreground="#FF403C3C"
+                           Text=""
+                           TextAlignment="Center" />
+                <TextBlock Width="106"
+                           Height="19"
+                           Margin="10,91,0,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           FontSize="13"
+                           FontWeight="Medium"
+                           Foreground="#FF6C5F5F"
+                           Text="Overall Progress"
+                           TextWrapping="Wrap" />
+                <TextBlock Width="106"
+                           Height="19"
+                           Margin="10,32,0,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           FontSize="13"
+                           FontWeight="Medium"
+                           Foreground="#FF6C5F5F"
+                           Text="Site Progress"
+                           TextWrapping="Wrap" />
+                <TextBlock x:Name="SiteLabelText"
+                           Width="31"
+                           Height="22"
+                           Margin="10,10,0,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           FontFamily="Microsoft JhengHei"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Foreground="#2D75A3"
+                           Text="Site : "
+                           TextWrapping="Wrap" />
+                <TextBlock x:Name="SiteNameText"
+                           Height="22"
+                           Margin="46,10,10,0"
+                           VerticalAlignment="Top"
+                           FontSize="13"
+                           FontWeight="Medium"
+                           Foreground="#FFF07474"
+                           Text=""
+                           TextWrapping="Wrap" />
+                <TextBlock x:Name="siteProgressDuration"
+                           Width="115"
+                           Height="19"
+                           Margin="0,32,10,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top"
+                           Foreground="#FFAA4B4B"
+                           Text="00:00:00"
+                           TextAlignment="Right"
+                           TextWrapping="Wrap" />
+                <TextBlock x:Name="overallProgressDuration"
+                           Width="115"
+                           Height="19"
+                           Margin="0,92,10,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top"
+                           Foreground="#FFAA4B4B"
+                           Text="00:00:00"
+                           TextAlignment="Right"
+                           TextWrapping="Wrap" />
             </Grid>
             <Grid Margin="10,170,10,199">
-                <Button
-                    x:Name="startButton"
-                    Width="101"
-                    Height="31"
-                    Margin="75,0,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Click="startButton_Click"
-                    Content="Start">
+                <Button x:Name="startButton"
+                        Width="101"
+                        Height="31"
+                        Margin="75,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Click="startButton_Click"
+                        Content="Start">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
                             <Setter Property="Background">
@@ -163,11 +151,10 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
-                                        <Border
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="#80ccff"
-                                            BorderThickness="1"
-                                            CornerRadius="5">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="#80ccff"
+                                                BorderThickness="1"
+                                                CornerRadius="5">
                                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Border>
                                     </ControlTemplate>
@@ -207,16 +194,15 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button
-                    x:Name="stopButton"
-                    Width="101"
-                    Height="31"
-                    Margin="267,0,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Click="stopButton_Click"
-                    Content="Stop"
-                    IsEnabled="True">
+                <Button x:Name="stopButton"
+                        Width="101"
+                        Height="31"
+                        Margin="267,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Click="stopButton_Click"
+                        Content="Stop"
+                        IsEnabled="True">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
                             <Setter Property="Background">
@@ -231,11 +217,10 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
-                                        <Border
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="#ff9999"
-                                            BorderThickness="1"
-                                            CornerRadius="5">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="#ff9999"
+                                                BorderThickness="1"
+                                                CornerRadius="5">
                                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Border>
                                     </ControlTemplate>
@@ -277,24 +262,22 @@
                 </Button>
             </Grid>
             <Grid Margin="10,206,10,173">
-                <TextBlock
-                    x:Name="statusBar"
-                    Width="430"
-                    Height="20"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    FontSize="13"
-                    Foreground="#FF554A4A"
-                    Text="Click Start to Begin the Process"
-                    TextAlignment="Center"
-                    TextWrapping="Wrap" />
+                <TextBlock x:Name="statusBar"
+                           Width="430"
+                           Height="20"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           FontSize="13"
+                           Foreground="#FF554A4A"
+                           Text="Click Start to Begin the Process"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
             </Grid>
             <Grid Margin="10,226,10,10">
-                <Border
-                    Margin="5,5,5,5"
-                    BorderBrush="White"
-                    BorderThickness="2,2,2,2"
-                    CornerRadius="8,8,8,8">
+                <Border Margin="5,5,5,5"
+                        BorderBrush="White"
+                        BorderThickness="2,2,2,2"
+                        CornerRadius="8,8,8,8">
                     <Border.Background>
                         <RadialGradientBrush>
                             <GradientStop Color="#FF8F8F8F" />
@@ -307,98 +290,68 @@
                         <DropShadowEffect Opacity="0.3" Color="Gray" />
                     </Border.Effect>
                 </Border>
-                <Grid
-                    Width="129"
-                    Margin="10,10,0,12"
-                    HorizontalAlignment="Left">
-                    <Border
-                        BorderBrush="#cbcbcb"
-                        BorderThickness="1"
-                        CornerRadius="5" />
-                    <Label
-                        x:Name="completedLabel"
-                        Width="119"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Content="Completed Sites" />
-                    <ListBox
-                        x:Name="CompletedListBox"
-                        Height="110"
-                        Margin="4.98,27,6.073,0"
-                        VerticalAlignment="Top"
-                        Background="#f2f2f2"
-                        RenderTransformOrigin="0.5,0.5">
+                <Grid Width="129" Margin="10,10,0,12" HorizontalAlignment="Left">
+                    <Border BorderBrush="#cbcbcb" BorderThickness="1" CornerRadius="5" />
+                    <Label x:Name="completedLabel"
+                           Width="119"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Content="Completed Sites" />
+                    <ListBox x:Name="CompletedListBox"
+                             Height="110"
+                             Margin="4.98,27,6.073,0"
+                             VerticalAlignment="Top"
+                             Background="#f2f2f2"
+                             RenderTransformOrigin="0.5,0.5">
                         <ListBox.Resources>
                             <Style TargetType="{x:Type Border}">
                                 <Setter Property="CornerRadius" Value="5" />
                             </Style>
                         </ListBox.Resources>
                     </ListBox>
-                    <Border
-                        BorderBrush="#cbcbcb"
-                        BorderThickness="1"
-                        CornerRadius="5" />
+                    <Border BorderBrush="#cbcbcb" BorderThickness="1" CornerRadius="5" />
                 </Grid>
                 <Grid Margin="147,12,151,10">
-                    <Border
-                        BorderBrush="#cbcbcb"
-                        BorderThickness="1"
-                        CornerRadius="5" />
-                    <Label
-                        x:Name="NotCompletedSitesLabel"
-                        Width="122"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Content="Not Completed Sites" />
-                    <ListBox
-                        x:Name="NotCompletedListBox"
-                        Height="110"
-                        Margin="4.98,27,6.073,0"
-                        VerticalAlignment="Top"
-                        Background="#f2f2f2"
-                        RenderTransformOrigin="0.5,0.5">
+                    <Border BorderBrush="#cbcbcb" BorderThickness="1" CornerRadius="5" />
+                    <Label x:Name="NotCompletedSitesLabel"
+                           Width="122"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Content="Not Completed Sites" />
+                    <ListBox x:Name="NotCompletedListBox"
+                             Height="110"
+                             Margin="4.98,27,6.073,0"
+                             VerticalAlignment="Top"
+                             Background="#f2f2f2"
+                             RenderTransformOrigin="0.5,0.5">
                         <ListBox.Resources>
                             <Style TargetType="{x:Type Border}">
                                 <Setter Property="CornerRadius" Value="5" />
                             </Style>
                         </ListBox.Resources>
                     </ListBox>
-                    <Border
-                        BorderBrush="#cbcbcb"
-                        BorderThickness="1"
-                        CornerRadius="5" />
+                    <Border BorderBrush="#cbcbcb" BorderThickness="1" CornerRadius="5" />
                 </Grid>
-                <Grid
-                    Width="129"
-                    Margin="0,12,10,10"
-                    HorizontalAlignment="Right">
-                    <Border
-                        BorderBrush="#cbcbcb"
-                        BorderThickness="1"
-                        CornerRadius="5" />
-                    <Label
-                        x:Name="FailedSitesLabel"
-                        Width="119"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Content="Failed Sites" />
-                    <ListBox
-                        x:Name="FailedSitesListBox"
-                        Height="110"
-                        Margin="4.98,27,6.073,0"
-                        VerticalAlignment="Top"
-                        Background="#f2f2f2"
-                        RenderTransformOrigin="0.5,0.5">
+                <Grid Width="129" Margin="0,12,10,10" HorizontalAlignment="Right">
+                    <Border BorderBrush="#cbcbcb" BorderThickness="1" CornerRadius="5" />
+                    <Label x:Name="FailedSitesLabel"
+                           Width="119"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Content="Failed Sites" />
+                    <ListBox x:Name="FailedSitesListBox"
+                             Height="110"
+                             Margin="4.98,27,6.073,0"
+                             VerticalAlignment="Top"
+                             Background="#f2f2f2"
+                             RenderTransformOrigin="0.5,0.5">
                         <ListBox.Resources>
                             <Style TargetType="{x:Type Border}">
                                 <Setter Property="CornerRadius" Value="5" />
                             </Style>
                         </ListBox.Resources>
                     </ListBox>
-                    <Border
-                        BorderBrush="#cbcbcb"
-                        BorderThickness="1"
-                        CornerRadius="5" />
+                    <Border BorderBrush="#cbcbcb" BorderThickness="1" CornerRadius="5" />
                 </Grid>
             </Grid>
         </Grid>

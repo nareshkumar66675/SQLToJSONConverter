@@ -379,4 +379,10 @@
   <data name="Wizard_Next_Button" xml:space="preserve">
     <value>Next &gt;</value>
   </data>
+  <data name="HistoryProcessPage_Description" xml:space="preserve">
+    <value>Please wait until the Migration is Complete.</value>
+  </data>
+  <data name="HistoryProcessPage_Title" xml:space="preserve">
+    <value>STEP 11 : History Migration</value>
+  </data>
 </root>

@@ -619,6 +619,24 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please wait until the Migration is Complete..
+        /// </summary>
+        public static string HistoryProcessPage_Description {
+            get {
+                return ResourceManager.GetString("HistoryProcessPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 11 : History Migration.
+        /// </summary>
+        public static string HistoryProcessPage_Title {
+            get {
+                return ResourceManager.GetString("HistoryProcessPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do you wish to change the language to {0} ?.
         /// </summary>
         public static string IntroPage_ChangeLanguage_Message {

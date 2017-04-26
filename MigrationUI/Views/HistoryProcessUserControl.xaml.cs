@@ -30,6 +30,7 @@ namespace MigrationTool.Views
     /// </summary>
     public partial class HistoryProcessUserControl : UserControl
     {
+        #region VariableInitialization
         DispatcherTimer siteTimer;
         DispatcherTimer overallTimer;
 
@@ -38,13 +39,15 @@ namespace MigrationTool.Views
 
         private bool terminate = false;
 
-        private string siteCompletedText= "{0} of {1} Completed";
+        private string siteCompletedText = "{0} of {1} Completed";
+        public event EventHandler ProcessStarted;
         public event EventHandler ProcessCompleted;
         public Dictionary<string, string> NotMigratedSites { get; set; }
         public Dictionary<string, string> AllSites { get; set; }
-        public KeyValuePair<string,string> CurrentSite { get; set; }
+        public KeyValuePair<string, string> CurrentSite { get; set; }
         public Dictionary<string, string> FailedSites { get; set; }
-        public Dictionary<string, string> MigratedSites { get; set; }
+        public Dictionary<string, string> MigratedSites { get; set; } 
+        #endregion
         public HistoryProcessUserControl()
         {
             InitializeComponent();
@@ -69,7 +72,7 @@ namespace MigrationTool.Views
             FailedSites = new Dictionary<string, string>();
             MigratedSites = new Dictionary<string, string>();
             NotMigratedSites = new Dictionary<string, string>();
-            AllSites = DatabaseHelper.GetAllSitesFromLegacy().Where(t=> t.Key=="233").ToDictionary(u=>u.Key,v=>v.Value);
+            AllSites = DatabaseHelper.GetAllSitesFromLegacy();//.Where(t=> t.Key=="233").ToDictionary(u=>u.Key,v=>v.Value);
             OverallProgress.Maximum = AllSites.Count();
 
             NotMigratedSites = GetNotMigratedSites(GroupType.HISTORY, AllSites);
@@ -97,6 +100,7 @@ namespace MigrationTool.Views
 
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
+            ProcessStarted?.Invoke(sender, e);
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += Worker_StartProcess;
             worker.RunWorkerAsync();
@@ -262,20 +266,20 @@ namespace MigrationTool.Views
             if(rslt== MessageBoxResult.Yes)
             {
                 terminate = true;
+                stopButton.IsEnabled = false;
                 statusBar.Text = "Stopping Process!!! Please Wait....";
             }
         }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private void HistoryProcessUserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (AllSites.Count == MigratedSites.Count)
-            {
-                Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "All Items has been Migrated.\nPlease Proceed to Next page.", "History Process", MessageBoxButton.OK, MessageBoxImage.Information);
-                startButton.IsEnabled = false;
-                stopButton.IsEnabled = false;
-                ProcessCompleted?.Invoke(sender, e);
-
-            }
+            if (AllSites != null && MigratedSites != null)
+                if (AllSites.Count == MigratedSites.Count)
+                {
+                    Xceed.Wpf.Toolkit.MessageBox.Show(Window.GetWindow(this), "All Items has been Migrated.\nPlease Proceed to Next page.", "History Process", MessageBoxButton.OK, MessageBoxImage.Information);
+                    startButton.IsEnabled = false;
+                    stopButton.IsEnabled = false;
+                    ProcessCompleted?.Invoke(sender, e);
+                }
         }
     }
 }

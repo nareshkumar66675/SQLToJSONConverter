@@ -61,6 +61,18 @@ DROP Table MIGRATION.GAM_THEME
 END
 GO
 
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.PROGRESSIVE_POOL') AND type in (N'U'))
+BEGIN
+DROP Table MIGRATION.PROGRESSIVE_POOL
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.PROGRESSIVE_METER') AND type in (N'U'))
+BEGIN
+DROP Table MIGRATION.PROGRESSIVE_METER
+END
+GO
+
 
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_POS_MANUFACTURER') AND type in (N'U'))
 BEGIN
@@ -93,16 +105,18 @@ DROP Table MIGRATION.GAM_DENOMINATION
 END
 GO
 
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_THEME_DETAILS') AND type in (N'U'))
+BEGIN
+DROP TABLE MIGRATION.GAM_THEME_DETAILS
+END
+GO
 
------------- DDL Create & Insert Data ---------------------
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_HISTORY_PROGRESSIVE') AND type in (N'U'))
+BEGIN
+DROP Table MIGRATION.GAM_HISTORY_PROGRESSIVE
+END
+GO
 
-
---AREA 
-CREATE TABLE MIGRATION.GAM_AREA
-(
-AREA_LEGCY_ID BIGINT,
-AR_NEW_ID BIGINT
-)
 
 ---------------------------
 -- Site wise incremental --
@@ -113,24 +127,37 @@ AR_NEW_ID BIGINT
 --AREA_ID FROM GAM.AREA AS AR WHERE IS_DELETED = 0 ORDER BY AR.SITE_ID, AR.AREA_ID
 
 
-INSERT INTO MIGRATION.GAM_AREA
-SELECT AREA_ID, ROW_NUMBER() OVER( ORDER BY AREA_ID) AS RW_NUM
-FROM GAM.AREA AS AR
-WHERE IS_DELETED = 0  ORDER BY AR.AREA_ID
+-- AREA 
+
+SELECT AR.AREA_ID as AREA_LEGCY_ID, AR.SITE_ID AS AR_SITE_ID ,
+ROW_NUMBER () OVER (PARTITION BY SITE_ID ORDER BY SITE_ID, AREA_ID) as AR_NEW_ID
+INTO MIGRATION.GAM_AREA
+FROM GAM.AREA AS AR 
+WHERE AR.IS_DELETED = 0
+GO
 
 --ZONE
-CREATE TABLE MIGRATION.GAM_ZONE
-(
-AREA_LEGCY_ID BIGINT,
-ZN_NEW_ID BIGINT
-)
+
+SELECT ZN.ZONE_ID AS ZONE_LEGCY_ID, ZN.ZN_AREA_ID, SITE_ID,
+ROW_NUMBER () over (partition by SITE_ID order by SITE_ID, ZN_AREA_ID, ZONE_ID) as ZN_NEW_ID
+INTO MIGRATION.GAM_ZONE
+FROM GAM.ZONE AS ZN 
+JOIN GAM.AREA AS AR ON AR.AREA_ID = ZN.ZN_AREA_ID
+WHERE AR.IS_DELETED = 0 AND ZN.IS_DELETED = 0
+GO
 
 --BANK
-CREATE TABLE MIGRATION.GAM_BANK
-(
-AREA_LEGCY_ID BIGINT,
-BK_NEW_ID BIGINT
-)
+
+SELECT BK.BANK_ID AS BANK_LEGCY_ID, BK_ZONE_ID, AR.AREA_ID , SITE_ID,
+row_number() over( partition by SITE_ID order by AREA_ID, BK_ZONE_ID, BANK_ID) as BK_NEW_ID
+INTO MIGRATION.GAM_BANK
+FROM GAM.BANK AS BK 
+JOIN GAM.ZONE AS ZN ON ZN.ZONE_ID = BK.BK_ZONE_ID
+JOIN GAM.AREA AS AR ON AR.AREA_ID = ZN.ZN_AREA_ID
+WHERE AR.IS_DELETED = 0 AND ZN.IS_DELETED = 0 
+AND BK.IS_DELETED = 0
+
+GO
 
 -- MANUFACTURER
 CREATE TABLE MIGRATION.GAM_MANUFACTURER
@@ -142,7 +169,7 @@ MF_NEW_ID BIGINT
 INSERT INTO MIGRATION.GAM_MANUFACTURER
 SELECT MANF_ID, ROW_NUMBER() OVER( ORDER BY MANF_ID) AS RW_NUM
 FROM GAM.MANUFACTURER AS AR
-WHERE IS_DELETED = 0 AND MANF_ID NOT IN (-1) ORDER BY AR.MANF_ID
+WHERE IS_DELETED = 0  ORDER BY AR.MANF_ID
 
 
 -- MODEL_TYPE
@@ -184,6 +211,31 @@ FROM GAM.THEME AS TM
 WHERE IS_DELETED = 0 ORDER BY THEM_ID
 
 
+--- PROGRESSIVE POOL
+CREATE TABLE MIGRATION.PROGRESSIVE_POOL
+(
+POOL_LEGCY_ID BIGINT,
+POOL_NEW_ID BIGINT
+)
+
+INSERT INTO MIGRATION.PROGRESSIVE_POOL
+SELECT PRGP_ID, ROW_NUMBER() OVER(ORDER BY PRGP_ID) AS RW_NUM
+-- select *
+FROM PROGRESSIVE.[POOL] AS P
+WHERE IS_DELETED = 0 ORDER BY PRGP_ID
+
+--- PROGRESSIVE METER
+CREATE TABLE MIGRATION.PROGRESSIVE_METER
+(
+MTR_LEGCY_ID BIGINT,
+MTR_NEW_ID BIGINT
+)
+
+INSERT INTO MIGRATION.PROGRESSIVE_METER
+SELECT MTR_ID, ROW_NUMBER() OVER(ORDER BY MTR_ID) AS RW_NUM
+-- SELECT *
+FROM PROGRESSIVE.METER AS MTR
+WHERE IS_DELETED = 0 ORDER BY MTR_ID
 
 
 -- POS MANUFACTURER
@@ -211,14 +263,15 @@ FROM GAM.MODEL AS MT
 WHERE IS_DELETED = 0  AND MT.MDL_SHORT_NAME = 'POS' ORDER BY MDL_ID
 
 
---Denomination
-
-SELECT DENM_ID, ROW_NUMBER() OVER (ORDER BY DENM_ID ) AS Components_Id,
-'Denom Value' as CODE, 'DENOMINATION' as ComponentCode,
-cast ( CONVERT(DECIMAL(10,2),cast(denm_amount as float)/100) as nvarchar) as DENM_AMOUNT
-INTO MIGRATION.GAM_DENOMINATION
-FROM GAM.DENOMINATION WHERE IS_DELETED = 0 
-
+-- Denomination
+SELECT DENM_ID, COMPONENTS_ID, CODE, DENM_AMOUNT, DENM_AMOUNT_Cents 
+INTO [MIGRATION].[GAM_DENOMINATION]
+FROM ( SELECT DENM_ID, ROW_NUMBER() OVER (ORDER BY denm_amount ) AS Components_Id, 
+ROW_NUMBER() OVER (partition by denm_amount ORDER BY denm_amount ) AS dm_amt_seq,
+'Denom Value' as CODE, cast ( CONVERT(DECIMAL(10,2),cast(denm_amount as float)/100) as nvarchar) as DENM_AMOUNT,
+DENM_AMOUNT as DENM_AMOUNT_Cents
+FROM GAM.DENOMINATION AS D  WHERE IS_DELETED = 0 ) AS TT
+WHERE TT.DM_AMT_SEQ = 1 
 
 
 
@@ -377,11 +430,92 @@ and m.GameCategory = a.GameCategory
 GO
 
 
+-------------------
+--Theme
+-------------------
+
+--DROP TABLE MIGRATION.GAM_THEME_DETAILS
+GO
 
 
-----select * from MIGRATION.GAM_TYPE_DESCRIPTION
+SELECT 
+TT.TTYP_ID,
+TT.TTYP_SHORT_NAME,
+TT.TTYP_LONG_NAME,
+0 as ThemeType_Id,
+tg.TGRP_ID,
+tg.TGRP_SHORT_NAME,
+TG.TGRP_LONG_NAME,
+0 as ThemeGroup_Id,
+TC.TCAT_ID,
+TC.TCAT_SHORT_NAME,
+tc.TCAT_LONG_NAME,
+0 as ThemeCategory_Id,
+MNF.MANF_ID,
+MNF.MANF_SHORT_NAME,
+MNF.MANF_LONG_NAME,
+0 as Manfacture_Id,
+TH.THEM_ID,
+TH.THEM_NAME ,
+0 as Theme_Id
+INTO MIGRATION.GAM_THEME_DETAILS
+FROM GAM.THEME_TYPE AS TT
+JOIN GAM.THEME_GROUP AS TG ON TG.TGRP_TTYP_ID = TT.TTYP_ID
+JOIN GAM.THEME_CATEGORY AS TC ON TC.TCAT_TGRP_ID = TG.TGRP_ID
+JOIN GAM.THEME AS TH ON TH.theme_cat_id = TC.tcat_id
+JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
 
---TODO
+
+---ThemeType_Id
+UPDATE TT
+SET tt.ThemeType_Id = T_1
+--SELECT * 
+FROM MIGRATION.GAM_THEME_DETAILS as tt
+join ( select row_number() over (order by TTYP_SHORT_NAME desc ) as T_1, *
+from (select distinct TTYP_SHORT_NAME FROM MIGRATION.GAM_THEME_DETAILS) as tt) a
+on tt.TTYP_SHORT_NAME = a.TTYP_SHORT_NAME
+
+--ThemeGroup_Id
+UPDATE TT
+SET tt.ThemeGroup_Id = T_2
+--SELECT * 
+FROM MIGRATION.GAM_THEME_DETAILS as tt
+join ( select row_number() over (order by TTYP_SHORT_NAME desc, TGRP_SHORT_NAME) as T_2, *
+from (select distinct TTYP_SHORT_NAME, TGRP_SHORT_NAME FROM MIGRATION.GAM_THEME_DETAILS) as tt) a
+on tt.TTYP_SHORT_NAME = a.TTYP_SHORT_NAME and tt.TGRP_SHORT_NAME = a.TGRP_SHORT_NAME
+
+--ThemeCategory_Id
+UPDATE TT
+SET tt.ThemeCategory_Id = T_3
+--SELECT * 
+FROM MIGRATION.GAM_THEME_DETAILS as tt
+join ( select row_number() over (order by TTYP_SHORT_NAME desc, TGRP_SHORT_NAME, TCAT_SHORT_NAME) as T_3, *
+from (select distinct TTYP_SHORT_NAME, TGRP_SHORT_NAME, TCAT_SHORT_NAME FROM MIGRATION.GAM_THEME_DETAILS) as tt) a
+on tt.TTYP_SHORT_NAME = a.TTYP_SHORT_NAME and tt.TGRP_SHORT_NAME = a.TGRP_SHORT_NAME
+and tt.TCAT_SHORT_NAME = a.TCAT_SHORT_NAME
+
+
+--Manfacture_Id
+UPDATE TT
+SET tt.Manfacture_Id = T_4
+--SELECT * 
+FROM MIGRATION.GAM_THEME_DETAILS as tt
+join ( select row_number() over (order by TTYP_SHORT_NAME desc, TGRP_SHORT_NAME, TCAT_SHORT_NAME, MANF_SHORT_NAME) as T_4, *
+from (select distinct TTYP_SHORT_NAME, TGRP_SHORT_NAME, TCAT_SHORT_NAME, MANF_SHORT_NAME FROM MIGRATION.GAM_THEME_DETAILS) as tt) a
+on tt.TTYP_SHORT_NAME = a.TTYP_SHORT_NAME and tt.TGRP_SHORT_NAME = a.TGRP_SHORT_NAME
+and tt.TCAT_SHORT_NAME = a.TCAT_SHORT_NAME and tt.MANF_SHORT_NAME = a.MANF_SHORT_NAME
+
+--Theme_Id
+UPDATE TT
+SET tt.Theme_Id = T_5
+--SELECT * 
+FROM MIGRATION.GAM_THEME_DETAILS as tt
+join ( select row_number() over (order by TTYP_SHORT_NAME desc, TGRP_SHORT_NAME, TCAT_SHORT_NAME, MANF_SHORT_NAME, THEM_NAME) as T_5, *
+from (select distinct TTYP_SHORT_NAME, TGRP_SHORT_NAME, TCAT_SHORT_NAME, MANF_SHORT_NAME,THEM_NAME FROM MIGRATION.GAM_THEME_DETAILS) as tt) a
+on tt.TTYP_SHORT_NAME = a.TTYP_SHORT_NAME and tt.TGRP_SHORT_NAME = a.TGRP_SHORT_NAME
+and tt.TCAT_SHORT_NAME = a.TCAT_SHORT_NAME and tt.MANF_SHORT_NAME = a.MANF_SHORT_NAME
+and tt.THEM_NAME = a.THEM_NAME
+
 
 ---- Asset to Type Description
 --UPDATE ASTMAP
@@ -758,7 +892,8 @@ CASE
        when mtr_value_desc = 'MTR_LAST_JACKPOT_AMOUNT' then 'Last.Jackpot.Amount'
        when mtr_value_desc = 'MTR_LAST_JACKPOT_TS' then 'Last.Jackpot.Timestamp'
        END AS InlineAssets_Code,
-      MTR_VALUE AS InlineAssets
+      MTR_VALUE AS InlineAssets,
+	  Mtr_Deleted
 FROM (SELECT MTR_ID , m.INSMAP_ID , MTR_NAME , 
 m.PRGP_ID , m.JKPT_ID , MP.POOL_NEW_ID,
 cast(MTR_NAME as nvarchar) as METER_ID,
@@ -787,7 +922,8 @@ ST.SITE_NUMBER as SiteId,
 ST.SITE_NUMBER as SiteNumber,
 ST.SITE_LONG_NAME as SiteName,
 LPROP.PROP_NEW_ID as OrganizationId,
-PTY.PROP_LONG_NAME as OrganizationName
+PTY.PROP_LONG_NAME as OrganizationName,
+M.IS_DELETED as Mtr_Deleted
 FROM PROGRESSIVE.METER as m
 join [PROGRESSIVE].[JACKPOT] as j on j.[JKPT_ID] = m.[JKPT_ID]
 join [PROGRESSIVE].[PAYMENT_METHOD] as pm on pm.[PRPM_ID] = m.[PRPM_ID]
@@ -796,9 +932,7 @@ JOIN MIGRATION.PROGRESSIVE_POOL AS MP ON MP.POOL_LEGCY_ID = P.PRGP_ID
 JOIN GAM.INSTALLED_SYSTEM_MAP AS IMAP ON IMAP.INSM_ID = P.INSMAP_ID
 JOIN GAM.[SITE] AS ST ON ST.SITE_ID = IMAP.INSM_SITE_ID
 JOIN GAM.PROPERTY AS PTY ON PTY.PROP_ID = ST.SITE_PROP_ID
-join MIGRATION.GAM_PROPERTY as Lprop on Lprop.prop_legcy_id = PTY.PROP_ID
-
-where m.IS_DELETED = 0 ) as st
+join MIGRATION.GAM_PROPERTY as Lprop on Lprop.prop_legcy_id = PTY.PROP_ID ) as st
 UNPIVOT
 ( MTR_VALUE FOR MTR_VALUE_DESC IN ( METER_ID, MTR_CURRENT_AMOUNT, MTR_LAST_JACKPOT_AMOUNT,
 MTR_LAST_JACKPOT_TS, MTR_HIT_TO_HIT_CONTRIBUTN, MTR_DESCRIPTION, MTR_FLOOR_DESCRIPTION, 
@@ -835,21 +969,22 @@ Case when value_desc_prog = 'Pool_Id' then 1
 	 when value_desc_prog = 'IsWAPPool' then 5 
 	 when value_desc_prog = 'MeterCount' then 6 end as Options_Id,
 
-Case when value_desc_prog = 'Pool_Id' then 'Pool_Id'
-	 when value_desc_prog = 'Pool_Name' then 'Pool_Name'
-	 when value_desc_prog = 'IsMultipleLevel' then 'IsMultipleLevel'
-	 when value_desc_prog = 'IsMysteryPool' then 'IsMysteryPool'
-	 when value_desc_prog = 'IsWAPPool' then 'IsWAPPool' 
-	 when value_desc_prog = 'MeterCount' then 'MeterCount' end as Options_Name,
+Case when value_desc_prog = 'Pool_Id' then 'Pool Id'
+	 when value_desc_prog = 'Pool_Name' then 'Pool Name'
+	 when value_desc_prog = 'IsMultipleLevel' then 'Is Multiple Pool Progressive'
+	 when value_desc_prog = 'IsMysteryPool' then 'Is Mystery Pool'
+	 when value_desc_prog = 'IsWAPPool' then 'Is WAP Pool' 
+	 when value_desc_prog = 'MeterCount' then 'Meter Count' end as Options_Name,
 
-Case when value_desc_prog = 'Pool_Id' then 'Pool.Id'
-	 when value_desc_prog = 'Pool_Name' then 'Pool.Name'
-	 when value_desc_prog = 'IsMultipleLevel' then 'Is.Multiple.Level'
-	 when value_desc_prog = 'IsMysteryPool' then 'Is.Mystery.Pool'
-	 when value_desc_prog = 'IsWAPPool' then 'Is.WAP.Pool' 
+Case when value_desc_prog = 'Pool_Id' then 'Pool.Id.Code'
+	 when value_desc_prog = 'Pool_Name' then 'PROGRESSIVE.POOL.DESCRIPTION'
+	 when value_desc_prog = 'IsMultipleLevel' then 'PROGRESSIVE.POOL.IS.MULTIPLE.POOL.LEVEL.ON'
+	 when value_desc_prog = 'IsMysteryPool' then 'PROGRESSIVE.POOL.IS.MYSTERY.POOL'
+	 when value_desc_prog = 'IsWAPPool' then 'PROGRESSIVE.POOL.IS.WAP.POOL'
 	 when value_desc_prog = 'MeterCount' then 'Meter.Count.Code' end as Options_Code,
 
-	 value_prog as Options_Value
+	 value_prog as Options_Value,
+	 Pool_Deleted
 
 --, *
 from ( SELECT cast(PRGP_POOL_ID as nvarchar) as Pool_Id,
@@ -860,8 +995,8 @@ case when PRGP_IS_WAP_POOL = 1 then cast('Yes' as nvarchar) else cast('No' as nv
 
 cast(METER_COUNT as nvarchar) AS MeterCount,
 MP.POOL_NEW_ID,
-P.PRGP_ID, P.PCON_ID
-
+P.PRGP_ID, P.PCON_ID,
+P.IS_DELETED as Pool_Deleted
 FROM PROGRESSIVE.[POOL] AS P 
 JOIN MIGRATION.PROGRESSIVE_POOL AS MP ON MP.POOL_LEGCY_ID = P.PRGP_ID
 LEFT JOIN (SELECT M.PRGP_ID, COUNT(*) AS METER_COUNT FROM PROGRESSIVE.METER AS M
@@ -891,9 +1026,11 @@ WHERE INSYS.SYS_ID = 3
 GO
 
 
+
 DROP VIEW IF EXISTS [MIGRATION].[VIEW_AREA]
 
 GO
+
 
 CREATE VIEW [MIGRATION].[VIEW_AREA]
 AS
@@ -914,17 +1051,20 @@ ROW_NUMBER () over (partition by SITE_ID order by SITE_ID, AREA_ID) as AR_Indx,
 AR_LONG_NAME as DISPLAY_NAME,
 cast(AR.AR_LONG_NAME as nvarchar) as AR_LONG_NAME,
 cast(AR.AR_SHORT_NAME as nvarchar) as AR_SHORT_NAME
-FROM GAM.AREA AS AR WHERE AR.IS_DELETED = 0) AR_ZN_BK
+FROM GAM.AREA AS AR 
+JOIN ( SELECT DISTINCT ASD_AREA_ID FROM GAM.ASSET_STANDARD_DETAILS as AD
+WHERE AD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 ) as lk_ar on lk_ar.ASD_AREA_ID = ar.AREA_id
+WHERE AR.IS_DELETED = 0) AR_ZN_BK
 UNPIVOT
 ( VALUE_AR FOR VALUE_DESC_AR IN ( AR_SHORT_NAME, AR_LONG_NAME) ) AS T
 
 
 GO
 
+
 DROP VIEW IF EXISTS [MIGRATION].[VIEW_ZONE]
 
 GO
-
 CREATE VIEW [MIGRATION].[VIEW_ZONE]
 AS
 SELECT ZONE_ID, ZN_AREA_ID,
@@ -946,7 +1086,9 @@ cast(ZN.ZN_LONG_NAME as nvarchar) as ZN_LONG_NAME,
 cast(ZN.ZN_SHORT_NAME as nvarchar) as ZN_SHORT_NAME
 FROM GAM.ZONE AS ZN 
 JOIN GAM.AREA AS AR ON AR.AREA_ID = ZN.ZN_AREA_ID
-where ZN.IS_DELETED = 0) AR_ZN_BK
+JOIN ( SELECT DISTINCT ASD_ZONE_ID FROM GAM.ASSET_STANDARD_DETAILS AS AD
+WHERE AD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 ) AS LK_ZN ON LK_ZN.ASD_ZONE_ID = ZN.ZONE_ID
+WHERE ZN.IS_DELETED = 0) AR_ZN_BK
 UNPIVOT
 ( VALUE_ZN FOR VALUE_DESC_ZN IN ( ZN_SHORT_NAME, ZN_LONG_NAME) ) AS T
 
@@ -981,11 +1123,192 @@ cast(BK.BK_SHORT_NAME as nvarchar) as BK_SHORT_NAME
  FROM GAM.BANK AS BK 
  JOIN GAM.ZONE AS ZN ON ZN.ZONE_ID = BK.BK_ZONE_ID
  JOIN GAM.AREA AS AR ON AR.AREA_ID = ZN.ZN_AREA_ID
+ JOIN ( SELECT DISTINCT ASD_BANK_ID FROM GAM.ASSET_STANDARD_DETAILS AS AD
+ WHERE AD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 ) AS LK_BK ON LK_BK.ASD_BANK_ID = BK.BANK_ID
  WHERE BK.IS_DELETED = 0 ) AR_ZN_BK
 UNPIVOT
 ( VALUE_BK FOR VALUE_DESC_BK IN ( BK_SHORT_NAME, BK_LONG_NAME) ) AS T
 
 
 
-
 GO
+
+
+
+--------------------------
+--PROGRESSIVE
+--------------------------
+
+SELECT PRGP_ID, PCON_ID, POOL_NEW_ID,
+---AssetId----
+'11' as AssetId_Id,
+JKPT_ID , MTR_ID ,
+SiteId as Site_SiteId, 
+SiteNumber as Site_SiteNumber,
+SiteName as Site_SiteName,
+OrganizationId as Site_OrganizationId, 
+OrganizationName as Site_OrganizationName,
+---Options----
+ Case  when value_desc_prog = 'Pool_Id' then 1
+	   when value_desc_prog = 'Pool_Name' then 2
+	   when value_desc_prog = 'IsMultipleLevel' then 3
+	   when value_desc_prog = 'IsMysteryPool' then 4
+	   when value_desc_prog = 'IsWAPPool' then 5 
+	   when value_desc_prog = 'MeterCount' then 6  
+	   when value_desc_prog = 'METER_ID' then 7
+       when value_desc_prog = 'MTR_DESCRIPTION' then 8
+       when value_desc_prog = 'MTR_FLOOR_DESCRIPTION' then 9
+       when value_desc_prog = 'MTR_CURRENT_AMOUNT' then 10  
+       when value_desc_prog = 'MTR_RESET_AMOUNT' then 11
+       when value_desc_prog = 'MTR_HAS_HIDDEN_METER' then 12
+       when value_desc_prog = 'MTR_MACHINE_PAY_AMOUNT' then 13   
+       when value_desc_prog = 'MTR_CURRENT_MAXIMUM' then 14
+       when value_desc_prog = 'MTR_CURRENT_FACTOR' then 15
+       when value_desc_prog = 'MTR_HIT_TO_HIT_CONTRIBUTN' then 16
+       when value_desc_prog = 'MTR_HIDDEN_AMOUNT' then 17
+       when value_desc_prog = 'MTR_HIDDEN_MAXIMUM' then 18
+       when value_desc_prog = 'MTR_HIDDEN_FACTOR' then 19
+       when value_desc_prog = 'MTR_BREAK_RATE_FACTOR' then 20
+       when value_desc_prog = 'MTR_BREAK_RATE_THRESHOLD' then 21
+       when value_desc_prog = 'MTR_START_OUT_FACTOR' then 22
+       when value_desc_prog = 'MTR_CURRENT_FRACT_AMT' then 23
+       when value_desc_prog = 'MTR_OVERFLOW_AMOUNT' then 24
+       when value_desc_prog = 'JKPT_JACKPOT_ID' then 25
+       when value_desc_prog = 'PRPM_DESC' then 26
+       when value_desc_prog = 'MTR_LAST_JACKPOT_AMOUNT' then 27
+       when value_desc_prog = 'MTR_LAST_JACKPOT_TS' then 28 end as Options_Id,
+
+  Case when value_desc_prog = 'Pool_Id' then 'Pool Id'
+	   when value_desc_prog = 'Pool_Name' then 'Pool Name'
+	   when value_desc_prog = 'IsMultipleLevel' then 'Is Multiple Pool Progressive'
+	   when value_desc_prog = 'IsMysteryPool' then 'Is Mystery Pool'
+	   when value_desc_prog = 'IsWAPPool' then 'Is WAP Pool' 
+	   when value_desc_prog = 'MeterCount' then 'Meter Count' 
+	   when value_desc_prog = 'METER_ID' then 'Meter Id'
+       when value_desc_prog = 'MTR_DESCRIPTION' then 'Meter Description' 
+       when value_desc_prog = 'MTR_FLOOR_DESCRIPTION' then 'Floor Description'
+       when value_desc_prog = 'MTR_CURRENT_AMOUNT' then 'Current Meter Amount'     
+       when value_desc_prog = 'MTR_RESET_AMOUNT' then 'Meter Reset Amount'
+       when value_desc_prog = 'MTR_HAS_HIDDEN_METER' then 'Has Hidden Meter'
+       when value_desc_prog = 'MTR_MACHINE_PAY_AMOUNT' then 'Machine Pay Amount'   
+       when value_desc_prog = 'MTR_CURRENT_MAXIMUM' then 'Current Meter Max Amount'
+       when value_desc_prog = 'MTR_CURRENT_FACTOR' then 'Current Meter Factor'
+       when value_desc_prog = 'MTR_HIT_TO_HIT_CONTRIBUTN' then 'Meter Hit To Hit Contribution'
+       when value_desc_prog = 'MTR_HIDDEN_AMOUNT' then 'Hidden Meter Amount'
+       when value_desc_prog = 'MTR_HIDDEN_MAXIMUM' then 'Hidden Meter Max Amount'
+       when value_desc_prog = 'MTR_HIDDEN_FACTOR' then 'Hidden Meter Factor'
+       when value_desc_prog = 'MTR_BREAK_RATE_FACTOR' then 'Break Rate'
+       when value_desc_prog = 'MTR_BREAK_RATE_THRESHOLD' then 'Break Threshold'
+       when value_desc_prog = 'MTR_START_OUT_FACTOR' then 'Start Out Factor'
+       when value_desc_prog = 'MTR_CURRENT_FRACT_AMT' then 'Meter Current Fraction Amount'
+       when value_desc_prog = 'MTR_OVERFLOW_AMOUNT' then 'Meter Over Flow Amount'
+       when value_desc_prog = 'JKPT_JACKPOT_ID' then 'Level No'
+       when value_desc_prog = 'PRPM_DESC' then 'Payment Method'
+       when value_desc_prog = 'MTR_LAST_JACKPOT_AMOUNT' then 'Last Jackpot Amount'
+       when value_desc_prog = 'MTR_LAST_JACKPOT_TS' then 'Last Jackpot Timestamp'end as Options_Name,
+
+  Case when value_desc_prog = 'Pool_Id' then 'Pool.Id.Code'
+	   when value_desc_prog = 'Pool_Name' then 'PROGRESSIVE.POOL.DESCRIPTION'
+	   when value_desc_prog = 'IsMultipleLevel' then 'PROGRESSIVE.POOL.IS.MULTIPLE.POOL.LEVEL.ON'
+	   when value_desc_prog = 'IsMysteryPool' then 'PROGRESSIVE.POOL.IS.MYSTERY.POOL'
+	   when value_desc_prog = 'IsWAPPool' then 'PROGRESSIVE.POOL.IS.WAP.POOL'
+	   when value_desc_prog = 'MeterCount' then 'Meter.Count.Code' 
+	   when value_desc_prog = 'METER_ID' then 'Meter.Id'
+       when value_desc_prog = 'MTR_DESCRIPTION' then 'Meter.Description' 
+       when value_desc_prog = 'MTR_FLOOR_DESCRIPTION' then 'Floor.Description'
+       when value_desc_prog = 'MTR_CURRENT_AMOUNT' then 'Current.Meter.Amount'     
+       when value_desc_prog = 'MTR_RESET_AMOUNT' then 'Meter.Reset.Amount'
+       when value_desc_prog = 'MTR_HAS_HIDDEN_METER' then 'Has.Hidden.Meter'
+       when value_desc_prog = 'MTR_MACHINE_PAY_AMOUNT' then 'Machine.Pay.Amount'   
+       when value_desc_prog = 'MTR_CURRENT_MAXIMUM' then 'Current.Meter.Max.Amount'
+       when value_desc_prog = 'MTR_CURRENT_FACTOR' then 'Current.Meter.Factor'
+       when value_desc_prog = 'MTR_HIT_TO_HIT_CONTRIBUTN' then 'Meter.Hit.To.Hit.Contribution'
+       when value_desc_prog = 'MTR_HIDDEN_AMOUNT' then 'Hidden.Meter.Amount'
+       when value_desc_prog = 'MTR_HIDDEN_MAXIMUM' then 'Hidden.Meter.Max.Amount'
+       when value_desc_prog = 'MTR_HIDDEN_FACTOR' then 'Hidden.Meter.Factor'
+       when value_desc_prog = 'MTR_BREAK_RATE_FACTOR' then 'Break.Rate'
+       when value_desc_prog = 'MTR_BREAK_RATE_THRESHOLD' then 'Break.Threshold'
+       when value_desc_prog = 'MTR_START_OUT_FACTOR' then 'Start.Out.Factor'
+       when value_desc_prog = 'MTR_CURRENT_FRACT_AMT' then 'Meter.Current.Fraction.Amount'
+       when value_desc_prog = 'MTR_OVERFLOW_AMOUNT' then 'Meter.Over.Flow.Amount'
+       when value_desc_prog = 'JKPT_JACKPOT_ID' then 'Level.No'
+       when value_desc_prog = 'PRPM_DESC' then 'Payment.Method'
+       when value_desc_prog = 'MTR_LAST_JACKPOT_AMOUNT' then 'Last.Jackpot.Amount'
+       when value_desc_prog = 'MTR_LAST_JACKPOT_TS' then 'Last.Jackpot.Timestamp' end as Options_Code,
+
+	 value_prog as Options_Value,
+	 Pool_Deleted
+INTO MIGRATION.GAM_HISTORY_PROGRESSIVE
+FROM ( SELECT cast(PRGP_POOL_ID as nvarchar) as Pool_Id,
+cast(PRGP_NAME as nvarchar) as Pool_Name,
+case when PRGP_IS_MULTIPLE_LVL_ON = 1 then cast('Yes' as nvarchar) else cast('No' as nvarchar) end as IsMultipleLevel,
+case when PRGP_IS_MYSTERY_POOL = 1 then cast('Yes' as nvarchar) else cast('No' as nvarchar) end as IsMysteryPool,
+case when PRGP_IS_WAP_POOL = 1 then cast('Yes' as nvarchar) else cast('No' as nvarchar) end as IsWAPPool,
+
+cast(METER_COUNT as nvarchar) AS MeterCount,
+MP.POOL_NEW_ID,
+P.PRGP_ID, P.PCON_ID,
+P.IS_DELETED as Pool_Deleted,
+METER_ID, MTR_CURRENT_AMOUNT, MTR_LAST_JACKPOT_AMOUNT,
+MTR_LAST_JACKPOT_TS, MTR_HIT_TO_HIT_CONTRIBUTN, MTR_DESCRIPTION, MTR_FLOOR_DESCRIPTION, 
+MTR_HAS_HIDDEN_METER, MTR_MACHINE_PAY_AMOUNT, MTR_CURRENT_MAXIMUM, MTR_CURRENT_FACTOR, 
+MTR_HIDDEN_AMOUNT, MTR_HIDDEN_MAXIMUM, MTR_HIDDEN_FACTOR, MTR_RESET_AMOUNT, 
+MTR_BREAK_RATE_FACTOR, MTR_BREAK_RATE_THRESHOLD,  MTR_START_OUT_FACTOR, MTR_CURRENT_FRACT_AMT, 
+MTR_OVERFLOW_AMOUNT, JKPT_JACKPOT_ID, PRPM_DESC, JKPT_ID,
+MTR_ID, SiteId, SiteNumber, SiteName, OrganizationId,  OrganizationName
+FROM PROGRESSIVE.[POOL] AS P 
+JOIN MIGRATION.PROGRESSIVE_POOL AS MP ON MP.POOL_LEGCY_ID = P.PRGP_ID
+
+LEFT JOIN (SELECT MTR_ID , m.INSMAP_ID , MTR_NAME , 
+m.PRGP_ID , m.JKPT_ID , MP.POOL_NEW_ID,
+cast(MTR_NAME as nvarchar) as METER_ID,
+cast(MTR_CURRENT_AMOUNT as nvarchar) as MTR_CURRENT_AMOUNT,
+cast(ISNULL(MTR_LAST_JACKPOT_AMOUNT, 0) as nvarchar) as MTR_LAST_JACKPOT_AMOUNT,
+cast(ISNULL(MTR_LAST_JACKPOT_TS, '1970-01-01 00:00:00') as nvarchar) as MTR_LAST_JACKPOT_TS, 
+cast(ISNULL(MTR_HIT_TO_HIT_CONTRIBUTN , 0) as nvarchar) as MTR_HIT_TO_HIT_CONTRIBUTN,
+cast(ISNULL(MTR_DESCRIPTION, '') as nvarchar) as MTR_DESCRIPTION, 
+cast(ISNULL(MTR_FLOOR_DESCRIPTION, '') as nvarchar) as MTR_FLOOR_DESCRIPTION, 
+cast(ISNULL(MTR_HAS_HIDDEN_METER, 'N') as nvarchar) as MTR_HAS_HIDDEN_METER, 
+cast(ISNULL(MTR_MACHINE_PAY_AMOUNT, 0) as nvarchar) as MTR_MACHINE_PAY_AMOUNT, 
+cast(ISNULL(MTR_CURRENT_MAXIMUM, 0) as nvarchar) as MTR_CURRENT_MAXIMUM, 
+cast(ISNULL(MTR_CURRENT_FACTOR, 0.00) as nvarchar) as MTR_CURRENT_FACTOR, 
+cast(ISNULL(MTR_HIDDEN_AMOUNT, 0) as nvarchar) as MTR_HIDDEN_AMOUNT, 
+cast(ISNULL(MTR_HIDDEN_MAXIMUM, 0) as nvarchar) as MTR_HIDDEN_MAXIMUM, 
+cast(ISNULL(MTR_HIDDEN_FACTOR, 0.00) as nvarchar) as MTR_HIDDEN_FACTOR, 
+cast(ISNULL(MTR_RESET_AMOUNT, 0) as nvarchar) as MTR_RESET_AMOUNT, 
+cast(ISNULL(MTR_BREAK_RATE_FACTOR, 0.00) as nvarchar) as MTR_BREAK_RATE_FACTOR, 
+cast(ISNULL(MTR_BREAK_RATE_THRESHOLD, 0) as nvarchar) as MTR_BREAK_RATE_THRESHOLD, 
+cast(ISNULL(MTR_START_OUT_FACTOR, 0.00) as nvarchar) as MTR_START_OUT_FACTOR, 
+cast(ISNULL(MTR_CURRENT_FRACT_AMT, 0.00) as nvarchar) as MTR_CURRENT_FRACT_AMT, 
+cast(ISNULL(MTR_OVERFLOW_AMOUNT, 0) as nvarchar) as MTR_OVERFLOW_AMOUNT,
+cast(JKPT_JACKPOT_ID as nvarchar) as JKPT_JACKPOT_ID,
+cast(PRPM_DESC as nvarchar) as PRPM_DESC,
+ST.SITE_NUMBER as SiteId,
+ST.SITE_NUMBER as SiteNumber,
+ST.SITE_LONG_NAME as SiteName,
+LPROP.PROP_NEW_ID as OrganizationId,
+PTY.PROP_LONG_NAME as OrganizationName,
+M.IS_DELETED as Mtr_Deleted
+FROM PROGRESSIVE.METER as m
+join [PROGRESSIVE].[JACKPOT] as j on j.[JKPT_ID] = m.[JKPT_ID]
+join [PROGRESSIVE].[PAYMENT_METHOD] as pm on pm.[PRPM_ID] = m.[PRPM_ID]
+join progressive.[pool] as p on m.PRGP_ID = p.PRGP_ID
+JOIN MIGRATION.PROGRESSIVE_POOL AS MP ON MP.POOL_LEGCY_ID = P.PRGP_ID
+JOIN GAM.INSTALLED_SYSTEM_MAP AS IMAP ON IMAP.INSM_ID = P.INSMAP_ID
+JOIN GAM.[SITE] AS ST ON ST.SITE_ID = IMAP.INSM_SITE_ID
+JOIN GAM.PROPERTY AS PTY ON PTY.PROP_ID = ST.SITE_PROP_ID
+join MIGRATION.GAM_PROPERTY as Lprop on Lprop.prop_legcy_id = PTY.PROP_ID ) as st
+ON ST.PRGP_ID = P.PRGP_ID
+
+LEFT JOIN (SELECT M.PRGP_ID, COUNT(*) AS METER_COUNT FROM PROGRESSIVE.METER AS M
+WHERE IS_DELETED = 0 GROUP BY M.PRGP_ID ) mtr_sum ON MTR_SUM.PRGP_ID = P.PRGP_ID ) prog_view
+
+unpivot 
+(value_prog for value_desc_prog in (Pool_Id, Pool_Name, 
+IsMultipleLevel, IsMysteryPool, IsWAPPool, MeterCount,
+METER_ID, MTR_CURRENT_AMOUNT, MTR_LAST_JACKPOT_AMOUNT,
+MTR_LAST_JACKPOT_TS, MTR_HIT_TO_HIT_CONTRIBUTN, MTR_DESCRIPTION, MTR_FLOOR_DESCRIPTION, 
+MTR_HAS_HIDDEN_METER, MTR_MACHINE_PAY_AMOUNT, MTR_CURRENT_MAXIMUM, MTR_CURRENT_FACTOR, 
+MTR_HIDDEN_AMOUNT, MTR_HIDDEN_MAXIMUM, MTR_HIDDEN_FACTOR, MTR_RESET_AMOUNT, 
+MTR_BREAK_RATE_FACTOR, MTR_BREAK_RATE_THRESHOLD,  MTR_START_OUT_FACTOR, MTR_CURRENT_FRACT_AMT, 
+MTR_OVERFLOW_AMOUNT, JKPT_JACKPOT_ID, PRPM_DESC) ) as t

@@ -24,7 +24,7 @@
                      BackButtonContent="{x:Static res:Resources.Wizard_Back_Button}"
                      Cancel="LogAppClose"
                      CancelButtonContent="{x:Static res:Resources.Wizard_Cancel_Button}"
-                     CurrentPage="{Binding ElementName=HistoryProcessPage}"
+                     CurrentPage="{Binding ElementName=IntroPage}"
                      FinishButtonClosesWindow="True"
                      FinishButtonContent="{x:Static res:Resources.Wizard_Finish_Button}"
                      Help="Wiz_Help"
@@ -321,10 +321,10 @@
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=ReportConnectionPage}" />
             <xctk:WizardPage x:Name="HistoryProcessPage"
-                             Title="{x:Static res:Resources.AssetSiteSelectionPage_Title}"
+                             Title="{x:Static res:Resources.HistoryProcessPage_Title}"
                              CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
-                             Description="{x:Static res:Resources.AssetSiteSelectionPage_Description}"
+                             Description="{x:Static res:Resources.HistoryProcessPage_Description}"
                              NextPage="{Binding ElementName=ViewMigrationReportPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=ReportComponentsProcessPage}">
