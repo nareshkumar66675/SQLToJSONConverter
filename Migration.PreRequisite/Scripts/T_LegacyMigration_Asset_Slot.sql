@@ -805,7 +805,7 @@ cast(GAME_HOLD_PER as nvarchar) as GAME_HOLD_PER,
 cast(GAME_PAYTABLE_ID as nvarchar) as GAME_PAYTABLE_ID,
 cast(GAME_PAY_ID as nvarchar) as GAME_PAY_ID,
 cast(isnull(GAME_POSITION, 0 ) as nvarchar) as GAME_POSITION
-FROM GAM.GAME_DETAILS AS GM where is_deleted = 0) as a
+FROM GAM.GAME_DETAILS AS GM ) as a
 unpivot
 (value for value_desc in (GAME_HOLD_PER, GAME_WAGER, GAME_PAYLINE, GAME_REELS, GAME_PAYTABLE_ID) )as tt
 

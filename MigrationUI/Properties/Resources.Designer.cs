@@ -628,11 +628,29 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to STEP 11 : History Migration.
+        ///   Looks up a localized string similar to STEP 12 : History Migration.
         /// </summary>
         public static string HistoryProcessPage_Title {
             get {
                 return ResourceManager.GetString("HistoryProcessPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the Sites which needs to be migrated..
+        /// </summary>
+        public static string HistorySiteSelectionPage_Description {
+            get {
+                return ResourceManager.GetString("HistorySiteSelectionPage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STEP 11 : History Sites Selection.
+        /// </summary>
+        public static string HistorySiteSelectionPage_Title {
+            get {
+                return ResourceManager.GetString("HistorySiteSelectionPage_Title", resourceCulture);
             }
         }
         

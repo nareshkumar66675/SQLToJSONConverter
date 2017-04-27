@@ -49,6 +49,28 @@ DROP Table MIGRATION.GAM_HISTORY_GAMES
 END
 GO
 
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_CHANGELIST_ASSET_DETAIL') AND type in (N'U'))
+BEGIN
+DROP Table MIGRATION.GAM_CHANGELIST_ASSET_DETAIL
+END
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_ASSET_SLOT_OPTIONS_VALUE') AND type in (N'U'))
+BEGIN
+DROP Table MIGRATION.GAM_ASSET_SLOT_OPTIONS_VALUE
+END
+GO
+
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING') AND type in (N'U'))
+BEGIN
+DROP Table MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING
+END
+GO
+
+ 
+
+
 
 ------------ DDL Create & Insert Data ---------------------
 
@@ -59,6 +81,7 @@ CREATE TABLE [MIGRATION].[GAM_ASSET_SLOT_HISTORY_SUMMARY](
 	[CLST_ID] BIGINT,
 	[Current_Id] [bigint] NULL,
 	[Pre_Id] [bigint] NULL,
+	[Asst_Histry_Id] bigint null,
 	[ASD_NUMBER] [varchar](16) NULL,
 	[ASD_AM_UID] [bigint] NULL,
 	[ASD_DELETED] bit,
@@ -88,7 +111,8 @@ CREATE TABLE [MIGRATION].[GAM_ASSET_SLOT_HISTORY_SUMMARY](
 	[ApprovedBy_LoginName] [nvarchar](30) NULL,
 	[ApprovedBy_FirstName] [nvarchar](30) NULL,
 	[ApprovedBy_MiddleName] [nvarchar](30) NULL,
-	[ApprovedBy_LastName] [nvarchar](30) NULL
+	[ApprovedBy_LastName] [nvarchar](30) NULL,
+	[Asset_Is_Latest] bit
 ) ON [PRIMARY]
 
 GO
@@ -123,6 +147,8 @@ CREATE TABLE [MIGRATION].[GAM_ASSET_SLOT_HISTORY_PROGRESSIVE](
 	[CLST_DET_ID] [bigint] NOT NULL,
 	[ASD_AM_UID] [bigint] NULL,
 	[ACTION] [nvarchar](64) NULL,
+	[PoolId_Old] bigint null,
+	[PoolId_Current] bigint null,
 	[PoolName_Old] [nvarchar](256) NULL,
 	[PoolName_Current] [nvarchar](256) NULL,
 	[CLST_UNIQUE_ID] [nvarchar](32) NULL,
@@ -131,7 +157,6 @@ CREATE TABLE [MIGRATION].[GAM_ASSET_SLOT_HISTORY_PROGRESSIVE](
 ) ON [PRIMARY]
 
 GO
-
 
 
 
@@ -146,9 +171,35 @@ CREATE TABLE [MIGRATION].[GAM_ASSET_SLOT_HISTORY_GAMES](
 	[Old_GameComboName] [nvarchar](256) NULL,
 	[Old_Game_Id] [bigint] NULL,
 	[ASD_STD_ID] [bigint] NULL,
+	[CLST_OLD_DATA_ID] [bigint] NULL,
+	[CLST_UNIQUE_ID] [nvarchar](32) NULL,
+	[CLST_INSMAP_ID] [bigint] NULL
+) ON [PRIMARY]
+
 GO
 
 
+CREATE TABLE [MIGRATION].[GAM_HISTORY_SLOT_GAMES_MAPPING](
+	[Idx] [bigint] NULL,
+	[GM_ASD_STD_ID] [bigint] NOT NULL,
+	[Game_Id] [bigint] NULL,
+	[ASD_AM_UID] [bigint] NULL,
+	[gmOptionName] [varchar](16) NULL,
+	[Code] [varchar](32) NOT NULL,
+	[Seq] [int] NULL,
+	[GmOptionValue] [nvarchar](128) NULL,
+	[Comp_Id] [varchar](16) NULL
+) ON [PRIMARY]
+
+GO
+
+CREATE TABLE MIGRATION.GAM_ASSET_SLOT_OPTIONS_VALUE (
+P_ASD_ID bigint,
+P_ASD_OPTN_VALUE nvarchar(max) 
+)
+GO
+
+ 
 
 --DROP INDEX IDX_RN ON MIGRATION.GAM_CHANGELIST_ASSET_DETAIL;
 GO
@@ -170,22 +221,44 @@ GO
 --CREATE INDEX IDX_RN ON MIGRATION.GAM_CHANGELIST_ASSET_DETAIL  (RN);
 GO
 
+
 --------------------------
 -- Games
 --------------------------
-SELECT * 
+SELECT Game_id, GmOptionName,
+CASE WHEN GmOptionName ='Denom' THEN 'DENOMINATION' 
+     WHEN GmOptionName ='Theme Type' THEN 'THEME.TYPE' 
+     WHEN GmOptionName ='Theme Group' THEN 'THEME.GROUP' 
+     WHEN GmOptionName ='Theme Category' THEN 'THEME CATEGORY' 
+     WHEN GmOptionName ='Manufacturer' THEN 'MANUFACTURER'
+     WHEN GmOptionName ='Theme Attributes' THEN 'THEME' 
+     ELSE GmOptionName end as Code,
+     
+     Seq as Id, GmOptionValue,
+
+     CASE WHEN GmOptionName ='Denom' THEN '22011' 
+     WHEN GmOptionName ='Theme Type' THEN '22057' 
+     WHEN GmOptionName ='Theme Group' THEN '22058' 
+     WHEN GmOptionName ='Theme Category' THEN '22059' 
+     WHEN GmOptionName ='Manufacturer' THEN '22002'
+     WHEN GmOptionName ='Theme Attributes' THEN '22060' 
+     WHEN GmOptionName ='Hold Percent' THEN '0'
+     WHEN GmOptionName ='Max Credit Bet' THEN '0'
+     WHEN GmOptionName ='Pay Lines' THEN '0'
+     WHEN GmOptionName ='Reels' THEN '0'
+     WHEN GmOptionName ='Paytable' THEN '0' end as Comp_Id
 INTO MIGRATION.GAM_HISTORY_GAMES
 FROM (
-select distinct Game_id, InlineAssets_Components_ComponentName as GmOptionName, ''as Code, Seq, InlineAssets_Components_ComponentValue as GmOptionValue  
-from [MIGRATION].[GAM_GAMES_DETAILS]
+SELECT DISTINCT Game_id, InlineAssets_Components_ComponentName as GmOptionName,  Seq, InlineAssets_Components_ComponentValue as GmOptionValue  
+FROM [MIGRATION].[GAM_GAMES_DETAILS]
 --where game_id = 1099000005473
-union all
-select distinct go_game_id, options_code, '' as Code, IdIndex+6, Options_Value from [MIGRATION].[GAM_GAMES_DETAILS]
+UNION ALL
+SELECT DISTINCT go_game_id, options_code, IdIndex+6, Options_Value from [MIGRATION].[GAM_GAMES_DETAILS]
 --where go_game_id = 1099000005473
-) as tgm
-where game_id is not null
+) AS TGM
+WHERE GAME_ID IS NOT NULL
 -- and game_id = 1099000005473
-order by game_id, seq
+ORDER BY GAME_ID, SEQ
 
 
 

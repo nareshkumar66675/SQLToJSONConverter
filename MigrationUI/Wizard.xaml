@@ -321,9 +321,9 @@
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=ReportConnectionPage}" />
             <xctk:WizardPage x:Name="HistorySiteSelectionPage"
-                             Title="{x:Static res:Resources.AssetSiteSelectionPage_Title}"
+                             Title="{x:Static res:Resources.HistorySiteSelectionPage_Title}"
                              CanSelectNextPage="False"
-                             Description="{x:Static res:Resources.AssetSiteSelectionPage_Description}"
+                             Description="{x:Static res:Resources.HistorySiteSelectionPage_Description}"
                              NextPage="{Binding ElementName=HistoryProcessPage}"
                              PageType="Interior"
                              PreviousPage="{Binding ElementName=ReportComponentsProcessPage}" />

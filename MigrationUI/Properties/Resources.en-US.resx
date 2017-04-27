@@ -383,6 +383,12 @@
     <value>Please wait until the Migration is Complete.</value>
   </data>
   <data name="HistoryProcessPage_Title" xml:space="preserve">
-    <value>STEP 11 : History Migration</value>
+    <value>STEP 12 : History Migration</value>
+  </data>
+  <data name="HistorySiteSelectionPage_Description" xml:space="preserve">
+    <value>Select the Sites which needs to be migrated.</value>
+  </data>
+  <data name="HistorySiteSelectionPage_Title" xml:space="preserve">
+    <value>STEP 11 : History Sites Selection</value>
   </data>
 </root>

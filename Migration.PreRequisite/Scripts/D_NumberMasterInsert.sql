@@ -21,7 +21,7 @@ SELECT 'IF EXISTS (Select 1 from Config.NumberMaster where NumberCode='''+cast(N
 		UPDATE [Config].[NumberMaster] SET StartRange='+cast(StartRange as VARCHAR(50))+' WHERE NumberCode='''+NumberCode+'''
 		ELSE
 		INSERT INTO Config.NumberMaster (NumberCode,StartRange,Seed,Version) Values('''+
-			cast(NumberCode as VARCHAR(50))+''','+cast(StartRange as VARCHAR(50))+','+cast(Seed as VARCHAR(50))+','+cast([Version] as VARCHAR(50))+'); GO'
+			cast(NumberCode as VARCHAR(50))+''','+cast(StartRange as VARCHAR(50))+','+cast(Seed as VARCHAR(50))+','+cast([Version] as VARCHAR(50))+');  '
 FROM NumMaster_CTE
 
 GO
