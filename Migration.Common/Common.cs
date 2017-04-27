@@ -38,7 +38,7 @@ namespace Migration.Common
                     case GroupType.HISTORY:
                         return ReportConnectionString;
                     default:
-                        return "";
+                        return string.Empty;
                 }
             }
         }
@@ -213,7 +213,7 @@ namespace Migration.Common
             {
                 get
                 {
-                    return "SELECT SITE_NUMBER,SITE_LONG_NAME FROM [GAM].[SITE] WHERE SITE_NUMBER in ({0})";
+                    return "SELECT SITE_NUMBER,SITE_LONG_NAME FROM [MIGRATION].[VIEW_SITE_INFO] WHERE SITE_NUMBER in ({0})";
                 }
                 private set { }
             }

@@ -67,12 +67,12 @@ namespace Migration.PreRequisite.Helpers
                             try
                             {
                                 transaction.Rollback();
-                                throw new Exception($"Bulk Copy Failed for table { destinationTableName } ", ex);
                             }
                             catch (Exception ex1)
                             {
                                 throw new Exception("Rollback Failed", ex1);
                             }
+                            throw new Exception($"Bulk Copy Failed for table { destinationTableName } ", ex);
                         }
                     }
                 }
@@ -228,12 +228,12 @@ namespace Migration.PreRequisite.Helpers
                         try
                         {
                             server.ConnectionContext.RollBackTransaction();
-                            throw new Exception("Error Ocurred while Executing PreRequisites - Rollbacked", ex);
                         }
                         catch (Exception ex1)
                         {
                             throw new Exception("Rollback Failed.", ex1);
                         }
+                        throw new Exception("Error Ocurred while Executing PreRequisites - Rollbacked", ex);
                     }
 
                 }

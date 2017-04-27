@@ -1,4 +1,5 @@
-﻿using Migration.Configuration;
+﻿using Dapper;
+using Migration.Configuration;
 using Migration.Configuration.ConfigObject;
 using Migration.Generate;
 using Migration.Generate.Generators;
@@ -15,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Slapper.AutoMapper.Configuration;
 
 namespace Migration.Test
 {
@@ -34,57 +36,192 @@ namespace Migration.Test
         public int Id { get; set; }
         public int TestId { get; set; }
     }
+    public class DictionaryConverter : ITypeConverter
+    {
+        public int Order => 110;
+
+        public bool CanConvert(object value, Type type)
+        {
+            // Handle Nullable types
+            var conversionType = Nullable.GetUnderlyingType(type) ?? type;
+            //Check if Type is a Dictionary
+            return conversionType.IsGenericType && conversionType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+        }
+
+        public object Convert(object value, Type type)
+        {
+            // Handle Nullable types
+            var conversionType = Nullable.GetUnderlyingType(type) ?? type;
+            //Create Empty Instance
+            object result = Activator.CreateInstance(type);
+            if (value != null)
+            {
+                try
+                {
+                    result = JsonConvert.DeserializeObject(value as string, type);
+                }
+                catch (JsonException ex)
+                {
+                    throw new Exception("Invalid JSON String while Converting to Dictionary Object", ex);
+                }
+            }
+            return result;
+        }
+    }
     class Program
     {
         static void Main(string[] args)
         {
-            //   const string sql = @"SELECT DISTINCT
-            //                           tp.MODL_ID as Id,
-            //tc.FUNC_ID as Tasks_Id,
-            //                           tc.FUNC_NAME Tasks_Name,
-            //tc.FUNC_DESCRIPTION as [Tasks_Description]
-            //                       FROM [COMMON].[USER_FUNCTION] tc
-            //                            INNER JOIN [COMMON].[MODULE] tp ON tc.MODULE_ID = tp.MODL_ID where FUNC_ID>0";
+            const string sql = @"Declare @id int =1
+            IF OBJECT_ID('tempdb..#temp') IS NOT NULL  
+            DROP TABLE #temp;  
+            CREATE table #temp(Id int,[Data] varchar(max),[value] varchar(50))
+            WHILE @id<6 
+            BEGIN  
+            DEclare @count int =1
+            DECLARE @text varchar(max);
+            while @count<2
+            BEGIN
 
-            //   string connectionString = "Data Source=10.2.108.21\\MSSQLSERVER2K12;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_140_Demo";
+            Set @text = '
+                    ""ASSET.MASTER.NETWORK.TYPE"": ""Ethernet"",
+                    ""ASSET.MASTER.ASSET.TYPE"": ""EGM"",
+                    ""ASSET.MASTER.CONFIGURATION.STATUS"": ""Online"",
+                    ""ASSET.MULTI.DENOM"": """",
+                    ""ASSET.VAR.HOLD.PERCENT"": ""Yes"",
+                    ""ASSET.MULTI.GAME"": """",
+                    ""ASSET.VALID.FILL.NUMBER"": """",
+                    ""ASSET.STOOL"": """",
+                    ""ASSET.VAL.MFG"": """",
+                    ""ASSET.TOURNAMENT.PLAY"": """",
+                    ""ASSET.VIDEO.GAME"": """",
+                    ""ASSET.CREDIT.GAME"": """",
+                    ""ASSET.GAME.TYPE"": ""A"",
+                    ""ASSET.TOKENIZED"": """",
+                    ""ASSET.ECASH.ENABLED"": ""No"",
+                    ""ASSET.TICKET.PRINTER"": ""No"",
+                    ""ASSET.COIN.ACC"": ""No"",
+                    ""ASSET.COIN.HOP"": ""No"",
+                    ""ASSET.E.PRINTER"": ""No"",
+                    ""ASSET.PLAYABLE.TKT"": ""No"",
+                    ""ASSET.CASH.CLUB.ENAB"": ""Normal"",
+                    ""ASSET.GAME.CAPPING"": ""No"",
+                    ""ASSET.ROULETTE"": ""No"",
+                    ""ASSET.SMART.CARD"": ""No"",
+                    ""MAG.STRIP.CARD"": ""No"",
+                    ""ASSET.GAME.SUPPORTS.AUTO.PAY"": ""No"",
+                    ""ASSET.ROM.SIG.ENABLED"": ""No"",
+                    ""ASSET.GMU.CRC.AUTH"": ""N"",
+                    ""ASSET.CASLESS.DISAB"": ""N"",
+                    ""ASSET.MULTI.CURRENCY.SUPPORT"": ""No"",
+                    ""ASSET.VOUCHER.VALIDATION.TYPE"": """",
+                    ""OPTION.CODE.METER.TYPE"": """",
+                    ""ASSET.NUMBER"": ""23454"",
+                    ""ASSET.LOCATION"": ""233243"",
+                    ""ASSET.LINE.ADDRESS"": """",
+                    ""ASSET.SERIAL.NUMBER"": ""sd5454"",
+                    ""ASSET.ASL.POSITION"": """",
+                    ""ASSET.MASTER.DISPOSITION"": """",
+                    ""ASSET.MASTER.LOCATION.X"": """",
+                    ""ASSET.MASTER.LOCATION.Y"": """",
+                    ""ASSET.MASTER.LOCATION.Z"": """",
+                    ""ASSET.MASTER.LOCATION.R"": """",
+                    ""ASSET.MASTER.PURCHASED.AMOUNT"": """",
+                    ""ASSET.MASTER.SOLD.AMOUNT"": """",
+                    ""ASSET.MASTER.EGM.ID"": """",
+                    ""ASSET.CAROUSEL"": """",
+                    ""ASSET.CAMERA.1"": """",
+                    ""ASSET.CAMERA.2"": """",
+                    ""ASSET.NJ.SEAL"": ""4545343"",
+                    ""ASSET.REEL.STRIP"": """",
+                    ""ASSET.PAGER.ZONE"": """",
+                    ""ASSET.DESCRIPTION.NUMBER"": """",
+                    ""ASSET.GAME.EPROM.ID"": """",
+                    ""ASSET.MACHINE.SIZE"": """",
+                    ""ASSET.BILL.SER.NO"": """",
+                    ""ASSET.LIFE.CYCLE"": """",
+                    ""ASSET.AUX.FILL.DOOR.NO"": """",
+                    ""ASSET.MAXIMUM.COIN.IN"": """",
+                    ""ASSET.MAX.HANDLE.PULL.PER.MIN"": """",
+                    ""ASSET.GMU.DOC.ID"": """",
+                    ""ASSET.GAME.PROTOCOL"": """",
+                    ""ASSET.GAME.PROG.ID"": """",
+                    ""ASSET.USER.CUSTOM.2"": """",
+                    ""ASSET.USER.CUSTOM.5"": """",
+                    ""ASSET.USER.CUSTOM.6"": """",
+                    ""ASSET.USER.CUSTOM.7"": """",
+                    ""ASSET.USER.CUSTOM.8"": """",
+                    ""ASSET.USER.CUSTOM.9"": """",
+                    ""ASSET.USER.CUSTOM.10"": """",
+                    ""ASSET.ROULETTE.ID"": """",
+                    ""ASSET.STANDARD.ERROR"": """",
+                    ""ASSET.PROG.RATE"": """",
+                    ""ASSET.EPROM.ID"": """",
+                    ""ASSET.PROGRESSIVE"": """",
+                    ""ASSET.CRC.REQ.DATE"": """",
+                    ""ASSET.CRC.REQ.TIME"": """",
+                    ""ASSET.CRC.COUNT"": """",
+                    ""ASSET.CRC.ERROR"": """",
+                    ""PROTOCOL.VERSION"": """",
+                    ""BILL.VALIDATOR.CAPACITY"": ""342"",
+                    ""ASSET.ROM.SIG.STATUS"": """",
+                    ""ASSET.VALUE"": """",
+                    ""ASSET.LIFE.SPAN"": """",
+                    ""OPTION.CODE.PURCHASED.DATE"": """",
+                    ""OPTION.CODE.ENROLMENT.STATUS"": """"
+                }';
 
-            //   using (var conn = new SqlConnection(connectionString))
-            //   {
-            //       conn.Open();
-            //       {
+            insert into #temp values(@id,@text,@count)
+            insert into #temp values(@id,NULL,Null)
+            set @count=@count+1;
+            END
+            set @id=@id+1;
+            END 
+            select * from #temp order by id";
+
+            string connectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=ALH_AssetMatrix14";
+
+            using (var conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                {
 
 
-            //           dynamic test = conn.Query<dynamic>(sql);
-            //           //var li = conn.Query<dynamic>(sql).ToList();
+                    dynamic test = conn.Query<dynamic>(sql);
+                    //var li = conn.Query<dynamic>(sql).ToList();
 
-            //           //Slapper.AutoMapper.Configuration.AddIdentifiers(typeof(BallyTech.Library.Domain.Employee.Task), new List<string> { "Id" });
-            //           //Slapper.AutoMapper.Configuration.AddIdentifiers(typeof(Module), new List<string> { "Id" });
-            //           Type ft = Type.GetType("Migration.Test.Module,Migration.Test");
-            //           //Activator.CreateInstance("Migration.Test", "Migration.Test.Module");
-            //           //var obj=Activator.CreateInstance(ft);
-            //           var testContact =  (Slapper.AutoMapper.MapDynamic(ft, test) as IEnumerable<Object>).ToList();
-            //           string s =JsonConvert.SerializeObject(testContact);
-            //           //ProcessQueue.ProcessQueue.Processes.Enqueue(new ProcessItem(new Migration.Configuration.ConfigObject.Component(), testContact));
-            //           //ProcessQueue.ProcessQueue.Processes.Take()
-            //           //IEnumerable t = test;
-            //           //List<object> not = new List<object>();
-            //           //for (int i = 0; i < 192; i++)
-            //           //{
-            //           //    if(testContact.Exists(vt=>vt.Id == test[i].Id ))
+                    //Slapper.AutoMapper.Configuration.AddIdentifiers(typeof(BallyTech.Library.Domain.Employee.Task), new List<string> { "Id" });
+                    //Slapper.AutoMapper.Configuration.AddIdentifiers(typeof(Module), new List<string> { "Id" });
+                    //Type ft = Type.GetType("Migration.Test.Module,Migration.Test");
+                    //Activator.CreateInstance("Migration.Test", "Migration.Test.Module");
+                    //var obj=Activator.CreateInstance(ft);
+                    //var testContact = (Slapper.AutoMapper.MapDynamic(ft, test) as IEnumerable<Object>).ToList();
+                    //string s = JsonConvert.SerializeObject(testContact);
+                    //ProcessQueue.ProcessQueue.Processes.Enqueue(new ProcessItem(new Migration.Configuration.ConfigObject.Component(), testContact));
+                    //ProcessQueue.ProcessQueue.Processes.Take()
+                    //IEnumerable t = test;
+                    //List<object> not = new List<object>();
+                    //for (int i = 0; i < 192; i++)
+                    //{
+                    //    if(testContact.Exists(vt=>vt.Id == test[i].Id ))
 
-            //           //    {
-            //           //        not.Add(test[i].Id);
-            //           //    }
-            //           //}
-            //           //StringBuilder sb = new StringBuilder();
-            //           //foreach (var c in testContact)
-            //           //{
-            //           //    sb.AppendLine(c.Id.ToString());
-            //           //}
-            //           //File.AppendAllText(@"C:\Users\105171\Desktop\New Text Document.txt", sb.ToString());
-            //           Console.ReadLine();
-            //       }
-            //   }
+                    //    {
+                    //        not.Add(test[i].Id);
+                    //    }
+                    //}
+                    //StringBuilder sb = new StringBuilder();
+                    //foreach (var c in testContact)
+                    //{
+                    //    sb.AppendLine(c.Id.ToString());
+                    //}
+                    //File.AppendAllText(@"C:\Users\105171\Desktop\New Text Document.txt", sb.ToString());
+
+                    TypeConverters.Add(new DictionaryConverter());
+                    var rslt = Slapper.AutoMapper.MapDynamic<TestEntity>(test);
+
+                    Console.ReadLine();
+                }
+            }
 
             //Migration.Generate.Generate gen = new Migration.Generate.Generate();
             ////await gen.Start(Configuration.Configurator.Components, null);

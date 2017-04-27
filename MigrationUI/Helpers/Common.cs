@@ -19,7 +19,7 @@ namespace MigrationTool.Helpers
     {
         public const string SITEGRPTABNAME = @"Migration.SiteGroup";
         public const string GETALLACTIVEDBS = @"SELECT NAME FROM sys.databases WHERE state_desc<>'OFFLINE'";
-        public const string GETALLACTIVESITES = @"SELECT SITE_NUMBER, Site_Long_Name FROM GAM.SITE ORDER BY Site_Long_Name";
+        public const string GETALLACTIVESITES = @"SELECT SITE_NUMBER, Site_Long_Name FROM [MIGRATION].[VIEW_SITE_INFO] ORDER BY Site_Long_Name";
         public const string CHECKTABLEEXISTS = @"SELECT CASE WHEN EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=@Schema AND TABLE_NAME = @TableName)) THEN 1 ELSE 0 END";
         public const string GETCOMPITEMSWITHOUTSITE = @"SELECT DISTINCT Component_Name from Migration.Report where Status = 'Success'";
         public const string GETMIGRATEDSITES = @"SELECT Distinct SiteID FROM [Migration].[SiteGroup] grp 

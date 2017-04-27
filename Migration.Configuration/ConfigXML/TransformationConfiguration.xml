@@ -1214,64 +1214,109 @@
       --Query
 
       SELECT
-      ----Id
-      RIGHT(Cast(SMY.CLST_DET_ID as VARCHAR(30)),5) as Id,
-      --SMY.[Action] as [Action],
-      CASE WHEN SMY.[Action] = 'ADD' THEN 'Add'
-      WHEN SMY.[Action] = 'EDIT' THEN 'Edit'
-      WHEN SMY.[Action] = 'MOVE' THEN 'Move'
-      WHEN SMY.[Action] = 'MOVE &#038; EDIT' THEN 'MoveEdit'
-      ELSE 'None' END AS [Action],
+      ------ Id -------
+      Asst_Histry_Id as Id,
+      SMY.[Action] as [Action],
       clst_name as MasterListName,
       clst_name as ChangeListName,
       SMY.astl_data_source  as DataTriggerSource,
-      ----CreatedBy----
+      ------- CreatedBy-------
       0 as CreatedBy_UserId,
       SMY.created_user as CreatedBy_LoginName,
       SMY.created_user as CreatedBy_FirstName,
       SMY.created_user as CreatedBy_MiddleName,
       SMY.created_user as CreatedBy_LastName,
-      ----ApprovedBy----
+      --------ApprovedBy--------
       0 as ApprovedBy_UserId,
       SMY.CLST_AUTH_USER as ApprovedBy_LoginName,
       SMY.CLST_AUTH_USER as ApprovedBy_FirstName,
       SMY.CLST_AUTH_USER as ApprovedBy_MiddleName,
       SMY.CLST_AUTH_USER as ApprovedBy_LastName,
 
-      cast(SMY.clst_exectued_date as varchar(50)) as ExecutedAt,
+      cast(SMY.clst_exectued_date as Varchar(50)) as ExecutedAt,
       -----Asset----
       10 as Asset_AssetTypeDefinitionId,
       asset_type as Asset_AssetType,
       10 as Asset_Id,
 
       ----Site---
-      SiteId as Site_SiteId,
+      SMY.SiteId as Site_SiteId,
       SOURCE_SITE as Site_SiteName,
-      SiteNumber as Site_SiteNumber,
-      Site_OrganizationId as Site_OrganizationId,
-      Site_OrganizationName as Site_OrganizationName,
-
-      --optn_code,
-      --OPTN.OPTN_CODE as Option_Code,
+      SMY.SiteNumber as Site_SiteNumber,
+      SMY.Site_OrganizationId as Site_OrganizationId,
+      SMY.Site_OrganizationName as Site_OrganizationName,
+      ----- OPTIONS --------
+      P_ASD_OPTN_VALUE as Options,
       --OPTN.IS_UPDATED,
 
-      -----ChangedOptions_Value----
+      -----ChangedOptions----
       CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTION_ORDER ELSE NULL END AS ChangedOptions_Id,
       CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OPTN_CODE ELSE NULL END AS ChangedOptions_Name,
       CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OLD_VALUE ELSE NULL END AS ChangedOptions_Value_OldValue,
-      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.CURRENT_VALUE ELSE NULL END AS ChangedOptions_Value_NewValue
-      --, *
+      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.CURRENT_VALUE ELSE NULL END AS ChangedOptions_Value_NewValue,
+      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OPTN_CODE ELSE NULL END AS ChangedOptions_Code,
 
-      --select *
-      FROM MIGRATION.GAM_ASSET_SLOT_HISTORY_SUMMARY AS SMY --WHERE SMY.ASD_NUMBER = '3668'
+      -----------InlineAssets-------
+      ------ Asset ------
+      260 as InlineAssets_Asset_AssetTypeDefinitionId,
+      'Game' as InlineAssets_Asset_AssetType,
+      0 as InlineAssets_Asset_Id,
+      -------Options------
+      --C_G.Code as Code,
+      --C_G.GmOptionValue as GmOptionValue,
+      --C_G.Seq as Id,
+      -----Games Changed Options---
+      CASE WHEN isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data')
+      THEN isnull(C_G.Seq, O_G.Seq) ELSE NULL END AS InlineAssets_ChangedOptions_Id,
+
+      CASE WHEN isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data')
+      THEN isnull(C_G.GmOptionName, O_G.GmOptionName) ELSE NULL END AS InlineAssets_ChangedOptions_Name,
+
+      CASE WHEN isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data')
+      THEN O_G.GmOptionValue ELSE NULL END AS InlineAssets_ChangedOptions_Value_OldValue,
+
+      CASE WHEN isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data')
+      THEN C_G.GmOptionValue ELSE NULL END AS InlineAssets_ChangedOptions_Value_NewValue,
+
+      CASE WHEN isnull(C_G.Code,'no_data') &lt;&gt; isnull(O_G.Code,'no_data')
+      THEN isnull(C_G.Code, O_G.Code) ELSE NULL END AS InlineAssets_ChangedOptions_Code,
+
+      ----LinkedAssets--Progressive---
+      ---- i.ActiveLinks
+      11 as LinkedAssets_ActiveLinks_AssetTypeDefinitionId,
+      'Progressive Pool' as LinkedAssets_ActiveLinks_AssetType,
+      0 as LinkedAssets_ActiveLinks_Id,
+      'Pool Id' as LinkedAssets_ActiveLinks_DisplayName,
+      [PoolName_Current] as LinkedAssets_ActiveLinks_DisplayValue,
+      --- ii.ChangedLinkes
+      --TODO
+
+      cast(0 as bit) as IsLastest
+
+      --GMS.[Current_GameComboName],
+      --gms.[Current_Game_Id],
+      --GMS.[Old_GameComboName],
+      --[Old_Game_Id],
+      --[PoolName_Old],
+      --[PoolName_Current],
+      --PoolId_Old,
+      --PoolId_Current,
+      --SMY.current_id,
+      --SMY.pre_id,
+      --OPTION_ORDER
+      FROM MIGRATION.GAM_ASSET_SLOT_HISTORY_SUMMARY AS SMY --WHERE SMY.ASD_NUMBER = '180'
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_OPTIONS AS OPTN ON OPTN.CLST_ASD_ID = SMY.CLST_DET_ID
-      LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_GAMES AS GMS ON GMS.CLST_DET_ID = SMY.CLST_DET_ID
+      LEFT JOIN MIGRATION.GAM_ASSET_SLOT_OPTIONS_VALUE AS OTP_VAL ON P_ASD_ID = smy.CURRENT_ID
+      FULL JOIN MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING AS C_G ON smy.current_id = C_G.gm_asd_std_id
+      FULL JOIN MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING AS O_G ON
+      smy.Pre_Id = O_G.gm_asd_std_id
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_PROGRESSIVE AS PROG ON PROG.CLST_DET_ID = SMY.CLST_DET_ID
-      --WHERE SMY.ASD_NUMBER = '3668'
-      ORDER BY SMY.CLST_EXECTUED_DATE
-
+      WHERE 1=1
+      and Asst_Histry_Id is not null
+      and SMY.ASD_AM_UID =1828
+      ORDER BY SMY.CLST_EXECTUED_DATE, SMY.CURRENT_ID, OPTION_ORDER
     </Source>
-    <Destination>[Report].[Asset]</Destination>
+    <Destination>[Asset_History].[AssetsHistory]</Destination>
     <KeyFormat Format="68_{0}" Keys="Id"  />
   </Transformation>
   

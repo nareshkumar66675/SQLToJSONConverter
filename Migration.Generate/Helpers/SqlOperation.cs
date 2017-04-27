@@ -104,12 +104,12 @@ namespace Migration.Generate.Helpers
                         try
                         {
                             transaction.Rollback();
-                            throw new Exception("Error Ocurred - Rollbacked", ex);
                         }
-                        catch (Exception)
+                        catch (Exception ex1)
                         {
-                            throw;
+                            throw new Exception("Rollback Failed", ex1);
                         }
+                        throw new Exception("Error Ocurred - Rollbacked", ex);
                     }
                 }
             }

@@ -124,29 +124,29 @@ namespace MigrationTool.Views
                     siteTimer.Start();
                     CurrentSite = site;
                     Dispatcher.Invoke(() => SiteNameText.Text = CurrentSite.Value);
-                    //Configurator.SetQueryParamsFrTrnsfrmWtParams(GroupType.HISTORY, new List<string> { string.Join(",", site.Key) });
+                    Configurator.SetQueryParamsFrTrnsfrmWtParams(GroupType.HISTORY, new List<string> { string.Join(",", site.Key) });
 
-                    //Generate generate = new Generate();
-                    //Persist persist = new Persist();
+                    Generate generate = new Generate();
+                    Persist persist = new Persist();
 
-                    //var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
-                    //var progressPersist = new Progress<ProcessStatus>(PersistProgress);
+                    var progressGenerate = new Progress<ProcessStatus>(GenerateProgress);
+                    var progressPersist = new Progress<ProcessStatus>(PersistProgress);
 
-                    ////Starting Generate and Persist Parallely
-                    //Task genTask = generate.Start(Configurator.GetComponentsByGroup(GroupType.HISTORY), progressGenerate);
-                    //Task persisTask = persist.Start(progressPersist);
+                    //Starting Generate and Persist Parallely
+                    Task genTask = generate.Start(Configurator.GetComponentsByGroup(GroupType.HISTORY), progressGenerate);
+                    Task persisTask = persist.Start(progressPersist);
 
-                    //await genTask;
-                    //await persisTask;
-                    Thread.Sleep(100);
-                    GenerateProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
-                    Thread.Sleep(1500);
-                    if (int.Parse(site.Key) % 2 == 0) GenerateProgress(new ProcessStatus("AST_HISTORY", 100, Status.Failed)); else GenerateProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
-                    //Thread.Sleep(1000);
-                    PersistProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
-                    Thread.Sleep(1500);
-                    if (int.Parse(site.Key) % 2 == 0) PersistProgress(new ProcessStatus("AST_HISTORY", 100, Status.Failed)); else PersistProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
-                    Thread.Sleep(100);
+                    await genTask;
+                    await persisTask;
+                    //Thread.Sleep(100);
+                    //GenerateProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
+                    //Thread.Sleep(1500);
+                    //if (int.Parse(site.Key) % 2 == 0) GenerateProgress(new ProcessStatus("AST_HISTORY", 100, Status.Failed)); else GenerateProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
+                    ////Thread.Sleep(1000);
+                    //PersistProgress(new ProcessStatus("AST_HISTORY", 0, Status.Running));
+                    //Thread.Sleep(1500);
+                    //if (int.Parse(site.Key) % 2 == 0) PersistProgress(new ProcessStatus("AST_HISTORY", 100, Status.Failed)); else PersistProgress(new ProcessStatus("AST_HISTORY", 100, Status.Success));
+                    //Thread.Sleep(100);
                     siteTimer.Stop();
                 }
                 else
