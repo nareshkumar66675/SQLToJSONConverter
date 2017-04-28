@@ -76,7 +76,7 @@ namespace MigrationTool
                 //Auth Connection Page -> Auth Components Selection Page
                 if (Wiz.CurrentPage == AuthConnectionPage)
                 {
-                    AuthCompSelectCntrl.SourceComponents = Configurator.GetComponentListByGroup(GroupType.AUTH);
+                    AuthCompSelectCntrl.SourceComponents = Configurator.GetComponentListByGroup(GroupType.AUTH).ToList();
                     AuthCompSelectCntrl.InitializeData(GroupType.AUTH);
                     AddUserControlToPage(AuthComponentsSelectionPage, AuthCompSelectCntrl);
                 }
@@ -100,7 +100,7 @@ namespace MigrationTool
                 {
                     var siteList = AssetSiteCntrl.GetSelectedSites().Select(t => t.Key);
                     Configurator.SetQueryParamsFrTrnsfrmWtParams(GroupType.ASSET,new List <string> { string.Join(",", siteList) });
-                    AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentListByGroup(GroupType.ASSET);
+                    AssetsCompSelectCntrl.SourceComponents = Configurator.GetComponentListByGroup(GroupType.ASSET).ToList();
                     AssetsCompSelectCntrl.SelectedSiteIDList = siteList.ToList();
                     AssetsCompSelectCntrl.InitializeData(GroupType.ASSET);
                     AddUserControlToPage(AssetsComponentsSelectionPage, AssetsCompSelectCntrl);

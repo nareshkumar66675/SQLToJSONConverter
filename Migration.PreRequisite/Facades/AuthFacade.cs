@@ -17,6 +17,7 @@ namespace Migration.PreRequisite.Facades
             _authPreRequisites.Add(new ExecuteScriptPreRequisite("NewMigrationTables", _connectionString));
             _authPreRequisites.AddRange(new LegacyFacade().PreRequisites);
             _authPreRequisites.Add(new ExecuteScriptPreRequisite("AuthStaticData", _connectionString));
+            _authPreRequisites.Add(new InsertNumberMasterPreRequisite("AuthNumberMasterInsert", _connectionString));
         }
         public override FacadeType Type => FacadeType.Auth;
         public override List<IPreRequisite> PreRequisites => _authPreRequisites;

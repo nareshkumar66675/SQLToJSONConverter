@@ -13,6 +13,7 @@
   <PreRequisite Name ="LegacyAssetHistoryDataPopulation" ScriptFilePath="Scripts/T_LegacyMigration_Asset_Slot_History.sql" Skip="False"/>
   <PreRequisite Name ="LegacyAuthDataTables" ScriptFilePath="Scripts/T_LegacyMigration_Auth.sql" Skip="False"/>
   <PreRequisite Name ="InsertCustomAssetID" ScriptFilePath="Scripts/D_CustomAssetIdInsert.sql" Skip="False"/>
-  <PreRequisite Name ="NumberMasterInsert" ScriptFilePath="Scripts/D_NumberMasterInsert.sql" Skip="False"/>
+  <PreRequisite Name ="AssetNumberMasterInsert" ScriptFilePath="Scripts/D_AssetNumberMasterInsert.sql" Skip="False"/>
+  <PreRequisite Name ="AuthNumberMasterInsert" ScriptFilePath="Scripts/D_AuthNumberMasterInsert.sql" Skip="False"/>
   <PreRequisite Name ="AssetDefault" ScriptFilePath="Scripts/D_AssetDefault.sql" Skip="False"/>
 </PreRequisiteConfig>

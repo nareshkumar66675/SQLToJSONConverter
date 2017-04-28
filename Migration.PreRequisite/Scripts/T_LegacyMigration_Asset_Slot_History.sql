@@ -61,6 +61,12 @@ DROP Table MIGRATION.GAM_ASSET_SLOT_OPTIONS_VALUE
 END
 GO
 
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_ASSET_GAMES_OPTIONS_VALUE') AND type in (N'U'))
+BEGIN
+DROP Table MIGRATION.GAM_ASSET_GAMES_OPTIONS_VALUE
+END
+GO
+
 
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING') AND type in (N'U'))
 BEGIN
@@ -199,6 +205,13 @@ P_ASD_OPTN_VALUE nvarchar(max)
 )
 GO
 
+
+CREATE TABLE MIGRATION.GAM_ASSET_GAMES_OPTIONS_VALUE (
+P_GM_ID bigint,
+P_GM_VALUE nvarchar(max) 
+)
+GO
+
  
 
 --DROP INDEX IDX_RN ON MIGRATION.GAM_CHANGELIST_ASSET_DETAIL;
@@ -260,5 +273,28 @@ WHERE GAME_ID IS NOT NULL
 -- and game_id = 1099000005473
 ORDER BY GAME_ID, SEQ
 
+
+----GAME VALUES JSON FORMAT
+INSERT INTO MIGRATION.GAM_ASSET_GAMES_OPTIONS_VALUE
+SELECT GAME_ID AS P_GM_ID, '{ "Hold Percent" :"' + game_hold_per + '", ' +
+'"Max Credit Bet" : "'+ isnull(cast(game_wager as nvarchar), '')  + '", ' +
+'"Pay Lines": "'+ isnull(cast(game_payline as nvarchar), '') + '", ' +
+'"Reels": "'+ isnull(cast(game_reels as nvarchar), '') + '", ' +
+'"Paytable": "'+ isnull(game_paytable_id, '') + '", ' +
+'"DENOMINATION": "'+ cast(gdm.denm_amount as nvarchar) +'", ' +
+'"THEME.GROUP": "'+ TGRP_LONG_NAME + '", '+
+'"THEME CATEGORY": "'+ tcat_long_name + '", ' +
+'"MANUFACTURER": "'+ manf_long_name + '", ' +
+'"THEME": "' + them_name + '", '+
+'"THEME.TYPE": "' + ttyp_long_name+'" }' as P_GM_VALUE
+FROM GAM.GAME_DETAILS AS GM
+JOIN GAM.THEME AS TH ON TH.THEM_ID = GM.GAME_THEM_ID
+JOIN GAM.THEME_TYPE AS TT ON TT.TTYP_ID = TH.TTYP_ID
+JOIN GAM.THEME_CATEGORY AS TC ON TC.TCAT_ID = TH.THEME_CAT_ID
+JOIN GAM.THEME_GROUP AS TG ON TG.TGRP_ID = TC.TCAT_TGRP_ID
+JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = TH.MANF_ID
+JOIN GAM.DENOMINATION AS D ON D.DENM_ID = GAME_DENOM
+JOIN MIGRATION.GAM_DENOMINATION as gdm on gdm.DENM_ID = D.DENM_ID
+GO
 
 

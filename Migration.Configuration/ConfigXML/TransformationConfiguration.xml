@@ -8,12 +8,11 @@
       st.SITE_short_NAME as Name,
       st.SITE_LONG_NAME as [Description],
       st.SITE_short_NAME as VenueCode,
-      MST.SITE_CODE as Code, --ST.SITE_CODE as Code,
+      MST.SITE_CODE as Code, 
       --'Rot' as ParentCode,
       coalesce(PROP_PARENT_CODE,P.PROP_SHORT_NAME) as ParentCode,
       p.PROP_SHORT_NAME as ServiceProviderCode,
-      --st.SITE_TIMEZONE_ID as Timezone,
-      'AUS Eastern Standard Time' as Timezone,
+      st.SITE_TIMEZONE_ID as Timezone,
       sttype.site_type_short_name as SiteType,
       ''  as LicensedMonitoringOperator,
       ''  as Licensee,
@@ -125,7 +124,7 @@
       MGP.PROP_SHORT_NAME as Code,
       --coalesce(PROP_PARENT_CODE,PROP_SHORT_NAME) as ParentCode,
       'Rot' as ParentCode,
-      GP.PROP_SHORT_NAME as Name,
+      GP.PROP_LONG_NAME as Name,
       PROP_LONG_NAME as [Description],
       CONVERT(bit,'false') as IsRoot,
       coalesce(PROP_DEPTH_LEVEL, 2) as DepthLevel,
@@ -582,8 +581,7 @@
     JOIN MIGRATION.VIEW_ZONE AS ZN ON ZN_AREA_ID = AREA_ID AND AREA_SEQ = ZONE_SEQ
     JOIN MIGRATION.VIEW_BANK AS BK ON BK_ZONE_ID = ZONE_ID AND ZONE_SEQ = BANK_SEQ
     JOIN GAM.[SITE] ON SITE_ID = AR_SITE_ID
-    WHERE 1=1 
-    --	and site_number in ( {0})
+    WHERE 1=1 and site_number in ( 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 	--ARea_ID = -1256000001181
     order by SITE_ID, AR.AREA_ID, ZN.ZONE_ID, BK.BANK_ID
     </Source>   
@@ -627,7 +625,7 @@
 		'MANUFACTURER' as Component_Components_ComponentValues_CC_CC_Code,
 		mnf.Display_Name as Component_Components_ComponentValues_CC_CC_DisplayName,
 		----Options---
-		mnf_seq as Component_Components_ComponentValues_CC_CC_Options_Id,
+		mnf_code_seq as Component_Components_ComponentValues_CC_CC_Options_Id,
 		mnf.value as Component_Components_ComponentValues_CC_CC_Options_Value,
 		mnf.mnf_code as Component_Components_ComponentValues_CC_CC_Options_Code,
 
@@ -911,9 +909,8 @@
 		select 103 as SeqId, 22052 as ComponentId, 'POS Model Attributes' as ComponentName, 'POS' as ComponentValue, '0_1_22052' as ComponentKey, 'POSMODEL' as ComponentInstanceId, 'POS.MODEL' as ComponentCode
 		) as mas_comp on mas_comp.SeqId = AST_OPTION_ID
 		WHERE ASD.IS_DELETED = 0 AND ASD.ASD_CLST_STAT_ID = 5
-		AND ASD.ASD_ASST_ID = 1 
-		--AND ST.SITE_NUMBER = 201
-		AND MDL.MDL_SHORT_NAME in ('POS')
+		AND ASD.ASD_ASST_ID = 1 AND MDL.MDL_SHORT_NAME in ('POS')
+		AND ST.SITE_NUMBER in ( {0} )
 		--and ASD.ASD_NUMBER = 97902
 		AND AST_OPTION_ID IN (101,102,103,263,215,125)
 		ORDER BY ASD_STD_NEW_ID, AST_OPTION_ID
@@ -954,7 +951,8 @@
       --select *
       from MIGRATION.VIEW_PROGRESSIVE_METERS as mtr
       left join MIGRATION.VIEW_POOL AS P on p.prgp_id = mtr.PRGP_ID and mtr.InlineAssets_Id = Options_Id
-	  where Mtr_Deleted = 0 and Pool_Deleted = 0
+	  where Mtr_Deleted = 0 
+	  and  Site_SiteNumber in ({0})
       order by mtr.PRGP_ID, mtr.InlineAssets_Id
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
@@ -1098,7 +1096,10 @@
     JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
     JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
     JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
+	JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
+	JOIN GAM.SITE AS ST ON ST.SITE_ID = ISM.INSM_SITE_ID
     WHERE PM.[IS_DELETED] = 0 AND ISNULL(ASST_ANCESTOR_ID, ASST_ID)=1
+	AND SITE_NUMBER in ( {0} )
     ORDER BY MSLOT.[ASD_STD_NEW_ID], [POOL_NEW_ID]
     </Source>
     <Destination>[DataManagement].[AssetLink]</Destination>
@@ -1107,7 +1108,7 @@
   <Transformation Name="LINK_POOL2SLOT">
     <Source>
     SELECT 
-    --'59_11_'+cast(PoolId as nvarchar) as [Key],
+    --'59_11_'+CAST(PoolId as nvarchar) as [Key],
     ----Id--
     PoolId as AssetId,
     11 as Id_AssetTypeDefinitionId,
@@ -1121,26 +1122,31 @@
     SELECT MPOOL.[POOL_NEW_ID] as PoolId,
     MSLOT.[ASD_STD_NEW_ID] as AssetId,
     --row_number() over (partition by [POOL_NEW_ID] order by [POOL_NEW_ID]) as rNumber,
-    10 as AssetTypeId
+    10 as AssetTypeId, SITE_NUMBER
     FROM [PROGRESSIVE].[SLOT_POOL_MAPPING] AS PM 
     JOIN [PROGRESSIVE].[SLOT] AS SLT ON SLT.SLOT_ID = PM.SLOT_ID
     JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS MSLOT ON MSLOT.ASD_STD_LEGACY_ID = SLT.ASD_STD_ID
     JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
     JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
     JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
+	JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
+	JOIN GAM.SITE as st on st.site_id = ism.INSM_SITE_ID
     WHERE PM.[IS_DELETED] = 0 AND ISNULL(ASST_ANCESTOR_ID, ASST_ID)=1
     UNION ALL
     /*pool to controller*/
     SELECT MPOOL.[POOL_NEW_ID] as PoolId,
     MSLOT.[ASD_STD_NEW_ID] as AssetId,
     --row_number() over (partition by [POOL_NEW_ID] order by [POOL_NEW_ID]) as rNumber,
-    15 as AssetTypeId
+    15 as AssetTypeId, SITE_NUMBER
     FROM [PROGRESSIVE].[pool] as p
     JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS MSLOT ON MSLOT.ASD_STD_LEGACY_ID = p.PCON_ID
     JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
     JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
     JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
+	JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
+	JOIN GAM.SITE as st on st.site_id = ism.INSM_SITE_ID
     WHERE p.[IS_DELETED] = 0  ) as vrAll
+	WHERE SITE_NUMBER in ( {0} )
     ORDER BY PoolId
     </Source>
     <Destination>[DataManagement].[AssetLink]</Destination>
@@ -1148,7 +1154,7 @@
   </Transformation>
   <Transformation Name="LINK_CNTRL2POOL">
     <Source>
-    --Controller[15] to Pool[11]
+     --Controller[15] to Pool[11]
     SELECT 
     --'59_15_'+cast([ASD_STD_NEW_ID] as nvarchar) as [Key],
     --Id--
@@ -1165,7 +1171,10 @@
     JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
     JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
     JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
+	JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
+	JOIN GAM.SITE AS ST ON ST.SITE_ID = ISM.INSM_SITE_ID
     WHERE p.[IS_DELETED] = 0 
+	AND SITE_NUMBER in ( {0} )
     ORDER BY MSLOT.[ASD_STD_NEW_ID]
     </Source>
     <Destination>[DataManagement].[AssetLink]</Destination>
@@ -1207,13 +1216,11 @@
 
   <Transformation Name="AST_HISTORY">
     <Source>
-      --SP
-      --EXEC MIGRATION.P_ASSET_SLOT_HISTORY {0}
-
+     EXEC MIGRATION.P_ASSET_SLOT_HISTORY {0}
 
       --Query
-
-      SELECT
+		
+		SELECT
       ------ Id -------
       Asst_Histry_Id as Id,
       SMY.[Action] as [Action],
@@ -1262,24 +1269,23 @@
       'Game' as InlineAssets_Asset_AssetType,
       0 as InlineAssets_Asset_Id,
       -------Options------
-      --C_G.Code as Code,
-      --C_G.GmOptionValue as GmOptionValue,
-      --C_G.Seq as Id,
+      P_GM_VALUE AS InlineAssets_Options,
+
       -----Games Changed Options---
-      CASE WHEN isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data')
-      THEN isnull(C_G.Seq, O_G.Seq) ELSE NULL END AS InlineAssets_ChangedOptions_Id,
+      CASE WHEN isnull(C_G.GmOptionValue,'no_data') = isnull(O_G.GmOptionValue,'no_data')
+      THEN NULL ELSE isnull(C_G.Seq, O_G.Seq) END AS InlineAssets_ChangedOptions_Id,
 
-      CASE WHEN isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data')
-      THEN isnull(C_G.GmOptionName, O_G.GmOptionName) ELSE NULL END AS InlineAssets_ChangedOptions_Name,
+      CASE WHEN isnull(C_G.GmOptionValue,'no_data') = isnull(O_G.GmOptionValue,'no_data')
+      THEN NULL ELSE isnull(C_G.GmOptionName, O_G.GmOptionName) END AS InlineAssets_ChangedOptions_Name,
 
-      CASE WHEN isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data')
-      THEN O_G.GmOptionValue ELSE NULL END AS InlineAssets_ChangedOptions_Value_OldValue,
+      CASE WHEN isnull(C_G.GmOptionValue,'no_data') = isnull(O_G.GmOptionValue,'no_data')
+      THEN NULL ELSE O_G.GmOptionValue END AS InlineAssets_ChangedOptions_Value_OldValue,
 
-      CASE WHEN isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data')
-      THEN C_G.GmOptionValue ELSE NULL END AS InlineAssets_ChangedOptions_Value_NewValue,
+      CASE WHEN isnull(C_G.GmOptionValue,'no_data') = isnull(O_G.GmOptionValue,'no_data')
+      THEN NULL ELSE C_G.GmOptionValue END AS InlineAssets_ChangedOptions_Value_NewValue,
 
-      CASE WHEN isnull(C_G.Code,'no_data') &lt;&gt; isnull(O_G.Code,'no_data')
-      THEN isnull(C_G.Code, O_G.Code) ELSE NULL END AS InlineAssets_ChangedOptions_Code,
+      CASE WHEN isnull(C_G.Code,'no_data') = isnull(O_G.Code,'no_data')
+      THEN NULL ELSE isnull(C_G.Code, O_G.Code)  END AS InlineAssets_ChangedOptions_Code,
 
       ----LinkedAssets--Progressive---
       ---- i.ActiveLinks
@@ -1289,7 +1295,18 @@
       'Pool Id' as LinkedAssets_ActiveLinks_DisplayName,
       [PoolName_Current] as LinkedAssets_ActiveLinks_DisplayValue,
       --- ii.ChangedLinkes
-      --TODO
+		-----Linked
+		    11 as LinkedAssets_ChangedLinkes_Linked_AssetTypeDefinitionId,
+			'Progressive Pool' as LinkedAssets_ChangedLinkes_Linked_AssetType,
+			0 as LinkedAssets_ChangedLinkes_Linked_Id,
+			'Pool Id' as LinkedAssets_ChangedLinkes_Linked_DisplayName,
+			[PoolName_Current] as LinkedAssets_ChangedLinkes_Linked_DisplayValue,
+		-----DeLinked
+			11 as LinkedAssets_ChangedLinkes_DeLinked_AssetTypeDefinitionId,
+			'Progressive Pool' as LinkedAssets_ChangedLinkes_DeLinked_AssetType,
+			0 as LinkedAssets_ChangedLinkes_DeLinked_Id,
+			'Pool Id' as LinkedAssets_ChangedLinkes_DeLinked_DisplayName,
+			PoolName_Old as LinkedAssets_ChangedLinkes_DeLinked_DisplayValue,
 
       cast(0 as bit) as IsLastest
 
@@ -1308,13 +1325,16 @@
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_OPTIONS AS OPTN ON OPTN.CLST_ASD_ID = SMY.CLST_DET_ID
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_OPTIONS_VALUE AS OTP_VAL ON P_ASD_ID = smy.CURRENT_ID
       FULL JOIN MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING AS C_G ON smy.current_id = C_G.gm_asd_std_id
-      FULL JOIN MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING AS O_G ON
-      smy.Pre_Id = O_G.gm_asd_std_id
+      FULL JOIN MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING AS O_G ON smy.Pre_Id = O_G.gm_asd_std_id
+	  LEFT JOIN MIGRATION.GAM_ASSET_GAMES_OPTIONS_VALUE AS GM ON GM.P_GM_ID = C_G.Game_Id
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_PROGRESSIVE AS PROG ON PROG.CLST_DET_ID = SMY.CLST_DET_ID
       WHERE 1=1
       and Asst_Histry_Id is not null
-      and SMY.ASD_AM_UID =1828
+      --and SMY.ASD_AM_UID =1828
+	  and SMY.SiteNumber in ({0})
+	  --and SMY.SiteNumber in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
       ORDER BY SMY.CLST_EXECTUED_DATE, SMY.CURRENT_ID, OPTION_ORDER
+
     </Source>
     <Destination>[Asset_History].[AssetsHistory]</Destination>
     <KeyFormat Format="68_{0}" Keys="Id"  />

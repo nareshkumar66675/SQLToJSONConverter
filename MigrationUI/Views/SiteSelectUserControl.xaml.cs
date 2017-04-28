@@ -25,7 +25,7 @@ namespace MigrationTool.Views
     {
         #region Variable Initialization
         public Dictionary<string, string> SourceSites = new Dictionary<string, string>();
-        public static Dictionary<string, string> SelectedSites = new Dictionary<string, string>();
+        public Dictionary<string, string> SelectedSites = new Dictionary<string, string>();
         public event EventHandler<SitesSelectionChangedEventArgs> OnSitesSelectionChanged;
         private int allSiteCount;
         #endregion
@@ -43,6 +43,8 @@ namespace MigrationTool.Views
         }
         public void LoadSites(GroupType group)
         {
+            SourceSites.Clear();
+            SelectedSites.Clear();
             SourceSites = GetNotMigratedSites(group);
             allSiteCount = SourceSites.Count;
             srcListBox.DisplayMemberPath = "Value";
@@ -58,8 +60,6 @@ namespace MigrationTool.Views
 
             CollectionView selectView = (CollectionView)CollectionViewSource.GetDefaultView(selectedListBox.ItemsSource);
             selectView.Filter = SelectedSiteFilter;
-
-
 
             ResetListBoxes();
         }

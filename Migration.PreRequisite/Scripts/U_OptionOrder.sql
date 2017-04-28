@@ -139,8 +139,13 @@ GO
       FROM (SELECT ASD.ASD_STD_ID, ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
       fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
       --CASE WHEN AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes'
-      --else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE,
-      CASE WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'No'
+      --else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE,FLAG.F
+      CASE WHEN OPTION_CODE in ('ASSET.GMU.CRC.AUTH', 'ASSET.CASLESS.DISAB') THEN 
+	(CASE	WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'N'
+		WHEN AST_OPTN_VALUE = 'FLAG.F' then 'F'
+		WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Y' END)
+      ELSE
+      (CASE WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'No'
       WHEN AST_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
       WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Yes'
       WHEN AST_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.NORMAL' then 'Normal'
@@ -156,7 +161,7 @@ GO
       WHEN AST_OPTN_VALUE = 'KIOSK.TYPE.K' THEN 'K'
       WHEN AST_OPTN_VALUE = 'VALIDATION.ENHANCED' THEN 'Enhanced'
       WHEN AST_OPTN_VALUE = 'SM.SERVER.DOWN' THEN 'Server Down'
-      ELSE AST_OPTN_VALUE end as AST_OPTN_VALUE,
+      ELSE AST_OPTN_VALUE end) end as AST_OPTN_VALUE,
       GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_LONG_NAME,
       gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
       tycod_number as TypeCode_Id, tycod_name as TypeCode_Name,
@@ -186,6 +191,6 @@ GO
       and Ast_Optn.Asset_optn_val_seqId = gSltMap.Ast_Gme_Seq
       ) as overAll
       where 1=1 AND Site_SiteNumber IS NOT NULL AND AssetId_Id IS NOT NULL
-      --and Site_SiteNumber in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      AND Site_SiteNumber in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
       order by Ast_std_Id, game_id
 GO

@@ -71,6 +71,8 @@ namespace MigrationTool.Views
         {
             FailedSites = new Dictionary<string, string>();
             MigratedSites = new Dictionary<string, string>();
+            CurrentSite = new KeyValuePair<string, string>();
+            //SelectedSites = new Dictionary<string, string>();
             //NotMigratedSites = new Dictionary<string, string>();
             //SelectedSites = DatabaseHelper.GetAllSitesFromLegacy();//.Where(t=> t.Key=="233").ToDictionary(u=>u.Key,v=>v.Value);
             selctedSiteCount= SelectedSites.Count();
@@ -80,7 +82,7 @@ namespace MigrationTool.Views
             CompletedListBox.ItemsSource = MigratedSites;
             NotCompletedListBox.ItemsSource = SelectedSites;//.ToDictionary(t=>t.Key,t=>t.Value);
             FailedSitesListBox.ItemsSource = FailedSites;
-            NotCompletedListBox.DisplayMemberPath = "Value";
+            NotCompletedListBox.DisplayMemberPath = "Value"; 
             CompletedListBox.DisplayMemberPath = "Value";
             FailedSitesListBox.DisplayMemberPath = "Value";
             OverallProgress.Value = 0;//SelectedSites.Count() - NotMigratedSites.Count();

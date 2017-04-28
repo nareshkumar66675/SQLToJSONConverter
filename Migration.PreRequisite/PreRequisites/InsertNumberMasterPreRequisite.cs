@@ -11,11 +11,12 @@ namespace Migration.PreRequisite.PreRequisites
 {
     class InsertNumberMasterPreRequisite : IPreRequisite
     {
-        private const string _name = "NumberMasterInsert";
+        private readonly string _name = string.Empty;
         private readonly string _connetionString = string.Empty;
         public string Name => _name;
-        public InsertNumberMasterPreRequisite(string connectionString)
+        public InsertNumberMasterPreRequisite(string name,string connectionString)
         {
+            _name = name;
             _connetionString = connectionString;
         }
         public bool Execute()

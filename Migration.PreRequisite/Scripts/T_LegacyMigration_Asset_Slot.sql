@@ -740,37 +740,6 @@ GO
 SELECT GETDATE() AS END_DATE_TIME
 GO
 
-/*-------------------
--- Type Description
--------------------
-INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
-SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
-asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
-gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
----SequenceId----
-16 as Seq_Id,
--- Type Description --
-cast('22008' as nvarchar) as ComponentId,
-cast('Type Description' as nvarchar) as ComponentName,
-cast(TypeDescription as nvarchar) as ComponentValue,
-'0_'+ cast(TYPEDESCP_ID as nvarchar)+'_22008' as ComponentKey,
-cast('22008' as nvarchar) as ComponentInstanceId,
-cast('ASSET.TYPE.DESCRIPTION' as nvarchar)  as ComponentCode
-FROM GAM.ASSET_STANDARD_DETAILS AS ASD
-JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
-JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
-JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
-JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
-JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
-JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
-join [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
-JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
-LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS TYAST ON TYAST.ASD_STD_ID = ASD.ASD_STD_ID
-WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-AND AST.ASST_ID in ( 1 ) 
-GO */
-
 
 ------------------------------
 --	Game Combo Options  --

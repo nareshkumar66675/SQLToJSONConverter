@@ -79,10 +79,13 @@
     <Content Include="Scripts\D_AuthDefaultInserts.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\D_AuthNumberMasterInsert.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\D_CustomAssetIdInsert.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\D_NumberMasterInsert.sql">
+    <Content Include="Scripts\D_AssetNumberMasterInsert.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\SP_Asset_History.sql">
