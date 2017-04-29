@@ -1216,16 +1216,19 @@
 
   <Transformation Name="AST_HISTORY">
     <Source>
-     EXEC MIGRATION.P_ASSET_SLOT_HISTORY {0}
+      EXEC MIGRATION.P_ASSET_SLOT_HISTORY {0}
 
       --Query
-		
-		SELECT
+      SELECT
       ------ Id -------
       Asst_Histry_Id as Id,
       SMY.[Action] as [Action],
       clst_name as MasterListName,
       clst_name as ChangeListName,
+      case when SMY.astl_data_source = 'IMPORT_DATA' then 'Import'
+      when SMY.astl_data_source = 'CHANGELIST_DATA' then 'Changelist'
+      when clst_name like 'Data Sync%' then 'Data Sync'
+      else '' end as DataTriggerSource_1,
       SMY.astl_data_source  as DataTriggerSource,
       ------- CreatedBy-------
       0 as CreatedBy_UserId,
@@ -1289,26 +1292,26 @@
 
       ----LinkedAssets--Progressive---
       ---- i.ActiveLinks
-      11 as LinkedAssets_ActiveLinks_AssetTypeDefinitionId,
-      'Progressive Pool' as LinkedAssets_ActiveLinks_AssetType,
-      0 as LinkedAssets_ActiveLinks_Id,
-      'Pool Id' as LinkedAssets_ActiveLinks_DisplayName,
-      [PoolName_Current] as LinkedAssets_ActiveLinks_DisplayValue,
+      case when [PoolName_Current] is null then null else 11 end as LinkedAssets_ActiveLinks_AssetTypeDefinitionId,
+      case when [PoolName_Current] is null then null else 'Progressive Pool' end as LinkedAssets_ActiveLinks_AssetType,
+      case when [PoolName_Current] is null then null else 0 end as LinkedAssets_ActiveLinks_Id,
+      case when [PoolName_Current] is null then null else 'Pool Id' end as LinkedAssets_ActiveLinks_DisplayName,
+      case when [PoolName_Current] is null then null else [PoolName_Current] end as LinkedAssets_ActiveLinks_DisplayValue,
       --- ii.ChangedLinkes
-		-----Linked
-		    11 as LinkedAssets_ChangedLinkes_Linked_AssetTypeDefinitionId,
-			'Progressive Pool' as LinkedAssets_ChangedLinkes_Linked_AssetType,
-			0 as LinkedAssets_ChangedLinkes_Linked_Id,
-			'Pool Id' as LinkedAssets_ChangedLinkes_Linked_DisplayName,
-			[PoolName_Current] as LinkedAssets_ChangedLinkes_Linked_DisplayValue,
-		-----DeLinked
-			11 as LinkedAssets_ChangedLinkes_DeLinked_AssetTypeDefinitionId,
-			'Progressive Pool' as LinkedAssets_ChangedLinkes_DeLinked_AssetType,
-			0 as LinkedAssets_ChangedLinkes_DeLinked_Id,
-			'Pool Id' as LinkedAssets_ChangedLinkes_DeLinked_DisplayName,
-			PoolName_Old as LinkedAssets_ChangedLinkes_DeLinked_DisplayValue,
+      -----Linked
+      case when [PoolName_Current] is null then null else 11 end as LinkedAssets_ChangedLinkes_Linked_AssetTypeDefinitionId,
+      case when [PoolName_Current] is null then null else 'Progressive Pool' end as LinkedAssets_ChangedLinkes_Linked_AssetType,
+      case when [PoolName_Current] is null then null else 0 end as LinkedAssets_ChangedLinkes_Linked_Id,
+      case when [PoolName_Current] is null then null else 'Pool Id' end as LinkedAssets_ChangedLinkes_Linked_DisplayName,
+      case when [PoolName_Current] is null then null else [PoolName_Current] end as LinkedAssets_ChangedLinkes_Linked_DisplayValue,
+      -----DeLinked
+      case when [PoolName_Current] is null then null else 11 end as LinkedAssets_ChangedLinkes_DeLinked_AssetTypeDefinitionId,
+      case when [PoolName_Current] is null then null else 'Progressive Pool' end as LinkedAssets_ChangedLinkes_DeLinked_AssetType,
+      case when [PoolName_Current] is null then null else 0 end as LinkedAssets_ChangedLinkes_DeLinked_Id,
+      case when [PoolName_Current] is null then null else 'Pool Id' end as LinkedAssets_ChangedLinkes_DeLinked_DisplayName,
+      case when [PoolName_Current] is null then null else PoolName_Old  end as LinkedAssets_ChangedLinkes_DeLinked_DisplayValue,
 
-      cast(0 as bit) as IsLastest
+      case when ASD_DELETED = 0 then 1 else 0 end as IsLastest
 
       --GMS.[Current_GameComboName],
       --gms.[Current_Game_Id],
@@ -1326,13 +1329,12 @@
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_OPTIONS_VALUE AS OTP_VAL ON P_ASD_ID = smy.CURRENT_ID
       FULL JOIN MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING AS C_G ON smy.current_id = C_G.gm_asd_std_id
       FULL JOIN MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING AS O_G ON smy.Pre_Id = O_G.gm_asd_std_id
-	  LEFT JOIN MIGRATION.GAM_ASSET_GAMES_OPTIONS_VALUE AS GM ON GM.P_GM_ID = C_G.Game_Id
+      LEFT JOIN MIGRATION.GAM_ASSET_GAMES_OPTIONS_VALUE AS GM ON GM.P_GM_ID = C_G.Game_Id
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_PROGRESSIVE AS PROG ON PROG.CLST_DET_ID = SMY.CLST_DET_ID
-      WHERE 1=1
-      and Asst_Histry_Id is not null
-      --and SMY.ASD_AM_UID =1828
-	  and SMY.SiteNumber in ({0})
-	  --and SMY.SiteNumber in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      WHERE 1=1  and Asst_Histry_Id is not null
+      --and SMY.ASD_AM_UID =7337
+      AND SMY.SiteNumber in ({0})
+      --and SMY.SiteNumber in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
       ORDER BY SMY.CLST_EXECTUED_DATE, SMY.CURRENT_ID, OPTION_ORDER
 
     </Source>

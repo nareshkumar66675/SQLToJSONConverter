@@ -52,6 +52,7 @@
     <Compile Include="IPersistence.cs" />
     <Compile Include="PersistenceFactory.cs" />
     <Compile Include="Persistences\Search\ElasticGenericPersistence.cs" />
+    <Compile Include="Persistences\SQL\HistoryPersistence.cs" />
     <Compile Include="Persistences\SQL\SqlGenericPersistence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

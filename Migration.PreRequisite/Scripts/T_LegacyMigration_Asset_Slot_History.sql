@@ -242,7 +242,7 @@ SELECT Game_id, GmOptionName,
 CASE WHEN GmOptionName ='Denom' THEN 'DENOMINATION' 
      WHEN GmOptionName ='Theme Type' THEN 'THEME.TYPE' 
      WHEN GmOptionName ='Theme Group' THEN 'THEME.GROUP' 
-     WHEN GmOptionName ='Theme Category' THEN 'THEME CATEGORY' 
+     WHEN GmOptionName ='Theme Category' THEN 'THEME.CATEGORY' 
      WHEN GmOptionName ='Manufacturer' THEN 'MANUFACTURER'
      WHEN GmOptionName ='Theme Attributes' THEN 'THEME' 
      ELSE GmOptionName end as Code,
@@ -283,7 +283,7 @@ SELECT GAME_ID AS P_GM_ID, '{ "Hold Percent" :"' + game_hold_per + '", ' +
 '"Paytable": "'+ isnull(game_paytable_id, '') + '", ' +
 '"DENOMINATION": "'+ cast(gdm.denm_amount as nvarchar) +'", ' +
 '"THEME.GROUP": "'+ TGRP_LONG_NAME + '", '+
-'"THEME CATEGORY": "'+ tcat_long_name + '", ' +
+'"THEME.CATEGORY": "'+ tcat_long_name + '", ' +
 '"MANUFACTURER": "'+ manf_long_name + '", ' +
 '"THEME": "' + them_name + '", '+
 '"THEME.TYPE": "' + ttyp_long_name+'" }' as P_GM_VALUE

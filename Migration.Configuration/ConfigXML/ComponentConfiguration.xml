@@ -35,6 +35,6 @@
     <Component Name="RPT_ASTLINK" DisplayName="Asset Link - Report"  DomainType="" GenerateType="AssetData" PersistType="Default" />
   </Group>
   <Group Name="HISTORY">
-    <Component Name="AST_HISTORY" DisplayName="Asset History"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetHistory.AssetHistoryEntity,BallyTech.Library.Persistence.MSSql.Asset" GenerateType="DefaultWithParams" PersistType="Default" />
+    <Component Name="AST_HISTORY" DisplayName="Asset History"  DomainType="BallyTech.Library.Persistence.MSSql.Entity.AssetHistory.AssetHistoryEntity,BallyTech.Library.Persistence.MSSql.Asset" GenerateType="DefaultWithParams" PersistType="HistoryData" />
   </Group>
 </ComponentConfig>

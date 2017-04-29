@@ -863,7 +863,7 @@ SELECT GM.GAME_ID, 4 as Seq,
 TC.TCAT_LONG_NAME as ComponentValue,
 '0_'+ CAST(GTD.ThemeCategory_Id as nvarchar) +'_22059' as ComponentKey,
 'Inline260THEMECATEGORY' as ComponentInstanceId,
-'THEME CATEGORY' as ComponentCode,
+'THEME.CATEGORY' as ComponentCode,
  row_number() over (order by GAME_ID) Row_Num,
  9 as Htry_Indx,
  GM.IS_DELETED as Game_Deleted

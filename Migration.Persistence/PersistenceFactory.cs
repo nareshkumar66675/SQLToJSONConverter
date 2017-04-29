@@ -35,6 +35,8 @@ namespace Migration.Persistence
                 {
                     case Constants.DEFAULTPERSIST:
                         return new SqlGenericPersistence();
+                    case Constants.HISTORYDATAGENERATE:
+                        return new HistoryPersistence();
                     default:
                         return new SqlGenericPersistence();
                 }

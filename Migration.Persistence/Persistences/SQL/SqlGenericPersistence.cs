@@ -15,9 +15,17 @@ using Migration.Common;
 
 namespace Migration.Persistence.Persistences.SQL
 {
+    /// <summary>
+    /// Generic SQL Persistence
+    /// </summary>
     public class SqlGenericPersistence : IPersistence
     {
-        public bool Insert(ProcessItem item)
+        /// <summary>
+        /// Persists Data Item
+        /// </summary>
+        /// <param name="item">Data</param>
+        /// <returns></returns>
+        public virtual bool Insert(ProcessItem item)
         {
             try
             {
@@ -36,8 +44,14 @@ namespace Migration.Persistence.Persistences.SQL
                 return false;
             }
         }
-
-        private DataTable ConvertToCommonDataTable(List<object> items,KeyFormat keyFormat)
+        /// <summary>
+        /// Serializes Object and Converts to Datatbale
+        /// Key - Value Format
+        /// </summary>
+        /// <param name="items">Data</param>
+        /// <param name="keyFormat">Key Column Format</param>
+        /// <returns>Datatable</returns>
+        protected DataTable ConvertToCommonDataTable(List<object> items,KeyFormat keyFormat)
         {
             try
             {
@@ -72,7 +86,14 @@ namespace Migration.Persistence.Persistences.SQL
                 throw;
             }
         }
-        private object GetPropertyValue(object src,string propName)
+        /// <summary>
+        /// Gets the Property Value from Object
+        /// For Ex: AssetId.AssetTypeDefinitionId
+        /// </summary>
+        /// <param name="src">Object Data</param>
+        /// <param name="propName">Property Name</param>
+        /// <returns></returns>
+        protected object GetPropertyValue(object src,string propName)
         {
             if (propName.Contains("."))
             {
