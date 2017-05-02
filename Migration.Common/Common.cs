@@ -48,6 +48,7 @@ namespace Migration.Common
             public const string DEFAULTWTPARAMSGENERATE = "DEFAULTWITHPARAMS";
             public const string AUTHDATAGENERATE = "AUTHDATA";
             public const string ASSETDATAGENERATE = "ASSETDATA";
+            public const string HISTORYDATAGENERATE = "HISTORYDATA";
             public const string DEFAULTPERSIST = "DEFAULT";
         }
         public static class AppSettings

@@ -230,6 +230,12 @@ namespace Migration.Configuration
             components.Group = grps;
             return components;
         }
+        public static List<UniqueColumn> GetUniqueColumns(string componentName)
+        {
+            List<UniqueColumn> colList = new List<UniqueColumn>();
+            colList = GetTransformationEnumerable(componentName).FirstOrDefault()?.UniqueMembers?.UniqueColumn;
+            return colList;
+        }
         #region PrivateMethods
         private static IEnumerable<Transformation> GetTransformationEnumerable(string componentName)
         {

@@ -7,15 +7,40 @@ using System.Threading.Tasks;
 
 namespace Migration.ProcessQueue
 {
+    /// <summary>
+    /// Status Of Process
+    /// </summary>
     public enum Status
     {
+        /// <summary>
+        /// Process not started
+        /// </summary>
         [Description("Not Started")]
         NotStarted,
+        /// <summary>
+        /// Process Started
+        /// </summary>
+        [Description("Started")]
         Started,
+        /// <summary>
+        /// Process Running
+        /// </summary>
+        [Description("Running")]
         Running,
+        /// <summary>
+        /// Process Completed Successfully
+        /// </summary>
+        [Description("Success")]
         Success,
+        /// <summary>
+        /// Process Completed with Errors
+        /// </summary>
+        [Description("Failed")]
         Failed
     }
+    /// <summary>
+    /// Process Status
+    /// </summary>
     public class ProcessStatus
     {
         public ProcessStatus(string componentName,int percentCompleted,Status status)
@@ -26,8 +51,17 @@ namespace Migration.ProcessQueue
         }
 
         private int _percentCompleted;
+        /// <summary>
+        /// Component Name
+        /// </summary>
         public string ComponentName { get; set; }
+        /// <summary>
+        /// Current Status
+        /// </summary>
         public Status Status { get; set; } = Status.NotStarted;
+        /// <summary>
+        /// Percentage Completed
+        /// </summary>
         public int PercentCompleted {
             get
             {

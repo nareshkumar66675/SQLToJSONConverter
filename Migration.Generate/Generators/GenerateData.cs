@@ -8,6 +8,7 @@ using Migration.Generate.Helpers;
 using Migration.ProcessQueue;
 using System.Data;
 using static Migration.Common.Common;
+using Migration.Common;
 
 namespace Migration.Generate.Generators
 {
@@ -25,7 +26,7 @@ namespace Migration.Generate.Generators
                 resultSet = ConvertToKeyValue(SqlOperation.ExecuteQuery(GetConnectionString(),query));
 
                 //Notify Status
-                NotifyGenerateStatus(resultSet, resultSet, component, startTime, "Running");
+                NotifyGenerateStatus(resultSet, resultSet, component, startTime, Status.Running.GetDescription());
 
                 //Add to Process Queue for Persisting
                 ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultSet));
@@ -34,7 +35,7 @@ namespace Migration.Generate.Generators
             }
             catch (Exception)
             {
-                NotifyGenerateStatus(resultSet, resultSet, component, startTime, "Failed");
+                NotifyGenerateStatus(resultSet, resultSet, component, startTime, Status.Failed.GetDescription());
                 throw;
             }
         }

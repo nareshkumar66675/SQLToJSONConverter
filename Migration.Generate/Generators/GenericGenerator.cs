@@ -30,7 +30,7 @@ namespace Migration.Generate.Generators
             dynamic resultSet = null;
             List<object> resultEntities = null;
             Mapper mapper = new Mapper();
-
+            List<UniqueColumn> customIdentifiers = new List<UniqueColumn>();
             try
             {
                 //Get Entity Type
@@ -46,10 +46,13 @@ namespace Migration.Generate.Generators
                 //Map Column Names
                 resultSet = MapColumns(component.Name, resultSet);
 
+                //Get Custom Identifiers - If any
+                customIdentifiers = Configuration.Configurator.GetUniqueColumns(component.Name);
+
                 //Map Data to Entity
-                resultEntities = mapper.Map<object>(resultSet, entityType);
+                resultEntities = mapper.Map<object>(resultSet, entityType, customIdentifiers);
                 
-                NotifyGenerateStatus(resultSet, resultEntities, component, startTime,"Running");
+                NotifyGenerateStatus(resultSet, resultEntities, component, startTime,Status.Running.GetDescription());
 
                 //Add to Process Queue for Persisting
                 ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultEntities));
@@ -58,7 +61,7 @@ namespace Migration.Generate.Generators
             }
             catch (Exception ex)
             {
-                NotifyGenerateStatus(resultSet, resultEntities, component, startTime, "Failed");
+                NotifyGenerateStatus(resultSet, resultEntities, component, startTime, Status.Failed.GetDescription());
                 throw;
             }
         }

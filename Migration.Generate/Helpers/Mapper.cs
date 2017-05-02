@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Migration.Configuration.ConfigObject;
+using Newtonsoft.Json;
 using Slapper;
 using System;
 using System.Collections.Generic;
@@ -32,15 +33,68 @@ namespace Migration.Generate.Helpers
             //    var tempResult = Slapper.AutoMapper.MapDynamic(type, item);
             //    result.AddRange(tempResult as IEnumerable<T>);
             //}
-            var dictConverter =new DictionaryConverter();
+
+            var mappedObject = MapObject<T>(resultSet, type, null);
+            
+            return mappedObject;
+        }
+        /// <summary>
+        /// Maps ResultSet to Entities using Slapper.Automapper
+        /// </summary>
+        /// <typeparam name="T">Entity Result Type</typeparam>
+        /// <param name="resultSet">Data</param>
+        /// <param name="type">Type of Entity</param>
+        /// <param name="Identifiers">List of Custom Identifiers</param>
+        /// <returns>List of Mapped Data</returns>
+        public List<T> Map<T>(dynamic resultSet, Type type,List<UniqueColumn> Identifiers)
+        {
+            var mappedObject = MapObject<T>(resultSet,type,Identifiers);
+
+            return mappedObject;
+        }
+        #region PrivateMethods
+        private void SetDictionaryConverter()
+        {
+            var dictConverter = new DictionaryConverter();
             if (!TypeConverters.Contains(dictConverter))
             {
                 TypeConverters.Add(dictConverter);
             }
-            var mappedObject = (AutoMapper.MapDynamic(type, resultSet,true) as IEnumerable<T>).ToList();
-            //Slapper.AutoMapper.Configuration.AddIdentifier()
-            return mappedObject;
         }
+        private List<T> MapObject<T>(dynamic resultSet, Type type, List<UniqueColumn> Identifiers, bool setCustomDictionary = true)
+        {
+            if (type == null)
+                throw new ArgumentNullException("Type is Null");
+
+            //Set Custom Dictionary Converter
+            if (setCustomDictionary)
+                SetDictionaryConverter();
+
+            //Add Custom Identifiers
+            AddCustomIdentifiers(Identifiers);
+
+            //Map Objects to Entities
+            var mappedObject = (AutoMapper.MapDynamic(type, resultSet, true) as IEnumerable<T>).ToList();
+
+            return mappedObject;
+        } 
+        private void AddCustomIdentifiers(List<UniqueColumn> Identifiers)
+        {
+            if (Identifiers != null && Identifiers.Count > 0)
+            {
+                Identifiers.ForEach(identifier =>
+                {
+                    Type idType = Type.GetType(identifier.Type);
+
+                    if (idType == null)
+                        throw new Exception("Custom Id Type not Found:" + identifier.Type);
+
+                    if(identifier.Column != null && identifier.Column.Count > 0)
+                        AddIdentifiers(idType, identifier.Column);
+                });
+            }
+        }
+        #endregion
     }
     /// <summary>
     /// Dictionary Converter - Converts Json Data to Dictionary Object

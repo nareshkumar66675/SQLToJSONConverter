@@ -32,14 +32,14 @@ namespace Migration.Persistence.Persistences.SQL
                 SqlOperation.ExecuteBulkCopy(ConvertToCommonDataTable(item.Items, Configurator.GetKeyFormat(item.Component.Name)), item.Component.GroupName, Configurator.GetDestinationByComponentName(item.Component.Name));
 
                 if(AppSettings.IsReportEnabled)
-                    SqlOperation.UpdatePersistReport(item.Component.Name, DateTime.Now, item.Items.Count, item.Component.GroupName,"Success");
+                    SqlOperation.UpdatePersistReport(item.Component.Name, DateTime.Now, item.Items.Count, item.Component.GroupName,Status.Success.GetDescription());
 
                 return true;
             }
             catch (Exception ex)
             {
                 if (AppSettings.IsReportEnabled)
-                    SqlOperation.UpdatePersistReport(item.Component.Name, DateTime.Now, item.Items.Count, item.Component.GroupName,"Failed");
+                    SqlOperation.UpdatePersistReport(item.Component.Name, DateTime.Now, item.Items.Count, item.Component.GroupName,Status.Failed.GetDescription());
                 Logger.Instance.LogError($"Error Occurred While Inserting Item : {item.Component.Name}", ex);
                 return false;
             }

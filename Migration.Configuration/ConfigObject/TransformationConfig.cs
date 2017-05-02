@@ -88,10 +88,34 @@ namespace Migration.Configuration.ConfigObject
         [XmlElement(ElementName = "ColumnMapping")]
         public ColumnMapping ColumnMapping { get; set; }
         /// <summary>
+        /// Custom Unique Columns - To Group Data
+        /// Default Unique Columns are - Id, xxxId
+        /// </summary>
+        [XmlElement(ElementName = "UniqueMembers")]
+        public UniqueMembers UniqueMembers { get; set; }
+        /// <summary>
         /// Dynamic Parameters for Source Query
         /// </summary>
         [XmlIgnore]
         public List<string> QueryParams { get; set; }
+    }
+    /// <summary>
+    /// List Of Custom Unique Columns
+    /// </summary>
+    [XmlRoot(ElementName = "UniqueColumn")]
+    public class UniqueColumn
+    {
+        [XmlElement(ElementName = "Column")]
+        public List<string> Column { get; set; }
+        [XmlAttribute(AttributeName = "type")]
+        public string Type { get; set; }
+    }
+
+    [XmlRoot(ElementName = "UniqueMembers")]
+    public class UniqueMembers
+    {
+        [XmlElement(ElementName = "UniqueColumn")]
+        public List<UniqueColumn> UniqueColumn { get; set; }
     }
     /// <summary>
     /// Root Element

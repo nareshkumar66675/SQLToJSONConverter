@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TransformationConfig>
   <!-- Auth Components -->
+  
   <Transformation Name="SITE">
     <Source>
       select st.SITE_NUMBER as Id,
@@ -205,9 +206,12 @@
     <ColumnMapping>
       <ColumnMap Key="1" ColumnName="Id"/>
       <ColumnMap Key="cc" ColumnName="Component"/>
-      <!--<ColumnMap Key="3" ColumnName="fv"/>
-      <ColumnMap Key="4" ColumnName="fdv"/>-->
     </ColumnMapping>
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
+        <Column>SiteId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="COMPDATA_MODEL">
     <Source>
@@ -269,6 +273,11 @@
     <ColumnMapping>
       <ColumnMap Key="CC" ColumnName="ChildComponents"/>
     </ColumnMapping>
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
+        <Column>SiteId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="COMPDATA_THEME">
     <Source>
@@ -359,6 +368,11 @@
     <ColumnMapping>
       <ColumnMap Key="CC" ColumnName="ChildComponents"/>
     </ColumnMapping>
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
+        <Column>SiteId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="COMPDATA_DENOM">
     <Source>
@@ -390,6 +404,11 @@
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
+        <Column>SiteId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="COMPDATA_MNF">
     <Source>
@@ -439,6 +458,11 @@
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
+        <Column>SiteId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="COMPDATA_POS_VENDOR">
     <Source>
@@ -486,6 +510,11 @@
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
+        <Column>SiteId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="COMPDATA_POS_MODEL">
     <Source>
@@ -521,6 +550,11 @@
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
+        <Column>SiteId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="COMPDATA_AZB">
     <Source>
@@ -590,6 +624,11 @@
     <ColumnMapping>
       <ColumnMap Key="CC" ColumnName="ChildComponents"/>
     </ColumnMapping>
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
+        <Column>SiteId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="COMPDATA_TYPE_DESC">
     <Source>
@@ -713,9 +752,14 @@
     </Source>
     <Destination>[Components].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id"  />
-	<ColumnMapping>
+	  <ColumnMapping>
       <ColumnMap Key="CC" ColumnName="ChildComponents"/>
     </ColumnMapping>
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
+        <Column>SiteId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="AST_DEFN">
     <Source>
@@ -1104,6 +1148,11 @@
     </Source>
     <Destination>[DataManagement].[AssetLink]</Destination>
     <KeyFormat Format="59_10_{0}" Keys="Id.Id"  />
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Persistence.MSSql.Entity.AssetLinkEntity,BallyTech.Library.Persistence.MSSql.Asset">
+        <Column>AssetId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="LINK_POOL2SLOT">
     <Source>
@@ -1151,6 +1200,11 @@
     </Source>
     <Destination>[DataManagement].[AssetLink]</Destination>
     <KeyFormat Format="59_11_{0}" Keys="Id.Id"  />
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Persistence.MSSql.Entity.AssetLinkEntity,BallyTech.Library.Persistence.MSSql.Asset">
+        <Column>AssetId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
   <Transformation Name="LINK_CNTRL2POOL">
     <Source>
@@ -1171,14 +1225,19 @@
     JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
     JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
     JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
-	JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
-	JOIN GAM.SITE AS ST ON ST.SITE_ID = ISM.INSM_SITE_ID
+	  JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
+	  JOIN GAM.SITE AS ST ON ST.SITE_ID = ISM.INSM_SITE_ID
     WHERE p.[IS_DELETED] = 0 
-	AND SITE_NUMBER in ( {0} )
+	  AND SITE_NUMBER in ( {0} )
     ORDER BY MSLOT.[ASD_STD_NEW_ID]
     </Source>
     <Destination>[DataManagement].[AssetLink]</Destination>
     <KeyFormat Format="59_15_{0}" Keys="Id.Id"  />
+    <UniqueMembers>
+      <UniqueColumn type ="BallyTech.Library.Persistence.MSSql.Entity.AssetLinkEntity,BallyTech.Library.Persistence.MSSql.Asset">
+        <Column>AssetId</Column>
+      </UniqueColumn>
+    </UniqueMembers>
   </Transformation>
 
   <!-- Report Components -->
