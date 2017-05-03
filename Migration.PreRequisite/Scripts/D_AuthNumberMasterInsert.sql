@@ -19,7 +19,7 @@ AS
 	UNION ALL
 	SELECT MAX(ROLE_NEW_ID) + 1 as StartRange, 'ROLE' as NumberCode,50 as Seed,1 as [Version] FROM MIGRATION.COMMON_USER_ROLE
     UNION ALL
-	SELECT MAX(PROP_NEW_ID) + 1 as StartRange, 'ORGANIZATION' as NumberCode,10 as Seed,1 as [Version] FROM MIGRATION.GAM_PROPERTY
+	SELECT MAX(PROP_NEW_ID) + 1 as StartRange, 'HIERARCHALORGANIZATION' as NumberCode,10 as Seed,1 as [Version] FROM MIGRATION.GAM_PROPERTY
 )
 SELECT 'IF EXISTS (Select 1 from Config.NumberMaster where NumberCode='''+cast(NumberCode as VARCHAR(50))+''')
 		UPDATE [Config].[NumberMaster] SET StartRange='+cast(StartRange as VARCHAR(50))+' WHERE NumberCode='''+NumberCode+'''

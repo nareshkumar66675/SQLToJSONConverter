@@ -33,6 +33,18 @@ namespace MigrationTool.Views
         }
 
         public event EventHandler<ConnectionCompleteEventArgs> OnConnectComplete;
+        public void InitializeData(string connectionString)
+        {
+            if(!string.IsNullOrWhiteSpace(connectionString))
+            {
+                serverNameTextBox.Text = DatabaseHelper.GetServerName(connectionString);
+                loginTextBox.Text = DatabaseHelper.GetUserName(connectionString);
+                passwordBox.Password = DatabaseHelper.GetPassword(connectionString);
+                databaseTextBox.Text = DatabaseHelper.GetDatabaseName(connectionString);
+                AuthTypeComboBox.SelectedItem = DatabaseHelper.GetAuthenticationType(connectionString);
+                selectedDBGrid.Visibility = Visibility.Visible;
+            }
+        }
         private void connectButton_Click(object sender, RoutedEventArgs e)
         {
             #region VariableDeclaration
@@ -146,6 +158,7 @@ namespace MigrationTool.Views
             databaseTextBox.Clear();
             selectedDBGrid.Visibility = Visibility.Collapsed;
             connectButton.IsEnabled = true;
+            OnConnectComplete?.Invoke(this, new ConnectionCompleteEventArgs { ConnectionString = string.Empty });
         }
 
         private void DatabaseConfigUserCntrl_Loaded(object sender, RoutedEventArgs e)

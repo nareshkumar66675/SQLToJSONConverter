@@ -47,7 +47,6 @@ namespace MigrationTool
         #endregion
         public Wizard()
         {
-            //MigrationTool.Properties.Resources.
             InitializeComponent();
             Logger.Instance.LogInfo("Data Migration Tool Initialized.");
             InitializeCultureComboBox();
@@ -63,7 +62,6 @@ namespace MigrationTool
             HistoryProcessCntrl.ProcessStarted += HistoryProcessCntrl_ProcessStarted;
             #endregion
 
-            UpdateDbConnectStatus();
         }
 
         #region WizardEvents
@@ -71,7 +69,7 @@ namespace MigrationTool
         {
             try
             {
-                Logger.Instance.LogInfo("Navigating From Page - " + Wiz.CurrentPage.Name + " to Next Page. ");
+                Logger.Instance.LogInfo("Navigating From Page - " + Wiz.CurrentPage.Name + " to Next Page "+Wiz.CurrentPage.NextPage?.Name);
 
                 //Auth Connection Page -> Auth Components Selection Page
                 if (Wiz.CurrentPage == AuthConnectionPage)
@@ -112,6 +110,11 @@ namespace MigrationTool
                     AddUserControlToPage(AssetsComponentsProcessPage, AssetCompProcessCntrl);
                     CanClose = false;
                     AssetCompProcessCntrl.StartComponentProcess(comp);
+                }
+                ////Any Page -> Report Connection Page 
+                else if (Wiz.CurrentPage == AssetsComponentsProcessPage)
+                {
+                    UpdateDbConnectStatus();
                 }
                 //Report Connection Page -> Reports Process Page
                 else if (Wiz.CurrentPage == ReportConnectionPage)
@@ -181,6 +184,11 @@ namespace MigrationTool
                 ConnectionStrings.AuthConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Auth Database Connection Completed");
             }
+            else
+            {
+                ConnectionStrings.AuthConnectionString = string.Empty;
+                Wiz.CurrentPage.CanSelectNextPage = false;
+            }
         }
         private void AssetDB_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
         {
@@ -189,6 +197,11 @@ namespace MigrationTool
                 Wiz.CurrentPage.CanSelectNextPage = true;
                 ConnectionStrings.AssetConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Asset Database Connection Completed");
+            }
+            else
+            {
+                ConnectionStrings.AssetConnectionString = string.Empty;
+                Wiz.CurrentPage.CanSelectNextPage = false;
             }
         }
         private void SrcExisiting_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
@@ -199,6 +212,11 @@ namespace MigrationTool
                 ConnectionStrings.LegacyConnectionString = e.ConnectionString;
                 Logger.Instance.LogInfo("Source Database Connection Completed");
             }
+            else
+            {
+                ConnectionStrings.LegacyConnectionString = string.Empty;
+                Wiz.CurrentPage.CanSelectNextPage = false;
+            }
         }
         private void ReportDBCntrl_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
         {
@@ -208,6 +226,11 @@ namespace MigrationTool
                 Logger.Instance.LogInfo("Report Database Connection Completed");
                 NavigateToReportsProcess();
             }
+            else
+            {
+                ConnectionStrings.ReportConnectionString = string.Empty;
+                Wiz.CurrentPage.CanSelectNextPage = false;
+            }
         }
         #endregion
 
@@ -215,10 +238,12 @@ namespace MigrationTool
         private void SkipAuthButton_Click(object sender, RoutedEventArgs e)
         {
             Wiz.CurrentPage = AssetConnectionPage;
+            UpdateDbConnectStatus();
         }
         private void SkipAssetButton_Click(object sender, RoutedEventArgs e)
         {
             Wiz.CurrentPage = ReportConnectionPage;
+            UpdateDbConnectStatus();
         }
         private void SkipReportButton_Click(object sender, RoutedEventArgs e)
         {
@@ -259,36 +284,41 @@ namespace MigrationTool
 
         private bool CanProcessReport()
         {
-            ////Auth Check 
-            //var authCompledtedComp =DatabaseHelper.GetCompletedComponents(GroupType.AUTH, null).Count;
-            //var authAllComp = Configurator.GetComponentListByGroup(GroupType.AUTH).Count;
+            if(AppSettings.IsReportCheck)
+            {
+                //Auth Check 
+                var authCompledtedComp = DatabaseHelper.GetCompletedComponents(GroupType.AUTH, null).Count;
+                var authAllComp = Configurator.GetComponentListByGroup(GroupType.AUTH).Count;
 
-            //if (authCompledtedComp != authAllComp)
-            //{
-            //    Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Auth Components; All Componnets Count - { authAllComp} Completed Components - {authCompledtedComp}");
-            //    return false;
-            //}
+                if (authCompledtedComp != authAllComp)
+                {
+                    Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Auth Components; All Componnets Count - { authAllComp } Completed Components - { authCompledtedComp }");
+                    return false;
+                }
 
-            ////Asset Check
-            //var allSites = DatabaseHelper.GetAllSitesFromLegacy();
+                //Asset Check
+                var allSites = DatabaseHelper.GetAllSitesFromLegacy();
 
-            //var assetCompletedComp = DatabaseHelper.GetCompletedComponents(GroupType.ASSET, allSites.Select(t => t.Key).ToList()).Count;
+                var assetCompletedComp = DatabaseHelper.GetCompletedComponents(GroupType.ASSET, allSites.Select(t => t.Key).ToList()).Count;
 
-            //var assetAllComp = Configurator.GetComponentListByGroup(GroupType.ASSET).Count;
+                var assetAllComp = Configurator.GetComponentListByGroup(GroupType.ASSET).Count;
 
-            //if (assetCompletedComp != assetAllComp)
-            //{
-            //    Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Asset Components ; All Componnets Count - { assetAllComp} Completed Components - {assetCompletedComp}");
-            //    return false;
-            //}
+                if (assetCompletedComp != assetAllComp)
+                {
+                    Logger.Instance.LogInfo($"Cannot Proceed with Report Tables - Missing Asset Components ; All Componnets Count - { assetAllComp } Completed Components - { assetCompletedComp }");
+                    return false;
+                }
+            }
             return true;
         }
         private void authConnectBtn_Click(object sender, RoutedEventArgs e)
         {
             DatabaseConfigSubWindow win = new DatabaseConfigSubWindow();
             win.Owner = Application.Current.MainWindow;
-            win.Closed += authDBSelect_Closed; ;
+            win.Closed += authDBSelect_Closed;
+            win.ConnectionString = ConnectionStrings.AuthConnectionString;
             win.Type = GroupType.AUTH.ToString();
+            win.InitializeData();
             win.ShowDialog();
         }
 
@@ -304,7 +334,9 @@ namespace MigrationTool
             DatabaseConfigSubWindow win = new DatabaseConfigSubWindow();
             win.Owner = Application.Current.MainWindow;
             win.Closed += assetDBSelect_Closed;
+            win.ConnectionString = ConnectionStrings.AssetConnectionString;
             win.Type = GroupType.ASSET.ToString();
+            win.InitializeData();
             win.ShowDialog();
         }
 

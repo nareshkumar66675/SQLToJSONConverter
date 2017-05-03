@@ -86,7 +86,7 @@
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="SourceConnectionPage"
                              Title="{x:Static res:Resources.SourceConnectionPage_Title}"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              Description="{x:Static res:Resources.SourceConnectionPage_Description}"
                              NextPage="{Binding ElementName=AuthConnectionPage}"
                              PageType="Interior"
@@ -107,7 +107,7 @@
             <!--  Auth Process Block Start  -->
             <xctk:WizardPage x:Name="AuthConnectionPage"
                              Title="{x:Static res:Resources.AuthConnectionPage_Title}"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              Description="{x:Static res:Resources.AuthConnectionPage_Description}"
                              NextPage="{Binding ElementName=AuthComponentsSelectionPage}"
                              PageType="Interior"
@@ -165,7 +165,7 @@
             <!--  Asset Process Block Start  -->
             <xctk:WizardPage x:Name="AssetConnectionPage"
                              Title="{x:Static res:Resources.AssetConnectionPage_Title}"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              CanSelectPreviousPage="False"
                              Description="{x:Static res:Resources.AssetConnectionPage_Description}"
                              NextPage="{Binding ElementName=AssetSiteSelectionPage}"
@@ -213,7 +213,7 @@
                              PreviousPage="{Binding ElementName=AssetConnectionPage}" />
             <xctk:WizardPage x:Name="AssetsComponentsSelectionPage"
                              Title="{x:Static res:Resources.AssetsComponentsSelectionPage_Title}"
-                             CanSelectNextPage="True"
+                             CanSelectNextPage="False"
                              Description="{x:Static res:Resources.AssetsComponentsSelectionPage_Description}"
                              NextPage="{Binding ElementName=ComponentsProcessPage}"
                              PageType="Interior"

@@ -96,8 +96,6 @@ namespace Migration.PreRequisite.Helpers
                     }
                 }
 
-
-
                 /* Insert Unused Custom Id to New Database */
                 ExecuteBulkCopy(table, connectionString, "[IDGEN].[CustomID_VALUES]");
             }

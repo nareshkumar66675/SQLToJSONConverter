@@ -12,14 +12,14 @@ namespace Migration.Common
     {
         public static class ConnectionStrings
         {
-            public static string AuthConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Auth_Migration";
-            public static string AssetConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Asset_Migration";
-            public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=ALH_AssetMatrix14";
-            public static string ReportConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Report_Migration";
-            //public static string AuthConnectionString = @"";
-            //public static string AssetConnectionString = @"";
-            //public static string LegacyConnectionString = @"";
-            //public static string ReportConnectionString = @"";
+            //public static string AuthConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Auth_Migration";
+            //public static string AssetConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Asset_Migration";
+            //public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=ALH_AssetMatrix14";
+            //public static string ReportConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Report_Migration";
+            public static string AuthConnectionString = string.Empty;
+            public static string AssetConnectionString = string.Empty;
+            public static string LegacyConnectionString = string.Empty;
+            public static string ReportConnectionString = string.Empty;
             /// <summary>
             /// Retrieves Connection String based on Group Type
             /// </summary>
@@ -128,6 +128,14 @@ namespace Migration.Common
                 }
                 private set { }
             }
+            public static string ReportDBCheck
+            {
+                get
+                {
+                    return string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("ReportDBCheck")) ? "Report.Asset" : ConfigurationManager.AppSettings.Get("ReportDBCheck");
+                }
+                private set { }
+            }
             public static bool RunPreRequisites
             {
                 get
@@ -152,6 +160,15 @@ namespace Migration.Common
                 {
                     int sqlCommandTimeout;
                     return int.TryParse(ConfigurationManager.AppSettings.Get("SqlCommandTimeout"), out sqlCommandTimeout) ? sqlCommandTimeout : 500;
+                }
+                private set { }
+            }
+            public static bool IsReportCheck
+            {
+                get
+                {
+                    bool isReportCheck;
+                    return bool.TryParse(ConfigurationManager.AppSettings.Get("IsReportCheck"), out isReportCheck) ? isReportCheck : false;
                 }
                 private set { }
             }

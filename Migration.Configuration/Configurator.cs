@@ -202,16 +202,23 @@ namespace Migration.Configuration
         }
         public static Components Except(this Components sourceItems,Components removeItems)
         {
-            var temp = sourceItems;
-            removeItems.Group.ForEach(grp =>
-            {
-                if (grp.Component.Count > 0)
-                {
-                    temp.Group.Where(g => g.Name == grp.Name).FirstOrDefault().Component.RemoveAll(u => grp.Component.Contains(u));
-                }
-            });
-            return temp;
+            //var temp = sourceItems;
+            //removeItems.Group.ForEach(grp =>
+            //{
+            //    if (grp.Component.Count > 0)
+            //    {
+            //        temp.Group.Where(g => g.Name == grp.Name).FirstOrDefault().Component.RemoveAll(u => grp.Component.Contains(u));
+            //    }
+            //});
+            //return temp;
+            throw new NotImplementedException();
         }
+        /// <summary>
+        /// Removes Items from the given Components
+        /// </summary>
+        /// <param name="sourceItems">Source Items</param>
+        /// <param name="items">Items to be removed</param>
+        /// <returns>Result Components</returns>
         public static Components Remove(this Components sourceItems, List<string> items)
         {
             //var temp =(Components) sourceItems.Clone();
@@ -230,6 +237,11 @@ namespace Migration.Configuration
             components.Group = grps;
             return components;
         }
+        /// <summary>
+        /// Retrieves Custom Unique Columns
+        /// </summary>
+        /// <param name="componentName">Component Name</param>
+        /// <returns>List of Custom Unique Columns</returns>
         public static List<UniqueColumn> GetUniqueColumns(string componentName)
         {
             List<UniqueColumn> colList = new List<UniqueColumn>();

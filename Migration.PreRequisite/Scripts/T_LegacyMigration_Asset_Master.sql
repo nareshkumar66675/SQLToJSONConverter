@@ -303,6 +303,13 @@ group by AD.ASD_STD_ID ) sumTab
 
 GO
 
+--updating model
+UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET
+SET Model = 'MVPXCEED' WHERE MODEL = 'MVP XCEED' 
+GO
+
+
+
 ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET 
 ADD TYPEDESCP_ID INT
 GO
@@ -311,6 +318,12 @@ SELECT row_number()over(order by TypeDescription, Manufacturer, ModelType, Model
 INTO MIGRATION.GAM_TYPE_DESCRIPTION
 from (SELECT DISTINCT TypeDescription, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration, GameCategory 
 FROM  MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET ) as tt
+GO
+
+
+--updating model
+UPDATE MIGRATION.GAM_TYPE_DESCRIPTION
+SET Model = 'MVPXCEED' WHERE MODEL = 'MVP XCEED' 
 GO
 
 
@@ -434,6 +447,44 @@ and m.HoldPC = a.HoldPC and m.MaxBet = a.MaxBet and m.LineConfiguration = a.Line
 and m.GameCategory = a.GameCategory
 GO
 
+--inserting type decription for Type Code
+INSERT INTO [MIGRATION].[GAM_TYPE_DESCRIPTION]
+SELECT 
+max(Id)+1 as Id, 
+'KONAMI' as Typedescription,
+'KONAMI' AS manufacture, --7
+'CASINO' as modelType,
+'PODIUM' as Model,
+'1.00' as gameHoldPc,
+'1.00' as HoldPC,
+'1' as MaxBet,
+'1' as LineConfiguration,
+'1' as GameCategory,
+max(TypeDescription_Id)+1 as TypeDescription_Id,
+max(Manufacturer_Id)+1 as Manufacturer_Id,
+max(ModelType_Id)+1 as ModelType_Id,
+max(Model_Id)+1 as Model_Id,
+max(GameHoldPC_Id)+1 as GameHoldPC_Id,
+max(HoldPC_Id)+1 as HoldPC_Id,
+max(MaxBet_Id)+1 as MaxBet_Id,
+max(LineConfiguration_Id)+1 as LineConfiguration_Id,
+max(GameCategory_Id)+1 as GameCategory_Id
+from [MIGRATION].[GAM_TYPE_DESCRIPTION]
+
+UPDATE MIGRATION.GAM_TYPE_DESCRIPTION SET MAXBET = '1' WHERE MAXBET = ''
+GO
+UPDATE MIGRATION.GAM_TYPE_DESCRIPTION SET LINECONFIGURATION = '1' WHERE LINECONFIGURATION = ''
+GO
+UPDATE MIGRATION.GAM_TYPE_DESCRIPTION SET GameCategory = '1' WHERE GameCategory = ''
+GO
+
+UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET SET MAXBET = '1' WHERE MAXBET = ''
+GO
+UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET SET LINECONFIGURATION = '1' WHERE LINECONFIGURATION = ''
+GO
+UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET SET GameCategory = '1' WHERE GameCategory = ''
+GO
+
 
 -------------------
 --Theme
@@ -549,7 +600,7 @@ GO
 CREATE VIEW [Migration].[VIEW_MANUFACTURE]
 AS
 SELECT MF_ID, '22002' AS COMP_TYPE_ID, MANF_ID,
-DISPLAY_NAME,
+DISPLAY_NAME, IsDefault,
 CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'Manufacture Short Name'
 	  WHEN VALUE_DESC = 'MANF_LONG_NAME' then 'Manufacture Long Name'
 	  WHEN VALUE_DESC = 'MANF_VEND_CODE' then 'Code'
@@ -574,7 +625,8 @@ MF_NEW_ID as MF_ID,
 MANF_LONG_NAME AS DISPLAY_NAME,
 CAST(MANF_SHORT_NAME AS NVARCHAR) AS MANF_SHORT_NAME, 
 CAST(MANF_LONG_NAME AS NVARCHAR) AS MANF_LONG_NAME,
-CAST(MANF_VEND_CODE AS NVARCHAR) AS MANF_VEND_CODE
+CAST(MANF_VEND_CODE AS NVARCHAR) AS MANF_VEND_CODE,
+CASE WHEN MANF_SHORT_NAME = 'UNKNOWN' THEN cast(1 as bit) ELSE cast(0 as bit) END AS IsDefault
 FROM GAM.MANUFACTURER 
 JOIN MIGRATION.GAM_MANUFACTURER ON MNF_LEGCY_ID = MANF_ID 
 WHERE IS_DELETED = 0 AND MANF_IS_VENDOR = 0 and MANF_ID > 0 ) MFN
@@ -678,7 +730,7 @@ GO
 CREATE VIEW [Migration].[VIEW_THEME_TYPE]
 AS
 SELECT TT_ID, '22057' AS COMP_TYPE_ID, TTYP_ID,
-DISPLAY_NAME,
+DISPLAY_NAME, IsDefault,
 CASE  WHEN VALUE_DESC = 'TTYP_SHORT_NAME' then 'Theme Type Short Name'
 	  WHEN VALUE_DESC = 'TTYP_LONG_NAME' then 'Theme Type Long Name'
 END AS THEM_TYPE_NAME,
@@ -694,7 +746,8 @@ END AS THEM_TYPE_SEQ,
 ROW_NUMBER() OVER (ORDER BY TTYP_ID) AS TT_ID,
 TTYP_LONG_NAME AS DISPLAY_NAME,
 CAST(TTYP_SHORT_NAME AS NVARCHAR) AS TTYP_SHORT_NAME, 
-CAST(TTYP_LONG_NAME AS NVARCHAR) AS TTYP_LONG_NAME
+CAST(TTYP_LONG_NAME AS NVARCHAR) AS TTYP_LONG_NAME,
+CASE WHEN TTYP_SHORT_NAME = 'UNKNOWN' THEN cast(1 as bit) ELSE cast(0 as bit) END AS IsDefault
 FROM GAM.THEME_TYPE  WHERE IS_DELETED = 0 ) MDL_TYPE
 UNPIVOT
  ( VALUE FOR VALUE_DESC IN (TTYP_SHORT_NAME, TTYP_LONG_NAME)  ) AS T
@@ -710,7 +763,7 @@ GO
 CREATE VIEW [Migration].[VIEW_THEME_GROUP]
 AS
 SELECT TG_ID, '22058' AS COMP_TYPE_ID, TGRP_ID, TGRP_TTYP_ID,
-DISPLAY_NAME,
+DISPLAY_NAME, IsDefault,
 CASE  WHEN VALUE_DESC = 'TGRP_SHORT_NAME' then 'Theme Group Short Name'
 	  WHEN VALUE_DESC = 'TGRP_LONG_NAME' then 'Theme Group Long Name'
 END AS THM_GRP_NAME,
@@ -725,7 +778,8 @@ FROM ( SELECT TGRP_ID, ROW_NUMBER() OVER (ORDER BY TGRP_ID ) AS TG_ID,
 TGRP_TTYP_ID,
 TGRP_LONG_NAME AS DISPLAY_NAME,
 CAST(TGRP_SHORT_NAME AS NVARCHAR) AS TGRP_SHORT_NAME, 
-CAST(TGRP_LONG_NAME AS NVARCHAR) AS TGRP_LONG_NAME 
+CAST(TGRP_LONG_NAME AS NVARCHAR) AS TGRP_LONG_NAME ,
+CASE WHEN TGRP_SHORT_NAME = 'UNKNOWN' THEN cast(1 as bit) ELSE  cast(0 as bit)  END AS IsDefault
 FROM GAM.THEME_GROUP AS GRP WHERE GRP.IS_DELETED = 0 ) TMGRP_TYPE
 UNPIVOT
  ( VALUE FOR VALUE_DESC IN (TGRP_SHORT_NAME, TGRP_LONG_NAME)  ) AS T
@@ -740,7 +794,7 @@ GO
 CREATE VIEW [Migration].[VIEW_THEME_CATEGORY]
 AS
 SELECT TC_ID, '22059' AS COMP_TYPE_ID, TCAT_ID, TCAT_TGRP_ID,
-DISPLAY_NAME,
+DISPLAY_NAME, IsDefault,
 CASE 
 	  WHEN VALUE_DESC = 'TCAT_SHORT_NAME' then 'Theme Category Short Name'
 	  WHEN VALUE_DESC = 'TCAT_LONG_NAME' then 'Theme Category Long Name'
@@ -757,7 +811,8 @@ END AS TCAT_SEQ,
  FROM ( SELECT TCAT_ID, TCAT_TGRP_ID, ROW_NUMBER() OVER (ORDER BY TCAT_ID ) AS TC_ID,
  TCAT_LONG_NAME AS DISPLAY_NAME,
 CAST(TCAT_SHORT_NAME AS NVARCHAR) AS TCAT_SHORT_NAME, 
-CAST(TCAT_LONG_NAME AS NVARCHAR) AS TCAT_LONG_NAME
+CAST(TCAT_LONG_NAME AS NVARCHAR) AS TCAT_LONG_NAME,
+CASE WHEN TCAT_SHORT_NAME = 'UNKNOWN' THEN cast(1 as bit) ELSE cast(0 as bit) END AS IsDefault
 FROM GAM.THEME_CATEGORY AS THEM_CAT WHERE THEM_CAT.IS_DELETED = 0 ) TMGRP_TYPE
 UNPIVOT
  ( VALUE FOR VALUE_DESC IN (TCAT_SHORT_NAME, TCAT_LONG_NAME)  ) AS T
@@ -773,7 +828,7 @@ CREATE VIEW [Migration].[VIEW_THEME]
 AS
 SELECT TM_ID, '22060' AS COMP_TYPE_ID, THEM_ID,THEME_CAT_ID, 
 TTYP_ID, MANF_ID,
-DISPLAY_NAME,
+DISPLAY_NAME, IsDefault,
 CASE 
 	  WHEN VALUE_DESC = 'THEM_SHORT_NAME' then 'Theme Name'
 	  WHEN VALUE_DESC = 'THEM_LONG_NAME' then 'Theme Name'
@@ -795,7 +850,8 @@ FROM ( SELECT THEM_ID, TTYP_ID, MANF_ID, THEME_CAT_ID, ROW_NUMBER() OVER (ORDER 
 CAST(THEM_NAME AS NVARCHAR) AS DISPLAY_NAME, 
 CAST(THEM_NAME AS NVARCHAR) AS THEM_SHORT_NAME, 
 CAST(THEM_NAME AS NVARCHAR) AS THEM_LONG_NAME, 
-CAST(THEM_NAME AS NVARCHAR) AS THEM_NAME
+CAST(THEM_NAME AS NVARCHAR) AS THEM_NAME,
+CASE WHEN THEM_NAME = 'UNKNOWN' THEN cast(1 as bit) ELSE cast(0 as bit) END AS IsDefault
 -- SELECT *
 FROM GAM.THEME AS THEM WHERE THEM.IS_DELETED = 0 ) TM
 UNPIVOT
@@ -814,7 +870,6 @@ CREATE VIEW [MIGRATION].[VIEW_PROGRESSIVE_METERS]
 AS
 SELECT MTR_ID , INSMAP_ID , PRGP_ID , JKPT_ID ,
 POOL_NEW_ID,
---MTR_VALUE, MTR_VALUE_DESC ,
 ----Site------
 SiteId as Site_SiteId, 
 SiteNumber as Site_SiteNumber,
@@ -829,23 +884,17 @@ CASE
        when mtr_value_desc = 'MTR_FLOOR_DESCRIPTION' then 3
        when mtr_value_desc = 'MTR_CURRENT_AMOUNT' then 4   
        when mtr_value_desc = 'MTR_RESET_AMOUNT' then 5
-       when mtr_value_desc = 'MTR_HAS_HIDDEN_METER' then 6
-       when mtr_value_desc = 'MTR_MACHINE_PAY_AMOUNT' then 7   
-       when mtr_value_desc = 'MTR_CURRENT_MAXIMUM' then 8
-       when mtr_value_desc = 'MTR_CURRENT_FACTOR' then 9
-       when mtr_value_desc = 'MTR_HIT_TO_HIT_CONTRIBUTN' then 10
-       when mtr_value_desc = 'MTR_HIDDEN_AMOUNT' then 11
-       when mtr_value_desc = 'MTR_HIDDEN_MAXIMUM' then 12
-       when mtr_value_desc = 'MTR_HIDDEN_FACTOR' then 13
-       when mtr_value_desc = 'MTR_BREAK_RATE_FACTOR' then 14
-       when mtr_value_desc = 'MTR_BREAK_RATE_THRESHOLD' then 15
-       when mtr_value_desc = 'MTR_START_OUT_FACTOR' then 16
-       when mtr_value_desc = 'MTR_CURRENT_FRACT_AMT' then 17
-       when mtr_value_desc = 'MTR_OVERFLOW_AMOUNT' then 18
-       when mtr_value_desc = 'JKPT_JACKPOT_ID' then 19
-       when mtr_value_desc = 'PRPM_DESC' then 20
-       when mtr_value_desc = 'MTR_LAST_JACKPOT_AMOUNT' then 21
-       when mtr_value_desc = 'MTR_LAST_JACKPOT_TS' then 22
+       when mtr_value_desc = 'MTR_MACHINE_PAY_AMOUNT' then 6
+       when mtr_value_desc = 'MTR_CURRENT_MAXIMUM' then 7
+       when mtr_value_desc = 'MTR_CURRENT_FACTOR' then 8
+       when mtr_value_desc = 'MTR_HIDDEN_AMOUNT' then 9
+       when mtr_value_desc = 'MTR_HIDDEN_MAXIMUM' then 10
+       when mtr_value_desc = 'MTR_HIDDEN_FACTOR' then 11
+       when mtr_value_desc = 'MTR_BREAK_RATE_FACTOR' then 12
+       when mtr_value_desc = 'MTR_BREAK_RATE_THRESHOLD' then 13
+       when mtr_value_desc = 'MTR_START_OUT_FACTOR' then 14
+       when mtr_value_desc = 'JKPT_JACKPOT_ID' then 15
+       when mtr_value_desc = 'PRPM_DESC' then 16
        END AS InlineAssets_Id,
 
 CASE
@@ -854,23 +903,17 @@ CASE
        when mtr_value_desc = 'MTR_FLOOR_DESCRIPTION' then 'Floor Description'
        when mtr_value_desc = 'MTR_CURRENT_AMOUNT' then 'Current Meter Amount'     
        when mtr_value_desc = 'MTR_RESET_AMOUNT' then 'Meter Reset Amount'
-       when mtr_value_desc = 'MTR_HAS_HIDDEN_METER' then 'Has Hidden Meter'
        when mtr_value_desc = 'MTR_MACHINE_PAY_AMOUNT' then 'Machine Pay Amount'   
        when mtr_value_desc = 'MTR_CURRENT_MAXIMUM' then 'Current Meter Max Amount'
        when mtr_value_desc = 'MTR_CURRENT_FACTOR' then 'Current Meter Factor'
-       when mtr_value_desc = 'MTR_HIT_TO_HIT_CONTRIBUTN' then 'Meter Hit To Hit Contribution'
        when mtr_value_desc = 'MTR_HIDDEN_AMOUNT' then 'Hidden Meter Amount'
        when mtr_value_desc = 'MTR_HIDDEN_MAXIMUM' then 'Hidden Meter Max Amount'
        when mtr_value_desc = 'MTR_HIDDEN_FACTOR' then 'Hidden Meter Factor'
        when mtr_value_desc = 'MTR_BREAK_RATE_FACTOR' then 'Break Rate'
        when mtr_value_desc = 'MTR_BREAK_RATE_THRESHOLD' then 'Break Threshold'
        when mtr_value_desc = 'MTR_START_OUT_FACTOR' then 'Start Out Factor'
-       when mtr_value_desc = 'MTR_CURRENT_FRACT_AMT' then 'Meter Current Fraction Amount'
-       when mtr_value_desc = 'MTR_OVERFLOW_AMOUNT' then 'Meter Over Flow Amount'
        when mtr_value_desc = 'JKPT_JACKPOT_ID' then 'Level No'
        when mtr_value_desc = 'PRPM_DESC' then 'Payment Method'
-       when mtr_value_desc = 'MTR_LAST_JACKPOT_AMOUNT' then 'Last Jackpot Amount'
-       when mtr_value_desc = 'MTR_LAST_JACKPOT_TS' then 'Last Jackpot Timestamp'
        END AS InlineAssets_Name,
 
     CASE
@@ -879,23 +922,17 @@ CASE
        when mtr_value_desc = 'MTR_FLOOR_DESCRIPTION' then 'Floor.Description'
        when mtr_value_desc = 'MTR_CURRENT_AMOUNT' then 'Current.Meter.Amount'     
        when mtr_value_desc = 'MTR_RESET_AMOUNT' then 'Meter.Reset.Amount'
-       when mtr_value_desc = 'MTR_HAS_HIDDEN_METER' then 'Has.Hidden.Meter'
        when mtr_value_desc = 'MTR_MACHINE_PAY_AMOUNT' then 'Machine.Pay.Amount'   
        when mtr_value_desc = 'MTR_CURRENT_MAXIMUM' then 'Current.Meter.Max.Amount'
        when mtr_value_desc = 'MTR_CURRENT_FACTOR' then 'Current.Meter.Factor'
-       when mtr_value_desc = 'MTR_HIT_TO_HIT_CONTRIBUTN' then 'Meter.Hit.To.Hit.Contribution'
        when mtr_value_desc = 'MTR_HIDDEN_AMOUNT' then 'Hidden.Meter.Amount'
        when mtr_value_desc = 'MTR_HIDDEN_MAXIMUM' then 'Hidden.Meter.Max.Amount'
        when mtr_value_desc = 'MTR_HIDDEN_FACTOR' then 'Hidden.Meter.Factor'
        when mtr_value_desc = 'MTR_BREAK_RATE_FACTOR' then 'Break.Rate'
        when mtr_value_desc = 'MTR_BREAK_RATE_THRESHOLD' then 'Break.Threshold'
        when mtr_value_desc = 'MTR_START_OUT_FACTOR' then 'Start.Out.Factor'
-       when mtr_value_desc = 'MTR_CURRENT_FRACT_AMT' then 'Meter.Current.Fraction.Amount'
-       when mtr_value_desc = 'MTR_OVERFLOW_AMOUNT' then 'Meter.Over.Flow.Amount'
        when mtr_value_desc = 'JKPT_JACKPOT_ID' then 'Level.No'
        when mtr_value_desc = 'PRPM_DESC' then 'Payment.Method'
-       when mtr_value_desc = 'MTR_LAST_JACKPOT_AMOUNT' then 'Last.Jackpot.Amount'
-       when mtr_value_desc = 'MTR_LAST_JACKPOT_TS' then 'Last.Jackpot.Timestamp'
        END AS InlineAssets_Code,
       MTR_VALUE AS InlineAssets,
 	  Mtr_Deleted
@@ -903,12 +940,8 @@ FROM (SELECT MTR_ID , m.INSMAP_ID , MTR_NAME ,
 m.PRGP_ID , m.JKPT_ID , MP.POOL_NEW_ID,
 cast(MTR_NAME as nvarchar) as METER_ID,
 cast(MTR_CURRENT_AMOUNT as nvarchar) as MTR_CURRENT_AMOUNT,
-cast(ISNULL(MTR_LAST_JACKPOT_AMOUNT, 0) as nvarchar) as MTR_LAST_JACKPOT_AMOUNT,
-cast(ISNULL(MTR_LAST_JACKPOT_TS, '1970-01-01 00:00:00') as nvarchar) as MTR_LAST_JACKPOT_TS, 
-cast(ISNULL(MTR_HIT_TO_HIT_CONTRIBUTN , 0) as nvarchar) as MTR_HIT_TO_HIT_CONTRIBUTN,
 cast(ISNULL(MTR_DESCRIPTION, '') as nvarchar) as MTR_DESCRIPTION, 
 cast(ISNULL(MTR_FLOOR_DESCRIPTION, '') as nvarchar) as MTR_FLOOR_DESCRIPTION, 
-cast(ISNULL(MTR_HAS_HIDDEN_METER, 'N') as nvarchar) as MTR_HAS_HIDDEN_METER, 
 cast(ISNULL(MTR_MACHINE_PAY_AMOUNT, 0) as nvarchar) as MTR_MACHINE_PAY_AMOUNT, 
 cast(ISNULL(MTR_CURRENT_MAXIMUM, 0) as nvarchar) as MTR_CURRENT_MAXIMUM, 
 cast(ISNULL(MTR_CURRENT_FACTOR, 0.00) as nvarchar) as MTR_CURRENT_FACTOR, 
@@ -919,21 +952,17 @@ cast(ISNULL(MTR_RESET_AMOUNT, 0) as nvarchar) as MTR_RESET_AMOUNT,
 cast(ISNULL(MTR_BREAK_RATE_FACTOR, 0.00) as nvarchar) as MTR_BREAK_RATE_FACTOR, 
 cast(ISNULL(MTR_BREAK_RATE_THRESHOLD, 0) as nvarchar) as MTR_BREAK_RATE_THRESHOLD, 
 cast(ISNULL(MTR_START_OUT_FACTOR, 0.00) as nvarchar) as MTR_START_OUT_FACTOR, 
-cast(ISNULL(MTR_CURRENT_FRACT_AMT, 0.00) as nvarchar) as MTR_CURRENT_FRACT_AMT, 
-cast(ISNULL(MTR_OVERFLOW_AMOUNT, 0) as nvarchar) as MTR_OVERFLOW_AMOUNT,
-cast(JKPT_JACKPOT_ID as nvarchar) as JKPT_JACKPOT_ID,
+cast(JKPT_ID as nvarchar) as JKPT_JACKPOT_ID,
 cast((case when PRPM_DESC = 'PROG.PM.CLIENT.DETERMINED' then 'Client Determined'
      when PRPM_DESC = 'PROG.PM.SYSTEM.HANDPAY' then 'System Handpay'
      when PRPM_DESC = 'PROG.PM.FORCE.HANDPAY' then 'Force Handpay' end ) as nvarchar) as PRPM_DESC,
---cast(PRPM_DESC as nvarchar) as PRPM_DESC,
 ST.SITE_NUMBER as SiteId,
 ST.SITE_NUMBER as SiteNumber,
 ST.SITE_LONG_NAME as SiteName,
 LPROP.PROP_NEW_ID as OrganizationId,
 PTY.PROP_LONG_NAME as OrganizationName,
 M.IS_DELETED as Mtr_Deleted
-FROM PROGRESSIVE.METER as m
-join [PROGRESSIVE].[JACKPOT] as j on j.[JKPT_ID] = m.[JKPT_ID]
+FROM PROGRESSIVE.METER as m 
 join [PROGRESSIVE].[PAYMENT_METHOD] as pm on pm.[PRPM_ID] = m.[PRPM_ID]
 join progressive.[pool] as p on m.PRGP_ID = p.PRGP_ID
 JOIN MIGRATION.PROGRESSIVE_POOL AS MP ON MP.POOL_LEGCY_ID = P.PRGP_ID
@@ -942,12 +971,12 @@ JOIN GAM.[SITE] AS ST ON ST.SITE_ID = IMAP.INSM_SITE_ID
 JOIN GAM.PROPERTY AS PTY ON PTY.PROP_ID = ST.SITE_PROP_ID
 join MIGRATION.GAM_PROPERTY as Lprop on Lprop.prop_legcy_id = PTY.PROP_ID ) as st
 UNPIVOT
-( MTR_VALUE FOR MTR_VALUE_DESC IN ( METER_ID, MTR_CURRENT_AMOUNT, MTR_LAST_JACKPOT_AMOUNT,
-MTR_LAST_JACKPOT_TS, MTR_HIT_TO_HIT_CONTRIBUTN, MTR_DESCRIPTION, MTR_FLOOR_DESCRIPTION, 
-MTR_HAS_HIDDEN_METER, MTR_MACHINE_PAY_AMOUNT, MTR_CURRENT_MAXIMUM, MTR_CURRENT_FACTOR, 
+( MTR_VALUE FOR MTR_VALUE_DESC IN ( METER_ID, MTR_CURRENT_AMOUNT, 
+MTR_DESCRIPTION, MTR_FLOOR_DESCRIPTION, 
+MTR_MACHINE_PAY_AMOUNT, MTR_CURRENT_MAXIMUM, MTR_CURRENT_FACTOR, 
 MTR_HIDDEN_AMOUNT, MTR_HIDDEN_MAXIMUM, MTR_HIDDEN_FACTOR, MTR_RESET_AMOUNT, 
-MTR_BREAK_RATE_FACTOR, MTR_BREAK_RATE_THRESHOLD,  MTR_START_OUT_FACTOR, MTR_CURRENT_FRACT_AMT, 
-MTR_OVERFLOW_AMOUNT, JKPT_JACKPOT_ID, PRPM_DESC) ) AS UU
+MTR_BREAK_RATE_FACTOR, MTR_BREAK_RATE_THRESHOLD,  MTR_START_OUT_FACTOR,  
+JKPT_JACKPOT_ID, PRPM_DESC) ) AS UU
 
 GO
 
@@ -1252,7 +1281,7 @@ P.PRGP_ID, P.PCON_ID,
 P.IS_DELETED as Pool_Deleted,
 METER_ID, MTR_CURRENT_AMOUNT, MTR_LAST_JACKPOT_AMOUNT,
 MTR_LAST_JACKPOT_TS, MTR_HIT_TO_HIT_CONTRIBUTN, MTR_DESCRIPTION, MTR_FLOOR_DESCRIPTION, 
-MTR_HAS_HIDDEN_METER, MTR_MACHINE_PAY_AMOUNT, MTR_CURRENT_MAXIMUM, MTR_CURRENT_FACTOR, 
+MTR_MACHINE_PAY_AMOUNT, MTR_CURRENT_MAXIMUM, MTR_CURRENT_FACTOR, 
 MTR_HIDDEN_AMOUNT, MTR_HIDDEN_MAXIMUM, MTR_HIDDEN_FACTOR, MTR_RESET_AMOUNT, 
 MTR_BREAK_RATE_FACTOR, MTR_BREAK_RATE_THRESHOLD,  MTR_START_OUT_FACTOR, MTR_CURRENT_FRACT_AMT, 
 MTR_OVERFLOW_AMOUNT, JKPT_JACKPOT_ID, PRPM_DESC, JKPT_ID,

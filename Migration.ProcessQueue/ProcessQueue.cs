@@ -14,7 +14,10 @@ namespace Migration.ProcessQueue
         /// List of Queued Process to execute
         /// </summary>
         public static BlockingCollection<ProcessItem> Processes { get; set; }
-        
+        /// <summary>
+        /// Initilaizes Process Queue.
+        /// Max Queue Size Depends on <see cref="AppSettings.MaxQueueSize"/>
+        /// </summary>
         static ProcessQueue()
         {
             Processes = new BlockingCollection<ProcessItem>(AppSettings.MaxQueueSize);

@@ -4,12 +4,12 @@
   
   <Transformation Name="SITE">
     <Source>
-      select st.SITE_NUMBER as Id,
+      SELECT st.SITE_NUMBER as Id,
       st.SITE_NUMBER as Number,
       st.SITE_short_NAME as Name,
       st.SITE_LONG_NAME as [Description],
       st.SITE_short_NAME as VenueCode,
-      MST.SITE_CODE as Code, 
+      MST.SITE_CODE as Code,
       --'Rot' as ParentCode,
       coalesce(PROP_PARENT_CODE,P.PROP_SHORT_NAME) as ParentCode,
       p.PROP_SHORT_NAME as ServiceProviderCode,
@@ -49,7 +49,10 @@
       join gam.[SYSTEM] as sy on sy.SYS_ID = im.SYS_ID
       join gam.PROPERTY as p on p.PROP_ID = st.SITE_PROP_ID
       LEFT JOIN MIGRATION.GAM_PROPERTY AS MP ON MP.PROP_LEGCY_ID = P.PROP_ID
-      where iMap.INSM_IS_SITE_GROUP = 0 and INS_SYSTEM_IP_ADDRESS NOT IN ('0.0.0.0')
+      WHERE 1 = 1
+      and ( (st.site_type_id = 1 and iMap.INSM_IS_SITE_GROUP = 0 and INS_SYSTEM_IP_ADDRESS NOT IN ('0.0.0.0') )
+      or (st.site_type_id not in (1)  )  )
+      and st.site_number in ( 1,2,3,301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
       order by st.site_number
     </Source>
     <Destination>[Site].[Site]</Destination>
@@ -207,7 +210,7 @@
       <ColumnMap Key="1" ColumnName="Id"/>
       <ColumnMap Key="cc" ColumnName="Component"/>
     </ColumnMapping>
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
         <Column>SiteId</Column>
       </UniqueColumn>
@@ -273,7 +276,7 @@
     <ColumnMapping>
       <ColumnMap Key="CC" ColumnName="ChildComponents"/>
     </ColumnMapping>
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
         <Column>SiteId</Column>
       </UniqueColumn>
@@ -291,18 +294,20 @@
       'Theme' as Component_Components_ComponentValues_Name,
       'Theme'  as Component_Components_ComponentValues_DisplayName,
       'THEME.RELATION' as Component_Components_ComponentValues_Code,
-      
+	     TM.IsDefault as Component_Components_ComponentValues_IsSystemDefined,
+	        
       ---- Theme Type -----
       CAST ( ThemeType_ID  AS NVARCHAR) + '_'+
       TT.COMP_TYPE_ID as Component_Components_ComponentValues_CC_Id,
       TT.DISPLAY_NAME as Component_Components_ComponentValues_CC_Name,
       'THEME.TYPE' as Component_Components_ComponentValues_CC_Code,
       TT.DISPLAY_NAME as Component_Components_ComponentValues_CC_DisplayName,
+	    TT.IsDefault as Component_Components_ComponentValues_CC_IsSystemDefined,
 
       ---Theme Type Options ----
       tt.THEM_TYPE_SEQ as Component_Components_ComponentValues_CC_Options_Id,
       tt.value as Component_Components_ComponentValues_CC_Options_Value,
-      tt.them_type_name  as Component_Components_ComponentValues_CC_Options_Code,
+      tt.THEM_TYPE_CODE  as Component_Components_ComponentValues_CC_Options_Code,
 
       ---Theme Group ----
       --ROW_NUMBER() OVER (ORDER BY TG.DISPLAY_NAME) AS TG_RW_NM,
@@ -311,6 +316,7 @@
       TG.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_Name,
       'THEME.GROUP' as Component_Components_ComponentValues_CC_CC_Code,
       tg.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_DisplayName,
+	    tg.IsDefault as Component_Components_ComponentValues_CC_CC_IsSystemDefined,
 
       ---Theme Options ----
       tg.THM_GRP_SEQ as Component_Components_ComponentValues_CC_CC_Options_Id,
@@ -324,6 +330,7 @@
       TC.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_Name,
       'THEME.CATEGORY' as Component_Components_ComponentValues_CC_CC_CC_Code,
       TC.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_DisplayName,
+	    TC.IsDefault as Component_Components_ComponentValues_CC_CC_CC_IsSystemDefined,
 
       ---- Theme Category Options ----
       tc.TCAT_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
@@ -337,6 +344,7 @@
       MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_CC_Name,
       'MANUFACTURER' as Component_Components_ComponentValues_CC_CC_CC_CC_Code,
       MF.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_CC_DisplayName,
+	    MF.IsDefault as Component_Components_ComponentValues_CC_CC_CC_CC_IsSystemDefined,
 
       --- Manufacturer Options
       MF.MNF_CODE_SEQ as  Component_Components_ComponentValues_CC_CC_CC_CC_Options_Id,
@@ -349,6 +357,7 @@
       TM.DISPLAY_NAME as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Name,
       'THEME' as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Code,
       TM.DISPLAY_NAME as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_DisplayName,
+	    TM.IsDefault as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_IsSystemDefined,
       --- Theme Options ------
       TM.THEM_CODE_SEQ as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Id,
       TM.VALUE as  Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Value,
@@ -368,7 +377,7 @@
     <ColumnMapping>
       <ColumnMap Key="CC" ColumnName="ChildComponents"/>
     </ColumnMapping>
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
         <Column>SiteId</Column>
       </UniqueColumn>
@@ -404,7 +413,7 @@
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
         <Column>SiteId</Column>
       </UniqueColumn>
@@ -458,7 +467,7 @@
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
         <Column>SiteId</Column>
       </UniqueColumn>
@@ -510,7 +519,7 @@
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
         <Column>SiteId</Column>
       </UniqueColumn>
@@ -550,7 +559,7 @@
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
         <Column>SiteId</Column>
       </UniqueColumn>
@@ -624,7 +633,7 @@
     <ColumnMapping>
       <ColumnMap Key="CC" ColumnName="ChildComponents"/>
     </ColumnMapping>
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
         <Column>SiteId</Column>
       </UniqueColumn>
@@ -677,7 +686,7 @@
 		----Options---
 		MDL_TYP_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
 		MDLTYPE.VALUE as Component_Components_ComponentValues_CC_CC_CC_Options_Value,
-		MDLTYPE.MDL_TYP_CODE as Components_ComponentValues_CC_CC_CC_Options_Code,
+		MDLTYPE.MDL_TYP_CODE as Component_Components_ComponentValues_CC_CC_CC_Options_Code,
 
 		----Model----
 		cast(Model_Id as nvarchar) +
@@ -710,7 +719,7 @@
 		----Options---
 		1 as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_Options_Id,
 		HoldPC as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_Options_Value,
-		'ASSET.HOLD.PERCENTAGE.VALUE' as Component_ComponentValues_CC_CC_CC_CC_CC_CC_Options_Code,
+		'ASSET.HOLD.PERCENTAGE.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_Options_Code,
 
 		----MaxBet----
 		cast(MaxBet_Id as nvarchar) +
@@ -752,10 +761,10 @@
     </Source>
     <Destination>[Components].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id"  />
-	  <ColumnMapping>
+	<ColumnMapping>
       <ColumnMap Key="CC" ColumnName="ChildComponents"/>
     </ColumnMapping>
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Domain.Component.Component,BallyTech.Library.Domain.Asset">
         <Column>SiteId</Column>
       </UniqueColumn>
@@ -823,10 +832,10 @@
       SITE_LONG_NAME as Site_SiteName,
       SITE_NUMBER as Site_SiteNumber,
       st.IS_DELETED as Site_IsDeleted,
-      0 as Site_OrganizationId, -- mapping needed
+      PROP_NEW_ID as Site_OrganizationId, 
       pt.prop_long_name as Site_OrganizationName,
       ---- OPTIONS ----------
-      case when ogrp_id = 1 then OPTN.OPTN_ID else null end as Options_Id,
+      case when ogrp_id = 1 then moptn.OPTION_ID else null end as Options_Id,
       case when ogrp_id = 1 then OPTN.OPTN_CODE else null end as Options_Code,
       case when ogrp_id = 1 then (CASE WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'No'
 			WHEN AST_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
@@ -857,9 +866,7 @@
       when 90021 then  MANF_LONG_NAME
       when 90014 then  COL_LONG_NAME
       when 90023 then  MDLTYP_LONG_NAME end)  else null end as Components_ComponentValue,
-
-
-
+	    --SELECT * FROM MIGRATION.GAM_PROPERTY 
       ------Type Code -----
       TCODE.TYCOD_NUMBER as TypeCode_TypeCodeId, -- mapping needed
       TCODE.TYCOD_NAME as TypeCode_TypeCodeName
@@ -869,8 +876,10 @@
       JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
       JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
       JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
+	    LEFT JOIN MIGRATION.GAM_PROPERTY AS Mpt ON Mpt.PROP_LEGCY_ID = pt.PROP_ID
       JOIN GAM.ASSET_DETAIL AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
       JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID = AD.AST_OPTION_ID
+	    LEFT JOIN MIGRATION.ASSET_TYPE_DEFN as moptn on moptn.option_code = optn.optn_code AND ASST_NAME = ASSET_CODE
       LEFT JOIN GAM.MANUFACTURER  AS MNF ON MNF.MANF_ID = ASD.ASD_MANF_ID
 	    LEFT JOIN MIGRATION.GAM_MANUFACTURER AS GMNF ON GMNF.[MNF_LEGCY_ID] = ASD.ASD_MANF_ID
       LEFT JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD.ASD_MODL_ID
@@ -884,80 +893,82 @@
       LEFT JOIN [GAM].[COLLECTION] AS COL ON COL.[COLLECTION_ID] = ASD.ASD_COLLECTION_ID
       LEFT JOIN [GAM].MODEL_TYPE AS MTYP ON COL.[COLLECTION_ID] = ASD.ASD_COLLECTION_ID
       WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
-      AND AST.ASST_ID not in ( 1 )
-      AND SITE_NUMBER in ({0})
+      AND AST.ASST_ID not in ( 1 ) AND OPTN.OPTN_ID NOT IN (127, 124)
+	  AND SITE_NUMBER in ({0})
+	  ORDER BY MG.ASD_STD_NEW_ID, moptn.OPTION_ID
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
   </Transformation>
   <Transformation Name="AST_POS_ASSET">
     <Source>
-		SELECT  
-		-----Id--------
-		ASD_STD_NEW_ID as Id,
-		-----AssetId--------
-		305 as AssetId_AssetTypeDefinitionId,
-		ASD_STD_NEW_ID as AssetId_Id,
-		-------Site-----
-		ST.SITE_NUMBER as Site_SiteId,
-		ST.SITE_LONG_NAME as Site_SiteName,
-		ST.SITE_NUMBER as Site_SiteNumber,
-		GPT.prop_new_id as Site_OrganizationId,
-		PT.PROP_LONG_NAME as Site_OrganizationName,
-		--AST.ASST_NAME, ASD.ASD_NUMBER as SlotNumber, ASD.ASD_AM_UID, 
-		CASE when OPTN_CODE = 'ASSET.NUMBER' THEN 'AST.NON.SLOT.ID'
-			   WHEN OPTN_CODE = 'ASSET.LOCATION' THEN 'AST.NON.TERMINAL.NAME' 
-				WHEN OPTN_CODE = 'ASSET.SERIAL.NUMBER' THEN 'ASSET.SERIAL.NUMBER' 
-				WHEN OPTN_CODE = 'ASSET.PROG.RATE' THEN 'POS.VERSION'
-			   WHEN OPTN_CODE = 'ASSET.NJ.SEAL' THEN 'POS.FIRMWARE.VERSION' 
-				WHEN OPTN_CODE = 'ASSET.ASL.POSITION' THEN 'AST.NON.TERMINAL.LOCATION' END AS Options_Code,
+      SELECT
+      -----Id--------
+      ASD_STD_NEW_ID as Id,
+      -----AssetId--------
+      305 as AssetId_AssetTypeDefinitionId,
+      ASD_STD_NEW_ID as AssetId_Id,
+      -------Site-----
+      ST.SITE_NUMBER as Site_SiteId,
+      ST.SITE_LONG_NAME as Site_SiteName,
+      ST.SITE_NUMBER as Site_SiteNumber,
+      GPT.prop_new_id as Site_OrganizationId,
+      PT.PROP_LONG_NAME as Site_OrganizationName,
+      --AST.ASST_NAME, ASD.ASD_NUMBER as SlotNumber, ASD.ASD_AM_UID,
+      CASE when OPTN_CODE = 'ASSET.NUMBER' THEN 'AST.NON.SLOT.ID'
+      WHEN OPTN_CODE = 'ASSET.LOCATION' THEN 'AST.NON.TERMINAL.NAME'
+      WHEN OPTN_CODE = 'ASSET.SERIAL.NUMBER' THEN 'ASSET.SERIAL.NUMBER'
+      WHEN OPTN_CODE = 'ASSET.PROG.RATE' THEN 'POS.VERSION'
+      WHEN OPTN_CODE = 'ASSET.NJ.SEAL' THEN 'POS.FIRMWARE.VERSION'
+      WHEN OPTN_CODE = 'ASSET.ASL.POSITION' THEN 'AST.NON.TERMINAL.LOCATION' END AS Options_Code,
 
-		CASE when OPTN_CODE = 'ASSET.NUMBER' THEN 1
-			   WHEN OPTN_CODE = 'ASSET.LOCATION' THEN 6
-			   WHEN OPTN_CODE = 'ASSET.SERIAL.NUMBER' THEN 5
-			   WHEN OPTN_CODE = 'ASSET.PROG.RATE' THEN 2
-			   WHEN OPTN_CODE = 'ASSET.NJ.SEAL' THEN 3
-			   WHEN OPTN_CODE = 'ASSET.ASL.POSITION' THEN 7 END AS Options_Id,
+      CASE when OPTN_CODE = 'ASSET.NUMBER' THEN 1
+      WHEN OPTN_CODE = 'ASSET.LOCATION' THEN 6
+      WHEN OPTN_CODE = 'ASSET.SERIAL.NUMBER' THEN 5
+      WHEN OPTN_CODE = 'ASSET.PROG.RATE' THEN 2
+      WHEN OPTN_CODE = 'ASSET.NJ.SEAL' THEN 3
+      WHEN OPTN_CODE = 'ASSET.ASL.POSITION' THEN 7 END AS Options_Id,
 
-		CASE when OPTN_CODE = 'ASSET.NUMBER' THEN ASD_NUMBER
-			   WHEN OPTN_CODE = 'ASSET.LOCATION' THEN ASD_LOCATION
-			   WHEN OPTN_CODE = 'ASSET.SERIAL.NUMBER' THEN ASD_SERIAL_NUM
-			   WHEN OPTN_CODE = 'ASSET.PROG.RATE' THEN '1.0'
-			   WHEN OPTN_CODE = 'ASSET.NJ.SEAL' THEN AST_OPTN_VALUE 
-				WHEN OPTN_CODE = 'ASSET.ASL.POSITION' THEN ASD_LOCATION END as Options_Value,
-		tycod_number as TypeCode_Id, tycod_name as TypeCode_Name,
-		ComponentId as Components_ComponentId,
-		ComponentName as Components_ComponentName,
-		ComponentValue as Components_ComponentValue,
-		ComponentKey as Components_ComponentKey,
-		ComponentInstanceId as Components_ComponentInstanceId,
-		ComponentCode as Components_ComponentCode
-		--, OPTN.[OPTN_CODE] , ad.AST_OPTN_VALUE, ad.*
-		FROM GAM.ASSET_STANDARD_DETAILS AS ASD
-		JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
-		JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
-		JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
-		JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
-		JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
-		JOIN GAM.PROPERTY AS PT ON PT.PROP_ID = ST.SITE_PROP_ID
-		JOIN [MIGRATION].[GAM_PROPERTY] AS GPT ON GPT.[PROP_LEGCY_ID] = PT.PROP_ID
-		JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
-		LEFT JOIN GAM.ASSET_DETAIL AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
-		left JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID  = ad.[AST_OPTION_ID]
-		LEFT JOIN [MIGRATION].[ASSET_TYPE_DEFN] AS TOPTN ON TOPTN.[OPTION_CODE] = OPTN.[OPTN_CODE] and TOPTN.asset_code = AST.asst_name
-		left join [GAM].[TYPE_CODE_MASTER] as tcm on tcm.tycod_id = [ASD_TCOD_ID]
-		left join (select 101 as SeqId, 22002 as ComponentId, 'Manufacturer' as ComponentName, 'POS' as ComponentValue, '0_1_1' as ComponentKey, '220022' as ComponentInstanceId, '22002.1' as ComponentCode
-		UNION ALL
-		select 102 as SeqId, 22051 as ComponentId, 'POS Vendor' as ComponentName, 'POS' as ComponentValue, '0_1_22051' as ComponentKey, 'POSVENDOR' as ComponentInstanceId, 'POS.VENDOR' as ComponentCode
-		UNION ALL
-		select 103 as SeqId, 22052 as ComponentId, 'POS Model Attributes' as ComponentName, 'POS' as ComponentValue, '0_1_22052' as ComponentKey, 'POSMODEL' as ComponentInstanceId, 'POS.MODEL' as ComponentCode
-		) as mas_comp on mas_comp.SeqId = AST_OPTION_ID
-		WHERE ASD.IS_DELETED = 0 AND ASD.ASD_CLST_STAT_ID = 5
-		AND ASD.ASD_ASST_ID = 1 AND MDL.MDL_SHORT_NAME in ('POS')
-		AND ST.SITE_NUMBER in ( {0} )
-		--and ASD.ASD_NUMBER = 97902
-		AND AST_OPTION_ID IN (101,102,103,263,215,125)
-		ORDER BY ASD_STD_NEW_ID, AST_OPTION_ID
+      CASE when OPTN_CODE = 'ASSET.NUMBER' THEN ASD_NUMBER
+      WHEN OPTN_CODE = 'ASSET.LOCATION' THEN ASD_LOCATION
+      WHEN OPTN_CODE = 'ASSET.SERIAL.NUMBER' THEN ASD_SERIAL_NUM
+      WHEN OPTN_CODE = 'ASSET.PROG.RATE' THEN '1.0'
+      WHEN OPTN_CODE = 'ASSET.NJ.SEAL' THEN '1.0'
+      WHEN OPTN_CODE = 'ASSET.ASL.POSITION' THEN ASD_LOCATION END as Options_Value,
+      tycod_number as TypeCode_TypeCodeId,
+      tycod_name as TypeCode_TypeCodeName,
+      ComponentId as Components_ComponentId,
+      ComponentName as Components_ComponentName,
+      ComponentValue as Components_ComponentValue,
+      ComponentKey as Components_ComponentKey,
+      ComponentInstanceId as Components_ComponentInstanceId,
+      ComponentCode as Components_ComponentCode
+      --, OPTN.[OPTN_CODE] , ad.AST_OPTN_VALUE, ad.*
+      FROM GAM.ASSET_STANDARD_DETAILS AS ASD
+      JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
+      JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+      JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+      JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+      JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
+      JOIN GAM.PROPERTY AS PT ON PT.PROP_ID = ST.SITE_PROP_ID
+      JOIN [MIGRATION].[GAM_PROPERTY] AS GPT ON GPT.[PROP_LEGCY_ID] = PT.PROP_ID
+      JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+      LEFT JOIN GAM.ASSET_DETAIL AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
+      left JOIN GAM.[OPTION] AS OPTN ON OPTN.OPTN_ID  = ad.[AST_OPTION_ID]
+      LEFT JOIN [MIGRATION].[ASSET_TYPE_DEFN] AS TOPTN ON TOPTN.[OPTION_CODE] = OPTN.[OPTN_CODE] and TOPTN.asset_code = AST.asst_name
+      left join [GAM].[TYPE_CODE_MASTER] as tcm on tcm.tycod_id = [ASD_TCOD_ID]
+      left join (select 101 as SeqId, 22002 as ComponentId, 'Manufacturer' as ComponentName, 'POS' as ComponentValue, '0_16_1' as ComponentKey, '220022' as ComponentInstanceId, '22002.2' as ComponentCode
+      UNION ALL
+      select 102 as SeqId, 22051 as ComponentId, 'POS Vendor' as ComponentName, 'POS' as ComponentValue, '0_5_22051' as ComponentKey, 'POSVENDOR' as ComponentInstanceId, 'POS.VENDOR' as ComponentCode
+      UNION ALL
+      select 103 as SeqId, 22052 as ComponentId, 'POS Model Attributes' as ComponentName, 'POS' as ComponentValue, '0_5_22052' as ComponentKey, 'POSMODEL' as ComponentInstanceId, 'POS.MODEL' as ComponentCode
+      ) as mas_comp on mas_comp.SeqId = AST_OPTION_ID
+      WHERE ASD.IS_DELETED = 0 AND ASD.ASD_CLST_STAT_ID = 5
+      AND ASD.ASD_ASST_ID = 1 AND MDL.MDL_SHORT_NAME in ('POS')
+      AND ST.SITE_NUMBER in ( {0} )
+      --and ASD.ASD_NUMBER = 97902
+      AND AST_OPTION_ID IN (101,102,103,263,215,125)
+      ORDER BY ASD_STD_NEW_ID, AST_OPTION_ID
     </Source>   
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
@@ -1049,11 +1060,19 @@
 
 		CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN cast(GMNF.MF_NEW_ID as nvarchar)+'_1'
 		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN TYCV_OPTN_VALUE
-		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN TYCV_OPTN_VALUE
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN '0_'+ cast(TypeDescription_Id as nvarchar)+'_22068'
 		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN cast(GDN.Components_Id as nvarchar)+'_1'
 		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN cast(GDN.Components_Id as nvarchar)+'_1'
 		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN cast(GDN.Components_Id as nvarchar)+'_1'
-		ELSE null end as TypeCodeOption_ComponentOptions_Value
+		ELSE null end as TypeCodeOption_ComponentOptions_Value,
+
+		CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN upper(TYCV_OPTN_VALUE)
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN TYCV_OPTN_VALUE
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN upper(TYCV_OPTN_VALUE)
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN TYCV_OPTN_VALUE
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN TYCV_OPTN_VALUE
+		WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN TYCV_OPTN_VALUE
+		ELSE null end as TypeCodeOption_ComponentOptions_DisplayValue
 
 		----------InlineOptions-----------
 		--Game
@@ -1065,7 +1084,7 @@
 		LEFT JOIN MIGRATION.GAM_DENOMINATION AS GDN ON GDN.DENM_AMOUNT = TYCV_OPTN_VALUE
 		LEFT JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_LONG_NAME = TYCV_OPTN_VALUE
 		LEFT JOIN [MIGRATION].[GAM_MANUFACTURER] AS GMNF ON GMNF.MNF_LEGCY_ID = MNF.MANF_ID
-		left join migration.GAM_TYPE_DESCRIPTION as typ on upper(typ.TypeDescription) = upper(TYCV_OPTN_VALUE)
+		LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION as typ on upper(typ.TypeDescription) = upper(TYCV_OPTN_VALUE) and tycv_optn_id = 210
 		where ms.[TYCOD_TYPE] = 2
 		order by  ms.[TYCOD_ID]
 
@@ -1114,9 +1133,9 @@
       --------TypeCode--------
       TypeCode_TypeCodeId,
       TypeCode_TypeCodeName
-	from migration.Datamanagement_asset_data
-	--where Site_SiteNumber = 201
-	ORDER BY ID, Asset_optn_val_seqId, asset_comp_seqId, Inline_asset_seqId
+	    from migration.Datamanagement_asset_data
+	    --where Site_SiteNumber = 201
+	    ORDER BY ID, Asset_optn_val_seqId, asset_comp_seqId, Inline_asset_seqId
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
@@ -1140,15 +1159,15 @@
     JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
     JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
     JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
-	JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
-	JOIN GAM.SITE AS ST ON ST.SITE_ID = ISM.INSM_SITE_ID
+	  JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
+	  JOIN GAM.SITE AS ST ON ST.SITE_ID = ISM.INSM_SITE_ID
     WHERE PM.[IS_DELETED] = 0 AND ISNULL(ASST_ANCESTOR_ID, ASST_ID)=1
-	AND SITE_NUMBER in ( {0} )
+	  AND SITE_NUMBER in ( {0} )
     ORDER BY MSLOT.[ASD_STD_NEW_ID], [POOL_NEW_ID]
     </Source>
     <Destination>[DataManagement].[AssetLink]</Destination>
     <KeyFormat Format="59_10_{0}" Keys="Id.Id"  />
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Persistence.MSSql.Entity.AssetLinkEntity,BallyTech.Library.Persistence.MSSql.Asset">
         <Column>AssetId</Column>
       </UniqueColumn>
@@ -1178,8 +1197,8 @@
     JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
     JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
     JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
-	JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
-	JOIN GAM.SITE as st on st.site_id = ism.INSM_SITE_ID
+	  JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
+	  JOIN GAM.SITE as st on st.site_id = ism.INSM_SITE_ID
     WHERE PM.[IS_DELETED] = 0 AND ISNULL(ASST_ANCESTOR_ID, ASST_ID)=1
     UNION ALL
     /*pool to controller*/
@@ -1192,15 +1211,15 @@
     JOIN GAM.ASSET_STANDARD_DETAILS AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
     JOIN GAM.ASSET AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
     JOIN MIGRATION.PROGRESSIVE_POOL AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
-	JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
-	JOIN GAM.SITE as st on st.site_id = ism.INSM_SITE_ID
+	  JOIN GAM.INSTALLED_SYSTEM_MAP AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
+	  JOIN GAM.SITE as st on st.site_id = ism.INSM_SITE_ID
     WHERE p.[IS_DELETED] = 0  ) as vrAll
-	WHERE SITE_NUMBER in ( {0} )
+	  WHERE SITE_NUMBER in ( {0} )
     ORDER BY PoolId
     </Source>
     <Destination>[DataManagement].[AssetLink]</Destination>
     <KeyFormat Format="59_11_{0}" Keys="Id.Id"  />
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Persistence.MSSql.Entity.AssetLinkEntity,BallyTech.Library.Persistence.MSSql.Asset">
         <Column>AssetId</Column>
       </UniqueColumn>
@@ -1233,7 +1252,7 @@
     </Source>
     <Destination>[DataManagement].[AssetLink]</Destination>
     <KeyFormat Format="59_15_{0}" Keys="Id.Id"  />
-    <UniqueMembers>
+      <UniqueMembers>
       <UniqueColumn type ="BallyTech.Library.Persistence.MSSql.Entity.AssetLinkEntity,BallyTech.Library.Persistence.MSSql.Asset">
         <Column>AssetId</Column>
       </UniqueColumn>
@@ -1262,10 +1281,10 @@
     <Source> SELECT [key],[value] from COMPONENTS.ComponentData </Source>
     <Destination>COMPONENTS.ComponentData</Destination>
   </Transformation>
-  <Transformation Name="RPT_ASSET">
+  <!--<Transformation Name="RPT_ASSET">
     <Source> SELECT [key],[value] from DataManagement.Asset </Source>
-    <Destination>DataManagement.Asset</Destination>
-  </Transformation>
+    <Destination>DataManagement.Asset</Destination> 
+  </Transformation>-->
   <Transformation Name="RPT_ASTLINK">
     <Source> SELECT [key],[value] from DataManagement.AssetLink </Source>
     <Destination>DataManagement.AssetLink</Destination>

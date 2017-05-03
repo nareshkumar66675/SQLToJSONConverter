@@ -231,6 +231,7 @@ left join migration.gam_area as gar on gar.[AREA_LEGCY_ID] = ASD.ASD_AREA_ID
 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 Order by gsd.ASD_STD_NEW_ID
 GO
 -------------------
@@ -266,6 +267,7 @@ left join migration.gam_zone as gzn on gzn.[ZONE_LEGCY_ID] = ASD.ASD_ZONE_ID
 left join migration.GAM_AREA as gar on gar.[AREA_LEGCY_ID] = ASD.ASD_AREA_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 -------------------
 -- Bank
@@ -300,6 +302,7 @@ left join migration.gam_bank as gbk on gbk.[BANK_LEGCY_ID] = ASD.ASD_BANK_ID
 left join migration.GAM_AREA as gar on gar.[AREA_LEGCY_ID] = ASD.ASD_AREA_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 -------------------
 --Manufacturer
@@ -336,6 +339,7 @@ LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MNF.IS_DELETED = 0
 AND MANF_LONG_NAME NOT IN ('POS')
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 
@@ -374,6 +378,7 @@ LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = A
 LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 -------------------
@@ -411,6 +416,7 @@ LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = A
 LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 -------------------
@@ -446,6 +452,7 @@ LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 
 LEFT JOIN MIGRATION.GAM_DENOMINATION AS GD ON GD.DENM_AMOUNT = AST_OPTN_VALUE
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 -------------------
@@ -482,6 +489,7 @@ LEFT JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 
 LEFT JOIN MIGRATION.GAM_DENOMINATION AS GD ON GD.DENM_AMOUNT = AST_OPTN_VALUE
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 -------------------
@@ -518,6 +526,7 @@ LEFT JOIN GAM.ASSET_DETAIL AS AD ON AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 2
 LEFT JOIN MIGRATION.GAM_DENOMINATION AS GDM ON GDM.DENM_AMOUNT = AD.AST_OPTN_VALUE
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 -------------------
@@ -555,6 +564,7 @@ LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS TYAST ON TYAST.ASD_STD_ID
 LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS TDSC ON TDSC.ID = TYAST.TYPEDESCP_ID
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 -------------------
@@ -571,7 +581,7 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 --Hold Percentage--
 '22063' as ComponentId,
 cast('Hold Percentage' as nvarchar) as ComponentName,
-cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
+cast(GTC.HoldPC as nvarchar)  as ComponentValue,
 '0_'+cast(HoldPC_Id as nvarchar) +'_22063' as ComponentKey,
 'ASSETHOLDPERCENTAGE' as ComponentInstanceId,
 'ASSET.HOLD.PERCENTAGE' as ComponentCode
@@ -591,6 +601,7 @@ LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = A
 LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 ----------------------
@@ -607,7 +618,7 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 --Game Hold Percentage--
 '22064' as ComponentId,
 cast('Game Hold Percentage' as nvarchar) as ComponentName,
-cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
+cast(GTC.GameHoldPC as nvarchar)  as ComponentValue,
 '0_'+cast(GameHoldPC_Id as nvarchar) +'_22064' as ComponentKey,
 'ASSETGAMEHOLDPERCENT' as ComponentInstanceId,
 'ASSET.GAME.HOLD.PERCENT' as ComponentCode
@@ -627,6 +638,7 @@ LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = A
 LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 -------------------
@@ -643,7 +655,7 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 --Max Bet--
 '22065' as ComponentId,
 cast('Max Bet' as nvarchar) as ComponentName,
-cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
+cast(GTC.MaxBet as nvarchar)  as ComponentValue,
 '0_'+cast(MaxBet_Id as nvarchar) +'_22065' as ComponentKey,
 'ASSETUSERCUSTOM1' as ComponentInstanceId,
 'ASSET.USER.CUSTOM.1' as ComponentCode
@@ -663,6 +675,7 @@ LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = A
 LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS') 
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 ---------------------
@@ -679,7 +692,7 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 --Line Configuration--
 '22066' as ComponentId,
 cast('Line Configuration' as nvarchar) as ComponentName,
-cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
+cast(GTC.LineConfiguration as nvarchar)  as ComponentValue,
 '0_'+cast(LineConfiguration_Id as nvarchar) +'_22066' as ComponentKey,
 'ASSETUSERCUSTOM3' as ComponentInstanceId,
 'ASSET.USER.CUSTOM.3' as ComponentCode
@@ -699,6 +712,7 @@ LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = A
 LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 -------------------
@@ -715,7 +729,7 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 --Game Category--
 '22067' as ComponentId,
 cast('Game Category' as nvarchar) as ComponentName,
-cast(ad.AST_OPTN_VALUE as nvarchar)  as ComponentValue,
+cast(GTC.GameCategory as nvarchar)  as ComponentValue,
 '0_'+cast(GameCategory_Id as nvarchar) +'_22067' as ComponentKey,
 'ASSETUSERCUSTOM4' as ComponentInstanceId,
 'ASSET.USER.CUSTOM.4' as ComponentCode
@@ -735,6 +749,7 @@ LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET AS GTC ON GTC.ASD_STD_ID = A
 LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION AS tc on tc.Id = gtc.typedescp_id 
 WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
+And ST.SITE_NUMBER in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
 SELECT GETDATE() AS END_DATE_TIME

@@ -283,7 +283,7 @@ SELECT GAME_ID AS P_GM_ID, '{ "Hold Percent" :"' + game_hold_per + '", ' +
 '"Paytable": "'+ isnull(game_paytable_id, '') + '", ' +
 '"DENOMINATION": "'+ cast(gdm.denm_amount as nvarchar) +'", ' +
 '"THEME.GROUP": "'+ TGRP_LONG_NAME + '", '+
-'"THEME.CATEGORY": "'+ tcat_long_name + '", ' +
+'"THEME CATEGORY": "'+ tcat_long_name + '", ' +
 '"MANUFACTURER": "'+ manf_long_name + '", ' +
 '"THEME": "' + them_name + '", '+
 '"THEME.TYPE": "' + ttyp_long_name+'" }' as P_GM_VALUE

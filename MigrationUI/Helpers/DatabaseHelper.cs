@@ -64,6 +64,36 @@ namespace MigrationTool.Helpers
             return new SqlConnectionStringBuilder(connectionString).InitialCatalog;
         }
         /// <summary>
+        /// Returns User Name from Connection String
+        /// </summary>
+        /// <param name="connectionString">Connection String</param>
+        /// <returns></returns>
+        public static string GetUserName(string connectionString)
+        {
+            return new SqlConnectionStringBuilder(connectionString).UserID;
+        }
+        /// <summary>
+        /// Returns Password from Connection String
+        /// </summary>
+        /// <param name="connectionString">Connection String</param>
+        /// <returns></returns>
+        public static string GetPassword(string connectionString)
+        {
+            return new SqlConnectionStringBuilder(connectionString).Password;
+        }
+        /// <summary>
+        /// Returns Authentication Type from Connection String. 
+        /// Returns <see cref="AuthenticationType.Windows"></see> if <see cref="SqlConnectionStringBuilder.IntegratedSecurity"/> is true, else 
+        /// <see cref="AuthenticationType.SQLServer"/>
+        /// </summary>
+        /// <param name="connectionString">Connection String</param>
+        /// <returns>Returns <see cref="AuthenticationType.Windows"></see> if <see cref="SqlConnectionStringBuilder.IntegratedSecurity"/> is true, else 
+        /// <see cref="AuthenticationType.SQLServer"/>/></returns>
+        public static AuthenticationType GetAuthenticationType(string connectionString)
+        {
+            return new SqlConnectionStringBuilder(connectionString).IntegratedSecurity ? AuthenticationType.Windows : AuthenticationType.SQLServer;
+        }
+        /// <summary>
         /// Add Database to Connection String
         /// </summary>
         /// <param name="connectionString">Connection String</param>

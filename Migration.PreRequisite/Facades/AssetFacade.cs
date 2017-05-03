@@ -8,6 +8,9 @@ using Migration.PreRequisite.PreRequisites;
 
 namespace Migration.PreRequisite.Facades
 {
+    /// <summary>
+    /// Asset Facade - Executes PreRequistes for Asset 
+    /// </summary>
     public class AssetFacade : AbstractPreRequisite
     {
         private List<IPreRequisite> _assetPreRequisites = new List<IPreRequisite>();

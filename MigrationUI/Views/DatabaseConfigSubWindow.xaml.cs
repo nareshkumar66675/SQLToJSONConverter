@@ -20,7 +20,7 @@ namespace MigrationTool.Views
     /// </summary>
     public partial class DatabaseConfigSubWindow : Window
     {
-        private string ConnectionString { get; set; }
+        public string ConnectionString { get; set; }
         public string Type
         {
             get
@@ -36,7 +36,10 @@ namespace MigrationTool.Views
         {
             InitializeComponent();
         }
-
+        public void InitializeData()
+        {
+            DBConnectCntrl.InitializeData(ConnectionString);
+        }
         private void DBConnectCntrl_OnConnectComplete(object sender, DatabaseConfigUserControl.ConnectionCompleteEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(e.ConnectionString))

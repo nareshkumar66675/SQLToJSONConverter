@@ -8,6 +8,9 @@ using static Migration.Common.Common;
 
 namespace Migration.PreRequisite.Facades
 {
+    /// <summary>
+    /// Legacy Facade - Executes PreRequistes for Legacy 
+    /// </summary>
     class LegacyFacade : AbstractPreRequisite
     {
         private List<IPreRequisite> _legacyPreRequisites = new List<IPreRequisite>();

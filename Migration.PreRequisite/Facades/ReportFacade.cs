@@ -8,6 +8,9 @@ using static Migration.Common.Common;
 
 namespace Migration.PreRequisite.Facades
 {
+    /// <summary>
+    /// Report Facade - Executes PreRequistes for Report 
+    /// </summary>
     public class ReportFacade:AbstractPreRequisite
     {
         private List<IPreRequisite> _reportPreRequisites = new List<IPreRequisite>();
