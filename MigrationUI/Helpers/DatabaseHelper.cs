@@ -129,6 +129,7 @@ namespace MigrationTool.Helpers
                     }
                 }
             }
+            databases.Sort();
             return databases;
 
         }

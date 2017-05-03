@@ -48,7 +48,8 @@
                              Title="{x:Static res:Resources.IntroPage_Title}"
                              Description="{x:Static res:Resources.IntroPage_Description}"
                              FontSize="14"
-                             HeaderImage="Resources/AppLogo.png">
+                             HeaderImage="Resources/AppLogo.png"
+                             NextPage="{Binding ElementName=SourceConnectionPage}">
                 <xctk:WizardPage.Content>
                     <Grid>
                         <Image Margin="24,108,304,129" Source="Resources/AppLogo.png" />

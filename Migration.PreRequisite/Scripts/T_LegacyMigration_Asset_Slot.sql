@@ -66,7 +66,11 @@ DROP Table MIGRATION.DATAMANAGEMENT_ASSET_DATA
 END
 GO
 
-
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_GAME_COMBO_HISTORY') AND type in (N'U'))
+BEGIN
+DROP Table MIGRATION.GAM_GAME_COMBO_HISTORY
+END
+GO
 
 -------------- DDL Index ----------------
 
@@ -800,6 +804,12 @@ SELECT GETDATE() AS END_dAT_TIME
 ------------------------------------
 --game combo details population
 ------------------------------------
+
+--game id to unique id mapping
+SELECT ROW_NUMBER()OVER(ORDER BY GAME_ID) AS h_ID, GAME_ID 
+INTO MIGRATION.GAM_GAME_COMBO_HISTORY
+FROM GAM.GAME_DETAILS
+ORDER BY CREATED_TS 
 
 
 --DROP TABLE MIGRATION.GAM_GAMES_DETAILS

@@ -180,7 +180,9 @@ CREATE TABLE [MIGRATION].[GAM_ASSET_SLOT_HISTORY_GAMES](
 	[ASD_STD_ID] [bigint] NULL,
 	[CLST_OLD_DATA_ID] [bigint] NULL,
 	[CLST_UNIQUE_ID] [nvarchar](32) NULL,
-	[CLST_INSMAP_ID] [bigint] NULL
+	[CLST_INSMAP_ID] [bigint] NULL,
+	Game_Unq_Id bigint null,
+	Game_Unq_Id_Old bigint null
 ) ON [PRIMARY]
 
 GO
@@ -195,7 +197,8 @@ CREATE TABLE [MIGRATION].[GAM_HISTORY_SLOT_GAMES_MAPPING](
 	[Code] [varchar](32) NOT NULL,
 	[Seq] [int] NULL,
 	[GmOptionValue] [nvarchar](128) NULL,
-	[Comp_Id] [varchar](16) NULL
+	[Comp_Id] [varchar](16) NULL,
+	Game_AssetId bigint
 ) ON [PRIMARY]
 
 GO
