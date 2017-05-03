@@ -422,7 +422,7 @@
   <Transformation Name="COMPDATA_MNF">
     <Source>
       SELECT 22002 as Id,
-	    0 as DataRowVersion,
+      0 as DataRowVersion,
       22002 as Component_Id,
       'MANUFACTURER' as Component_Code,
       --COMPONENTS---
@@ -435,8 +435,9 @@
       --ChildCompoenents----
       CAST(Components_Id as VARCHAR(50)) +'_1' as Component_Components_ComponentValues_ChildComponents_Id,
       'MANUFACTURER' as  Component_Components_ComponentValues_ChildComponents_Code,
-      Name as Component_Components_ComponentValues_ChildComponents_Name,
+      DisplayName as Component_Components_ComponentValues_ChildComponents_Name,
       DisplayName AS Component_Components_ComponentValues_ChildComponents_DisplayName,
+      CASE WHEN DisplayName ='UNKNOWN' THEN cast(1 as bit) ELSE cast(0 as bit) END AS Component_Components_ComponentValues_ChildComponents_IsSystemDefined,
       ----- OPTIONS ------
       cast( ROW_NUMBER() OVER (PARTITION BY MANF_ID ORDER BY MANF_ID ) as nvarchar) AS Component_Components_ComponentValues_ChildComponents_Options_Id,
       CASE  WHEN VALUE_DESC = 'MANF_SHORT_NAME' then 'Manufacture Short Name'
@@ -1339,16 +1340,17 @@
 
       -----ChangedOptions----
       CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTION_ORDER ELSE NULL END AS ChangedOptions_Id,
-      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OPTN_CODE ELSE NULL END AS ChangedOptions_Name,
+      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OPTN_NAME ELSE NULL END AS ChangedOptions_Name,
       CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OLD_VALUE ELSE NULL END AS ChangedOptions_Value_OldValue,
       CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.CURRENT_VALUE ELSE NULL END AS ChangedOptions_Value_NewValue,
       CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OPTN_CODE ELSE NULL END AS ChangedOptions_Code,
 
       -----------InlineAssets-------
+      CASE WHEN C_G.Seq is null and O_G.Seq is null THEN NULL  ELSE C_G.Game_AssetId  END as InlineAssets_Id,
       ------ Asset ------
-      260 as InlineAssets_Asset_AssetTypeDefinitionId,
-      'Game' as InlineAssets_Asset_AssetType,
-      0 as InlineAssets_Asset_Id,
+      CASE WHEN C_G.Seq is null and O_G.Seq is null THEN NULL  ELSE 260 END AS  InlineAssets_Assets_AssetTypeDefinitionId,
+      CASE WHEN C_G.Seq is null and O_G.Seq is null THEN NULL  ELSE 'Game' END as InlineAssets_Assets_AssetType,
+      CASE WHEN C_G.Seq is null and O_G.Seq is null THEN NULL  ELSE C_G.Game_AssetId  END as InlineAssets_Assets_Id,
       -------Options------
       P_GM_VALUE AS InlineAssets_Options,
 

@@ -316,7 +316,7 @@ GO
 
 SELECT row_number()over(order by TypeDescription, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration, GameCategory ) as Id, * 
 INTO MIGRATION.GAM_TYPE_DESCRIPTION
-from (SELECT DISTINCT TypeDescription, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration, GameCategory 
+from (SELECT DISTINCT TypeDescription, Manufacturer, ModelType, Model, cast (CONVERT(NUMERIC(18,2), GameHoldPC) as varchar(25)) as GameHoldPC,cast (CONVERT(NUMERIC(18,2), HoldPC) as varchar(25)) as HoldPC, MaxBet, LineConfiguration, GameCategory 
 FROM  MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET ) as tt
 GO
 
@@ -459,7 +459,7 @@ max(Id)+1 as Id,
 '1.00' as HoldPC,
 '1' as MaxBet,
 '1' as LineConfiguration,
-'1' as GameCategory,
+'Core' as GameCategory,
 max(TypeDescription_Id)+1 as TypeDescription_Id,
 max(Manufacturer_Id)+1 as Manufacturer_Id,
 max(ModelType_Id)+1 as ModelType_Id,
@@ -475,14 +475,14 @@ UPDATE MIGRATION.GAM_TYPE_DESCRIPTION SET MAXBET = '1' WHERE MAXBET = ''
 GO
 UPDATE MIGRATION.GAM_TYPE_DESCRIPTION SET LINECONFIGURATION = '1' WHERE LINECONFIGURATION = ''
 GO
-UPDATE MIGRATION.GAM_TYPE_DESCRIPTION SET GameCategory = '1' WHERE GameCategory = ''
+UPDATE MIGRATION.GAM_TYPE_DESCRIPTION SET GameCategory = 'Core' WHERE GameCategory = ''
 GO
 
 UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET SET MAXBET = '1' WHERE MAXBET = ''
 GO
 UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET SET LINECONFIGURATION = '1' WHERE LINECONFIGURATION = ''
 GO
-UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET SET GameCategory = '1' WHERE GameCategory = ''
+UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET SET GameCategory = 'Core' WHERE GameCategory = ''
 GO
 
 
@@ -883,18 +883,18 @@ CASE
        when mtr_value_desc = 'MTR_DESCRIPTION' then 2
        when mtr_value_desc = 'MTR_FLOOR_DESCRIPTION' then 3
        when mtr_value_desc = 'MTR_CURRENT_AMOUNT' then 4   
-       when mtr_value_desc = 'MTR_RESET_AMOUNT' then 5
-       when mtr_value_desc = 'MTR_MACHINE_PAY_AMOUNT' then 6
-       when mtr_value_desc = 'MTR_CURRENT_MAXIMUM' then 7
-       when mtr_value_desc = 'MTR_CURRENT_FACTOR' then 8
-       when mtr_value_desc = 'MTR_HIDDEN_AMOUNT' then 9
-       when mtr_value_desc = 'MTR_HIDDEN_MAXIMUM' then 10
-       when mtr_value_desc = 'MTR_HIDDEN_FACTOR' then 11
-       when mtr_value_desc = 'MTR_BREAK_RATE_FACTOR' then 12
-       when mtr_value_desc = 'MTR_BREAK_RATE_THRESHOLD' then 13
-       when mtr_value_desc = 'MTR_START_OUT_FACTOR' then 14
-       when mtr_value_desc = 'JKPT_JACKPOT_ID' then 15
-       when mtr_value_desc = 'PRPM_DESC' then 16
+       when mtr_value_desc = 'MTR_CURRENT_MAXIMUM' then 5
+       when mtr_value_desc = 'MTR_CURRENT_FACTOR' then 6
+       when mtr_value_desc = 'MTR_RESET_AMOUNT' then 7
+       when mtr_value_desc = 'MTR_START_OUT_FACTOR' then 8
+       when mtr_value_desc = 'MTR_BREAK_RATE_FACTOR' then 9
+       when mtr_value_desc = 'MTR_BREAK_RATE_THRESHOLD' then 10
+       when mtr_value_desc = 'MTR_HIDDEN_AMOUNT' then 11
+       when mtr_value_desc = 'MTR_HIDDEN_MAXIMUM' then 12
+       when mtr_value_desc = 'MTR_HIDDEN_FACTOR' then 13
+       when mtr_value_desc = 'MTR_MACHINE_PAY_AMOUNT' then 14             
+       when mtr_value_desc = 'PRPM_DESC' then 15
+       when mtr_value_desc = 'JKPT_JACKPOT_ID' then 16
        END AS InlineAssets_Id,
 
 CASE
