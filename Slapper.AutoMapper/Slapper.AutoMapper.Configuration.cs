@@ -221,7 +221,7 @@ namespace Slapper
                     // Handle Nullable types
                     var conversionType = Nullable.GetUnderlyingType(type) ?? type;
 
-                    object convertedValue = Enum.Parse(conversionType, value.ToString());
+                    object convertedValue = Enum.Parse(conversionType, value.ToString(),true);
 
                     return convertedValue;
                 }

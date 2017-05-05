@@ -568,66 +568,67 @@
   </Transformation>
   <Transformation Name="COMPDATA_AZB">
     <Source>
-    SELECT 
-    '22010' as Id,
-	  0 as DataRowVersion,
-    ---- Component ----
-    '22010' as Component_Id,
-    'AZB' as Component_Code,
-    ---- Components----
-    SITE_NUMBER as Component_Components_SiteId,
+      SELECT
+      '22010' as Id,
+      0 as DataRowVersion,
+      2 as ScopeLevel,
+      ---- Component ----
+      '22010' as Component_Id,
+      'AZB' as Component_Code,
+      ---- Components----
+      SITE_NUMBER as Component_Components_SiteId,
 
-    ---- ComponentValues ----
-    --SITE_NUMBER as Component_Components_SiteId,
-    ---- ComponentValues ----
-    '1_root' as Component_Components_ComponentValues_Id,
-    'Area Zone Bank' as Component_Components_ComponentValues_Name,
-    'Area Zone Bank' as Component_Components_ComponentValues_DisplayName,
-    'AZB' as Component_Components_ComponentValues_Code,
-    --- Area ChildComponents ---
-    cast(AR_Indx as nvarchar) + '_22007' as Component_Components_ComponentValues_CC_Id,
-    AR.DISPLAY_NAME as Component_Components_ComponentValues_CC_Name,
-    AR.DISPLAY_NAME as Component_Components_ComponentValues_CC_DisplayName,
-    'AREA' as Component_Components_ComponentValues_CC_Code,
+      ---- ComponentValues ----
+      --SITE_NUMBER as Component_Components_SiteId,
+      ---- ComponentValues ----
+      '1_root' as Component_Components_ComponentValues_Id,
+      'Area Zone Bank' as Component_Components_ComponentValues_Name,
+      'Area Zone Bank' as Component_Components_ComponentValues_DisplayName,
+      'AZB' as Component_Components_ComponentValues_Code,
+      --- Area ChildComponents ---
+      cast(AR_Indx as nvarchar) + '_22007' as Component_Components_ComponentValues_CC_Id,
+      AR.DISPLAY_NAME as Component_Components_ComponentValues_CC_Name,
+      AR.DISPLAY_NAME as Component_Components_ComponentValues_CC_DisplayName,
+      'AREA' as Component_Components_ComponentValues_CC_Code,
 
-    --- Area Options---
-    AREA_SEQ as Component_Components_ComponentValues_CC_Options_Id,
-    AREA_NAME as Component_Components_ComponentValues_CC_Options_Name,
-    AREA_CODE as Component_Components_ComponentValues_CC_Options_Code,
-    VALUE_AR as Component_Components_ComponentValues_CC_Options_Value,
+      --- Area Options---
+      AREA_SEQ as Component_Components_ComponentValues_CC_Options_Id,
+      AREA_NAME as Component_Components_ComponentValues_CC_Options_Name,
+      AREA_CODE as Component_Components_ComponentValues_CC_Options_Code,
+      VALUE_AR as Component_Components_ComponentValues_CC_Options_Value,
 
-    --- Zone ChildComponents ---
-    cast(ZN_Indx as nvarchar) + '_22008' as Component_Components_ComponentValues_CC_CC_Id,
-    ZN.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_Name,
-    ZN.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_DisplayName,
-    'ZONE' as Component_Components_ComponentValues_CC_CC_Code,
+      --- Zone ChildComponents ---
+      cast(ZN_Indx as nvarchar) + '_22008' as Component_Components_ComponentValues_CC_CC_Id,
+      ZN.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_Name,
+      ZN.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_DisplayName,
+      'ZONE' as Component_Components_ComponentValues_CC_CC_Code,
 
-    --- Zone Options---
-    ZONE_SEQ as Component_Components_ComponentValues_CC_CC_Options_Id,
-    ZONE_NAME as Component_Components_ComponentValues_CC_CC_Options_Name,
-    ZONE_CODE as Component_Components_ComponentValues_CC_CC_Options_Code,
-    VALUE_ZN as Component_Components_ComponentValues_CC_CC_Options_Value,
+      --- Zone Options---
+      ZONE_SEQ as Component_Components_ComponentValues_CC_CC_Options_Id,
+      ZONE_NAME as Component_Components_ComponentValues_CC_CC_Options_Name,
+      ZONE_CODE as Component_Components_ComponentValues_CC_CC_Options_Code,
+      VALUE_ZN as Component_Components_ComponentValues_CC_CC_Options_Value,
 
-    --- Bank ChildComponents ---
-    cast(BK_Indx as nvarchar) +'_22009' as Component_Components_ComponentValues_CC_CC_CC_Id,
-    BK.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_Name,
-    BK.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_DisplayName,
-    'BANK' as Component_Components_ComponentValues_CC_CC_CC_Code,
+      --- Bank ChildComponents ---
+      cast(BK_Indx as nvarchar) +'_22009' as Component_Components_ComponentValues_CC_CC_CC_Id,
+      BK.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_Name,
+      BK.DISPLAY_NAME as Component_Components_ComponentValues_CC_CC_CC_DisplayName,
+      'BANK' as Component_Components_ComponentValues_CC_CC_CC_Code,
 
-    --- Bank Options---
-    BANK_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
-    BANK_NAME as Component_Components_ComponentValues_CC_CC_CC_Options_Name,
-    BANK_CODE as Component_Components_ComponentValues_CC_CC_CC_Options_Code,
-    VALUE_BK as Component_Components_ComponentValues_CC_CC_CC_Options_Value
+      --- Bank Options---
+      BANK_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
+      BANK_NAME as Component_Components_ComponentValues_CC_CC_CC_Options_Name,
+      BANK_CODE as Component_Components_ComponentValues_CC_CC_CC_Options_Code,
+      VALUE_BK as Component_Components_ComponentValues_CC_CC_CC_Options_Value
 
-    --SELECT
-    FROM MIGRATION.VIEW_AREA AS AR
-    JOIN MIGRATION.VIEW_ZONE AS ZN ON ZN_AREA_ID = AREA_ID AND AREA_SEQ = ZONE_SEQ
-    JOIN MIGRATION.VIEW_BANK AS BK ON BK_ZONE_ID = ZONE_ID AND ZONE_SEQ = BANK_SEQ
-    JOIN GAM.[SITE] ON SITE_ID = AR_SITE_ID
-    WHERE 1=1 and site_number in ( 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
-	--ARea_ID = -1256000001181
-    order by SITE_ID, AR.AREA_ID, ZN.ZONE_ID, BK.BANK_ID
+      --SELECT
+      FROM MIGRATION.VIEW_AREA AS AR
+      JOIN MIGRATION.VIEW_ZONE AS ZN ON ZN_AREA_ID = AREA_ID AND AREA_SEQ = ZONE_SEQ
+      JOIN MIGRATION.VIEW_BANK AS BK ON BK_ZONE_ID = ZONE_ID AND ZONE_SEQ = BANK_SEQ
+      JOIN GAM.[SITE] ON SITE_ID = AR_SITE_ID
+      WHERE 1=1 and site_number in ( 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      --ARea_ID = -1256000001181
+      order by SITE_ID, AR.AREA_ID, ZN.ZONE_ID, BK.BANK_ID
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id" />
