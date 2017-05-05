@@ -570,11 +570,11 @@
     <Source>
       SELECT
       '22010' as Id,
-      0 as DataRowVersion,
-      2 as ScopeLevel,
+      0 as DataRowVersion,      
       ---- Component ----
       '22010' as Component_Id,
       'AZB' as Component_Code,
+	  2 as Component_ScopeLevel,
       ---- Components----
       SITE_NUMBER as Component_Components_SiteId,
 
@@ -1336,7 +1336,7 @@
       SMY.Site_OrganizationId as Site_OrganizationId,
       SMY.Site_OrganizationName as Site_OrganizationName,
       ----- OPTIONS --------
-      P_ASD_OPTN_VALUE as Options,
+      isnull(P_ASD_OPTN_VALUE, '{{}}') as Options,
       --OPTN.IS_UPDATED,
 
       -----ChangedOptions----
@@ -1363,10 +1363,10 @@
       THEN NULL ELSE isnull(C_G.GmOptionName, O_G.GmOptionName) END AS InlineAssets_ChangedOptions_Name,
 
       CASE WHEN isnull(C_G.GmOptionValue,'no_data') = isnull(O_G.GmOptionValue,'no_data')
-      THEN NULL ELSE O_G.GmOptionValue END AS InlineAssets_ChangedOptions_Value_OldValue,
+      THEN NULL ELSE isnull(O_G.GmOptionValue, '') END AS InlineAssets_ChangedOptions_Value_OldValue,
 
       CASE WHEN isnull(C_G.GmOptionValue,'no_data') = isnull(O_G.GmOptionValue,'no_data')
-      THEN NULL ELSE C_G.GmOptionValue END AS InlineAssets_ChangedOptions_Value_NewValue,
+      THEN NULL ELSE isnull(C_G.GmOptionValue, '') END AS InlineAssets_ChangedOptions_Value_NewValue,
 
       CASE WHEN isnull(C_G.Code,'no_data') = isnull(O_G.Code,'no_data')
       THEN NULL ELSE isnull(C_G.Code, O_G.Code)  END AS InlineAssets_ChangedOptions_Code,
@@ -1386,11 +1386,11 @@
       case when [PoolName_Current] is null then null else 'Pool Id' end as LinkedAssets_ChangedLinkes_Linked_DisplayName,
       case when [PoolName_Current] is null then null else [PoolName_Current] end as LinkedAssets_ChangedLinkes_Linked_DisplayValue,
       -----DeLinked
-      case when [PoolName_Current] is null then null else 11 end as LinkedAssets_ChangedLinkes_DeLinked_AssetTypeDefinitionId,
-      case when [PoolName_Current] is null then null else 'Progressive Pool' end as LinkedAssets_ChangedLinkes_DeLinked_AssetType,
-      case when [PoolName_Current] is null then null else 0 end as LinkedAssets_ChangedLinkes_DeLinked_Id,
-      case when [PoolName_Current] is null then null else 'Pool Id' end as LinkedAssets_ChangedLinkes_DeLinked_DisplayName,
-      case when [PoolName_Current] is null then null else PoolName_Old  end as LinkedAssets_ChangedLinkes_DeLinked_DisplayValue,
+      case when [PoolName_Old] is null then null else 11 end as LinkedAssets_ChangedLinkes_DeLinked_AssetTypeDefinitionId,
+      case when [PoolName_Old] is null then null else 'Progressive Pool' end as LinkedAssets_ChangedLinkes_DeLinked_AssetType,
+      case when [PoolName_Old] is null then null else 0 end as LinkedAssets_ChangedLinkes_DeLinked_Id,
+      case when [PoolName_Old] is null then null else 'Pool Id' end as LinkedAssets_ChangedLinkes_DeLinked_DisplayName,
+      case when [PoolName_Old] is null then null else PoolName_Old  end as LinkedAssets_ChangedLinkes_DeLinked_DisplayValue,
 
       case when ASD_DELETED = 0 then 1 else 0 end as IsLastest
 

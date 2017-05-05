@@ -95,7 +95,7 @@ GO
       10 as AssetId_AssetTypeDefinitionId,
       ---------SITE----------
       isnull(Site_SiteId, SITE_NEW_ID) as Site_SiteId,
-      isnull(Site_SiteName, SITE_LONG_NAME) as Site_SiteName,
+      isnull(Site_SiteName, SITE_SHORT_NAME) as Site_SiteName,
       isnull(Site_SiteNumber, SITE_NUMBER) as Site_SiteNumber,
       --st.IS_DELETED as Site_IsDeleted,
       isnull(OrganizationId, Ast_Optn.PROP_NEW_ID) as Site_OrganizationId,
@@ -140,7 +140,7 @@ GO
       fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
       --CASE WHEN AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes'
       --else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE,FLAG.F
-      CASE WHEN OPTION_CODE in ('ASSET.GMU.CRC.AUTH', 'ASSET.CASLESS.DISAB') THEN 
+      CASE WHEN OPTION_CODE in ('ASSET.GMU.CRC.AUTH', 'ASSET.CASLESS.DISAB', 'OPTION.CODE.ENROLMENT.STATUS') THEN 
 	(CASE	WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'N'
 		WHEN AST_OPTN_VALUE = 'FLAG.F' then 'F'
 		WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Y' END)
@@ -162,7 +162,7 @@ GO
       WHEN AST_OPTN_VALUE = 'VALIDATION.ENHANCED' THEN 'Enhanced'
       WHEN AST_OPTN_VALUE = 'SM.SERVER.DOWN' THEN 'Server Down'
       ELSE AST_OPTN_VALUE end) end as AST_OPTN_VALUE,
-      GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_LONG_NAME,
+      GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_SHORT_NAME,
       gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
       tycod_number as TypeCode_Id, tycod_name as TypeCode_Name,
 	  row_number() over (partition by ASD.asd_std_id order by ASD.asd_std_id, ASST_OPTN_ORDER) as Asset_optn_val_seqId

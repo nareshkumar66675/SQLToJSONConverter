@@ -958,7 +958,7 @@ cast((case when PRPM_DESC = 'PROG.PM.CLIENT.DETERMINED' then 'Client Determined'
      when PRPM_DESC = 'PROG.PM.FORCE.HANDPAY' then 'Force Handpay' end ) as nvarchar) as PRPM_DESC,
 ST.SITE_NUMBER as SiteId,
 ST.SITE_NUMBER as SiteNumber,
-ST.SITE_LONG_NAME as SiteName,
+ST.SITE_SHORT_NAME as SiteName,
 LPROP.PROP_NEW_ID as OrganizationId,
 PTY.PROP_LONG_NAME as OrganizationName,
 M.IS_DELETED as Mtr_Deleted
@@ -1051,7 +1051,7 @@ GO
 
 CREATE VIEW [MIGRATION].[VIEW_SITE_INFO]
 as
-SELECT SITE_LONG_NAME, SITE_NUMBER
+SELECT SITE_SHORT_NAME as SITE_LONG_NAME, SITE_NUMBER
 FROM GAM.SITE AS ST
 WHERE SITE_NUMBER IN (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
@@ -1315,7 +1315,7 @@ cast(JKPT_JACKPOT_ID as nvarchar) as JKPT_JACKPOT_ID,
 cast(PRPM_DESC as nvarchar) as PRPM_DESC,
 ST.SITE_NUMBER as SiteId,
 ST.SITE_NUMBER as SiteNumber,
-ST.SITE_LONG_NAME as SiteName,
+ST.SITE_SHORT_NAME as SiteName,
 LPROP.PROP_NEW_ID as OrganizationId,
 PTY.PROP_LONG_NAME as OrganizationName,
 M.IS_DELETED as Mtr_Deleted

@@ -208,7 +208,7 @@ SELECT GETDATE() AS START_dAT_TIME
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---sequenceId----
 1 as Seq_Id,
@@ -244,7 +244,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 2 as Seq_Id,
@@ -279,7 +279,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 3 as Seq_Id,
@@ -314,7 +314,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 4 as Seq_Id,
@@ -353,7 +353,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 5 as Seq_Id,
@@ -391,7 +391,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 6 as Seq_Id,
@@ -429,7 +429,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 7 as Seq_Id,
@@ -465,7 +465,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 8 as Seq_Id,
@@ -502,7 +502,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 9 as Seq_Id,
@@ -539,7 +539,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 10 as Seq_Id,
@@ -577,7 +577,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 11 as Seq_Id,
@@ -614,7 +614,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 12 as Seq_Id,
@@ -651,7 +651,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 13 as Seq_Id,
@@ -688,7 +688,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 14 as Seq_Id,
@@ -725,7 +725,7 @@ GO
 INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
 SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
 asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
-gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_LONG_NAME as SiteName,
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
 gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
 ---SequenceId----
 15 as Seq_Id,
@@ -956,7 +956,7 @@ FROM (SELECT AST_GAME_IDX as InlineAssets_Id,
 AST_GAME_IDX as AssetId_Id,
 ROW_NUMBER() OVER (partition by GMP.[GDM_ASTSTD_OR_TYCD_ID], gam_Comp.game_id Order by GMP.[GDM_ASTSTD_OR_TYCD_ID], gam_Comp.game_id, gam_Comp.seq) as Rw_Nm,
 SITE_NEW_ID as Site_SiteId,
-SITE_LONG_NAME as Site_SiteName,
+SITE_SHORT_NAME as Site_SiteName,
 st.SITE_NUMBER as Site_SiteNumber,
 PROP_NEW_ID as OrganizationId,
 PROP_LONG_NAME as OrganizationName,
@@ -997,7 +997,7 @@ GO
 
 CREATE VIEW MIGRATION.VIEW_ASST_SUMMARY
 AS
-SELECT PT.PROP_LONG_NAME, ST.SITE_NUMBER, ST.SITE_LONG_NAME, AST.ASST_NAME,
+SELECT PT.PROP_LONG_NAME, ST.SITE_NUMBER, ST.SITE_SHORT_NAME, AST.ASST_NAME,
 COUNT(ASD.ASD_STD_ID) AS ASSET_COUNT FROM GAM.ASSET_STANDARD_DETAILS AS ASD
 JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
 JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
@@ -1007,7 +1007,7 @@ JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
 JOIN GAM.PROPERTY AS PT ON PT.PROP_ID = ST.SITE_PROP_ID
 JOIN [MIGRATION].[GAM_PROPERTY] AS GPT ON GPT.[PROP_LEGCY_ID] = PT.PROP_ID
 WHERE ASD.IS_DELETED = 0 AND ASD.ASD_CLST_STAT_ID = 5
-GROUP BY PT.PROP_LONG_NAME, ST.SITE_NUMBER, ST.SITE_LONG_NAME, AST.ASST_NAME
+GROUP BY PT.PROP_LONG_NAME, ST.SITE_NUMBER, ST.SITE_SHORT_NAME, AST.ASST_NAME
 
 GO
 
