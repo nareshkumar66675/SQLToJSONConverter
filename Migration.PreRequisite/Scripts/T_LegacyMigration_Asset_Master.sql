@@ -316,8 +316,11 @@ GO
 
 SELECT row_number()over(order by TypeDescription, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration, GameCategory ) as Id, * 
 INTO MIGRATION.GAM_TYPE_DESCRIPTION
-from (SELECT DISTINCT TypeDescription, Manufacturer, ModelType, Model, cast (CONVERT(NUMERIC(18,2), GameHoldPC) as varchar(25)) as GameHoldPC,cast (CONVERT(NUMERIC(18,2), HoldPC) as varchar(25)) as HoldPC, MaxBet, LineConfiguration, GameCategory 
-FROM  MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET ) as tt
+from (SELECT DISTINCT TypeDescription, Manufacturer, ModelType, Model, 
+cast (CONVERT(NUMERIC(18,2), ISNULL(NULLIF(GameHoldPC, ''), '0')) as varchar(25)) as GameHoldPC, 
+cast (CONVERT(NUMERIC(18,2), ISNULL(NULLIF(HoldPC, ''), '0')) as varchar(25)) as HoldPC, 
+MaxBet, LineConfiguration, GameCategory 
+FROM  MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET  ) as tt
 GO
 
 
