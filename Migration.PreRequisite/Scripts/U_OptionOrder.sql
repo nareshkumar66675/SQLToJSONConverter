@@ -28,17 +28,12 @@ and fastDefn.[OPTION_CODE] = a.OPTN_CODE
 
 GO
 
-DROP VIEW IF EXISTS [MIGRATION].[VIEW_ASSET_ID_MASTER_CONFIG_INFO]
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.DATAMANAGEMENT_ASSET_DATA') AND type in (N'U'))
+BEGIN
+DROP Table MIGRATION.DATAMANAGEMENT_ASSET_DATA
+END
 GO
-
-CREATE VIEW [MIGRATION].[VIEW_ASSET_ID_MASTER_CONFIG_INFO]
-AS
-select * from (select max(asd_std_new_id)+ 1 as StartRange, 'ASSETDATA' as NumberCode from migration.gam_asset_standard_details
-union all
-select max(TYCOD_Number) + 1 as StartRange, 'TYPECODE' as NumberCode FROM GAM.TYPE_CODE_MASTER AS MS where ms.[TYCOD_TYPE] = 2 ) as Ast_Id_ConfigInfo
-
-GO
-
 
 -------------------------------
 --- populating historical   ---
