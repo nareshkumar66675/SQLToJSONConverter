@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -204,10 +205,13 @@ namespace Migration.PreRequisite.Helpers
 
         internal static bool ExecuteQuery(string connectionString, string query)
         {
+            Stopwatch sw = new Stopwatch();
             try
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
+                    sw.Start();
+
                     conn.Open();
 
                     /*Using SQL Server SMO Object
@@ -233,12 +237,14 @@ namespace Migration.PreRequisite.Helpers
                         }
                         throw new Exception("Error Ocurred while Executing PreRequisites - Rollbacked", ex);
                     }
-
+                    sw.Stop();
+                    Logger.Instance.LogInfo($"PreRequisite Query Execution Completed. Elapsed Time {sw.Elapsed.ToString(@"hh\:mm\:ss\.fff")}");
                 }
             }
             catch (Exception ex)
             {
-                Logger.Instance.LogError("Error Occurred while executing queries for PreRequisites", ex);
+                sw.Stop();
+                Logger.Instance.LogError($"Error Occurred while executing queries for PreRequisites. Elapsed Time {sw.Elapsed.ToString(@"hh\:mm\:ss\.fff")}", ex);
                 return false;
             }
             return true;

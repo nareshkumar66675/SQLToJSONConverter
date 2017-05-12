@@ -18,6 +18,7 @@ namespace Migration.PreRequisite.Facades
         public LegacyFacade()
         {
             //_legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyViews", _connectionString));
+            _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyIndex", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyAuthDataTables", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyAssetMasterTables", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyAssetSlotTables", _connectionString));

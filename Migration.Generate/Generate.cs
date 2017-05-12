@@ -48,6 +48,7 @@ namespace Migration.Generate
             {
                 await Task.Run(() =>
                 {
+                    Logger.Instance.LogInfo($"Generate task for the component {component.Name} Started.");
                     result = GenerateFactory.GetGenerator(component.GenerateType).Generate(component);
                 });
             }

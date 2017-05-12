@@ -28,6 +28,8 @@ namespace Migration.Generate
                     return new AuthReportData();
                 case Constants.ASSETDATAGENERATE:
                     return new AssetReportData();
+                case "HISTORYGENERATE":
+                    return new HistoryGenerator();
                 default:
                     return new GenericGenerator();
             }

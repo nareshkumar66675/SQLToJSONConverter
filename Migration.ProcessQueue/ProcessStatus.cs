@@ -39,6 +39,24 @@ namespace Migration.ProcessQueue
         Failed
     }
     /// <summary>
+    /// Defines the type of Items
+    /// </summary>
+    public enum ItemsType
+    {
+        /// <summary>
+        /// Full Data
+        /// </summary>
+        Full,
+        /// <summary>
+        /// Partial Data
+        /// </summary>
+        Partial,
+        /// <summary>
+        /// End or last chunk of partail Data
+        /// </summary>
+        PartialEnd
+    }
+    /// <summary>
     /// Process Status
     /// </summary>
     public class ProcessStatus

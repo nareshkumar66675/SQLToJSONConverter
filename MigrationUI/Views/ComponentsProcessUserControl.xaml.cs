@@ -53,7 +53,7 @@ namespace MigrationTool.Views
                 ProcessGrid.Columns[0].Visible = false;
                 ProcessGrid.Columns[4].Visible = false;
                 ProcessGrid.Columns[1].Width = new ColumnWidth(180, ColumnWidthUnitType.Pixel);
-                ProcessGrid.Columns[2].Width = new ColumnWidth(230, ColumnWidthUnitType.Pixel);
+                ProcessGrid.Columns[2].Width = new ColumnWidth(220, ColumnWidthUnitType.Pixel);
                 //ProcessGrid.Columns[2].Width = new ColumnWidth(130, ColumnWidthUnitType.Pixel);
                 ProcessGrid.Columns[0].AllowSort = false;
                 ProcessGrid.Columns[1].AllowSort = false;

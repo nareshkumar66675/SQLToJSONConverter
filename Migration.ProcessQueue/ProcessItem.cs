@@ -14,6 +14,17 @@ namespace Migration.ProcessQueue
             this.Component = _component;
             this.Items = _items;
         }
+        public ProcessItem(Component _component, List<object> _items,ItemsType _type)
+        {
+            this.Component = _component;
+            this.Items = _items;
+            this.Type = _type;
+        }
+        /// <summary>
+        /// Defines the Item Type.
+        /// Default Type is <see cref="ItemsType.Full"/>
+        /// </summary>
+        public ItemsType Type { get; set; } = ItemsType.Full;
         /// <summary>
         /// Component Information related data
         /// </summary>
