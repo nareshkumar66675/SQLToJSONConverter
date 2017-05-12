@@ -8,8 +8,8 @@
              xmlns:res="clr-namespace:MigrationTool.Properties"
              xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             Width="600"
-             Height="438"
+             Width="620"
+             Height="400"
              mc:Ignorable="d">
 
     <Grid>
@@ -63,9 +63,9 @@
                 </Style>
             </xctk:BusyIndicator.ProgressBarStyle>
             <xcdg:DataGridControl x:Name="ProcessGrid"
-                                  Width="580"
-                                  Height="421"
-                                  Margin="5,8,5,5"
+                                  Width="595"
+                                  Height="380"
+                                  Margin="5,8,5,8"
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Top"
                                   ScrollViewer.CanContentScroll="False"

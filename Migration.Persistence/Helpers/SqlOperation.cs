@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace Migration.Persistence.Helpers
             using (SqlConnection destinationConnection =
                        new SqlConnection(ConnectionStrings.GetConnectionString(type)))
             {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
                 destinationConnection.Open();
                 using (SqlTransaction transaction = destinationConnection.BeginTransaction())
                 {
@@ -30,7 +33,8 @@ namespace Migration.Persistence.Helpers
                         {
                             bulkCopy.WriteToServer(data);
                             transaction.Commit();
-                            Logger.Instance.LogInfo($"Bulk Copy Completed for table { destinationTableName }");
+                            sw.Stop();
+                            Logger.Instance.LogInfo($"Bulk Copy Completed for table { destinationTableName }. Elapsed Time {sw.Elapsed.ToString(@"hh\:mm\:ss\.fff")}");
                         }
                         catch (Exception ex)
                         {
@@ -42,7 +46,8 @@ namespace Migration.Persistence.Helpers
                             {
                                 throw new Exception("Rollback Failed", ex1);
                             }
-                            throw new Exception($"Bulk Copy Failed for table { destinationTableName } ", ex);
+                            sw.Stop();
+                            throw new Exception($"Bulk Copy Failed for table { destinationTableName }. Elapsed Time {sw.Elapsed.ToString(@"hh\:mm\:ss\.fff")} ", ex);
                         }
                     }
                 }

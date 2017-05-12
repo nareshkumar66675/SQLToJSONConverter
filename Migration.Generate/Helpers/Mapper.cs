@@ -1,4 +1,5 @@
-﻿using Migration.Configuration.ConfigObject;
+﻿using Migration.Common;
+using Migration.Configuration.ConfigObject;
 using Newtonsoft.Json;
 using Slapper;
 using System;
@@ -35,7 +36,7 @@ namespace Migration.Generate.Helpers
             //}
 
             var mappedObject = MapObject<T>(resultSet, type, null);
-            
+            //AutoMapper.Cache.ClearAllCaches();
             return mappedObject;
         }
         /// <summary>
@@ -72,9 +73,13 @@ namespace Migration.Generate.Helpers
 
             //Add Custom Identifiers
             AddCustomIdentifiers(Identifiers);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
             //Map Objects to Entities
-            var mappedObject = (AutoMapper.MapDynamic(type, resultSet, true) as IEnumerable<T>).ToList();
+            var mappedObject = (AutoMapper.MapDynamic(type, resultSet, false) as IEnumerable<T>).ToList();
+            sw.Stop();
+            Logger.Instance.LogInfo($"Mapping Completed {sw.Elapsed.ToString(@"hh\:mm\:ss\.fff")}. Memory Usage {GC.GetTotalMemory(false) / 1024 / 1024}");
 
             return mappedObject;
         } 

@@ -57,6 +57,7 @@
     <Compile Include="Generators\GenerateData.cs" />
     <Compile Include="Generators\GenericGenerator.cs" />
     <Compile Include="Generators\GenericGeneratorWtParams.cs" />
+    <Compile Include="Generators\HistoryGenerate.cs" />
     <Compile Include="Helpers\Mapper.cs" />
     <Compile Include="Helpers\SqlOperation.cs" />
     <Compile Include="IGenerator.cs" />

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,25 +22,34 @@ namespace Migration.Generate.Helpers
         /// <returns>Dynamic ResultSet</returns>
         internal static dynamic ExecuteQueryOnSource(string query)
         {
+            Stopwatch sw = new Stopwatch();
             try
             {
                 dynamic result;
+                sw.Start();
                 using (var conn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
                 {
                     result = conn.Query<dynamic>(query,commandTimeout:AppSettings.SqlCommandTimeout);
                 }
+                sw.Stop();
+                Logger.Instance.LogInfo($"Query Execution Completed. Elapsed Time {sw.Elapsed.ToString(@"hh\:mm\:ss\.fff")}");
+
                 return result;
             }
             catch (Exception)
             {
+                sw.Stop();
+                Logger.Instance.LogInfo($"Query Execution Completed. Elapsed Time {sw.Elapsed.ToString(@"hh\:mm\:ss\.fff")}");
                 throw;
             }
         }
         internal static DataTable ExecuteQuery(string connectionString,string query)
         {
+            Stopwatch sw = new Stopwatch();
             try
             {
                 DataTable rsltTable = new DataTable();
+                sw.Start();
 
                 using (var conn = new SqlConnection(connectionString))
                 {
@@ -49,10 +59,14 @@ namespace Migration.Generate.Helpers
                     cmd.CommandTimeout = AppSettings.SqlCommandTimeout;
                     rsltTable.Load(cmd.ExecuteReader());
                 }
+                sw.Stop();
+                Logger.Instance.LogInfo($"Query Execution Completed. Elapsed Time {sw.Elapsed.ToString(@"hh\:mm\:ss\.fff")}");
                 return rsltTable;
             }
             catch (Exception)
             {
+                sw.Stop();
+                Logger.Instance.LogInfo($"Query Execution Completed. Elapsed Time {sw.Elapsed.ToString(@"hh\:mm\:ss\.fff")}");
                 throw;
             }
         }
@@ -139,6 +153,59 @@ namespace Migration.Generate.Helpers
                 }
             }
             return sbuild.ToString();
+        }
+        internal static void LoadHistoryData(long siteId)
+        {
+            using (SqlConnection con = new SqlConnection(ConnectionStrings.LegacyConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("MIGRATION.P_ASSET_SLOT_HISTORY", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandTimeout = AppSettings.SqlCommandTimeout;
+                    cmd.Parameters.Add("@P_SITE_NUMBER", SqlDbType.BigInt).Value = siteId;
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        internal static Dictionary<string, long> GetAllHistoryID()
+        {
+            //List<string> historyId = new List<string>();
+            //using (SqlConnection con = new SqlConnection(ConnectionStrings.LegacyConnectionString))
+            //{
+            //    using (SqlCommand cmd = new SqlCommand("MIGRATION.P_GET_ASSETID_HISTORY", con))
+            //    {
+            //        cmd.CommandType = CommandType.StoredProcedure;
+            //        cmd.CommandTimeout = AppSettings.SqlCommandTimeout;
+            //        con.Open();
+            //        using (IDataReader dr = cmd.ExecuteReader())
+            //        {
+            //            while (dr.Read())
+            //            {
+            //                historyId.Add(dr.GetInt64(0).ToString());
+            //            }
+            //        }
+            //    }
+            //}
+            Dictionary<string,long> historyId = new Dictionary<string, long>();
+            using (SqlConnection con = new SqlConnection(ConnectionStrings.LegacyConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("MIGRATION.P_GET_ASSETID_HISTORY", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandTimeout = AppSettings.SqlCommandTimeout;
+                    con.Open();
+                    using (IDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            historyId.Add(dr.GetInt64(0).ToString(),dr.GetInt64(1));
+                        }
+                    }
+                }
+            }
+            return historyId;
         }
     }
 }

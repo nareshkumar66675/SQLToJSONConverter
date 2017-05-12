@@ -118,6 +118,7 @@ namespace MigrationTool.Views
             overallTimer.Start();
             foreach (var site in SelectedSites.ToDictionary(t => t.Key, t => t.Value))
             {
+                Logger.Instance.LogInfo($"History Migration Started for Site - {site.Value}({site.Key})");
                 if(!terminate)
                 {
                     siteStartTime = DateTime.Now;
@@ -251,19 +252,38 @@ namespace MigrationTool.Views
         }
         private void UpdateCompletedSiteList()
         {
-            SelectedSites.Remove(CurrentSite.Key);
-            MigratedSites.Add(CurrentSite.Key, CurrentSite.Value);
-            CompletedListBox.Items.Refresh();
-            NotCompletedListBox.Items.Refresh();
+            try
+            {
+                SelectedSites.Remove(CurrentSite.Key);
+                NotCompletedListBox.Items.Refresh();
+                if (!MigratedSites.ContainsKey(CurrentSite.Key))
+                {
+                    MigratedSites.Add(CurrentSite.Key, CurrentSite.Value);
+                    CompletedListBox.Items.Refresh();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Logger.Instance.LogError("Update completed SiteList Failed", ex);
+            }
         }
         private void UpdateFailedSiteList()
         {
-            SelectedSites.Remove(CurrentSite.Key);
-            NotCompletedListBox.Items.Refresh();
-            if (!FailedSites.ContainsKey(CurrentSite.Key))
+            try
             {
-                FailedSites.Add(CurrentSite.Key, CurrentSite.Value);
-                FailedSitesListBox.Items.Refresh();
+                SelectedSites.Remove(CurrentSite.Key);
+                NotCompletedListBox.Items.Refresh();
+                if (!FailedSites.ContainsKey(CurrentSite.Key))
+                {
+                    FailedSites.Add(CurrentSite.Key, CurrentSite.Value);
+                    FailedSitesListBox.Items.Refresh();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError("Update failed SiteList Failed", ex);
+                //ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this),""
             }
         }
         private void stopButton_Click(object sender, RoutedEventArgs e)

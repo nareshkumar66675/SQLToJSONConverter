@@ -35,6 +35,55 @@ DROP Table MIGRATION.DATAMANAGEMENT_ASSET_DATA
 END
 GO
 
+IF EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[MIGRATION].[DATAMANAGEMENT_ASSET_DATA]') AND name = N'INDX_AST_DATA')
+DROP INDEX [INDX_AST_DATA] ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA]
+GO
+CREATE NONCLUSTERED INDEX [INDX_AST_DATA] ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA]
+(
+	[Site_SiteNumber] ASC
+)
+INCLUDE ( 	[Id],
+	[AssetId_Id],
+	[AssetId_AssetTypeDefinitionId],
+	[Site_SiteId],
+	[Site_SiteName],
+	[Site_OrganizationId],
+	[Site_OrganizationName],
+	[Options_Id],
+	[Options_Code],
+	[Options_Value],
+	[Components_ComponentId],
+	[Components_ComponentInstanceId],
+	[Components_ComponentName],
+	[Components_ComponentKey],
+	[Components_ComponentValue],
+	[Components_ComponentCode],
+	[InlineAssets_Id],
+	[InlineAssets_AssetId_AssetTypeDefinitionId],
+	[InlineAssets_AssetId_Id],
+	[InlineAssets_Components_ComponentId],
+	[InlineAssets_Components_ComponentName],
+	[InlineAssets_Components_ComponentValue],
+	[InlineAssets_Components_ComponentKey],
+	[InlineAssets_Components_ComponentInstanceId],
+	[InlineAssets_Components_ComponentCode],
+	[InlineAssets_Options_Id],
+	[InlineAssets_Options_Value],
+	[InlineAssets_Options_Code],
+	[TypeCode_TypeCodeId],
+	[TypeCode_TypeCodeName],
+	[Asset_Comp_SeqId],
+	[Inline_Asset_SeqId],
+	[Asset_optn_val_seqId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+
+GO
+CREATE NONCLUSTERED INDEX [<DATAMANAGEMENT_ASSET_DATA>]
+ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA] ([Site_SiteNumber])
+INCLUDE ([Id],[AssetId_Id],[AssetId_AssetTypeDefinitionId],[Site_SiteId],[Site_SiteName],[Site_OrganizationId],[Site_OrganizationName],[Options_Id],[Options_Code],[Options_Value],[Components_ComponentId],[Components_ComponentInstanceId],[Components_ComponentName],[Components_ComponentKey],[Components_ComponentValue],[Components_ComponentCode],[InlineAssets_Id],[InlineAssets_AssetId_AssetTypeDefinitionId],[InlineAssets_AssetId_Id],[InlineAssets_Components_ComponentId],[InlineAssets_Components_ComponentName],[InlineAssets_Components_ComponentValue],[InlineAssets_Components_ComponentKey],[InlineAssets_Components_ComponentInstanceId],[InlineAssets_Components_ComponentCode],[InlineAssets_Options_Id],[InlineAssets_Options_Value],[InlineAssets_Options_Code],[TypeCode_TypeCodeId],[TypeCode_TypeCodeName],[Asset_Comp_SeqId],[Inline_Asset_SeqId],[Asset_optn_val_seqId])
+GO
+
 -------------------------------
 --- populating historical   ---
 -------------------------------

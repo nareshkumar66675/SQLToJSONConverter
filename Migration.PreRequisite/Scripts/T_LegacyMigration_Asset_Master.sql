@@ -596,8 +596,9 @@ and tt.THEM_NAME = a.THEM_NAME
 --------------------------
 --		MANUFACTURE     --
 --------------------------
+IF EXISTS(select * FROM sys.views where name = 'VIEW_MANUFACTURE')
+DROP VIEW  [Migration].[VIEW_MANUFACTURE]
 
-DROP VIEW IF EXISTS [Migration].[VIEW_MANUFACTURE]
 GO
 
 CREATE VIEW [Migration].[VIEW_MANUFACTURE]
@@ -642,7 +643,9 @@ UNPIVOT
 --		Model Type      --
 --------------------------
 
-DROP VIEW IF EXISTS [Migration].[VIEW_MODEL_TYPE]
+IF EXISTS(select * FROM sys.views where name = 'VIEW_MODEL_TYPE')
+DROP VIEW  [Migration].[VIEW_MODEL_TYPE]
+
 GO
 
 CREATE VIEW [Migration].[VIEW_MODEL_TYPE]
@@ -678,7 +681,10 @@ UNPIVOT
  --------------------------
 --		View Model      --
 --------------------------
-DROP VIEW IF EXISTS [Migration].[VIEW_MODEL]
+
+IF EXISTS(select * FROM sys.views where name = 'VIEW_MODEL')
+DROP VIEW  [Migration].[VIEW_MODEL]
+
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[Migration].[VIEW_MODEL]'))
@@ -727,7 +733,9 @@ GO
 --		Theme Type      --
 --------------------------
 
-DROP VIEW IF EXISTS [Migration].[VIEW_THEME_TYPE]
+IF EXISTS(select * FROM sys.views where name = 'VIEW_THEME_TYPE')
+DROP VIEW  [Migration].[VIEW_THEME_TYPE]
+
 GO
 
 CREATE VIEW [Migration].[VIEW_THEME_TYPE]
@@ -760,7 +768,9 @@ GO
 --		Theme Group     --
 --------------------------
 
-DROP VIEW IF EXISTS [Migration].[VIEW_THEME_GROUP]
+IF EXISTS(select * FROM sys.views where name = 'VIEW_THEME_GROUP')
+DROP VIEW  [Migration].[VIEW_THEME_GROUP]
+
 GO
 
 CREATE VIEW [Migration].[VIEW_THEME_GROUP]
@@ -791,7 +801,10 @@ GO
 --------------------------
 --   Theme Category     --
 --------------------------
-DROP VIEW IF EXISTS [Migration].[VIEW_THEME_CATEGORY]
+
+IF EXISTS(select * FROM sys.views where name = 'VIEW_THEME_CATEGORY')
+DROP VIEW  [Migration].[VIEW_THEME_CATEGORY]
+
 GO
 
 CREATE VIEW [Migration].[VIEW_THEME_CATEGORY]
@@ -824,7 +837,10 @@ UNPIVOT
 --------------------------
 --		Theme           --
 --------------------------
-DROP VIEW IF EXISTS [Migration].[VIEW_THEME]
+
+IF EXISTS(select * FROM sys.views where name = 'VIEW_THEME')
+DROP VIEW  [Migration].[VIEW_THEME]
+
 GO
 
 CREATE VIEW [Migration].[VIEW_THEME]
@@ -865,9 +881,10 @@ GO
 --	Progressive Meter   --
 --------------------------
 
-DROP VIEW IF EXISTS [MIGRATION].[VIEW_PROGRESSIVE_METERS]
-GO
+IF EXISTS(select * FROM sys.views where name = 'VIEW_PROGRESSIVE_METERS')
+DROP VIEW  [MIGRATION].[VIEW_PROGRESSIVE_METERS]
 
+GO
 
 CREATE VIEW [MIGRATION].[VIEW_PROGRESSIVE_METERS]
 AS
@@ -988,9 +1005,10 @@ GO
 --        Pool          --
 --------------------------
 
-DROP VIEW IF EXISTS [MIGRATION].[VIEW_POOL]
-GO
+IF EXISTS(select * FROM sys.views where name = 'VIEW_POOL')
+DROP VIEW  [MIGRATION].[VIEW_POOL]
 
+GO
 
 CREATE VIEW [MIGRATION].[VIEW_POOL]
 as
@@ -1048,8 +1066,8 @@ IsMultipleLevel, IsMysteryPool, IsWAPPool, MeterCount) ) as t
 
 GO
 
-
-DROP VIEW IF EXISTS [MIGRATION].[VIEW_SITE_INFO]
+IF EXISTS(select * FROM sys.views where name = 'VIEW_SITE_INFO')
+DROP VIEW  [MIGRATION].[VIEW_SITE_INFO]
 GO
 
 CREATE VIEW [MIGRATION].[VIEW_SITE_INFO]
@@ -1059,8 +1077,8 @@ FROM GAM.SITE AS ST
 --WHERE SITE_NUMBER IN (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 GO
 
-
-DROP VIEW IF EXISTS [MIGRATION].[VIEW_AREA]
+IF EXISTS(select * FROM sys.views where name = 'VIEW_AREA')
+DROP VIEW  [MIGRATION].[VIEW_AREA]
 
 GO
 
@@ -1094,8 +1112,8 @@ UNPIVOT
 
 GO
 
-
-DROP VIEW IF EXISTS [MIGRATION].[VIEW_ZONE]
+IF EXISTS(select * FROM sys.views where name = 'VIEW_ZONE')
+DROP VIEW  [MIGRATION].[VIEW_ZONE]
 
 GO
 CREATE VIEW [MIGRATION].[VIEW_ZONE]
@@ -1127,9 +1145,8 @@ UNPIVOT
 
 GO
 
-
-
-DROP VIEW IF EXISTS [MIGRATION].[VIEW_BANK]
+IF EXISTS(select * FROM sys.views where name = 'VIEW_BANK')
+DROP VIEW  [MIGRATION].[VIEW_BANK]
 
 GO
 
