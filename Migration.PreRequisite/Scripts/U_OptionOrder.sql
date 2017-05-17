@@ -18,12 +18,12 @@ FROM (SELECT fastDefn.[OPTION_CODE], optn.OPTN_CODE,
 ASTDFN_OPTN_ORDER,
 [ASSET_NAME],
 ROW_NUMBER() OVER (PARTITION BY AST.ASST_ID ORDER BY AST.ASST_ID, astDfn.ASTDFN_OPTN_ORDER ) AS OPTN_ORDER
-from GAM.ASSET AS AST
-join gam.ASSET_DEFINITION as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID
-join gam.[OPTION] as optn on optn.[OPTN_ID] = astdfn.ASTDFN_OPTN_ID
-join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on fastDefn.[ASSET_CODE] = upper(AST.asst_name)
+from GAM.ASSET (nolock) AS AST
+join GAM.ASSET_DEFINITION (nolock) as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID
+join GAM.[OPTION] (nolock) as optn on optn.[OPTN_ID] = astdfn.ASTDFN_OPTN_ID
+join [MIGRATION].[ASSET_TYPE_DEFN] (nolock) as fastDefn on fastDefn.[ASSET_CODE] = upper(AST.asst_name)
 and fastDefn.[OPTION_CODE] = optn.OPTN_CODE ) AS a
-JOIN [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on fastDefn.[ASSET_NAME] = A.assEt_name
+JOIN [MIGRATION].[ASSET_TYPE_DEFN] (nolock) as fastDefn on fastDefn.[ASSET_NAME] = A.assEt_name
 and fastDefn.[OPTION_CODE] = a.OPTN_CODE
 
 GO
@@ -210,28 +210,28 @@ GO
       gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
       tycod_number as TypeCode_Id, tycod_name as TypeCode_Name,
 	  row_number() over (partition by ASD.asd_std_id order by ASD.asd_std_id, ASST_OPTN_ORDER) as Asset_optn_val_seqId
-      FROM GAM.ASSET_STANDARD_DETAILS AS ASD
-      JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
-      JOIN GAM.ASSET AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
-	  JOIN GAM.MANUFACTURER AS MNF ON MNF.MANF_ID = ASD_MANF_ID
-      JOIN GAM.MODEL AS MDL ON MDL.MDL_ID = ASD_MODL_ID
-      JOIN GAM.INSTALLED_SYSTEM_MAP AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
-      JOIN GAM.[SITE] AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
-      JOIN MIGRATION.GAM_SITE AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
-      JOIN GAM.PROPERTY AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
-      JOIN [MIGRATION].[GAM_PROPERTY] as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
-      left JOIN GAM.ASSET_DETAIL AS AD ON  AD.IS_DELETED = 0 and AD.ASD_STD_ID = ASD.ASD_STD_ID
-      left join gam.[OPTION] as optn on optn.[OPTN_ID] = AST_OPTION_ID
-      left join gam.ASSET_DEFINITION as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID
+      FROM GAM.ASSET_STANDARD_DETAILS (nolock) AS ASD
+      JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
+      JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+	  JOIN GAM.MANUFACTURER (nolock) AS MNF ON MNF.MANF_ID = ASD_MANF_ID
+      JOIN GAM.MODEL (nolock) AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+      JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+      JOIN GAM.[SITE] (nolock) AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+      JOIN MIGRATION.GAM_SITE (nolock) AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
+      JOIN GAM.PROPERTY (nolock) AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
+      JOIN [MIGRATION].[GAM_PROPERTY] (nolock) as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+      left JOIN GAM.ASSET_DETAIL (nolock) AS AD ON  AD.IS_DELETED = 0 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+      left join gam.[OPTION] (nolock) as optn on optn.[OPTN_ID] = AST_OPTION_ID
+      left join gam.ASSET_DEFINITION (nolock) as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID
       and optn.[OPTN_ID] = astDfn.[ASTDFN_OPTN_ID]
-      left join [MIGRATION].[ASSET_TYPE_DEFN] as fastDefn on
+      left join [MIGRATION].[ASSET_TYPE_DEFN] (nolock) as fastDefn on
       fastDefn.[ASSET_NAME] = AST.asst_name and fastDefn.[OPTION_CODE] = optn.OPTN_CODE
-      left join [GAM].[TYPE_CODE_MASTER] as tcm on tcm.tycod_id = [ASD_TCOD_ID]
+      left join [GAM].[TYPE_CODE_MASTER] (nolock) as tcm on tcm.tycod_id = [ASD_TCOD_ID]
       WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 AND ASD.ASD_ASST_ID = 1
 	  AND MNF.MANF_LONG_NAME NOT IN ('POS') AND MDL.MDL_SHORT_NAME NOT IN ('POS')   ) as Ast_Optn
 
-      FULL JOIN MIGRATION.GAM_ASSET_COMP_VALUES AS AST_COMP ON AST_OPTN.ASD_STD_ID = AM_LEGACYID and Ast_Optn.Asset_optn_val_seqId = AST_COMP.Seq_id
-      FULL JOIN MIGRATION.GAM_GAMES_DETAILS as gSltMap  on [GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
+      FULL JOIN MIGRATION.GAM_ASSET_COMP_VALUES (nolock) AS AST_COMP ON AST_OPTN.ASD_STD_ID = AM_LEGACYID and Ast_Optn.Asset_optn_val_seqId = AST_COMP.Seq_id
+      FULL JOIN MIGRATION.GAM_GAMES_DETAILS (nolock) as gSltMap  on [GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
       and Ast_Optn.Asset_optn_val_seqId = gSltMap.Ast_Gme_Seq
       ) as overAll
       where 1=1 AND Site_SiteNumber IS NOT NULL AND AssetId_Id IS NOT NULL
