@@ -27,14 +27,20 @@ namespace MigrationTool.Helpers
         public const string GETCOMPITEMSWITHSITE = @"SELECT DISTINCT Component_Name FROM Migration.Report rpt
                                                      LEFT JOIN Migration.SiteGroup grp ON rpt.SiteGroupID=grp.SiteGroupID 
                                                      WHERE Status='Success' ";
-        public const string GETREPORTSUMMARY = @"SELECT Component_Name,
-                                                        MAX(SiteCount) as SiteCount,
-                                                        SUM (Tot_Rcrds_InLegacy) as Legacy ,
-                                                        SUM(Tot_Unique_RcrdsInLegacy) as [Unique],
-                                                        SUM(Inserted_Rcrds_InNew) as [InsertedRcrds]
-                                                 FROM Migration.Report LEFT JOIN (SELECT SiteGroupID, COUNT(SiteID) as SiteCount FROM Migration.SiteGroup GROUP BY SiteGroupID) as Sg
-							                     on Report.SiteGroupID=sg.SiteGroupID
-                                                 WHERE [Status]='Success'
-                                                 GROUP BY Component_Name,Report.SiteGroupID";
+        public const string GETREPORTSUMMARY = @"SELECT    Rpt.Component_Name,
+	                                                       SUM(Rpt.SiteCount) AS SiteCount,
+                                                           SUM (Rpt.Legacy) as Legacy ,
+	                                                       SUM(Rpt.[Unique]) as [Unique],
+	                                                       SUM(Rpt.InsertedRcrds) as [InsertedRcrds] from
+	                                                    (SELECT Component_Name,
+		                                                    MAX(SiteCount) as SiteCount,
+		                                                    SUM (Tot_Rcrds_InLegacy) as Legacy ,
+		                                                    SUM(Tot_Unique_RcrdsInLegacy) as [Unique],
+		                                                    SUM(Inserted_Rcrds_InNew) as [InsertedRcrds]
+                                                            FROM Migration.Report LEFT JOIN (SELECT SiteGroupID, COUNT(SiteID) as SiteCount FROM Migration.SiteGroup GROUP BY SiteGroupID) as Sg
+		                                                    on Report.SiteGroupID=sg.SiteGroupID
+                                                            WHERE [Status]='Success'
+                                                            GROUP BY Component_Name,Report.SiteGroupID) as Rpt
+                                                    GROUP BY Rpt.Component_Name,Rpt.SiteCount";
     }
 }

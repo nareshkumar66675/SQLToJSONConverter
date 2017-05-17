@@ -13,7 +13,7 @@ using System.Windows;
 [assembly: AssemblyCompany("Scientific Games")]
 [assembly: AssemblyProduct("Asset Matrix - Data Migrate")]
 [assembly: AssemblyCopyright("Copyright © Scientific Games 2017")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("SG")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -51,7 +51,7 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.3")]
-[assembly: AssemblyFileVersion("1.0.0.3")]
+[assembly: AssemblyVersion("1.0.0.4")]
+[assembly: AssemblyFileVersion("1.0.0.4")]
 [assembly: NeutralResourcesLanguage("en")]
 
