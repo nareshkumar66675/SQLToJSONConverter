@@ -35,55 +35,6 @@ DROP Table MIGRATION.DATAMANAGEMENT_ASSET_DATA
 END
 GO
 
-IF EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[MIGRATION].[DATAMANAGEMENT_ASSET_DATA]') AND name = N'INDX_AST_DATA')
-DROP INDEX [INDX_AST_DATA] ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA]
-GO
-CREATE NONCLUSTERED INDEX [INDX_AST_DATA] ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA]
-(
-	[Site_SiteNumber] ASC
-)
-INCLUDE ( 	[Id],
-	[AssetId_Id],
-	[AssetId_AssetTypeDefinitionId],
-	[Site_SiteId],
-	[Site_SiteName],
-	[Site_OrganizationId],
-	[Site_OrganizationName],
-	[Options_Id],
-	[Options_Code],
-	[Options_Value],
-	[Components_ComponentId],
-	[Components_ComponentInstanceId],
-	[Components_ComponentName],
-	[Components_ComponentKey],
-	[Components_ComponentValue],
-	[Components_ComponentCode],
-	[InlineAssets_Id],
-	[InlineAssets_AssetId_AssetTypeDefinitionId],
-	[InlineAssets_AssetId_Id],
-	[InlineAssets_Components_ComponentId],
-	[InlineAssets_Components_ComponentName],
-	[InlineAssets_Components_ComponentValue],
-	[InlineAssets_Components_ComponentKey],
-	[InlineAssets_Components_ComponentInstanceId],
-	[InlineAssets_Components_ComponentCode],
-	[InlineAssets_Options_Id],
-	[InlineAssets_Options_Value],
-	[InlineAssets_Options_Code],
-	[TypeCode_TypeCodeId],
-	[TypeCode_TypeCodeName],
-	[Asset_Comp_SeqId],
-	[Inline_Asset_SeqId],
-	[Asset_optn_val_seqId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-
-
-GO
-CREATE NONCLUSTERED INDEX [<DATAMANAGEMENT_ASSET_DATA>]
-ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA] ([Site_SiteNumber])
-INCLUDE ([Id],[AssetId_Id],[AssetId_AssetTypeDefinitionId],[Site_SiteId],[Site_SiteName],[Site_OrganizationId],[Site_OrganizationName],[Options_Id],[Options_Code],[Options_Value],[Components_ComponentId],[Components_ComponentInstanceId],[Components_ComponentName],[Components_ComponentKey],[Components_ComponentValue],[Components_ComponentCode],[InlineAssets_Id],[InlineAssets_AssetId_AssetTypeDefinitionId],[InlineAssets_AssetId_Id],[InlineAssets_Components_ComponentId],[InlineAssets_Components_ComponentName],[InlineAssets_Components_ComponentValue],[InlineAssets_Components_ComponentKey],[InlineAssets_Components_ComponentInstanceId],[InlineAssets_Components_ComponentCode],[InlineAssets_Options_Id],[InlineAssets_Options_Value],[InlineAssets_Options_Code],[TypeCode_TypeCodeId],[TypeCode_TypeCodeName],[Asset_Comp_SeqId],[Inline_Asset_SeqId],[Asset_optn_val_seqId])
-GO
-
 -------------------------------
 --- populating historical   ---
 -------------------------------
@@ -185,27 +136,32 @@ GO
       --CASE WHEN AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes'
       --else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE,FLAG.F
       CASE WHEN OPTION_CODE in ('ASSET.GMU.CRC.AUTH', 'ASSET.CASLESS.DISAB', 'OPTION.CODE.ENROLMENT.STATUS') THEN 
-	(CASE	WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'N'
-		WHEN AST_OPTN_VALUE = 'FLAG.F' then 'F'
-		WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Y' END)
-      ELSE
-      (CASE WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'No'
-      WHEN AST_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
-      WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Yes'
-      WHEN AST_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.NORMAL' then 'Normal'
-      WHEN AST_OPTN_VALUE = 'VALIDATION.SYSTEM' then 'System'
-      WHEN AST_OPTN_VALUE = 'ETHERNET' then 'Ethernet'
-      WHEN AST_OPTN_VALUE = 'PROTOCOL.TYPE.SAS' then 'SAS'
-      WHEN AST_OPTN_VALUE = 'ASSET.CONFIG.STATUS.OFFLINE' then 'Offline'
-      WHEN AST_OPTN_VALUE = 'ASSET.CONFIG.STATUS.ONLINE' then 'Online'
-      WHEN AST_OPTN_VALUE = 'CONTROLLER.TYPE.THIRDPARTY' then 'Third Party'
-      WHEN AST_OPTN_VALUE = 'ASSET.TYPE.EGM' THEN 'EGM'
-      WHEN AST_OPTN_VALUE = 'PROTOCOL.TYPE.QCOMM' THEN 'QCOMM'
-      WHEN AST_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.WITH.CCCE' THEN 'With CCCE'
-      WHEN AST_OPTN_VALUE = 'KIOSK.TYPE.K' THEN 'K'
-      WHEN AST_OPTN_VALUE = 'VALIDATION.ENHANCED' THEN 'Enhanced'
-      WHEN AST_OPTN_VALUE = 'SM.SERVER.DOWN' THEN 'Server Down'
-      ELSE AST_OPTN_VALUE end) end as AST_OPTN_VALUE,
+		(CASE	WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'N'
+			WHEN AST_OPTN_VALUE = 'FLAG.F' then 'F'
+			WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Y' END)
+	   WHEN OPTION_CODE in ('BILL.VALIDATOR.CAPACITY') THEN 
+		(CASE	WHEN AST_OPTN_VALUE = '' then '100'
+			WHEN AST_OPTN_VALUE IS NULL then '100'
+			ELSE AST_OPTN_VALUE END)
+	ELSE
+	      (CASE WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'No'
+	      WHEN AST_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
+	      WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Yes'
+	      WHEN AST_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.NORMAL' then 'Normal'
+	      WHEN AST_OPTN_VALUE = 'VALIDATION.SYSTEM' then 'System'
+	      WHEN AST_OPTN_VALUE = 'ETHERNET' then 'Ethernet'
+	      WHEN AST_OPTN_VALUE = 'PROTOCOL.TYPE.SAS' then 'SAS'
+	      WHEN AST_OPTN_VALUE = 'ASSET.CONFIG.STATUS.OFFLINE' then 'Offline'
+	      WHEN AST_OPTN_VALUE = 'ASSET.CONFIG.STATUS.ONLINE' then 'Online'
+	      WHEN AST_OPTN_VALUE = 'CONTROLLER.TYPE.THIRDPARTY' then 'Third Party'
+	      WHEN AST_OPTN_VALUE = 'ASSET.TYPE.EGM' THEN 'EGM'
+	      WHEN AST_OPTN_VALUE = 'PROTOCOL.TYPE.QCOMM' THEN 'QCOMM'
+	      WHEN AST_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.WITH.CCCE' THEN 'With CCCE'
+	      WHEN AST_OPTN_VALUE = 'KIOSK.TYPE.K' THEN 'K'
+	      WHEN AST_OPTN_VALUE = 'VALIDATION.ENHANCED' THEN 'Enhanced'
+	      WHEN AST_OPTN_VALUE = 'SM.SERVER.DOWN' THEN 'Server Down'
+	      WHEN AST_OPTN_VALUE = 'METER.TYPE.BCD' THEN 'BCD'
+	      ELSE AST_OPTN_VALUE end) end as AST_OPTN_VALUE,
       GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_SHORT_NAME,
       gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
       tycod_number as TypeCode_Id, tycod_name as TypeCode_Name,
@@ -235,6 +191,56 @@ GO
       and Ast_Optn.Asset_optn_val_seqId = gSltMap.Ast_Gme_Seq
       ) as overAll
       where 1=1 AND Site_SiteNumber IS NOT NULL AND AssetId_Id IS NOT NULL
-     -- AND Site_SiteNumber in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      AND Site_SiteNumber in (1, 2, 3, 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
       order by Ast_std_Id, game_id
+GO
+
+
+IF EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[MIGRATION].[DATAMANAGEMENT_ASSET_DATA]') AND name = N'INDX_AST_DATA')
+DROP INDEX [INDX_AST_DATA] ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA]
+GO
+CREATE NONCLUSTERED INDEX [INDX_AST_DATA] ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA]
+(
+	[Site_SiteNumber] ASC
+)
+INCLUDE ( 	[Id],
+	[AssetId_Id],
+	[AssetId_AssetTypeDefinitionId],
+	[Site_SiteId],
+	[Site_SiteName],
+	[Site_OrganizationId],
+	[Site_OrganizationName],
+	[Options_Id],
+	[Options_Code],
+	[Options_Value],
+	[Components_ComponentId],
+	[Components_ComponentInstanceId],
+	[Components_ComponentName],
+	[Components_ComponentKey],
+	[Components_ComponentValue],
+	[Components_ComponentCode],
+	[InlineAssets_Id],
+	[InlineAssets_AssetId_AssetTypeDefinitionId],
+	[InlineAssets_AssetId_Id],
+	[InlineAssets_Components_ComponentId],
+	[InlineAssets_Components_ComponentName],
+	[InlineAssets_Components_ComponentValue],
+	[InlineAssets_Components_ComponentKey],
+	[InlineAssets_Components_ComponentInstanceId],
+	[InlineAssets_Components_ComponentCode],
+	[InlineAssets_Options_Id],
+	[InlineAssets_Options_Value],
+	[InlineAssets_Options_Code],
+	[TypeCode_TypeCodeId],
+	[TypeCode_TypeCodeName],
+	[Asset_Comp_SeqId],
+	[Inline_Asset_SeqId],
+	[Asset_optn_val_seqId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+
+GO
+CREATE NONCLUSTERED INDEX [<DATAMANAGEMENT_ASSET_DATA>]
+ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA] ([Site_SiteNumber])
+INCLUDE ([Id],[AssetId_Id],[AssetId_AssetTypeDefinitionId],[Site_SiteId],[Site_SiteName],[Site_OrganizationId],[Site_OrganizationName],[Options_Id],[Options_Code],[Options_Value],[Components_ComponentId],[Components_ComponentInstanceId],[Components_ComponentName],[Components_ComponentKey],[Components_ComponentValue],[Components_ComponentCode],[InlineAssets_Id],[InlineAssets_AssetId_AssetTypeDefinitionId],[InlineAssets_AssetId_Id],[InlineAssets_Components_ComponentId],[InlineAssets_Components_ComponentName],[InlineAssets_Components_ComponentValue],[InlineAssets_Components_ComponentKey],[InlineAssets_Components_ComponentInstanceId],[InlineAssets_Components_ComponentCode],[InlineAssets_Options_Id],[InlineAssets_Options_Value],[InlineAssets_Options_Code],[TypeCode_TypeCodeId],[TypeCode_TypeCodeName],[Asset_Comp_SeqId],[Inline_Asset_SeqId],[Asset_optn_val_seqId])
 GO

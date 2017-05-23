@@ -52,7 +52,7 @@
       WHERE 1 = 1
       and ( (st.site_type_id = 1 and iMap.INSM_IS_SITE_GROUP = 0 and INS_SYSTEM_IP_ADDRESS NOT IN ('0.0.0.0') )
       or (st.site_type_id not in (1)  )  )
-      --and st.site_number in ( 1,2,3,301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      and st.site_number in ( 1,2,3,301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
       order by st.site_number
     </Source>
     <Destination>[Site].[Site]</Destination>
@@ -116,7 +116,7 @@
       left join [COMMON].[USER_ROLE_FUNCTION_GROUP] as fnRlMap on fnRlMap.ROLE_ID = rl.ROLE_ID
       left join [COMMON].[USER_FUNCTION_GROUP] as fnGrp on fnGrp.funcgrp_id = fnRlMap.[FUNCGRP_ID]
       JOIN MIGRATION.COMMON_USER_FUNCTION_GROUP AS MG ON MG.FUNCGRP_ID = fnGrp.FUNCGRP_ID
-      WHERE ROLE_IS_DELETED = 0 AND rl.ROLE_ID NOT IN (1)
+      WHERE ROLE_IS_DELETED = 0 AND rl.ROLE_ID NOT IN (1) and RLFNGRP_IS_DELETED = 0
       order by mrRle.ROLE_NEW_ID
     </Source>
     <Destination>[Employee].[Role]</Destination>
@@ -627,7 +627,7 @@
       JOIN MIGRATION.VIEW_BANK AS BK ON BK_ZONE_ID = ZONE_ID AND ZONE_SEQ = BANK_SEQ
       JOIN GAM.[SITE] ON SITE_ID = AR_SITE_ID
       WHERE 1=1 
-      --and site_number in ( 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      and site_number in ( 1, 2, 3, 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
       --ARea_ID = -1256000001181
       order by SITE_ID, AR.AREA_ID, ZN.ZONE_ID, BK.BANK_ID
     </Source>   
@@ -1428,8 +1428,9 @@
       LEFT JOIN MIGRATION.GAM_ASSET_GAMES_OPTIONS_VALUE (nolock) AS GM ON GM.P_GM_ID = C_G.Game_Id
       LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_PROGRESSIVE (nolock) AS PROG ON PROG.CLST_DET_ID = SMY.CLST_DET_ID
       WHERE 1=1  and Asst_Histry_Id is not null
-      and (case when OPTN.IS_UPDATED = 1 then 1
-      when isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data') then 1
+         and (case when SMY.[Action] = 'ADD' then 1
+				 when OPTN.IS_UPDATED = 1 then 1
+                 when isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data') then 1
                  when isnull([PoolName_Current],'no_data') &lt;&gt; isnull([PoolName_Old],'no_data') then 1 else 0 end ) = 1
       --and SMY.ASD_AM_UID =7337
       --AND SMY.SiteNumber in ({0})
