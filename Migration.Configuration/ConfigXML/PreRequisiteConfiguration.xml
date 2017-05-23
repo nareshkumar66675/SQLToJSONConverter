@@ -17,4 +17,5 @@
   <PreRequisite Name ="AuthNumberMasterInsert" ScriptFilePath="Scripts/D_AuthNumberMasterInsert.sql" Skip="False"/>
   <PreRequisite Name ="AssetDefault" ScriptFilePath="Scripts/D_AssetDefault.sql" Skip="False"/>
   <PreRequisite Name ="LegacyIndex" ScriptFilePath="Scripts/I_LegacyIndex.sql" Skip="False"/>
+  <PreRequisite Name ="UpdateCustomID" ScriptFilePath="Scripts/D_UpdateCutomValues.sql" Skip="False"/>
 </PreRequisiteConfig>
