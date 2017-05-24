@@ -38,8 +38,7 @@ GO
 -------------------------------
 --- populating historical   ---
 -------------------------------
-
-	 SELECT
+      SELECT
       Id,
 	  0 as DataRowVersion,
       ---ASSET ID -----
@@ -139,10 +138,13 @@ GO
 		(CASE	WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'N'
 			WHEN AST_OPTN_VALUE = 'FLAG.F' then 'F'
 			WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Y' END)
-	   WHEN OPTION_CODE in ('BILL.VALIDATOR.CAPACITY') THEN 
+	   WHEN OPTION_CODE = ('BILL.VALIDATOR.CAPACITY') THEN 
 		(CASE	WHEN AST_OPTN_VALUE = '' then '100'
 			WHEN AST_OPTN_VALUE IS NULL then '100'
 			ELSE AST_OPTN_VALUE END)
+	   WHEN OPTION_CODE = 'ASSET.USER.CUSTOM.10' THEN 
+		(CASE WHEN pt.PROP_LONG_NAME = ('South Australia') THEN FORMAT(cast(isnull(ASD.ASD_NUMBER, '0') as int), 'X') 
+			ELSE AST_OPTN_VALUE END)		 
 	ELSE
 	      (CASE WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'No'
 	      WHEN AST_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
