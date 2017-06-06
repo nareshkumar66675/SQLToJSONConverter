@@ -38,7 +38,7 @@ GO
 -------------------------------
 --- populating historical   ---
 -------------------------------
-      SELECT
+            SELECT
       Id,
 	  0 as DataRowVersion,
       ---ASSET ID -----
@@ -130,20 +130,20 @@ GO
 	  AST_COMP.Seq_id as Asset_Comp_SeqId,
 	  gSltMap.Ast_Gme_Seq as Inline_Asset_SeqId,
 	  Asset_optn_val_seqId
-      FROM (SELECT ASD.ASD_STD_ID, ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
-      fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
-      --CASE WHEN AD.AST_OPTN_VALUE = 'FLAG.NO' then 'No' when AD.AST_OPTN_VALUE = 'FLAG.YES' then 'Yes'
-      --else AD.AST_OPTN_VALUE end as AST_OPTN_VALUE,FLAG.F
+	   FROM   ( select  ASD_STD_ID, ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
+      [OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
+   
       CASE WHEN OPTION_CODE in ('ASSET.GMU.CRC.AUTH', 'ASSET.CASLESS.DISAB', 'OPTION.CODE.ENROLMENT.STATUS') THEN 
-		(CASE	WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'N'
+		(CASE WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'N'
 			WHEN AST_OPTN_VALUE = 'FLAG.F' then 'F'
-			WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Y' END)
+			WHEN AST_OPTN_VALUE = 'FLAG.YES' then 'Y'
+			WHEN AST_OPTN_VALUE is null or AST_OPTN_VALUE = '' then 'N' END)
 	   WHEN OPTION_CODE = ('BILL.VALIDATOR.CAPACITY') THEN 
 		(CASE	WHEN AST_OPTN_VALUE = '' then '100'
-			WHEN AST_OPTN_VALUE IS NULL then '100'
+			WHEN AST_OPTN_VALUE IS NULL then '100'	
 			ELSE AST_OPTN_VALUE END)
 	   WHEN OPTION_CODE = 'ASSET.USER.CUSTOM.10' THEN 
-		(CASE WHEN pt.PROP_LONG_NAME = ('South Australia') THEN FORMAT(cast(isnull(ASD.ASD_NUMBER, '0') as int), 'X') 
+		(CASE WHEN PROP_LONG_NAME = ('South Australia') THEN FORMAT(cast(isnull(ASD_NUMBER, '0') as int), 'X') 
 			ELSE AST_OPTN_VALUE END)		 
 	ELSE
 	      (CASE WHEN AST_OPTN_VALUE = 'FLAG.NO' then 'No'
@@ -164,10 +164,17 @@ GO
 	      WHEN AST_OPTN_VALUE = 'SM.SERVER.DOWN' THEN 'Server Down'
 	      WHEN AST_OPTN_VALUE = 'METER.TYPE.BCD' THEN 'BCD'
 	      ELSE AST_OPTN_VALUE end) end as AST_OPTN_VALUE,
+      SITE_NEW_ID, SITE_NUMBER, SITE_SHORT_NAME,
+      PROP_NEW_ID, PROP_LONG_NAME, ASST_OPTN_ORDER,
+      TypeCode_Id, TypeCode_Name,
+	  row_number() over (partition by asd_std_id order by asd_std_id, ASST_OPTN_ORDER) as Asset_optn_val_seqId
+	  
+	  from (  SELECT ASD.ASD_STD_ID, ASD.ASD_NUMBER, ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
+      fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
+	  AST_OPTN_VALUE,
       GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_SHORT_NAME,
       gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
-      tycod_number as TypeCode_Id, tycod_name as TypeCode_Name,
-	  row_number() over (partition by ASD.asd_std_id order by ASD.asd_std_id, ASST_OPTN_ORDER) as Asset_optn_val_seqId
+      tycod_number as TypeCode_Id, tycod_name as TypeCode_Name
       FROM GAM.ASSET_STANDARD_DETAILS (nolock) AS ASD
       JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
       JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
@@ -186,16 +193,49 @@ GO
       fastDefn.[ASSET_NAME] = AST.asst_name and fastDefn.[OPTION_CODE] = optn.OPTN_CODE
       left join [GAM].[TYPE_CODE_MASTER] (nolock) as tcm on tcm.tycod_id = [ASD_TCOD_ID]
       WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 AND ASD.ASD_ASST_ID = 1
-	  AND MNF.MANF_LONG_NAME NOT IN ('POS') AND MDL.MDL_SHORT_NAME NOT IN ('POS')   ) as Ast_Optn
+	  AND MNF.MANF_LONG_NAME NOT IN ('POS') AND MDL.MDL_SHORT_NAME NOT IN ('POS') 
+	  union all
+
+	  SELECT ASD.ASD_STD_ID, ASD.ASD_NUMBER, ASD_STD_NEW_ID, [TYCV_OPTN_ID], [OPTION_ID],[OPTN_NAME],
+      fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
+	  TYCV_OPTN_VALUE,
+      GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_SHORT_NAME,
+      gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
+      tycod_number as TypeCode_Id, tycod_name as TypeCode_Name
+
+	  FROM GAM.ASSET_STANDARD_DETAILS (nolock) AS ASD
+      JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
+      JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+	  JOIN GAM.MANUFACTURER (nolock) AS MNF ON MNF.MANF_ID = ASD_MANF_ID
+      JOIN GAM.MODEL (nolock) AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+      JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+      JOIN GAM.[SITE] (nolock) AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+      JOIN MIGRATION.GAM_SITE (nolock) AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
+      JOIN GAM.PROPERTY (nolock) AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
+      JOIN [MIGRATION].[GAM_PROPERTY] (nolock) as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+	  left join [GAM].[TYPE_CODE_MASTER] (nolock) as tcm on tcm.tycod_id = [ASD_TCOD_ID]
+	  left JOIN GAM.TYPE_CODE_VALUES  AS TCV ON TCV.TYCV_TYCOD_ID = TYCOD_ID
+      left join gam.[OPTION] (nolock) as optn on optn.[OPTN_ID] = TYCV_OPTN_ID
+      left join gam.ASSET_DEFINITION (nolock) as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID
+      and optn.[OPTN_ID] = astDfn.[ASTDFN_OPTN_ID]
+      left join [MIGRATION].[ASSET_TYPE_DEFN] (nolock) as fastDefn on
+      fastDefn.[ASSET_NAME] = AST.asst_name and fastDefn.[OPTION_CODE] = optn.OPTN_CODE
+
+      WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5 AND ASD.ASD_ASST_ID = 1
+	  AND MNF.MANF_LONG_NAME NOT IN ('POS') AND MDL.MDL_SHORT_NAME NOT IN ('POS') 
+	  and OPTION_ID is not null
+	    ) as all_tc ) as Ast_Optn
 
       FULL JOIN MIGRATION.GAM_ASSET_COMP_VALUES (nolock) AS AST_COMP ON AST_OPTN.ASD_STD_ID = AM_LEGACYID and Ast_Optn.Asset_optn_val_seqId = AST_COMP.Seq_id
       FULL JOIN MIGRATION.GAM_GAMES_DETAILS (nolock) as gSltMap  on [GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
       and Ast_Optn.Asset_optn_val_seqId = gSltMap.Ast_Gme_Seq
       ) as overAll
       where 1=1 AND Site_SiteNumber IS NOT NULL AND AssetId_Id IS NOT NULL
-      AND Site_SiteNumber in (1, 2, 3, 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      --AND Site_SiteNumber in (1, 2, 3, 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
       order by Ast_std_Id, game_id
 GO
+
+
 
 
 IF EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[MIGRATION].[DATAMANAGEMENT_ASSET_DATA]') AND name = N'INDX_AST_DATA')
@@ -246,3 +286,10 @@ CREATE NONCLUSTERED INDEX [<DATAMANAGEMENT_ASSET_DATA>]
 ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA] ([Site_SiteNumber])
 INCLUDE ([Id],[AssetId_Id],[AssetId_AssetTypeDefinitionId],[Site_SiteId],[Site_SiteName],[Site_OrganizationId],[Site_OrganizationName],[Options_Id],[Options_Code],[Options_Value],[Components_ComponentId],[Components_ComponentInstanceId],[Components_ComponentName],[Components_ComponentKey],[Components_ComponentValue],[Components_ComponentCode],[InlineAssets_Id],[InlineAssets_AssetId_AssetTypeDefinitionId],[InlineAssets_AssetId_Id],[InlineAssets_Components_ComponentId],[InlineAssets_Components_ComponentName],[InlineAssets_Components_ComponentValue],[InlineAssets_Components_ComponentKey],[InlineAssets_Components_ComponentInstanceId],[InlineAssets_Components_ComponentCode],[InlineAssets_Options_Id],[InlineAssets_Options_Value],[InlineAssets_Options_Code],[TypeCode_TypeCodeId],[TypeCode_TypeCodeName],[Asset_Comp_SeqId],[Inline_Asset_SeqId],[Asset_optn_val_seqId])
 GO
+
+
+
+UPDATE GAM.ASSET_DETAIL
+SET AST_OPTN_VALUE = 'Bright Lights'
+WHERE AST_OPTN_VALUE = '\Bright Lights'
+
