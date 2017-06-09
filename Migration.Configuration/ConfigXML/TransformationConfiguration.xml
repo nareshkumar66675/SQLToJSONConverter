@@ -52,7 +52,7 @@
       WHERE 1 = 1
       and ( (st.site_type_id = 1 and iMap.INSM_IS_SITE_GROUP = 0 and INS_SYSTEM_IP_ADDRESS NOT IN ('0.0.0.0') )
       or (st.site_type_id not in (1)  )  )
-      and st.site_number in ( 1,2,3,301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      and st.site_number in ( select * from [Migration].[GetSitesForMigration]())
       order by st.site_number
     </Source>
     <Destination>[Site].[Site]</Destination>
@@ -627,7 +627,7 @@
       JOIN MIGRATION.VIEW_BANK AS BK ON BK_ZONE_ID = ZONE_ID AND ZONE_SEQ = BANK_SEQ
       JOIN GAM.[SITE] ON SITE_ID = AR_SITE_ID
       WHERE 1=1 
-      and site_number in ( 1, 2, 3, 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      and site_number in (select * from [Migration].[GetSitesForMigration]())
       --ARea_ID = -1256000001181
       order by SITE_ID, AR.AREA_ID, ZN.ZONE_ID, BK.BANK_ID
     </Source>   
@@ -1434,7 +1434,7 @@
                  when isnull([PoolName_Current],'no_data') &lt;&gt; isnull([PoolName_Old],'no_data') then 1 else 0 end ) = 1
       --and SMY.ASD_AM_UID =7337
       --AND SMY.SiteNumber in ({0})
-      --and SMY.SiteNumber in (301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      and SMY.SiteNumber in (select * from [Migration].[GetSitesForMigration]())
 	  --and Asst_Histry_Id =1180529
       ORDER BY SMY.CLST_EXECTUED_DATE, SMY.CURRENT_ID, OPTION_ORDER
 

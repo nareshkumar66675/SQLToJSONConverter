@@ -231,7 +231,7 @@ GO
       and Ast_Optn.Asset_optn_val_seqId = gSltMap.Ast_Gme_Seq
       ) as overAll
       where 1=1 AND Site_SiteNumber IS NOT NULL AND AssetId_Id IS NOT NULL
-      --AND Site_SiteNumber in (1, 2, 3, 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+      AND Site_SiteNumber in (select * from [Migration].[GetSitesForMigration]())
       order by Ast_std_Id, game_id
 GO
 
