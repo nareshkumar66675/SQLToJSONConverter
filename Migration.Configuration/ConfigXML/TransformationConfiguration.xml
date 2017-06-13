@@ -8,41 +8,44 @@
       st.SITE_NUMBER as Number,
       st.SITE_short_NAME as Name,
       st.SITE_LONG_NAME as [Description],
-      st.SITE_short_NAME as VenueCode,
+      NULLIF(UM.ORG_VENUE_CODE,'') as VenueCode,
       MST.SITE_CODE as Code,
-      --'Rot' as ParentCode,
       coalesce(PROP_PARENT_CODE,P.PROP_SHORT_NAME) as ParentCode,
       p.PROP_SHORT_NAME as ServiceProviderCode,
       st.SITE_TIMEZONE_ID as Timezone,
       sttype.site_type_short_name as SiteType,
-      ''  as LicensedMonitoringOperator,
-      ''  as Licensee,
-      0 as ApprovedMachineCount,
-      CAST(0 as varchar(50)) as GamingLicenseNumber,
-      --123456 as FaxNumber,
-      --123456 as MobileNumber ,
+      NULLIF(UM.ORG_LMO,'') as LicensedMonitoringOperator,
+      NULLIF(UM.ORG_LICENSEE,'')  as Licensee,
+      ISNULL(NULLIF(UM.ORG_APPROVED_MACHINE_COUNT,''),0) as ApprovedMachineCount,
+      NULLIF(UM.ORG_LICENSE_NUM,'') as GamingLicenseNumber,
+      NULLIF(UM.CONT_FAX_NUMBER,'') as FaxNumber,
+      NULLIF(UM.CONT_MOB_NUMBER,'') as MobileNumber ,
       cast(1 as bit) as IsActive,
       cast(0 as bit) as IsDeleted,
-      --2 as DepthLevel,
       coalesce(PROP_DEPTH_LEVEL, 2) as DepthLevel,
-      '' as ContactInformation_Address,
-      '' as ContactInformation_City,
-      '' as ContactInformation_State,
-      --'' as ContactInformation_Country,
-      '' as ContactInformation_PostalCode,
-      '' as ContactInformation_MailId,
-      '' as ContactInformation_PhoneNumber,
-      '' as ContactInformation_Fax,
-      '' as ContactInformation_MobileNumber ,
+      NULLIF(UM.CONT_ADDRESS,'') as ContactInformation_Address,
+      NULLIF(UM.CONT_CITY,'') as ContactInformation_City,
+      NULLIF(UM.CONT_STATE_NAME,'') as ContactInformation_State,
+      NULLIF(UM.COUNTRY_ID,'') as ContactInformation_Country_Id,
+	    NULLIF(UM.COUNTRY_CODE,'') as ContactInformation_Country_CountryCode,
+	    NULLIF(UM.COUNTRY_NAME,'') as ContactInformation_Country_CountryName,
+	    UM.COUNTRY_IS_SUPPORTED as ContactInformation_Country_IsInactive,
+	    CAST(0 as BIT) as ContactInformation_Country_IsDefault,
+      NULLIF(UM.CONT_POSTAL_CODE,'') as ContactInformation_PostalCode,
+      NULLIF(UM.CONT_EMAIL,'') as ContactInformation_MailId,
+      NULLIF(UM.CONT_PHONE_NUMBER,'') as ContactInformation_PhoneNumber,
+      NULLIF(UM.CONT_FAX_NUMBER,'') as ContactInformation_Fax,
+      NULLIF(UM.CONT_MOB_NUMBER,'') as ContactInformation_MobileNumber ,
       0 as DataRowVersion,
       0 as UMDataRowVersion,
-      null as CreatedAt,
-      null as UpdatedAt,
+      UM.ORG_CREATED_TS as CreatedAt,
+      UM.ORG_UPDATED_TS as UpdatedAt,
       substring(sy.SYS_SHORT_NAME,0,4) as Products_ProductCode,
       im.INS_SYSTEM_IP_ADDRESS as Products_Ip ,
       CAST(im.INS_SERVICE_PORT as VARCHAR(50)) as Products_Port
       from gam.SITE as st
       LEFT JOIN MIGRATION.GAM_SITE AS MST ON MST.SITE_LEGCY_ID = ST.SITE_ID
+	    LEFT JOIN MIGRATION.UM_SITE_INFO AS UM ON UM.SITE_NUMBER=st.SITE_NUMBER
       join gam.SITE_TYPE as stType on st.SITE_TYPE_ID = stType.SITE_TYPE_ID
       join gam.INSTALLED_SYSTEM_MAP  as iMap on iMap.INSM_SITE_ID = st.site_id
       join gam.INSTALLED_SYSTEM as im on im.INS_SYS_ID = iMap.INSM_SYS_ID
@@ -50,10 +53,10 @@
       join gam.PROPERTY as p on p.PROP_ID = st.SITE_PROP_ID
       LEFT JOIN MIGRATION.GAM_PROPERTY AS MP ON MP.PROP_LEGCY_ID = P.PROP_ID
       WHERE 1 = 1
-      and ( (st.site_type_id = 1 and iMap.INSM_IS_SITE_GROUP = 0 and INS_SYSTEM_IP_ADDRESS NOT IN ('0.0.0.0') )
-      or (st.site_type_id not in (1)  )  )
-      and st.site_number in ( select * from [Migration].[GetSitesForMigration]())
-      order by st.site_number
+      AND ( (st.site_type_id = 1 and iMap.INSM_IS_SITE_GROUP = 0 and INS_SYSTEM_IP_ADDRESS NOT IN ('0.0.0.0') )
+      OR (st.site_type_id NOT IN (1)  )  )
+      AND st.site_number IN ( select * from [Migration].[GetSitesForMigration]())
+      ORDER by st.site_number
     </Source>
     <Destination>[Site].[Site]</Destination>
     <KeyFormat Format="151_{0}" Keys="Id"  />
@@ -148,12 +151,24 @@
       FUNCGRP_NAME as Code,
       FUNCGRP_NAME as Name,
       FUNCGRP_DESCRIPTION as [Description],
-	    0 as DataRowVersion,
-	    99 as Sites_$
+      0 as DataRowVersion,
+      101 as Tasks_Id,
+      'ViewPreference' as Tasks_Code,
+      'View Preference' as Tasks_Name,
+      1 as Tasks_Module_Id,
+      'Preference' as Tasks_Module_Name,
+      'Application.Application' as Tasks_Module_Key,
+      cast(0 as bit) as Tasks_IsLocationRequired,
+      cast(0 as bit) as Tasks_IsLimitRequired,
+      cast(0 as bit) as Tasks_IsSecurityCode,
+      cast(0 as bit) as Tasks_IsDeleted,
+      1 as Tasks_DataRowVersion,
+      99 as Sites_$
       FROM [COMMON].[USER_FUNCTION_GROUP] AS FG
       JOIN MIGRATION.COMMON_USER_FUNCTION_GROUP AS MG ON MG.FUNCGRP_ID = FG.FUNCGRP_ID
       WHERE FG.FUNCGRP_ID NOT IN (1)
       ORDER BY MG.FUNCGRP_NEW_ID
+
     </Source>
     <Destination>[Employee].[TaskGroup]</Destination>
     <KeyFormat Format="51_{0}" Keys="Id"  />
@@ -574,7 +589,7 @@
       ---- Component ----
       '22010' as Component_Id,
       'AZB' as Component_Code,
-	  2 as Component_ScopeLevel,
+	    2 as Component_ScopeLevel,
       ---- Components----
       SITE_NUMBER as Component_Components_SiteId,
 
@@ -1298,55 +1313,52 @@
 
   <Transformation Name="AST_HISTORY">
     <Source>
-      EXEC MIGRATION.P_ASSET_SLOT_HISTORY {0}
-
-      --Query
-      SELECT
-      ------ Id -------
+      SELECT --top 1000
+         ------ Id -------
       Asst_Histry_Id as Id,
-      SMY.[Action] as [Action],
+      tt.[Action] as [Action],
       clst_name as MasterListName,
       clst_name as ChangeListName,
-      case when SMY.astl_data_source = 'IMPORT_DATA' then 'Import'
-      when SMY.astl_data_source = 'CHANGELIST_DATA' then 'Changelist'
+      case when tt.astl_data_source = 'IMPORT_DATA' then 'Import'
+      when tt.astl_data_source = 'CHANGELIST_DATA' then 'Changelist'
       when clst_name like 'Data Sync%' then 'Data Sync'
       else '' end as DataTriggerSource_1,
-      SMY.astl_data_source  as DataTriggerSource,
+      tt.astl_data_source  as DataTriggerSource,
       ------- CreatedBy-------
       0 as CreatedBy_UserId,
-      SMY.created_user as CreatedBy_LoginName,
-      SMY.created_user as CreatedBy_FirstName,
-      SMY.created_user as CreatedBy_MiddleName,
-      SMY.created_user as CreatedBy_LastName,
+      tt.created_user as CreatedBy_LoginName,
+      tt.created_user as CreatedBy_FirstName,
+      tt.created_user as CreatedBy_MiddleName,
+      tt.created_user as CreatedBy_LastName,
       --------ApprovedBy--------
       0 as ApprovedBy_UserId,
-      SMY.CLST_AUTH_USER as ApprovedBy_LoginName,
-      SMY.CLST_AUTH_USER as ApprovedBy_FirstName,
-      SMY.CLST_AUTH_USER as ApprovedBy_MiddleName,
-      SMY.CLST_AUTH_USER as ApprovedBy_LastName,
+      tt.CLST_AUTH_USER as ApprovedBy_LoginName,
+      tt.CLST_AUTH_USER as ApprovedBy_FirstName,
+      tt.CLST_AUTH_USER as ApprovedBy_MiddleName,
+      tt.CLST_AUTH_USER as ApprovedBy_LastName,
 
-      cast(SMY.clst_exectued_date as Varchar(50)) as ExecutedAt,
+      cast(tt.clst_exectued_date as Varchar(50)) as ExecutedAt,
       -----Asset----
       10 as Asset_AssetTypeDefinitionId,
       asset_type as Asset_AssetType,
       10 as Asset_Id,
 
       ----Site---
-      SMY.SiteId as Site_SiteId,
+      tt.SiteId as Site_SiteId,
       SOURCE_SITE as Site_SiteName,
-      SMY.SiteNumber as Site_SiteNumber,
-      SMY.Site_OrganizationId as Site_OrganizationId,
-      SMY.Site_OrganizationName as Site_OrganizationName,
+      tt.SiteNumber as Site_SiteNumber,
+      tt.Site_OrganizationId as Site_OrganizationId,
+      tt.Site_OrganizationName as Site_OrganizationName,
       ----- OPTIONS --------
       isnull(P_ASD_OPTN_VALUE, '{{}}') as Options,
       --OPTN.IS_UPDATED,
 
       -----ChangedOptions----
-      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTION_ORDER ELSE NULL END AS ChangedOptions_Id,
-      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OPTN_NAME ELSE NULL END AS ChangedOptions_Name,
-      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OLD_VALUE ELSE NULL END AS ChangedOptions_Value_OldValue,
-      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.CURRENT_VALUE ELSE NULL END AS ChangedOptions_Value_NewValue,
-      CASE WHEN OPTN.IS_UPDATED = 1 THEN OPTN.OPTN_CODE ELSE NULL END AS ChangedOptions_Code,
+      CASE WHEN tt.IS_UPDATED = 1 THEN OPTION_ORDER ELSE NULL END AS ChangedOptions_Id,
+      CASE WHEN tt.IS_UPDATED = 1 THEN tt.OPTN_NAME ELSE NULL END AS ChangedOptions_Name,
+      CASE WHEN tt.IS_UPDATED = 1 THEN tt.OLD_VALUE ELSE NULL END AS ChangedOptions_Value_OldValue,
+      CASE WHEN tt.IS_UPDATED = 1 THEN tt.CURRENT_VALUE ELSE NULL END AS ChangedOptions_Value_NewValue,
+      CASE WHEN tt.IS_UPDATED = 1 THEN tt.OPTN_CODE ELSE NULL END AS ChangedOptions_Code,
 
       -----------InlineAssets-------
       CASE WHEN C_G.Seq is null and O_G.Seq is null THEN NULL  ELSE C_G.Game_AssetId  END as InlineAssets_Id,
@@ -1401,44 +1413,35 @@
 
       case when ASD_DELETED = 0 then 1 else 0 end as IsLastest,
          OPTION_ORDER,
-
-         case when OPTN.IS_UPDATED = 1 then 1
+              C_G.Gmap_Id_Seq,
+         case when tt.IS_UPDATED = 1 then 1
                  when isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data') then 1
                  when isnull([PoolName_Current],'no_data') &lt;&gt; isnull([PoolName_Old],'no_data') then 1
       else 0 end as all_Updated
-
-
-      --GMS.[Current_GameComboName],
-      --gms.[Current_Game_Id],
-      --GMS.[Old_GameComboName],
-      --[Old_Game_Id],
-      --[PoolName_Old],
-      --[PoolName_Current],
-      --PoolId_Old,
-      --PoolId_Current,
-      --SMY.current_id,
-      --SMY.pre_id,
-      --OPTION_ORDER
-      FROM MIGRATION.GAM_ASSET_SLOT_HISTORY_SUMMARY (nolock) AS SMY --WHERE SMY.ASD_NUMBER = '180'
-      LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_OPTIONS (nolock) AS OPTN ON OPTN.CLST_ASD_ID = SMY.CLST_DET_ID
-      LEFT JOIN MIGRATION.GAM_ASSET_SLOT_OPTIONS_VALUE (nolock) AS OTP_VAL ON P_ASD_ID = smy.CURRENT_ID
-      FULL JOIN MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING (nolock) AS C_G ON smy.current_id = C_G.gm_asd_std_id
-      FULL JOIN MIGRATION.GAM_HISTORY_SLOT_GAMES_MAPPING (nolock) AS O_G ON smy.Pre_Id = O_G.gm_asd_std_id
-      and C_G.GmOptionName = O_G.GmOptionName and O_G.game_id = C_G.game_id
+         --select *
+      FROM ( select * from MIGRATION.GAM_CHK_ASSET_SLOT_HISTORY_SUMMARY (nolock) AS SMY --WHERE SMY.ASD_NUMBER = '180'
+      JOIN (select row_number() over(partition by changelist_id, clst_asd_id, asd_am_uid order by changelist_id, clst_asd_id, asd_am_uid, OPTION_ORDER) as optn_seq,
+                --1 as optn_seq,
+                GH_OPTN_ID , CHANGELIST_NAME , CHANGELIST_ID , CLST_ASD_ID , ASD_AM_UID as ASSET_UNQ_ID , ASD_NUMBER as Asset_Number, 
+                ASD_LOCATION , OLD_ASD_NUMBER , OLD_ASD_LOCATION , OPTN_CODE , OPTN_NAME , CURRENT_VALUE , 
+                OLD_VALUE , OPTION_ORDER , IS_UPDATED , CUR_ASD_STD_ID , PRE_ASD_STD_ID , EXECUTED_DATETIME 
+                from  MIGRATION.GAM_CHK_ASSET_SLOT_HISTORY_OPTIONS (nolock) ) AS OPTN ON OPTN.CLST_ASD_ID = SMY.CLST_DET_ID
+      JOIN MIGRATION.GAM_CHK_ASSET_SLOT_OPTIONS_VALUE (nolock) AS OTP_VAL ON P_ASD_ID = smy.CURRENT_ID ) as tt
+      full outer JOIN MIGRATION.GAM_CHK_HISTORY_SLOT_GAMES_MAPPING (nolock) AS C_G ON cur_asd_std_id = C_G.gm_asd_std_id and c_g.seq = tt.optn_seq 
+      FULL OUTER JOIN MIGRATION.GAM_CHK_HISTORY_SLOT_GAMES_MAPPING (nolock) AS O_G ON tt.Pre_Id = O_G.gm_asd_std_id 
+                     and C_G.GmOptionName = O_G.GmOptionName and O_G.game_id = C_G.game_id and C_G.seq = O_G.seq
       LEFT JOIN MIGRATION.GAM_ASSET_GAMES_OPTIONS_VALUE (nolock) AS GM ON GM.P_GM_ID = C_G.Game_Id
-      LEFT JOIN MIGRATION.GAM_ASSET_SLOT_HISTORY_PROGRESSIVE (nolock) AS PROG ON PROG.CLST_DET_ID = SMY.CLST_DET_ID
+      LEFT JOIN MIGRATION.GAM_CHK_ASSET_SLOT_HISTORY_PROGRESSIVE (nolock) AS PROG ON PROG.CLST_DET_ID = tt.CLST_DET_ID
       WHERE 1=1  and Asst_Histry_Id is not null
-         and (case when SMY.[Action] = 'ADD' then 1
-				 when OPTN.IS_UPDATED = 1 then 1
-                 when isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data') then 1
-                 when isnull([PoolName_Current],'no_data') &lt;&gt; isnull([PoolName_Old],'no_data') then 1 else 0 end ) = 1
+         and (case when tt.[Action] = 'ADD' then 1
+                   when tt.IS_UPDATED = 1 then 1
+                   when isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data') then 1
+                   when isnull([PoolName_Current],'no_data') &lt;&gt; isnull([PoolName_Old],'no_data') then 1 
+                              else 0 end ) = 1
       --and SMY.ASD_AM_UID =7337
-      --AND SMY.SiteNumber in ({0})
-      and SMY.SiteNumber in (select * from [Migration].[GetSitesForMigration]())
-	  --and Asst_Histry_Id =1180529
-      ORDER BY SMY.CLST_EXECTUED_DATE, SMY.CURRENT_ID, OPTION_ORDER
-
-
+         --and Asst_Histry_Id = 1084920
+      AND tt.SiteNumber in ({0})
+      ORDER BY tt.CLST_EXECTUED_DATE, tt.CURRENT_ID, C_G.Game_AssetId, OPTION_ORDER
     </Source>
     <Destination>[Asset_History].[AssetsHistory]</Destination>
     <KeyFormat Format="68_{0}" Keys="Id"  />

@@ -2,7 +2,7 @@
 	
 	***************************************************
 	*												  *
-	*    PreRequisite Name - ReportTruncateTables     *
+	*    PreRequisite Name - UMDataRetrieval	      *
 	*												  *
 	***************************************************
    
@@ -47,3 +47,39 @@ SELECT 'UPDATE MIGRATION.GAM_SITE SET SITE_CODE = '''
 FROM [UM].[ORGANIZATION] AS ORG
 LEFT JOIN [UM].[ORGANIZATION_TYPE] AS ORGTYPE ON ORGTYPE.ORG_TYPE_ID = ORG.ORG_TYPE_ID
 WHERE ORG.ORG_DELETED_TS IS NULL AND ORGTYPE.ORG_TYPE_ID = 3 
+
+UNION ALL
+
+
+SELECT 'INSERT INTO Migration.UM_SITE_INFO (SITE_NUMBER,SITE_SHORT_NAME,SITE_LONG_NAME,CONT_ADDRESS,CONT_CITY,CONT_STATE_NAME,
+CONT_PROVINCE_NAME,CONT_POSTAL_CODE,CONT_EMAIL,CONT_PHONE_NUMBER,CONT_FAX_NUMBER,CONT_MOB_NUMBER,ORG_LMO,ORG_APPROVED_MACHINE_COUNT,
+ORG_LICENSEE,ORG_LICENSE_NUM,ORG_VENUE_CODE,ORG_CREATED_TS,ORG_UPDATED_TS,COUNTRY_ID,COUNTRY_CODE,COUNTRY_NAME,
+COUNTRY_IS_SUPPORTED) VALUES ('+
+       cast(ORG.ORG_NUMBER as NVARCHAR) +','''+
+	   ISNULL(REPLACE(org.ORG_SHORT_NAME,'''',''''''),'')+''','''+
+       ISNULL(REPLACE(ORG.ORG_LONG_NAME,'''',''''''),'') +''','''+ 
+	   ISNULL(REPLACE(C.CONT_ADDRESS,'''',''''''),'') +''','''+
+	   ISNULL(REPLACE(C.CONT_CITY,'''',''''''),'')+''','''+ 
+	   ISNULL(REPLACE(C.CONT_STATE_NAME,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(C.CONT_PROVINCE_NAME,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(C.CONT_POSTAL_CODE,'''',''''''),'')+''','''+
+       ISNULL(REPLACE(C.CONT_EMAIL,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(C.CONT_PHONE_NUMBER,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(C.CONT_FAX_NUMBER,'''',''''''),'')+''','''+
+       ISNULL(REPLACE(C.CONT_MOB_NUMBER,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(ORG.ORG_LMO,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(ORG_APPROVED_MACHINE_COUNT,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(ORG_LICENSEE,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(ORG_LICENSE_NUM,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(ORG_VENUE_CODE,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(ORG_CREATED_TS,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(ORG_UPDATED_TS,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(COUNTRY_ID,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(COUNTRY_CODE,'''',''''''),'')+''','''+
+	   ISNULL(REPLACE(COUNTRY_NAME,'''',''''''),'')+''','+
+	   ISNULL(CAST(ISNULL(COUNTRY_IS_SUPPORTED,'') as VARCHAR(2)),'')+
+	   ');' as sdf 
+	    FROM [UM].[ORGANIZATION] AS ORG
+INNER JOIN [UM].[CONTACT_MASTER] AS C ON C.CONT_ID = ORG_CONT_ID
+LEFT join [UM].COUNTRY as cnt on cnt.COUNTRY_CODE=c.CONT_COUNTRY_CODE
+WHERE ORG.ORG_DELETED_TS is NULL

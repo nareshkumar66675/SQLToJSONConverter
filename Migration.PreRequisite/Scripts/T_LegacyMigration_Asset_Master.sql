@@ -111,7 +111,10 @@ DROP TABLE MIGRATION.GAM_THEME_DETAILS
 END
 GO
 
-
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[MIGRATION].[UM_SITE_INFO]') AND type in (N'U'))
+BEGIN
+DROP TABLE [MIGRATION].[UM_SITE_INFO]
+END
 
 GO
 
@@ -127,17 +130,47 @@ RETURNS @output TABLE(
 BEGIN
 
 /* Limited Sites*/
-INSERT INTO @output
-select SITE_NUMBER from Gam.SITE
-where SITE_NUMBER in (1, 2, 3, 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
-order by SITE_NUMBER
+--INSERT INTO @output
+--select SITE_NUMBER from Gam.SITE
+--where SITE_NUMBER in (1, 2, 3, 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
+--order by SITE_NUMBER
 
 /*      ALL Sites  */
---INSERT INTO @output
---select SITE_NUMBER from Gam.SITE order by SITE_NUMBER
+INSERT INTO @output
+select SITE_NUMBER from Gam.SITE order by SITE_NUMBER
 
 Return
 END
+
+GO
+
+CREATE TABLE [MIGRATION].[UM_SITE_INFO](
+	[SITE_NUMBER] [int] NOT NULL PRIMARY KEY,
+	[SITE_SHORT_NAME] [nvarchar](200) NULL,
+	[SITE_LONG_NAME] [nvarchar](200) NULL,
+	[CONT_ADDRESS] [nvarchar](MAX) NULL,
+	[CONT_CITY] [nvarchar](200) NULL,
+	[CONT_STATE_NAME] [nvarchar](200) NULL,
+	[CONT_PROVINCE_NAME] [nvarchar](200) NULL,
+	[CONT_POSTAL_CODE] [nvarchar](200) NULL,
+	[CONT_EMAIL] [nvarchar](200) NULL,
+	[CONT_PHONE_NUMBER] [nvarchar](100) NULL,
+	[CONT_FAX_NUMBER] [nvarchar](100) NULL,
+	[CONT_MOB_NUMBER] [nvarchar](100) NULL,
+	[ORG_LMO][nvarchar](500) NULL,
+	[ORG_APPROVED_MACHINE_COUNT] [nvarchar](100) NULL,
+	[ORG_LICENSEE] [nvarchar](500) NULL,
+	[ORG_LICENSE_NUM] [nvarchar](500) NULL,
+	[ORG_VENUE_CODE] [nvarchar](500) NULL,
+	[COUNTRY_ID] int NULL,
+    [COUNTRY_CODE] [nvarchar](200) NULL,
+    [COUNTRY_NAME] [nvarchar](200) NULL,
+    [COUNTRY_IS_SUPPORTED] bit NULL,
+	[ORG_CREATED_TS] datetimeoffset NULL,
+	[ORG_UPDATED_TS] datetimeoffset NULL
+) ON [PRIMARY]
+
+
 GO
 
 --IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_HISTORY_PROGRESSIVE') AND type in (N'U'))
