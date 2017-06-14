@@ -6,8 +6,8 @@
     <Source>
       SELECT st.SITE_NUMBER as Id,
       st.SITE_NUMBER as Number,
-      st.SITE_short_NAME as Name,
-      st.SITE_LONG_NAME as [Description],
+      UM.SITE_SHORT_NAME as Name,
+      UM.SITE_LONG_NAME as [Description],
       NULLIF(UM.ORG_VENUE_CODE,'') as VenueCode,
       MST.SITE_CODE as Code,
       coalesce(PROP_PARENT_CODE,P.PROP_SHORT_NAME) as ParentCode,
@@ -27,10 +27,10 @@
       NULLIF(UM.CONT_CITY,'') as ContactInformation_City,
       NULLIF(UM.CONT_STATE_NAME,'') as ContactInformation_State,
       NULLIF(UM.COUNTRY_ID,'') as ContactInformation_Country_Id,
-	    NULLIF(UM.COUNTRY_CODE,'') as ContactInformation_Country_CountryCode,
-	    NULLIF(UM.COUNTRY_NAME,'') as ContactInformation_Country_CountryName,
-	    UM.COUNTRY_IS_SUPPORTED as ContactInformation_Country_IsInactive,
-	    CAST(0 as BIT) as ContactInformation_Country_IsDefault,
+	   NULLIF(UM.COUNTRY_CODE,'') as ContactInformation_Country_CountryCode,
+	   NULLIF(UM.COUNTRY_NAME,'') as ContactInformation_Country_CountryName,
+	   UM.COUNTRY_IS_SUPPORTED as ContactInformation_Country_IsInactive,
+	   CAST(0 as BIT) as ContactInformation_Country_IsDefault,
       NULLIF(UM.CONT_POSTAL_CODE,'') as ContactInformation_PostalCode,
       NULLIF(UM.CONT_EMAIL,'') as ContactInformation_MailId,
       NULLIF(UM.CONT_PHONE_NUMBER,'') as ContactInformation_PhoneNumber,
@@ -45,7 +45,7 @@
       CAST(im.INS_SERVICE_PORT as VARCHAR(50)) as Products_Port
       from gam.SITE as st
       LEFT JOIN MIGRATION.GAM_SITE AS MST ON MST.SITE_LEGCY_ID = ST.SITE_ID
-	    LEFT JOIN MIGRATION.UM_SITE_INFO AS UM ON UM.SITE_NUMBER=st.SITE_NUMBER
+	   LEFT JOIN MIGRATION.UM_SITE_INFO AS UM ON UM.SITE_NUMBER=st.SITE_NUMBER
       join gam.SITE_TYPE as stType on st.SITE_TYPE_ID = stType.SITE_TYPE_ID
       join gam.INSTALLED_SYSTEM_MAP  as iMap on iMap.INSM_SITE_ID = st.site_id
       join gam.INSTALLED_SYSTEM as im on im.INS_SYS_ID = iMap.INSM_SYS_ID

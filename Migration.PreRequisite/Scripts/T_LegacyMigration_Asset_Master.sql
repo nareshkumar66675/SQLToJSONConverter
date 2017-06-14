@@ -129,45 +129,45 @@ RETURNS @output TABLE(
 )
 BEGIN
 
-/* Limited Sites*/
+/*   Limited Sites    */
 --INSERT INTO @output
 --select SITE_NUMBER from Gam.SITE
 --where SITE_NUMBER in (1, 2, 3, 301, 302, 401, 404, 501, 502, 201, 202, 801, 802, 683, 601)
 --order by SITE_NUMBER
 
-/*      ALL Sites  */
+/*      ALL Sites     */
 INSERT INTO @output
-select SITE_NUMBER from Gam.SITE order by SITE_NUMBER
+SELECT SITE_NUMBER FROM GAM.SITE ORDER BY SITE_NUMBER
 
-Return
+RETURN
 END
 
 GO
 
 CREATE TABLE [MIGRATION].[UM_SITE_INFO](
-	[SITE_NUMBER] [int] NOT NULL PRIMARY KEY,
-	[SITE_SHORT_NAME] [nvarchar](200) NULL,
-	[SITE_LONG_NAME] [nvarchar](200) NULL,
-	[CONT_ADDRESS] [nvarchar](MAX) NULL,
-	[CONT_CITY] [nvarchar](200) NULL,
-	[CONT_STATE_NAME] [nvarchar](200) NULL,
-	[CONT_PROVINCE_NAME] [nvarchar](200) NULL,
-	[CONT_POSTAL_CODE] [nvarchar](200) NULL,
-	[CONT_EMAIL] [nvarchar](200) NULL,
-	[CONT_PHONE_NUMBER] [nvarchar](100) NULL,
-	[CONT_FAX_NUMBER] [nvarchar](100) NULL,
-	[CONT_MOB_NUMBER] [nvarchar](100) NULL,
-	[ORG_LMO][nvarchar](500) NULL,
-	[ORG_APPROVED_MACHINE_COUNT] [nvarchar](100) NULL,
-	[ORG_LICENSEE] [nvarchar](500) NULL,
-	[ORG_LICENSE_NUM] [nvarchar](500) NULL,
-	[ORG_VENUE_CODE] [nvarchar](500) NULL,
+	[SITE_NUMBER] int NOT NULL PRIMARY KEY,
+	[SITE_SHORT_NAME] nvarchar(200) NULL,
+	[SITE_LONG_NAME] nvarchar(200) NULL,
+	[CONT_ADDRESS] nvarchar(MAX) NULL,
+	[CONT_CITY] nvarchar(200) NULL,
+	[CONT_STATE_NAME] nvarchar(200) NULL,
+	[CONT_PROVINCE_NAME] nvarchar(200) NULL,
+	[CONT_POSTAL_CODE] nvarchar(200) NULL,
+	[CONT_EMAIL] nvarchar(200) NULL,
+	[CONT_PHONE_NUMBER] nvarchar(100) NULL,
+	[CONT_FAX_NUMBER] nvarchar(100) NULL,
+	[CONT_MOB_NUMBER] nvarchar(100) NULL,
+	[ORG_LMO] nvarchar(500) NULL,
+	[ORG_APPROVED_MACHINE_COUNT] nvarchar(100) NULL,
+	[ORG_LICENSEE] nvarchar(500) NULL,
+	[ORG_LICENSE_NUM] nvarchar(500) NULL,
+	[ORG_VENUE_CODE] nvarchar(500) NULL,
 	[COUNTRY_ID] int NULL,
-    [COUNTRY_CODE] [nvarchar](200) NULL,
-    [COUNTRY_NAME] [nvarchar](200) NULL,
+    [COUNTRY_CODE] nvarchar(200) NULL,
+    [COUNTRY_NAME] nvarchar(200) NULL,
     [COUNTRY_IS_SUPPORTED] bit NULL,
-	[ORG_CREATED_TS] datetimeoffset NULL,
-	[ORG_UPDATED_TS] datetimeoffset NULL
+	[ORG_CREATED_TS] datetime NULL,
+	[ORG_UPDATED_TS] datetime NULL
 ) ON [PRIMARY]
 
 
@@ -211,7 +211,7 @@ GO
 --BANK
 
 SELECT BK.BANK_ID AS BANK_LEGCY_ID, BK_ZONE_ID, AR.AREA_ID , SITE_ID,
-row_number() over( partition by SITE_ID order by AREA_ID, BK_ZONE_ID, BANK_ID) as BK_NEW_ID
+ROW_NUMBER() over( partition by SITE_ID order by AREA_ID, BK_ZONE_ID, BANK_ID) as BK_NEW_ID
 INTO MIGRATION.GAM_BANK
 FROM GAM.BANK (nolock) AS BK 
 JOIN GAM.ZONE (nolock) AS ZN ON ZN.ZONE_ID = BK.BK_ZONE_ID
