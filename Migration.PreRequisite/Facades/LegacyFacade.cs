@@ -17,14 +17,15 @@ namespace Migration.PreRequisite.Facades
         private string _connectionString = ConnectionStrings.LegacyConnectionString;
         public LegacyFacade()
         {
-            //_legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyViews", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyIndex", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyAuthDataTables", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyAssetMasterTables", _connectionString));
+            _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("DataCorrection", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyAssetSlotTables", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyAssetHistoryDataPopulation", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("AssetDefinitionParseSP", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("AssetHistoryInsertSP", _connectionString));
+            _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("HistoryData", _connectionString));
             _legacyPreRequisites.Add(new UMDataRetrievalPreRequisite()); 
         }
         public override FacadeType Type => FacadeType.Legacy;

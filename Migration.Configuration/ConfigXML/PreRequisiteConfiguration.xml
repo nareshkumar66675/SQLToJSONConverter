@@ -18,4 +18,6 @@
   <PreRequisite Name ="AssetDefault" ScriptFilePath="Scripts/D_AssetDefault.sql" Skip="False"/>
   <PreRequisite Name ="LegacyIndex" ScriptFilePath="Scripts/I_LegacyIndex.sql" Skip="False"/>
   <PreRequisite Name ="UpdateCustomID" ScriptFilePath="Scripts/D_UpdateCutomValues.sql" Skip="False"/>
+  <PreRequisite Name ="HistoryData" ScriptFilePath="Scripts/D_HistoryData.sql" Skip="False"/>
+  <PreRequisite Name ="DataCorrection" ScriptFilePath="Scripts/D_DataCorrection.sql" Skip="False"/>
 </PreRequisiteConfig>

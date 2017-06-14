@@ -178,7 +178,7 @@ GO
       FROM GAM.ASSET_STANDARD_DETAILS (nolock) AS ASD
       JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
       JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
-	  JOIN GAM.MANUFACTURER (nolock) AS MNF ON MNF.MANF_ID = ASD_MANF_ID
+      JOIN GAM.MANUFACTURER (nolock) AS MNF ON MNF.MANF_ID = ASD_MANF_ID
       JOIN GAM.MODEL (nolock) AS MDL ON MDL.MDL_ID = ASD_MODL_ID
       JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
       JOIN GAM.[SITE] (nolock) AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
@@ -206,15 +206,15 @@ GO
 	  FROM GAM.ASSET_STANDARD_DETAILS (nolock) AS ASD
       JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
       JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
-	  JOIN GAM.MANUFACTURER (nolock) AS MNF ON MNF.MANF_ID = ASD_MANF_ID
+      JOIN GAM.MANUFACTURER (nolock) AS MNF ON MNF.MANF_ID = ASD_MANF_ID
       JOIN GAM.MODEL (nolock) AS MDL ON MDL.MDL_ID = ASD_MODL_ID
       JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
       JOIN GAM.[SITE] (nolock) AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
       JOIN MIGRATION.GAM_SITE (nolock) AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
       JOIN GAM.PROPERTY (nolock) AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
       JOIN [MIGRATION].[GAM_PROPERTY] (nolock) as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
-	  left join [GAM].[TYPE_CODE_MASTER] (nolock) as tcm on tcm.tycod_id = [ASD_TCOD_ID]
-	  left JOIN GAM.TYPE_CODE_VALUES  AS TCV ON TCV.TYCV_TYCOD_ID = TYCOD_ID
+      LEFT JOIN [GAM].[TYPE_CODE_MASTER] (nolock) as tcm on tcm.tycod_id = [ASD_TCOD_ID]
+      LEFT JOIN GAM.TYPE_CODE_VALUES  AS TCV ON TCV.TYCV_TYCOD_ID = TYCOD_ID
       left join gam.[OPTION] (nolock) as optn on optn.[OPTN_ID] = TYCV_OPTN_ID
       left join gam.ASSET_DEFINITION (nolock) as astDfn on astdfn.ASTDFN_ASST_ID = AST.ASST_ID
       and optn.[OPTN_ID] = astDfn.[ASTDFN_OPTN_ID]
@@ -227,9 +227,8 @@ GO
 	    ) as all_tc ) as Ast_Optn
 
       FULL JOIN MIGRATION.GAM_ASSET_COMP_VALUES (nolock) AS AST_COMP ON AST_OPTN.ASD_STD_ID = AM_LEGACYID and Ast_Optn.Asset_optn_val_seqId = AST_COMP.Seq_id
-      FULL JOIN MIGRATION.GAM_GAMES_DETAILS (nolock) as gSltMap  on [GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
-      and Ast_Optn.Asset_optn_val_seqId = gSltMap.Ast_Gme_Seq
-      ) as overAll
+      FULL JOIN (SELECT * FROM MIGRATION.GAM_GAMES_DETAILS (nolock) WHERE ASD_STD_NEW_ID IS NOT NULL) as gSltMap  on [GDM_ASTSTD_OR_TYCD_ID] = Ast_Optn.ASD_STD_ID
+      and Ast_Optn.Asset_optn_val_seqId = gSltMap.Ast_Gme_Seq       ) as overAll
       where 1=1 AND Site_SiteNumber IS NOT NULL AND AssetId_Id IS NOT NULL
       AND Site_SiteNumber in (select * from [Migration].[GetSitesForMigration]())
       order by Ast_std_Id, game_id

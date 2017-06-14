@@ -61,19 +61,6 @@ DROP Table MIGRATION.GAM_THEME
 END
 GO
 
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.PROGRESSIVE_POOL') AND type in (N'U'))
-BEGIN
-DROP Table MIGRATION.PROGRESSIVE_POOL
-END
-GO
-
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.PROGRESSIVE_METER') AND type in (N'U'))
-BEGIN
-DROP Table MIGRATION.PROGRESSIVE_METER
-END
-GO
-
-
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_POS_MANUFACTURER') AND type in (N'U'))
 BEGIN
 DROP Table MIGRATION.GAM_POS_MANUFACTURER
@@ -99,11 +86,6 @@ DROP Table MIGRATION.GAM_TYPE_DESCRIPTION
 END
 GO
 
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_DENOMINATION') AND type in (N'U'))
-BEGIN
-DROP Table MIGRATION.GAM_DENOMINATION
-END
-GO
 
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_THEME_DETAILS') AND type in (N'U'))
 BEGIN
@@ -173,21 +155,9 @@ CREATE TABLE [MIGRATION].[UM_SITE_INFO](
 
 GO
 
---IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'MIGRATION.GAM_HISTORY_PROGRESSIVE') AND type in (N'U'))
---BEGIN
---DROP Table MIGRATION.GAM_HISTORY_PROGRESSIVE
---END
---GO
-
-
 ---------------------------
 -- Site wise incremental --
 ---------------------------
-
---INSERT INTO MIGRATION.GAM_AREA
---SELECT ROW_NUMBER() OVER(PARTITION BY SITE_ID ORDER BY SITE_ID, AREA_ID) AS RW_NUM ,
---AREA_ID FROM GAM.AREA AS AR WHERE IS_DELETED = 0 ORDER BY AR.SITE_ID, AR.AREA_ID
-
 
 -- AREA 
 
@@ -273,33 +243,6 @@ FROM GAM.THEME (nolock) AS TM
 WHERE IS_DELETED = 0 ORDER BY THEM_ID
 
 
---- PROGRESSIVE POOL
-CREATE TABLE MIGRATION.PROGRESSIVE_POOL
-(
-POOL_LEGCY_ID BIGINT,
-POOL_NEW_ID BIGINT
-)
-
-INSERT INTO MIGRATION.PROGRESSIVE_POOL
-SELECT PRGP_ID, ROW_NUMBER() OVER(ORDER BY PRGP_ID) AS RW_NUM
--- select *
-FROM PROGRESSIVE.[POOL] (nolock) AS P
-WHERE IS_DELETED = 0 ORDER BY PRGP_ID
-
---- PROGRESSIVE METER
-CREATE TABLE MIGRATION.PROGRESSIVE_METER
-(
-MTR_LEGCY_ID BIGINT,
-MTR_NEW_ID BIGINT
-)
-
-INSERT INTO MIGRATION.PROGRESSIVE_METER
-SELECT MTR_ID, ROW_NUMBER() OVER(ORDER BY MTR_ID) AS RW_NUM
--- SELECT *
-FROM PROGRESSIVE.METER (nolock) AS MTR
-WHERE IS_DELETED = 0 ORDER BY MTR_ID
-
-
 -- POS MANUFACTURER
 CREATE TABLE MIGRATION.GAM_POS_MANUFACTURER
 (
@@ -324,16 +267,6 @@ SELECT MDL_ID, ROW_NUMBER() OVER(ORDER BY MDL_ID) AS RW_NUM
 FROM GAM.MODEL (nolock) AS MT
 WHERE IS_DELETED = 0  AND MT.MDL_SHORT_NAME = 'POS' ORDER BY MDL_ID
 
-
--- Denomination
-SELECT DENM_ID, COMPONENTS_ID, CODE, DENM_AMOUNT, DENM_AMOUNT_Cents 
-INTO [MIGRATION].[GAM_DENOMINATION]
-FROM ( SELECT DENM_ID, ROW_NUMBER() OVER (ORDER BY denm_amount ) AS Components_Id, 
-ROW_NUMBER() OVER (partition by denm_amount ORDER BY denm_amount ) AS dm_amt_seq,
-'Denom Value' as CODE, cast ( CONVERT(DECIMAL(10,2),cast(denm_amount as float)/100) as nvarchar) as DENM_AMOUNT,
-DENM_AMOUNT as DENM_AMOUNT_Cents
-FROM GAM.DENOMINATION (nolock) AS D  WHERE IS_DELETED = 0 ) AS TT
-WHERE TT.DM_AMT_SEQ = 1 
 
 
 
@@ -517,44 +450,6 @@ on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
 and m.ModelType = a.ModelType and m.model = a.model and m.GameHoldPC = a.GameHoldPC
 and m.HoldPC = a.HoldPC and m.MaxBet = a.MaxBet and m.LineConfiguration = a.LineConfiguration
 and m.GameCategory = a.GameCategory
-GO
-
---inserting type decription for Type Code
-INSERT INTO [MIGRATION].[GAM_TYPE_DESCRIPTION]
-SELECT 
-max(Id)+1 as Id, 
-'KONAMI' as Typedescription,
-'KONAMI' AS manufacture, --7
-'CASINO' as modelType,
-'PODIUM' as Model,
-'1.00' as gameHoldPc,
-'1.00' as HoldPC,
-'1' as MaxBet,
-'1' as LineConfiguration,
-'Core' as GameCategory,
-max(TypeDescription_Id)+1 as TypeDescription_Id,
-max(Manufacturer_Id)+1 as Manufacturer_Id,
-max(ModelType_Id)+1 as ModelType_Id,
-max(Model_Id)+1 as Model_Id,
-max(GameHoldPC_Id)+1 as GameHoldPC_Id,
-max(HoldPC_Id)+1 as HoldPC_Id,
-max(MaxBet_Id)+1 as MaxBet_Id,
-max(LineConfiguration_Id)+1 as LineConfiguration_Id,
-max(GameCategory_Id)+1 as GameCategory_Id
-from [MIGRATION].[GAM_TYPE_DESCRIPTION] (nolock)
-
-UPDATE MIGRATION.GAM_TYPE_DESCRIPTION SET MAXBET = '1' WHERE MAXBET = ''
-GO
-UPDATE MIGRATION.GAM_TYPE_DESCRIPTION SET LINECONFIGURATION = '1' WHERE LINECONFIGURATION = ''
-GO
-UPDATE MIGRATION.GAM_TYPE_DESCRIPTION SET GameCategory = 'Core' WHERE GameCategory = ''
-GO
-
-UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET SET MAXBET = '1' WHERE MAXBET = ''
-GO
-UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET SET LINECONFIGURATION = '1' WHERE LINECONFIGURATION = ''
-GO
-UPDATE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET SET GameCategory = 'Core' WHERE GameCategory = ''
 GO
 
 
@@ -1091,24 +986,23 @@ POOL_NEW_ID,
 ---Options----
 Case when value_desc_prog = 'Pool_Id' then 1
 	 when value_desc_prog = 'Pool_Name' then 2
-	 when value_desc_prog = 'MeterCount' then 3
-	 when value_desc_prog = 'IsMultipleLevel' then 4
-	 when value_desc_prog = 'IsMysteryPool' then 5 
-	 when value_desc_prog = 'IsWAPPool' then 6 end as Options_Id,
+	 when value_desc_prog = 'IsMultipleLevel' then 3
+	 when value_desc_prog = 'IsMysteryPool' then 4 
+	 when value_desc_prog = 'IsWAPPool' then 5 end as Options_Id,
 
 Case when value_desc_prog = 'Pool_Id' then 'Pool Id'
 	 when value_desc_prog = 'Pool_Name' then 'Pool Name'
 	 when value_desc_prog = 'IsMultipleLevel' then 'Is Multiple Pool Progressive'
 	 when value_desc_prog = 'IsMysteryPool' then 'Is Mystery Pool'
 	 when value_desc_prog = 'IsWAPPool' then 'Is WAP Pool' 
-	 when value_desc_prog = 'MeterCount' then 'Meter Count' end as Options_Name,
+	 end as Options_Name,
 
 Case when value_desc_prog = 'Pool_Id' then 'Pool.Id.Code'
 	 when value_desc_prog = 'Pool_Name' then 'PROGRESSIVE.POOL.DESCRIPTION'
 	 when value_desc_prog = 'IsMultipleLevel' then 'PROGRESSIVE.POOL.IS.MULTIPLE.POOL.LEVEL.ON'
 	 when value_desc_prog = 'IsMysteryPool' then 'PROGRESSIVE.POOL.IS.MYSTERY.POOL'
 	 when value_desc_prog = 'IsWAPPool' then 'PROGRESSIVE.POOL.IS.WAP.POOL'
-	 when value_desc_prog = 'MeterCount' then 'Meter.Count.Code' end as Options_Code,
+	 end as Options_Code,
 
 	 value_prog as Options_Value,
 	 Pool_Deleted
@@ -1120,14 +1014,11 @@ case when PRGP_IS_MULTIPLE_LVL_ON = 1 then cast('Yes' as nvarchar) else cast('No
 case when PRGP_IS_MYSTERY_POOL = 1 then cast('Yes' as nvarchar) else cast('No' as nvarchar) end as IsMysteryPool,
 case when PRGP_IS_WAP_POOL = 1 then cast('Yes' as nvarchar) else cast('No' as nvarchar) end as IsWAPPool,
 
-cast(METER_COUNT as nvarchar) AS MeterCount,
 MP.POOL_NEW_ID,
 P.PRGP_ID, P.PCON_ID,
 P.IS_DELETED as Pool_Deleted
 FROM PROGRESSIVE.[POOL] (nolock) AS P 
-JOIN MIGRATION.PROGRESSIVE_POOL (nolock) AS MP ON MP.POOL_LEGCY_ID = P.PRGP_ID
-LEFT JOIN (SELECT M.PRGP_ID, COUNT(*) AS METER_COUNT FROM PROGRESSIVE.METER (nolock) AS M
-WHERE IS_DELETED = 0 GROUP BY M.PRGP_ID ) mtr_sum ON MTR_SUM.PRGP_ID = P.PRGP_ID ) prog_view
+JOIN MIGRATION.PROGRESSIVE_POOL (nolock) AS MP ON MP.POOL_LEGCY_ID = P.PRGP_ID  ) prog_view
 unpivot 
 (value_prog for value_desc_prog in (Pool_Id, Pool_Name, 
 IsMultipleLevel, IsMysteryPool, IsWAPPool, MeterCount) ) as t
