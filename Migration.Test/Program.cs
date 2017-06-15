@@ -194,18 +194,19 @@ namespace Migration.Test
             //var result = Slapper.AutoMapper.Map<TestEntity1>(list);
 
 
-            Configurator.SetQueryParamsFrTrnsfrmWtParams(GroupType.HISTORY, new List<string> { "201" });
+            //Configurator.SetQueryParamsFrTrnsfrmWtParams(GroupType.HISTORY, new List<string> { "201" });
 
-            Migration.Generate.Generate generate = new Migration.Generate.Generate();
-            Persist persist = new Persist();
+            //Migration.Generate.Generate generate = new Migration.Generate.Generate();
+            //Persist persist = new Persist();
 
 
-            //Starting Generate and Persist Parallely
-            Task genTask = generate.Start(Configurator.GetComponentsByGroup(GroupType.HISTORY), null);
-            Task persisTask = persist.Start(null);
+            ////Starting Generate and Persist Parallely
+            //Task genTask = generate.Start(Configurator.GetComponentsByGroup(GroupType.HISTORY), null);
+            //Task persisTask = persist.Start(null);
 
-            genTask.Wait();
-            persisTask.Wait();
+            //genTask.Wait();
+            //persisTask.Wait();
+            PreRequisiteFactory.GetPreRequistes(GroupType.ASSET).Start(null);
         }
     }
 }

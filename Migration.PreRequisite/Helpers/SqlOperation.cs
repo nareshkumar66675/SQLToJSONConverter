@@ -24,11 +24,10 @@ namespace Migration.PreRequisite.Helpers
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    string query = @"SELECT CASE WHEN EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=@Schema AND TABLE_NAME = @TableName)) THEN 1 ELSE 0 END";
                     var temp = tableName.Split('.');
                     string schema = temp.Length == 2 ? temp[0] : "dbo";
                     string tabName = temp.Length == 2 ? temp[1] : temp[0];
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand(Queries.CHECKTABLEEXISTS, con))
                     {
                         cmd.Parameters.Add(new SqlParameter("@Schema", schema));
                         cmd.Parameters.Add(new SqlParameter("@TableName", tabName));
@@ -98,7 +97,7 @@ namespace Migration.PreRequisite.Helpers
                 }
 
                 /* Insert Unused Custom Id to New Database */
-                ExecuteBulkCopy(table, connectionString, "[IDGEN].[CustomID_VALUES]");
+                ExecuteBulkCopy(table, connectionString, Queries.TBLCUSTOMID);
             }
             catch (Exception)
             {
@@ -155,13 +154,13 @@ namespace Migration.PreRequisite.Helpers
             {
                 List<string> completedList = new List<string>();
 
-                if (!CheckIfTableExists(connectionString, "Migration.PreRequisite"))
+                if (!CheckIfTableExists(connectionString, Common.Common.Queries.PreRequisiteTableName))
                     return completedList;
 
                 using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    var query = Queries.GetCompletedPreRequisites;
+                    var query = Common.Common.Queries.GetCompletedPreRequisites;
                     using (SqlCommand command = new SqlCommand(query, conn))
                     {
                         using (IDataReader dr = command.ExecuteReader())
@@ -191,7 +190,7 @@ namespace Migration.PreRequisite.Helpers
                 try
                 {
                     //Insert Records to PreRequisite Status Table
-                    command.CommandText = Queries.InsertPreRequisites;
+                    command.CommandText = Common.Common.Queries.InsertPreRequisites;
                     command.Parameters.Add(new SqlParameter("@Name", name));
                     command.Parameters.Add(new SqlParameter("@Status", status));
                     command.ExecuteNonQuery();
@@ -270,9 +269,7 @@ namespace Migration.PreRequisite.Helpers
                             0 - Table Exists and Not Empty - Records will not be Inserted
                            -1 - Table Not Exists - Error will be thrown
                         */
-                        command.CommandText = @"IF EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='Migration' AND TABLE_NAME = 'ASSET_TYPE_DEFN')) BEGIN
-                                                SELECT CASE WHEN COUNT(ID) > 0 THEN 0 ELSE 1 END from MIGRATION.ASSET_TYPE_DEFN END
-                                                ELSE BEGIN SELECT - 1 END";
+                        command.CommandText = Queries.CHECKASSETDFN;
                         command.CommandType = CommandType.Text;
 
                         var rslt = (int)command.ExecuteScalar();
@@ -285,8 +282,7 @@ namespace Migration.PreRequisite.Helpers
                             using (var astConn = new SqlConnection(connectionString))
                             {
                                 astConn.Open();
-                                var query = "SELECT Value FROM [ASSET_DEF].[ASSETS]";
-                                using (SqlCommand cmd = new SqlCommand(query, astConn))
+                                using (SqlCommand cmd = new SqlCommand(Queries.GETASSETDFN, astConn))
                                 {
                                     using (IDataReader dr = cmd.ExecuteReader())
                                     {
@@ -299,7 +295,7 @@ namespace Migration.PreRequisite.Helpers
                             }
 
                             //Insert Records to MIGRATION.ASSET_TYPE_DEFN
-                            command.CommandText = "MIGRATION.P_ASSET_DEFINITION";
+                            command.CommandText = Queries.SPASSETDFN;
                             command.CommandType = CommandType.StoredProcedure;
                             var sqp = new SqlParameter("@pValue", SqlDbType.VarChar);
                             command.Parameters.Add(sqp);
@@ -335,6 +331,48 @@ namespace Migration.PreRequisite.Helpers
             catch (Exception ex)
             {
                 Logger.Instance.LogError($"Error Occurred While Inserting Asset Defintion IDs ", ex);
+                return false;
+            }
+        }
+        internal static bool UpdateGeoData(string connectionString)
+        {
+            try
+            {
+                List<string> SiteNo = new List<string>();
+                /* Get List of Active Site Numbers from Legacy*/
+                using (SqlConnection legConn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
+                {
+                    legConn.Open();
+
+                    using (SqlCommand cmd = new SqlCommand(Queries.GETALLACTIVESITENO, legConn))
+                    {
+                        using (IDataReader dr = cmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                SiteNo.Add(dr[0].ToString());
+                            }
+                        }
+                    }
+                }
+                /* Update Geo Data in Asset DB*/
+                using (var astConn = new SqlConnection(connectionString))
+                {
+                    astConn.Open();
+
+                    using (SqlCommand command = new SqlCommand(Queries.SPUPDATEGEODATA, astConn))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        var sqp = new SqlParameter("@siteList", string.Join(",", SiteNo));
+                        command.Parameters.Add(sqp);
+                        command.ExecuteNonQuery();
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogError($"Error Occurred While Updating Geo Data", ex);
                 return false;
             }
         }

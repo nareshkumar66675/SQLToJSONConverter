@@ -60,6 +60,7 @@
     <Compile Include="Facades\AuthFacade.cs" />
     <Compile Include="Facades\LegacyFacade.cs" />
     <Compile Include="Facades\ReportFacade.cs" />
+    <Compile Include="Helpers\Common.cs" />
     <Compile Include="Helpers\SqlOperation.cs" />
     <Compile Include="IPreRequisite.cs" />
     <Compile Include="PreReqStatus.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="PreRequisites\InsertCustomAssetIDPreRequisite.cs" />
     <Compile Include="PreRequisites\InsertNumberMasterPreRequisite.cs" />
     <Compile Include="PreRequisites\UMDataRetrievalPreRequisite.cs" />
+    <Compile Include="PreRequisites\UpdateGeoDataPreRequisite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +84,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\D_CountryGeoData.sql" />
     <Content Include="Scripts\D_HistoryData.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

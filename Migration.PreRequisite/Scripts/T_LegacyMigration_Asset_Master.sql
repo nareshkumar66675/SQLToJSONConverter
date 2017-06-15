@@ -1021,7 +1021,7 @@ FROM PROGRESSIVE.[POOL] (nolock) AS P
 JOIN MIGRATION.PROGRESSIVE_POOL (nolock) AS MP ON MP.POOL_LEGCY_ID = P.PRGP_ID  ) prog_view
 unpivot 
 (value_prog for value_desc_prog in (Pool_Id, Pool_Name, 
-IsMultipleLevel, IsMysteryPool, IsWAPPool, MeterCount) ) as t
+IsMultipleLevel, IsMysteryPool, IsWAPPool) ) as t
 
 
 GO

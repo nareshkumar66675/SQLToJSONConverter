@@ -20,4 +20,5 @@
   <PreRequisite Name ="UpdateCustomID" ScriptFilePath="Scripts/D_UpdateCutomValues.sql" Skip="False"/>
   <PreRequisite Name ="HistoryData" ScriptFilePath="Scripts/D_HistoryData.sql" Skip="False"/>
   <PreRequisite Name ="DataCorrection" ScriptFilePath="Scripts/D_DataCorrection.sql" Skip="False"/>
+  <PreRequisite Name ="CountryGeoData" ScriptFilePath="Scripts/D_CountryGeoData.sql" Skip="False"/>
 </PreRequisiteConfig>

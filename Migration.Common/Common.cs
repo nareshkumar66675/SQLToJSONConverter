@@ -251,7 +251,14 @@ namespace Migration.Common
                 }
                 private set { }
             }
-
+            public static string PreRequisiteTableName
+            {
+                get
+                {
+                    return "Migration.PreRequisite";
+                }
+                private set { }
+            }
         }
     }
 }
