@@ -13,12 +13,12 @@ namespace Migration.Common
         public static class ConnectionStrings
         {
             //public static string AuthConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Auth_Migration";
-            //public static string AssetConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Asset_Migration";
-            //public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=ALH_AssetMatrix14";
+            public static string AssetConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM_B11_v1_Asset";
+            public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=Prod_ALH_AssetMatrix14";
             //public static string ReportConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Report_Migration";
             public static string AuthConnectionString = string.Empty;
-            public static string AssetConnectionString = string.Empty;
-            public static string LegacyConnectionString = string.Empty;
+            //public static string AssetConnectionString = string.Empty;
+            //public static string LegacyConnectionString = string.Empty;
             public static string ReportConnectionString = string.Empty;
             /// <summary>
             /// Retrieves Connection String based on Group Type
@@ -82,7 +82,26 @@ namespace Migration.Common
             {
                 get
                 {
-                    return !Directory.Exists(ConfigurationManager.AppSettings.Get("LogFilePath")) ? Directory.GetCurrentDirectory() : ConfigurationManager.AppSettings.Get("LogFilePath");
+                    var logFilePath = ConfigurationManager.AppSettings.Get("LogFilePath");
+                    if (string.IsNullOrWhiteSpace(logFilePath))
+                        return Directory.GetCurrentDirectory();
+                    else
+                    {
+                        if (Directory.Exists(logFilePath))
+                            return logFilePath;
+                        else
+                        {
+                            try
+                            {
+                                Directory.CreateDirectory(logFilePath);
+                            }
+                            catch (Exception)
+                            {
+                                return Directory.GetCurrentDirectory();
+                            }
+                            return logFilePath;
+                        }
+                    }
                 }
                 private set { }
             }

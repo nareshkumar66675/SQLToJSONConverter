@@ -339,13 +339,16 @@ namespace Migration.PreRequisite.Helpers
             try
             {
                 List<string> SiteNo = new List<string>();
-                /* Get List of Active Site Numbers from Legacy*/
+                DataTable DashboardCount = new DataTable();
                 using (SqlConnection legConn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
                 {
                     legConn.Open();
-
-                    using (SqlCommand cmd = new SqlCommand(Queries.GETALLACTIVESITENO, legConn))
+                    using (SqlCommand cmd = new SqlCommand())
                     {
+                        cmd.Connection = legConn;
+                        /* Get List of Active Site Numbers from Legacy*/
+                        cmd.CommandText = Queries.GETALLACTIVESITENO;
+                        cmd.CommandType = CommandType.Text;
                         using (IDataReader dr = cmd.ExecuteReader())
                         {
                             while (dr.Read())
@@ -353,26 +356,50 @@ namespace Migration.PreRequisite.Helpers
                                 SiteNo.Add(dr[0].ToString());
                             }
                         }
+
+                        /* Get Dashboard Count from Legacy   */
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = Queries.SPDASHBAORDCOUNT;
+
+                        SqlDataAdapter adapt = new SqlDataAdapter(cmd);
+                        adapt.Fill(DashboardCount);
                     }
                 }
-                /* Update Geo Data in Asset DB*/
+                /* Update Geo & Dashboard Data in Asset DB*/
                 using (var astConn = new SqlConnection(connectionString))
                 {
                     astConn.Open();
 
                     using (SqlCommand command = new SqlCommand(Queries.SPUPDATEGEODATA, astConn))
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        var sqp = new SqlParameter("@siteList", string.Join(",", SiteNo));
-                        command.Parameters.Add(sqp);
-                        command.ExecuteNonQuery();
+                        if (SiteNo != null && SiteNo.Count > 0)
+                        {
+                            if (DashboardCount != null && DashboardCount.Rows.Count == 1)
+                            {
+                                var row = DashboardCount.Rows[0];
+                                command.CommandType = CommandType.StoredProcedure;
+                                command.Parameters.Add(new SqlParameter("@siteList", string.Join(",", SiteNo)));
+                                command.Parameters.Add(new SqlParameter("@TotalSlots", row["TotalSlot"]));
+                                command.Parameters.Add(new SqlParameter("@Online", row["Online"]));
+                                command.Parameters.Add(new SqlParameter("@Enrolled", row["Enrolled"]));
+                                command.Parameters.Add(new SqlParameter("@Connected", row["Connected"]));
+                                command.Parameters.Add(new SqlParameter("@Manufacturer", row["Manufacturer"]));
+                                command.Parameters.Add(new SqlParameter("@Denom", row["Denom"]));
+                                command.Parameters.Add(new SqlParameter("@Progressive", row["Progressive"]));
+                                command.ExecuteNonQuery();
+                            }
+                            else
+                                throw new Exception("Dashboard Count Error");
+                        }
+                        else
+                            throw new Exception("Site Is Empty - GeoUpdate");
                     }
                 }
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.Instance.LogError($"Error Occurred While Updating Geo Data", ex);
+                Logger.Instance.LogError($"Error Occurred While Updating Dashboard Data", ex);
                 return false;
             }
         }

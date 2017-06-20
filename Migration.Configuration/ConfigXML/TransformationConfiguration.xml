@@ -659,124 +659,123 @@
   </Transformation>
   <Transformation Name="COMPDATA_TYPE_DESC">
     <Source>
-    SELECT  * From (select  TYCOD_Number as Id, 0 as DataRowVersion, TYCOD_NAME as Name, 
-    TYCOD_DESC as [Desc], CAST(0 as VARCHAR(50)) as SelectedInlines,
-    case when TYCOD_NAME like 'POS%' then 305 else 10 end as AssetTypeId,
-    case when TYCOD_NAME like 'POS%' then 'POS' else 'Slot' end as Asset_Type,
-    --------TypeCodeOption------
-    ---------Options------------
-    [OPTION_ID] as TypeCodeOption_Options_OptionId,
-    CASE WHEN [OPTION_ID] is NULL THEN NULL
-    ELSE
-    (CASE WHEN TYCV_OPTN_VALUE = 'FLAG.NO' then 'No'
-    when TYCV_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
-    WHEN TYCV_OPTN_VALUE = 'FLAG.YES' then 'Yes'
-    when TYCV_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.NORMAL' then 'Normal'
-    when TYCV_OPTN_VALUE = 'VALIDATION.SYSTEM' then 'System'
-    else TYCV_OPTN_VALUE end) END as TypeCodeOption_Options_Value,
-    ---------ComponentOptions---------
-    CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 22002
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 22063
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 22069
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 220113
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 220114
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 220115
-    ELSE null end as TypeCodeOption_ComponentOptions_ComponentId,
+      SELECT 22069 as Id,
+      0 as DataRowVersion,
+      --Component
+      22069 as Component_Id,
+      0 as Component_ScopeLevel,
+      'TYPE DESCRIPTION RELATION' as Component_Code,
+      --Components--
+      0 as Component_Components_SiteId,
+      --ComponentValues--
+      '1_root' as Component_Components_ComponentValues_Id,
+      'Type Description Relation' as Component_Components_ComponentValues_Name,
+      'TYPE DESCRIPTION RELATION' as Component_Components_ComponentValues_Code,
+      'Type Description Relation' as Component_Components_ComponentValues_DisplayName,
 
-    CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 'MANUFACTURER'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 'ASSET.HOLD.PERCENTAGE'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 'ASSET.TYPE.DESCRIPTION'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 'ASSET.DENOMINATION'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 'ASSET.GMU.DENOM'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 'ASSET.FILL.DENOM'
-    ELSE null end as TypeCodeOption_ComponentOptions_ComponentCode,
+      ----Type Description--
+      cast(TypeDescription_Id as nvarchar) +
+      '_22068' as Component_Components_ComponentValues_CC_Id,
+      typ.TypeDescription as Component_Components_ComponentValues_CC_Name,
+      'ASSET.TYPE.DESCRIPTION' as Component_Components_ComponentValues_CC_Code,
+      typ.TypeDescription as Component_Components_ComponentValues_CC_DisplayName,
+      ----Options---
+      1 as Component_Components_ComponentValues_CC_Options_Id,
+      typ.TypeDescription as Component_Components_ComponentValues_CC_Options_Value,
+      'ASSET.TYPE.DESCRIPTION.VALUE' as Component_Components_ComponentValues_CC_Options_Code,
 
-    CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 'Manufacturer'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 'Hold Percentage'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 'Type Description'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 'Denomination'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 'GMU Denom'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 'Fill Denom'
-    ELSE null end as TypeCodeOption_ComponentOptions_Instance,
+      ----Manufacturer----
+      cast(Manufacturer_Id as nvarchar) +
+      '_22002' as Component_Components_ComponentValues_CC_CC_Id,
+      MNF.Display_Name as Component_Components_ComponentValues_CC_CC_Name,
+      'MANUFACTURER' as Component_Components_ComponentValues_CC_CC_Code,
+      mnf.Display_Name as Component_Components_ComponentValues_CC_CC_DisplayName,
+      ----Options---
+      mnf_code_seq as Component_Components_ComponentValues_CC_CC_Options_Id,
+      mnf.value as Component_Components_ComponentValues_CC_CC_Options_Value,
+      mnf.mnf_code as Component_Components_ComponentValues_CC_CC_Options_Code,
 
-    CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN cast(GMNF.MF_NEW_ID as nvarchar)+'_1'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN TYCV_OPTN_VALUE
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN cast(TypeDescription_Id as nvarchar)+'_22068'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN cast(GDN.Components_Id as nvarchar)+'_1'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN cast(GDN.Components_Id as nvarchar)+'_1'
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN cast(GDN.Components_Id as nvarchar)+'_1'
-    ELSE null end as TypeCodeOption_ComponentOptions_Value,
+      ----Model Type----
+      cast(ModelType_Id as nvarchar) +
+      '_22003' as Component_Components_ComponentValues_CC_CC_CC_Id,
+      MDLTYPE.Display_Name as Component_Components_ComponentValues_CC_CC_CC_Name,
+      'MODEL.TYPE' as Component_Components_ComponentValues_CC_CC_CC_Code,
+      MDLTYPE.Display_Name as Component_Components_ComponentValues_CC_CC_CC_DisplayName,
+      ----Options---
+      MDL_TYP_SEQ as Component_Components_ComponentValues_CC_CC_CC_Options_Id,
+      MDLTYPE.VALUE as Component_Components_ComponentValues_CC_CC_CC_Options_Value,
+      MDLTYPE.MDL_TYP_CODE as Component_Components_ComponentValues_CC_CC_CC_Options_Code,
 
-    CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN upper(TYCV_OPTN_VALUE)
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN TYCV_OPTN_VALUE
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN upper(TYCV_OPTN_VALUE)
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN TYCV_OPTN_VALUE
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN TYCV_OPTN_VALUE
-    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN TYCV_OPTN_VALUE
-    ELSE null end as TypeCodeOption_ComponentOptions_DisplayValue 
+      ----Model----
+      cast(Model_Id as nvarchar) +
+      '_22005' as Component_Components_ComponentValues_CC_CC_CC_CC_Id,
+      MDL.Display_Name as Component_Components_ComponentValues_CC_CC_CC_CC_Name,
+      'MODEL' as Component_Components_ComponentValues_CC_CC_CC_CC_Code,
+      MDL.Display_Name as Component_Components_ComponentValues_CC_CC_CC_CC_DisplayName,
+      ----Options---
+      MDL_seq as Component_Components_ComponentValues_CC_CC_CC_CC_Options_Id,
+      MDL.VALUE as Component_Components_ComponentValues_CC_CC_CC_CC_Options_Value,
+      MDL.MDL_CODE as Component_Components_ComponentValues_CC_CC_CC_CC_Options_Code,
 
-    ----------InlineOptions-----------
-    --Game
-    --select  typ.TypeDescription ,  TYCV_OPTN_VALUE, *
+      ----Game Hold Percentage----
+      cast(GameHoldPC_Id as nvarchar) +
+      '_22064' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Id,
+      case when GameHoldPC = '' then '1.00' else GameHoldPC end as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Name,
+      'ASSET.GAME.HOLD.PERCENT' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Code,
+      case when GameHoldPC = '' then '1.00' else GameHoldPC end as Component_Components_ComponentValues_CC_CC_CC_CC_CC_DisplayName,
+      ----Options---
+      1 as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Id,
+      case when GameHoldPC = '' then '1.00' else GameHoldPC end as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Value,
+      'ASSET.GAME.HOLD.PERCENT.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_Options_Code,
 
-    FROM GAM.TYPE_CODE_MASTER (nolock) AS MS
-    JOIN GAM.TYPE_CODE_VALUES (nolock) AS VAL ON VAL.[TYCV_TYCOD_ID] = MS.TYCOD_ID
-    JOIN GAM.[OPTION] (nolock) AS OPTN ON OPTN.OPTN_ID  = TYCV_OPTN_ID
-    LEFT JOIN [MIGRATION].[ASSET_TYPE_DEFN] (nolock) AS TOPTN ON TOPTN.[OPTION_CODE] = OPTN.[OPTN_CODE]
-    LEFT JOIN MIGRATION.GAM_DENOMINATION (nolock) AS GDN ON GDN.DENM_AMOUNT = TYCV_OPTN_VALUE
-    LEFT JOIN GAM.MANUFACTURER (nolock) AS MNF ON MNF.MANF_LONG_NAME = TYCV_OPTN_VALUE
-    LEFT JOIN [MIGRATION].[GAM_MANUFACTURER] (nolock) AS GMNF ON GMNF.MNF_LEGCY_ID = MNF.MANF_ID
-    LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION (nolock) as typ on upper(typ.TypeDescription) = upper(TYCV_OPTN_VALUE) and tycv_optn_id = 210
-    where ms.[TYCOD_TYPE] = 2 and TYCOD_Number not in ( 2 )
-    ) as a
-                    union all
-    select * from (
-    --TypeDescription
-    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
-    22068 as ComponentId,'ASSET.TYPE.DESCRIPTION' as ComponentCode, 'Type Description' as Instance, cast(TypeDescription_Id as nvarchar)+'_22068' as comp_options_val, TypeDescription as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
-    where typedescription = 'KONAMI'
-    union all
-    --Manufacture
-    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
-    22002 as ComponentId,'MANUFACTURER' as ComponentCode, 'Manufacturer' as Instance, cast(Manufacturer_Id as nvarchar)+'_22002' as comp_options_val, Manufacturer as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
-    where typedescription = 'KONAMI'
-    union all
-    --Model Type
-    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
-    22003 as ComponentId,'MODEL.TYPE' as ComponentCode, 'Model Type' as Instance, cast(ModelType_Id as nvarchar)+'_22003' as comp_options_val, ModelType as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
-    where typedescription = 'KONAMI'
-    union all
-    --Model
-    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
-    22005 as ComponentId,'MODEL' as ComponentCode, 'Model' as Instance, CAST(Model_Id AS NVARCHAR)+'_22005' as comp_options_val, Model as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
-    where typedescription = 'KONAMI'
-    union all
-    --Hold Percentage
-    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
-    22063 as ComponentId,'ASSET.HOLD.PERCENTAGE' as ComponentCode, 'Hold Percentage' as Instance, cast(HoldPC_Id as nvarchar) +'_22063' as comp_options_val, GameHoldPC as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
-    where typedescription = 'KONAMI'
-    union all
-    --Game Hold Percentage
-    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines, 10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
-    22064 as ComponentId,'ASSET.GAME.HOLD.PERCENT' as ComponentCode, 'Game Hold Percentage' as Instance, cast(GameHoldPC_Id as nvarchar) +'_22064' as comp_options_val, GameHoldPC as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
-    where typedescription = 'KONAMI'
-    union all
-    --Max Bet
-    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
-    22065 as ComponentId,'ASSET.USER.CUSTOM.1' as ComponentCode, 'Max Bet' as Instance, cast(MaxBet_Id as nvarchar) +'_22065' as comp_options_val, MaxBet as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
-    where typedescription = 'KONAMI'
-    union all
-    --Line Configuration
-    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines, 10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
-    22066 as ComponentId,'ASSET.USER.CUSTOM.3' as ComponentCode, 'Line Configuration' as Instance, cast(LineConfiguration_Id as nvarchar) +'_22066' as comp_options_val, LineConfiguration as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
-    where typedescription = 'KONAMI'
-    union all
-    --Game Category
-    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
-    22067 as ComponentId,'ASSET.USER.CUSTOM.4' as ComponentCode, 'Game Category' as Instance, cast(GameCategory_Id as nvarchar) +'_22067' as comp_options_val, GameCategory as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
-    where typedescription = 'KONAMI'
-    ) as st_txt
-    order by id
+      ----Hold Percentage----
+      cast(HoldPC_Id as nvarchar) +
+      '_22063' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_Id,
+      HoldPC as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_Name,
+      'ASSET.HOLD.PERCENTAGE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_Code,
+      HoldPC as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_DisplayName,
+      ----Options---
+      1 as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_Options_Id,
+      HoldPC as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_Options_Value,
+      'ASSET.HOLD.PERCENTAGE.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_Options_Code,
+
+      ----MaxBet----
+      cast(MaxBet_Id as nvarchar) +
+      '_22065' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_Id,
+      MaxBet as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_Name,
+      'ASSET.USER.CUSTOM.1' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_Code,
+      MaxBet as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_DisplayName,
+      ----Options---
+      1 as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_Options_Id,
+      MaxBet as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_Options_Value,
+      'ASSET.USER.CUSTOM.1.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_Options_Code,
+
+      ----LineConfiguration----
+      cast(LineConfiguration_Id as nvarchar) +
+      '_22066' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_Id,
+      LineConfiguration as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_Name,
+      'ASSET.USER.CUSTOM.3' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_Code,
+      LineConfiguration as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_DisplayName,
+      ----Options---
+      1 as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_Options_Id,
+      LineConfiguration as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_Options_Value,
+      'ASSET.USER.CUSTOM.3.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_Options_Code,
+
+      ----GameCategory----
+      cast(GameCategory_Id as nvarchar) +
+      '_22067' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_Id,
+      case when GameCategory = '' then 'Core' else GameCategory end as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_Name,
+      'ASSET.USER.CUSTOM.4' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_Code,
+      case when GameCategory = '' then 'Core' else GameCategory end as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_DisplayName,
+      ----Options---
+      1 as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Id,
+      case when GameCategory = '' then 'Core' else GameCategory end as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Value,
+      'ASSET.USER.CUSTOM.4.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Code
+      FROM MIGRATION.GAM_TYPE_DESCRIPTION (nolock) AS TYP
+      LEFT JOIN MIGRATION.VIEW_MANUFACTURE (nolock) AS MNF ON MNF.display_name = TYP.MANUFACTURER
+      LEFT JOIN migration.VIEW_MODEL (nolock) AS MDL ON MDL.DISPLAY_NAME = TYP.MODEL and mnf_seq = MDL_seq
+      LEFT JOIN migration.VIEW_MODEL_TYPE (nolock) AS MDLTYPE ON MDLTYPE.DISPLAY_NAME = TYP.ModelType and mnf_seq = MDL_TYP_SEQ
+      --where Id between 2 and 150
 
     </Source>
     <Destination>[Components].[ComponentData]</Destination>
@@ -1035,78 +1034,124 @@
   </Transformation>
   <Transformation Name="TYPCODE">
     <Source>
-      SELECT TYCOD_Number as Id,
-      0 as DataRowVersion,
-      TYCOD_NAME as Name,
-      TYCOD_DESC as [Desc],
-      CAST(0 as VARCHAR(50)) as SelectedInlines,
-      case when TYCOD_NAME like 'POS%' then 305 else 10 end as AssetTypeId,
-      case when TYCOD_NAME like 'POS%' then 'POS' else 'Slot' end as Asset_Type,
-      --------TypeCodeOption------
-      ---------Options------------
-      [OPTION_ID] as TypeCodeOption_Options_OptionId,
-      CASE WHEN [OPTION_ID] is NULL THEN NULL
-      ELSE
-      (CASE WHEN TYCV_OPTN_VALUE = 'FLAG.NO' then 'No'
-      when TYCV_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
-      WHEN TYCV_OPTN_VALUE = 'FLAG.YES' then 'Yes'
-      when TYCV_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.NORMAL' then 'Normal'
-      when TYCV_OPTN_VALUE = 'VALIDATION.SYSTEM' then 'System'
-      else TYCV_OPTN_VALUE end) END as TypeCodeOption_Options_Value,
-      ---------ComponentOptions---------
-      CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 22002
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 22063
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 22069
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 220113
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 220114
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 220115
-      ELSE null end as TypeCodeOption_ComponentOptions_ComponentId,
+    SELECT  * From (select  TYCOD_Number as Id, 0 as DataRowVersion, TYCOD_NAME as Name, 
+    TYCOD_DESC as [Desc], CAST(0 as VARCHAR(50)) as SelectedInlines,
+    case when TYCOD_NAME like 'POS%' then 305 else 10 end as AssetTypeId,
+    case when TYCOD_NAME like 'POS%' then 'POS' else 'Slot' end as Asset_Type,
+    --------TypeCodeOption------
+    ---------Options------------
+    [OPTION_ID] as TypeCodeOption_Options_OptionId,
+    CASE WHEN [OPTION_ID] is NULL THEN NULL
+    ELSE
+    (CASE WHEN TYCV_OPTN_VALUE = 'FLAG.NO' then 'No'
+    when TYCV_OPTN_VALUE = 'FLAG.BAL' then 'Balance'
+    WHEN TYCV_OPTN_VALUE = 'FLAG.YES' then 'Yes'
+    when TYCV_OPTN_VALUE = 'ASSET.CASH.CLUB.ENAB.ENUM.NORMAL' then 'Normal'
+    when TYCV_OPTN_VALUE = 'VALIDATION.SYSTEM' then 'System'
+    else TYCV_OPTN_VALUE end) END as TypeCodeOption_Options_Value,
+    ---------ComponentOptions---------
+    CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 22002
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 22063
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 22069
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 220113
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 220114
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 220115
+    ELSE null end as TypeCodeOption_ComponentOptions_ComponentId,
 
-      CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 'MANUFACTURER'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 'ASSET.HOLD.PERCENTAGE'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 'ASSET.TYPE.DESCRIPTION'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 'ASSET.DENOMINATION'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 'ASSET.GMU.DENOM'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 'ASSET.FILL.DENOM'
-      ELSE null end as TypeCodeOption_ComponentOptions_ComponentCode,
+    CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 'MANUFACTURER'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 'ASSET.HOLD.PERCENTAGE'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 'ASSET.TYPE.DESCRIPTION'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 'ASSET.DENOMINATION'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 'ASSET.GMU.DENOM'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 'ASSET.FILL.DENOM'
+    ELSE null end as TypeCodeOption_ComponentOptions_ComponentCode,
 
-      CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 'Manufacturer'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 'Hold Percentage'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 'Type Description'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 'Denomination'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 'GMU Denom'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 'Fill Denom'
-      ELSE null end as TypeCodeOption_ComponentOptions_Instance,
+    CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN 'Manufacturer'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN 'Hold Percentage'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN 'Type Description'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN 'Denomination'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN 'GMU Denom'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN 'Fill Denom'
+    ELSE null end as TypeCodeOption_ComponentOptions_Instance,
 
-      CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN cast(GMNF.MF_NEW_ID as nvarchar)+'_1'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN TYCV_OPTN_VALUE
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN '0_'+ cast(TypeDescription_Id as nvarchar)+'_22068'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN cast(GDN.Components_Id as nvarchar)+'_1'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN cast(GDN.Components_Id as nvarchar)+'_1'
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN cast(GDN.Components_Id as nvarchar)+'_1'
-      ELSE null end as TypeCodeOption_ComponentOptions_Value,
+    CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN cast(GMNF.MF_NEW_ID as nvarchar)+'_1'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN TYCV_OPTN_VALUE
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN cast(TypeDescription_Id as nvarchar)+'_22068'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN cast(GDN.Components_Id as nvarchar)+'_1'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN cast(GDN.Components_Id as nvarchar)+'_1'
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN cast(GDN.Components_Id as nvarchar)+'_1'
+    ELSE null end as TypeCodeOption_ComponentOptions_Value,
 
-      CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN upper(TYCV_OPTN_VALUE)
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN TYCV_OPTN_VALUE
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN upper(TYCV_OPTN_VALUE)
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN TYCV_OPTN_VALUE
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN TYCV_OPTN_VALUE
-      WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN TYCV_OPTN_VALUE
-      ELSE null end as TypeCodeOption_ComponentOptions_DisplayValue
+    CASE WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.MASTER.MANUFACTURER' THEN upper(TYCV_OPTN_VALUE)
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.HOLD.PERCENTAGE' THEN TYCV_OPTN_VALUE
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.TYPE.DESCRIPTION' THEN upper(TYCV_OPTN_VALUE)
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.DENOMINATION' THEN TYCV_OPTN_VALUE
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.GMU.DENOM' THEN TYCV_OPTN_VALUE
+    WHEN [OPTION_ID] is null and OPTN_CODE = 'ASSET.FILL.DENOM' THEN TYCV_OPTN_VALUE
+    ELSE null end as TypeCodeOption_ComponentOptions_DisplayValue 
 
-      ----------InlineOptions-----------
-      --Game
-      --select  typ.TypeDescription ,  TYCV_OPTN_VALUE, *
-      FROM GAM.TYPE_CODE_MASTER (nolock) AS MS
-      JOIN GAM.TYPE_CODE_VALUES (nolock) AS VAL ON VAL.[TYCV_TYCOD_ID] = MS.TYCOD_ID
-      JOIN GAM.[OPTION] (nolock) AS OPTN ON OPTN.OPTN_ID  = TYCV_OPTN_ID
-      LEFT JOIN [MIGRATION].[ASSET_TYPE_DEFN] (nolock) AS TOPTN ON TOPTN.[OPTION_CODE] = OPTN.[OPTN_CODE]
-      LEFT JOIN MIGRATION.GAM_DENOMINATION (nolock) AS GDN ON GDN.DENM_AMOUNT = TYCV_OPTN_VALUE
-      LEFT JOIN GAM.MANUFACTURER (nolock) AS MNF ON MNF.MANF_LONG_NAME = TYCV_OPTN_VALUE
-      LEFT JOIN [MIGRATION].[GAM_MANUFACTURER] (nolock) AS GMNF ON GMNF.MNF_LEGCY_ID = MNF.MANF_ID
-      LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION (nolock) as typ on upper(typ.TypeDescription) = upper(TYCV_OPTN_VALUE) and tycv_optn_id = 210
-      where ms.[TYCOD_TYPE] = 2
-      order by  ms.[TYCOD_ID]
+    ----------InlineOptions-----------
+    --Game
+    --select  typ.TypeDescription ,  TYCV_OPTN_VALUE, *
+
+    FROM GAM.TYPE_CODE_MASTER (nolock) AS MS
+    JOIN GAM.TYPE_CODE_VALUES (nolock) AS VAL ON VAL.[TYCV_TYCOD_ID] = MS.TYCOD_ID
+    JOIN GAM.[OPTION] (nolock) AS OPTN ON OPTN.OPTN_ID  = TYCV_OPTN_ID
+    LEFT JOIN [MIGRATION].[ASSET_TYPE_DEFN] (nolock) AS TOPTN ON TOPTN.[OPTION_CODE] = OPTN.[OPTN_CODE]
+    LEFT JOIN MIGRATION.GAM_DENOMINATION (nolock) AS GDN ON GDN.DENM_AMOUNT = TYCV_OPTN_VALUE
+    LEFT JOIN GAM.MANUFACTURER (nolock) AS MNF ON MNF.MANF_LONG_NAME = TYCV_OPTN_VALUE
+    LEFT JOIN [MIGRATION].[GAM_MANUFACTURER] (nolock) AS GMNF ON GMNF.MNF_LEGCY_ID = MNF.MANF_ID
+    LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION (nolock) as typ on upper(typ.TypeDescription) = upper(TYCV_OPTN_VALUE) and tycv_optn_id = 210
+    where ms.[TYCOD_TYPE] = 2 and TYCOD_Number not in ( 2 )
+    ) as a
+                    union all
+    select * from (
+    --TypeDescription
+    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
+    22068 as ComponentId,'ASSET.TYPE.DESCRIPTION' as ComponentCode, 'Type Description' as Instance, cast(TypeDescription_Id as nvarchar)+'_22068' as comp_options_val, TypeDescription as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
+    where typedescription = 'KONAMI'
+    union all
+    --Manufacture
+    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
+    22002 as ComponentId,'MANUFACTURER' as ComponentCode, 'Manufacturer' as Instance, cast(Manufacturer_Id as nvarchar)+'_22002' as comp_options_val, Manufacturer as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
+    where typedescription = 'KONAMI'
+    union all
+    --Model Type
+    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
+    22003 as ComponentId,'MODEL.TYPE' as ComponentCode, 'Model Type' as Instance, cast(ModelType_Id as nvarchar)+'_22003' as comp_options_val, ModelType as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
+    where typedescription = 'KONAMI'
+    union all
+    --Model
+    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
+    22005 as ComponentId,'MODEL' as ComponentCode, 'Model' as Instance, CAST(Model_Id AS NVARCHAR)+'_22005' as comp_options_val, Model as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
+    where typedescription = 'KONAMI'
+    union all
+    --Hold Percentage
+    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
+    22063 as ComponentId,'ASSET.HOLD.PERCENTAGE' as ComponentCode, 'Hold Percentage' as Instance, cast(HoldPC_Id as nvarchar) +'_22063' as comp_options_val, GameHoldPC as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
+    where typedescription = 'KONAMI'
+    union all
+    --Game Hold Percentage
+    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines, 10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
+    22064 as ComponentId,'ASSET.GAME.HOLD.PERCENT' as ComponentCode, 'Game Hold Percentage' as Instance, cast(GameHoldPC_Id as nvarchar) +'_22064' as comp_options_val, GameHoldPC as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
+    where typedescription = 'KONAMI'
+    union all
+    --Max Bet
+    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
+    22065 as ComponentId,'ASSET.USER.CUSTOM.1' as ComponentCode, 'Max Bet' as Instance, cast(MaxBet_Id as nvarchar) +'_22065' as comp_options_val, MaxBet as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
+    where typedescription = 'KONAMI'
+    union all
+    --Line Configuration
+    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines, 10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
+    22066 as ComponentId,'ASSET.USER.CUSTOM.3' as ComponentCode, 'Line Configuration' as Instance, cast(LineConfiguration_Id as nvarchar) +'_22066' as comp_options_val, LineConfiguration as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
+    where typedescription = 'KONAMI'
+    union all
+    --Game Category
+    select 2 as Id, 0 as DataRowVersion, 'IGT' as Name, '' as Descrp, '0' as SelectedInlines,  10 as AssetTypeId, 'Slot' as Asset_Type, null as Options_OptionId, null as Options_Value,
+    22067 as ComponentId,'ASSET.USER.CUSTOM.4' as ComponentCode, 'Game Category' as Instance, cast(GameCategory_Id as nvarchar) +'_22067' as comp_options_val, GameCategory as DisplayValue from MIGRATION.GAM_TYPE_DESCRIPTION  
+    where typedescription = 'KONAMI'
+    ) as st_txt
+    order by id
 
     </Source>
     <Destination>[DataManagement].[TypeCode]</Destination>

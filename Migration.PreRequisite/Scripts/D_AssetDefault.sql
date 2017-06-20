@@ -35,23 +35,37 @@ IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'p_GetDashboard
 DROP PROCEDURE [Common].[p_GetDashboardSiteInfo]
 GO
 
-CREATE PROCEDURE [Common].[p_GetDashboardSiteInfo] (@siteList VARCHAR(max))
+CREATE PROCEDURE [Common].[p_GetDashboardSiteInfo] (@siteList VARCHAR(max),
+@TotalSlots BIGINT = 0,
+@Online BIGINT = 0,
+@Enrolled BIGINT = 0,
+@Connected BIGINT = 0,
+@Manufacturer VARCHAR(500) = NULL,
+@Denom VARCHAR(500) = NULL,
+@Progressive VARCHAR(500) =NULL)
 AS
-/****** Generated Stored Procedure - Script Date: 01/05/2014 6:56:18 PM ******/
-
-IF EXISTS (SELECT 1 FROM tempdb..sysobjects WHERE NAME = '##temp')
-	drop table ##temp
 
 BEGIN
-	CREATE TABLE ##temp (
+
+IF EXISTS (SELECT 1 FROM tempdb..sysobjects WHERE NAME = '#temp')
+	drop table #temp
+IF EXISTS (SELECT 1 FROM tempdb..sysobjects WHERE NAME = '#temp2')
+	drop table #temp2
+
+	CREATE TABLE #temp (
 		[STATE_NAME] [varchar](50) NULL
 		,[STATE_CODE] [varchar](50) NULL
 		,JSONDATA VARCHAR(max)
 		) ON [PRIMARY]
 
-	DECLARE @json VARCHAR(max)
-	DECLARE @String VARCHAR(max)
-
+DECLARE @json VARCHAR(max)
+DECLARE @String VARCHAR(max)
+DECLARE @DisplayName varchar(max)
+DECLARE @Offline BIGINT
+DECLARE @UnEnrolled BIGINT
+DECLARE @ProgressiveSlots BIGINT
+DECLARE @NotConnected BIGINT
+		
 	set @siteList = CONCAT(@siteList,',' +(select STUFF((select ','+ cdsi.Value  AS [text()]   from [Common].[DASHBOARDDATA] cd 
 	cross apply openjson(json_query(cd.value,'$.SiteData.CountryList')) cds 
 	outer apply openJSon(JSON_QUERY(cds.value,'$.StateList')) cdsa 
@@ -59,7 +73,7 @@ BEGIN
 	cross apply openjson(json_query(cdc.value,'$.SiteNumber')) cdsi 
 	FOR XML PATH('')),1,1,'')))
 
-	INSERT INTO ##temp
+	INSERT INTO #temp
 	SELECT STATE_NAME AS "StateList.StateName"
 		,STATE_CODE AS "StateList.StateCode"
 		,(
@@ -121,7 +135,7 @@ BEGIN
 				SELECT STATE_NAME AS "StateName"
 					,STATE_CODE AS "StateCode"
 					,JSON_QUERY('[' + JSONDATA + ']') AS "CityNameList"
-				FROM ##temp
+				FROM #temp
 				) AS a
 			FOR JSON path
 				,WITHOUT_ARRAY_WRAPPER
@@ -140,8 +154,45 @@ BEGIN
 				,WITHOUT_ARRAY_WRAPPER
 			)
 
+
+
 	UPDATE Common.DASHBOARDDATA
 	SET [value] = JSON_MODIFY([Value], '$.SiteData.CountryList', JSON_QUERY('['+LEFT(@String, LEN(@String) - 1) + ',"StateList":[' + @json + ']}]'))
-IF EXISTS (SELECT 1 FROM tempdb..sysobjects WHERE NAME = '##temp')
-	drop table ##temp
+
+
+    IF EXISTS (SELECT 1 FROM tempdb..sysobjects WHERE NAME = '#temp')
+	drop table #temp
+
+
+set @UnEnrolled = @TotalSlots - @Enrolled
+
+set @NotConnected = @TotalSlots - @Connected
+
+set @JSON = (select [value] from Common.DASHBOARDDATA)
+
+set @JSON =JSON_MODIFY(@JSON, '$.SlotDataEntity.TotalSlots',@TotalSlots)
+
+set @JSON =JSON_MODIFY(@JSON, '$.SlotDataEntity.Online',@Online)
+
+set @JSON =JSON_MODIFY(@JSON, '$.SlotDataEntity.Offline',@Offline)
+
+set @JSON =JSON_MODIFY(@JSON, '$.SlotDataEntity.Enrolled',@Enrolled)
+
+set @JSON =JSON_MODIFY(@JSON, '$.SlotDataEntity.UnEnrolled',@UnEnrolled)
+
+set @JSON =JSON_MODIFY(@JSON, '$.SlotDataEntity.Connected',@Connected)
+
+set @JSON =JSON_MODIFY(@JSON, '$.SlotDataEntity.NotConnected',@NotConnected)
+
+set @JSON = JSON_MODIFY(@JSON, '$.Manufacturers', ISNULL(JSON_QUERY(@Manufacturer),'null'))
+
+set @JSON = JSON_MODIFY(@JSON, '$.Denoms', ISNULL(JSON_QUERY(@Denom),'null'))
+
+set @JSON = JSON_MODIFY(@JSON, '$.ProgressivePools', ISNULL(JSON_QUERY(@Progressive),'null'))
+
+UPDATE Common.DASHBOARDDATA set [Value] = @JSON
+
+IF EXISTS (SELECT 1 FROM tempdb..sysobjects WHERE NAME = '#temp2')
+	drop table #temp2
+
 END
