@@ -279,7 +279,8 @@ SELECT SUMTAB.ASD_STD_ID, TypeDescription, Manufacturer, ModelType,
 case when mdl.mdl_long_name <> Model then mdl_long_name else Model end as Model,
 cast (CONVERT(NUMERIC(18,2), ISNULL(NULLIF(GameHoldPC, ''), '1')) as varchar(25)) as GameHoldPC, 
 cast (CONVERT(NUMERIC(18,2), ISNULL(NULLIF(HoldPC, ''), '1')) as varchar(25)) as HoldPC, 
- MaxBet, LineConfiguration, GameCategory
+ MaxBet, LineConfiguration, GameCategory,
+ MultiGame, MultiDenom, VarHoldPC
 INTO MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET 
 FROM (SELECT AD.ASD_STD_ID, Max(case when AST_OPTION_ID = 210 then upper(AST_OPTN_VALUE) end )as TypeDescription,
 Max(case when AST_OPTION_ID = 122 then AST_OPTN_VALUE end )as Manufacturer,
@@ -287,6 +288,11 @@ Max(case when AST_OPTION_ID = 126 then AST_OPTN_VALUE end )as ModelType,
 Max(case when AST_OPTION_ID = 108 then AST_OPTN_VALUE end )as Model,
 Max(case when AST_OPTION_ID = 207 then AST_OPTN_VALUE end )as GameHoldPC,
 Max(case when AST_OPTION_ID = 206 then AST_OPTN_VALUE end )as HoldPC,
+
+Max(case when AST_OPTION_ID = 205 then (case when AST_OPTN_VALUE ='FLAG.NO' then 'No' else 'Yes' end) end )as MultiDenom,
+Max(case when AST_OPTION_ID = 208 then (case when AST_OPTN_VALUE ='FLAG.NO' then 'No' else 'Yes' end) end )as VarHoldPC,
+Max(case when AST_OPTION_ID = 209 then (case when AST_OPTN_VALUE ='FLAG.NO' then 'No' else 'Yes' end) end )as MultiGame,
+
 Max(case when AST_OPTION_ID = 244 then AST_OPTN_VALUE end )as MaxBet,
 Max(case when AST_OPTION_ID = 246 then AST_OPTN_VALUE end )as LineConfiguration,
 Max(case when AST_OPTION_ID = 247 then AST_OPTN_VALUE end )as GameCategory
@@ -297,7 +303,7 @@ JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS ISM ON ISM.INSM_ID = ASD.ASD_INSMAP_ID
 join GAM.SITE (nolock) as st on st.site_id = ism.INSM_SITE_ID
 WHERE AD.IS_DELETED = 0 AND ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
 AND ISNULL(AST.ASST_ANCESTOR_ID, AST.ASST_ID) = 1
-AND AST_OPTION_ID IN (210, 122,126,108,207,206,244,246,247)
+AND AST_OPTION_ID IN (210,122,126,108,207,205,206,208,209,244,246,247)
 AND ASD_MODL_ID <> 309901003000002593
 And SITE_NUMBER in (select * from [Migration].[GetSitesForMigration]())
 group by AD.ASD_STD_ID ) sumTab
@@ -316,12 +322,13 @@ ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET
 ADD TYPEDESCP_ID INT
 GO
 
-SELECT row_number()over(order by TypeDescription, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration, GameCategory ) as Id, * 
+SELECT row_number()over(order by TypeDescription, Manufacturer, ModelType, Model, GameHoldPC, 
+HoldPC, MaxBet, LineConfiguration, GameCategory, MultiGame, MultiDenom, VarHoldPC ) as Id, * 
 INTO MIGRATION.GAM_TYPE_DESCRIPTION
 from (SELECT DISTINCT TypeDescription, Manufacturer, ModelType, Model, 
 cast (CONVERT(NUMERIC(18,2), ISNULL(NULLIF(GameHoldPC, ''), '1')) as varchar(25)) as GameHoldPC, 
 cast (CONVERT(NUMERIC(18,2), ISNULL(NULLIF(HoldPC, ''), '1')) as varchar(25)) as HoldPC, 
-MaxBet, LineConfiguration, GameCategory 
+MaxBet, LineConfiguration, GameCategory, MultiGame, MultiDenom, VarHoldPC
 FROM  MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET (nolock)  ) as tt
 GO
 
@@ -342,6 +349,9 @@ ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  HoldPC_Id INT;
 ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  MaxBet_Id INT;
 ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  LineConfiguration_Id INT;
 ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  GameCategory_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  MultiGame_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  MultiDenom_Id INT;
+ALTER TABLE MIGRATION.GAM_TYPE_DESCRIPTION ADD  VarHoldPC_Id INT;
 GO
 
 --updating id columns
@@ -452,6 +462,54 @@ and m.HoldPC = a.HoldPC and m.MaxBet = a.MaxBet and m.LineConfiguration = a.Line
 and m.GameCategory = a.GameCategory
 GO
 
+--MultiGame_Id
+UPDATE M
+SET m.MultiGame_Id = R_10
+--SELECT *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION (nolock) as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer, ModelType, Model, 
+GameHoldPC, HoldPC, MaxBet, LineConfiguration, GameCategory, MultiGame) R_10, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration,GameCategory,MultiGame
+FROM MIGRATION.GAM_TYPE_DESCRIPTION (nolock)) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+and m.ModelType = a.ModelType and m.model = a.model and m.GameHoldPC = a.GameHoldPC
+and m.HoldPC = a.HoldPC and m.MaxBet = a.MaxBet and m.LineConfiguration = a.LineConfiguration
+and m.GameCategory = a.GameCategory
+and m.MultiGame = a.MultiGame
+GO
+
+--MultiDenom_Id
+UPDATE M
+SET m.MultiDenom_Id = R_11
+--SELECT *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION (nolock) as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer, ModelType, Model, 
+GameHoldPC, HoldPC, MaxBet, LineConfiguration, GameCategory, MultiGame, MultiDenom) R_11, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration,GameCategory,MultiGame,MultiDenom
+FROM MIGRATION.GAM_TYPE_DESCRIPTION (nolock)) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+and m.ModelType = a.ModelType and m.model = a.model and m.GameHoldPC = a.GameHoldPC
+and m.HoldPC = a.HoldPC and m.MaxBet = a.MaxBet and m.LineConfiguration = a.LineConfiguration
+and m.GameCategory = a.GameCategory and m.MultiGame = a.MultiGame
+and m.MultiDenom = a.MultiDenom
+GO
+
+--VarHoldPC_Id
+UPDATE M
+SET m.VarHoldPC_Id = R_12
+--SELECT *
+FROM MIGRATION.GAM_TYPE_DESCRIPTION (nolock) as m
+JOIN (SELECT ROW_NUMBER () OVER (ORDER BY TYP.TYPEDESCRIPTION, Manufacturer, ModelType, Model, 
+GameHoldPC, HoldPC, MaxBet, LineConfiguration, GameCategory, MultiGame, MultiDenom, VarHoldPC) R_12, *
+FROM (SELECT DISTINCT TYPEDESCRIPTION, Manufacturer, ModelType, Model, GameHoldPC, HoldPC, MaxBet, LineConfiguration,
+GameCategory, MultiGame, MultiDenom, VarHoldPC
+FROM MIGRATION.GAM_TYPE_DESCRIPTION (nolock)) AS TYP ) a 
+on m.TypeDescription = a.TypeDescription and m.Manufacturer = a.Manufacturer
+and m.ModelType = a.ModelType and m.model = a.model and m.GameHoldPC = a.GameHoldPC
+and m.HoldPC = a.HoldPC and m.MaxBet = a.MaxBet and m.LineConfiguration = a.LineConfiguration
+and m.GameCategory = a.GameCategory and m.MultiGame = a.MultiGame
+and m.MultiDenom = a.MultiDenom and m.VarHoldPC = a.VarHoldPC
+GO
 
 -------------------
 --Theme
@@ -1191,7 +1249,7 @@ DECLARE @Progressive VARCHAR(500)
 
 	  /*        Total 3 Manufacturer Count           */
 	  SELECT @Manufacturer =  '[{' +  CASE dat WHEN null THEN null ELSE (CASE LEN(dat) WHEN 0 THEN dat ELSE LEFT(dat, LEN(dat) - 1) END 
-      ) END +'}' FROM (
+      ) END +']' FROM (
 	  SELECT STUFF((
       SELECT '{"Key":"' + cast([key] as VARCHAR(MAX))+'","Value":'+cast(Value as VARCHAR(MAX))+'},' 
       FROM (
@@ -1205,7 +1263,7 @@ DECLARE @Progressive VARCHAR(500)
 
 	  /*        Total 3 Denom Count           */
 	  SELECT @Denom =  '[{' +  CASE dat WHEN null THEN null ELSE (CASE LEN(dat) WHEN 0 THEN dat ELSE LEFT(dat, LEN(dat) - 1) END 
-      ) END +'}'  FROM (
+      ) END +']'  FROM (
 	  SELECT STUFF((
       SELECT '{"Key":"' + cast([key] as VARCHAR(MAX))+'","Value":'+cast(Value as VARCHAR(MAX))+'},' 
       FROM (
@@ -1219,7 +1277,7 @@ DECLARE @Progressive VARCHAR(500)
 
 	  /*        Total 3 Progressive Count           */
 	  SELECT @Progressive = '[{' +  CASE dat WHEN null THEN null ELSE (CASE LEN(dat) WHEN 0 THEN dat ELSE LEFT(dat, LEN(dat) - 1) END 
-      ) END +'}' FROM (
+      ) END +']' FROM (
 	  SELECT STUFF((
       SELECT '{"Key":"' + cast(PRGP_POOL_ID as VARCHAR(MAX))+'","Value":'+cast(cnt as VARCHAR(MAX))+'},' 
       FROM (
@@ -1247,6 +1305,5 @@ DECLARE @Progressive VARCHAR(500)
 			  @Manufacturer as Manufacturer,
 			  @Denom as Denom,
 			  @Progressive as Progressive
-
 
 

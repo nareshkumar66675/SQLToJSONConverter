@@ -680,7 +680,7 @@
       'ASSET.TYPE.DESCRIPTION' as Component_Components_ComponentValues_CC_Code,
       typ.TypeDescription as Component_Components_ComponentValues_CC_DisplayName,
       ----Options---
-      1 as Component_Components_ComponentValues_CC_Options_Id,
+     1 as Component_Components_ComponentValues_CC_Options_Id,
       typ.TypeDescription as Component_Components_ComponentValues_CC_Options_Value,
       'ASSET.TYPE.DESCRIPTION.VALUE' as Component_Components_ComponentValues_CC_Options_Code,
 
@@ -770,13 +770,46 @@
       ----Options---
       1 as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Id,
       case when GameCategory = '' then 'Core' else GameCategory end as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Value,
-      'ASSET.USER.CUSTOM.4.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Code
+      'ASSET.USER.CUSTOM.4.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Code,
+
+      ----MultiGame----
+      cast(MultiGame_Id as nvarchar) +
+      '_22091' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Id,
+      MultiGame as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Name,
+      'ASSET.MULTI.GAME' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Code,
+      MultiGame as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_DisplayName,
+      ----Options---
+      1 as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Id,
+      MultiGame as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Value,
+      'ASSET.MULTI.GAME.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Code,
+                  
+      ----MultiDenom----
+      cast(MultiDenom_Id as nvarchar) +
+      '_22092' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Id,
+      MultiDenom as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Name,
+      'ASSET.MULTI.DENOM' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Code,
+      MultiDenom as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_DisplayName,
+      ----Options---
+      1 as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Id,
+      MultiDenom as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Value,
+      'ASSET.MULTI.DENOM.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Code,
+
+       ----VarHoldPC----
+      cast(VarHoldPC_Id as nvarchar) +
+      '_22093' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Id,
+      VarHoldPC as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Name,
+      'ASSET.VAR.HOLD.PERCENT' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Code,
+      VarHoldPC as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_DisplayName,
+      ----Options---
+      1 as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Id,
+      VarHoldPC as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Value,
+      'ASSET.VAR.HOLD.PERCENT.VALUE' as Component_Components_ComponentValues_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_CC_Options_Code
+
       FROM MIGRATION.GAM_TYPE_DESCRIPTION (nolock) AS TYP
       LEFT JOIN MIGRATION.VIEW_MANUFACTURE (nolock) AS MNF ON MNF.display_name = TYP.MANUFACTURER
       LEFT JOIN migration.VIEW_MODEL (nolock) AS MDL ON MDL.DISPLAY_NAME = TYP.MODEL and mnf_seq = MDL_seq
       LEFT JOIN migration.VIEW_MODEL_TYPE (nolock) AS MDLTYPE ON MDLTYPE.DISPLAY_NAME = TYP.ModelType and mnf_seq = MDL_TYP_SEQ
       --where Id between 2 and 150
-
     </Source>
     <Destination>[Components].[ComponentData]</Destination>
     <KeyFormat Format="57_{0}" Keys="Id"  />
@@ -978,9 +1011,9 @@
       left join [GAM].[TYPE_CODE_MASTER] (nolock) as tcm on tcm.tycod_id = [ASD_TCOD_ID]
       left join (select 101 as SeqId, 22002 as ComponentId, 'Manufacturer' as ComponentName, 'POS' as ComponentValue, '0_16_1' as ComponentKey, '220022' as ComponentInstanceId, '22002.2' as ComponentCode
       UNION ALL
-      select 102 as SeqId, 22051 as ComponentId, 'POS Vendor' as ComponentName, 'POS' as ComponentValue, '0_5_22051' as ComponentKey, 'POSVENDOR' as ComponentInstanceId, 'POS.VENDOR' as ComponentCode
+      select 102 as SeqId, 22051 as ComponentId, 'POS Vendor' as ComponentName, 'POS' as ComponentValue, '0_1_22051' as ComponentKey, 'POSVENDOR' as ComponentInstanceId, 'POS.VENDOR' as ComponentCode
       UNION ALL
-      select 103 as SeqId, 22052 as ComponentId, 'POS Model Attributes' as ComponentName, 'POS' as ComponentValue, '0_5_22052' as ComponentKey, 'POSMODEL' as ComponentInstanceId, 'POS.MODEL' as ComponentCode
+      select 103 as SeqId, 22052 as ComponentId, 'POS Model Attributes' as ComponentName, 'POS' as ComponentValue, '0_1_22052' as ComponentKey, 'POSMODEL' as ComponentInstanceId, 'POS.MODEL' as ComponentCode
       ) as mas_comp on mas_comp.SeqId = AST_OPTION_ID
       WHERE ASD.IS_DELETED = 0 AND ASD.ASD_CLST_STAT_ID = 5
       AND ASD.ASD_ASST_ID = 1 AND MDL.MDL_SHORT_NAME in ('POS')
@@ -1487,7 +1520,7 @@
                               else 0 end ) = 1
       --and SMY.ASD_AM_UID =7337
          --and Asst_Histry_Id = 1084920
-      --AND tt.SiteNumber in ({0})
+      AND tt.SiteNumber in ({0})
       ORDER BY tt.CLST_EXECTUED_DATE, tt.CURRENT_ID, C_G.Game_AssetId, OPTION_ORDER
     </Source>
     <Destination>[Asset_History].[AssetsHistory]</Destination>

@@ -699,6 +699,119 @@ AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
 And ST.SITE_NUMBER in (select * from [Migration].[GetSitesForMigration]())
 GO
 
+-------------------
+--MultiGame
+-------------------
+INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
+SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
+asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
+---SequenceId----
+16 as Seq_Id,
+
+--Multi Game--
+'22091' as ComponentId,
+cast('Multi Game' as nvarchar) as ComponentName,
+cast(GTC.MultiGame as nvarchar)  as ComponentValue,
+'0_'+cast(MultiGame_Id as nvarchar) +'_22091' as ComponentKey,
+'ASSETMULTIGAME' as ComponentInstanceId,
+'ASSET.MULTI.GAME' as ComponentCode
+
+FROM GAM.ASSET_STANDARD_DETAILS (nolock) AS ASD
+JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
+JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+JOIN GAM.[SITE] (nolock) AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+JOIN MIGRATION.GAM_SITE (nolock) AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
+JOIN GAM.PROPERTY (nolock) AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
+join [MIGRATION].[GAM_PROPERTY] (nolock) as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL (nolock) AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+JOIN GAM.MANUFACTURER (nolock) AS MF ON MF.MANF_ID = ASD_MANF_ID
+LEFT JOIN GAM.ASSET_DETAIL (nolock) AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 209 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET (nolock) AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION (nolock) AS tc on tc.Id = gtc.typedescp_id 
+WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
+And ST.SITE_NUMBER in (select * from [Migration].[GetSitesForMigration]())
+GO
+
+-------------------
+--MultiDenom
+-------------------
+INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
+SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
+asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
+---SequenceId----
+17 as Seq_Id,
+
+--Multi Denom--
+'22092' as ComponentId,
+cast('Multi Denom' as nvarchar) as ComponentName,
+cast(GTC.MultiGame as nvarchar)  as ComponentValue,
+'0_'+cast(MultiGame_Id as nvarchar) +'_22092' as ComponentKey,
+'ASSETMULTIDENOM' as ComponentInstanceId,
+'ASSET.MULTI.DENOM' as ComponentCode
+
+FROM GAM.ASSET_STANDARD_DETAILS (nolock) AS ASD
+JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
+JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+JOIN GAM.[SITE] (nolock) AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+JOIN MIGRATION.GAM_SITE (nolock) AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
+JOIN GAM.PROPERTY (nolock) AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
+join [MIGRATION].[GAM_PROPERTY] (nolock) as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL (nolock) AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+JOIN GAM.MANUFACTURER (nolock) AS MF ON MF.MANF_ID = ASD_MANF_ID
+LEFT JOIN GAM.ASSET_DETAIL (nolock) AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 205 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET (nolock) AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION (nolock) AS tc on tc.Id = gtc.typedescp_id 
+WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
+And ST.SITE_NUMBER in (select * from [Migration].[GetSitesForMigration]())
+GO
+
+-------------------
+--VarHoldPercentage
+-------------------
+INSERT INTO MIGRATION.GAM_ASSET_COMP_VALUES 
+SELECT asd.ASD_STD_ID as AM_LegacyId, gsd.ASD_STD_NEW_ID as Id, asd.asd_am_uid,
+asd.asd_number as AssetNumber, asd.asd_location as Location, asd.ASD_SERIAL_NUM as SerialNumber, 
+gst.SITE_NEW_ID as SiteId, gst.site_number as SiteNumber, st.SITE_SHORT_NAME as SiteName,
+gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as ModelName,
+---SequenceId----
+18 as Seq_Id,
+
+--VarHoldPercentage--
+'22093' as ComponentId,
+cast('Var Hold Percentage' as nvarchar) as ComponentName,
+cast(GTC.MultiGame as nvarchar)  as ComponentValue,
+'0_'+cast(MultiGame_Id as nvarchar) +'_22093' as ComponentKey,
+'ASSETVARHOLDPERCENT' as ComponentInstanceId,
+'ASSET.VAR.HOLD.PERCENT' as ComponentCode
+
+FROM GAM.ASSET_STANDARD_DETAILS (nolock) AS ASD
+JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
+JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
+JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
+JOIN GAM.[SITE] (nolock) AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+JOIN MIGRATION.GAM_SITE (nolock) AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
+JOIN GAM.PROPERTY (nolock) AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
+join [MIGRATION].[GAM_PROPERTY] (nolock) as gpt on gpt.[PROP_LEGCY_ID] = pt.PROP_ID
+JOIN GAM.MODEL (nolock) AS MDL ON MDL.MDL_ID = ASD_MODL_ID
+JOIN GAM.MANUFACTURER (nolock) AS MF ON MF.MANF_ID = ASD_MANF_ID
+LEFT JOIN GAM.ASSET_DETAIL (nolock) AS AD ON  AD.IS_DELETED = 0 AND ad.[AST_OPTION_ID] = 208 and AD.ASD_STD_ID = ASD.ASD_STD_ID
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION_WITH_ASSET (nolock) AS GTC ON GTC.ASD_STD_ID = ASD.ASD_STD_ID 
+LEFT JOIN MIGRATION.GAM_TYPE_DESCRIPTION (nolock) AS tc on tc.Id = gtc.typedescp_id 
+WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
+AND AST.ASST_ID in ( 1 ) AND MANF_LONG_NAME NOT IN ('POS')
+And ST.SITE_NUMBER in (select * from [Migration].[GetSitesForMigration]())
+GO
+
+
+
 SELECT GETDATE() AS END_DATE_TIME
 GO
 

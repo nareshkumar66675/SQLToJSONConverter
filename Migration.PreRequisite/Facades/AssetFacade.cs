@@ -23,6 +23,7 @@ namespace Migration.PreRequisite.Facades
             _assetPreRequisites.Add(new InsertCompDefinitionIdPreRequisite(_connectionString));
             _assetPreRequisites.Add(new ExecuteScriptPreRequisite("OptionOrderUpdate", ConnectionStrings.LegacyConnectionString));
             _assetPreRequisites.Add(new InsertCustomAssetIDPreRequisite(_connectionString));
+            _assetPreRequisites.Add(new InsertNumberMasterPreRequisite("AssetNumberMasterInsert", _connectionString));
             _assetPreRequisites.Add(new ExecuteScriptPreRequisite("UpdateCustomID", _connectionString));
             _assetPreRequisites.Add(new UpdateGeoDataPreRequisite(_connectionString));
         }
