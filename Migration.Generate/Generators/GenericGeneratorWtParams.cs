@@ -8,6 +8,9 @@ using Migration.Configuration;
 
 namespace Migration.Generate.Generators
 {
+    /// <summary>
+    /// Generic Generator With Parameters
+    /// </summary>
     public class GenericGeneratorWtParams:GenericGenerator,IGenerator
     {
         /// <summary>

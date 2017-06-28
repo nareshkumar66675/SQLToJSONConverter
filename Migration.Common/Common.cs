@@ -10,16 +10,27 @@ namespace Migration.Common
 {
     public static class Common
     {
+        /// <summary>
+        /// Connection Strings
+        /// </summary>
         public static class ConnectionStrings
         {
-            //public static string AuthConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Auth_Migration";
-            //public static string AssetConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM_B11_v1_Asset";
-            //public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=Prod_ALH_AssetMatrix14";
-            //public static string ReportConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Report_Migration";
-            public static string AuthConnectionString = string.Empty;
-            public static string AssetConnectionString = string.Empty;
-            public static string LegacyConnectionString = string.Empty;
-            public static string ReportConnectionString = string.Empty;
+            /// <summary>
+            /// Legacy Connection String
+            /// </summary>
+            public static string LegacyConnectionString { get; set; } = string.Empty;
+            /// <summary>
+            /// Auth Connection String
+            /// </summary>
+            private static string AuthConnectionString { get; set; } = string.Empty;
+            /// <summary>
+            /// Asset Connection String
+            /// </summary>
+            private static string AssetConnectionString { get; set; } = string.Empty;
+            /// <summary>
+            /// Report Connection String
+            /// </summary>
+            private static string ReportConnectionString { get; set; } = string.Empty;
             /// <summary>
             /// Retrieves Connection String based on Group Type
             /// </summary>
@@ -41,7 +52,33 @@ namespace Migration.Common
                         return string.Empty;
                 }
             }
+            /// <summary>
+            /// Sets Values to Connection String
+            /// </summary>
+            /// <param name="group"></param>
+            /// <param name="connectionString"></param>
+            public static void SetConnectionString(GroupType group,string connectionString)
+            {
+                switch (group)
+                {
+                    case GroupType.AUTH:
+                        AuthConnectionString = connectionString;
+                        break;
+                    case GroupType.ASSET:
+                        AssetConnectionString = connectionString;
+                        break;
+                    case GroupType.REPORT:
+                        ReportConnectionString = connectionString;
+                        break;
+                    case GroupType.HISTORY:
+                        ReportConnectionString = connectionString;
+                        break;
+                }
+            }
         }
+        /// <summary>
+        /// Common Constants
+        /// </summary>
         public static class Constants
         {
             public const string DEFAULTGENERATE = "DEFAULT";
@@ -51,6 +88,9 @@ namespace Migration.Common
             public const string HISTORYDATAGENERATE = "HISTORYDATA";
             public const string DEFAULTPERSIST = "DEFAULT";
         }
+        /// <summary>
+        /// App Settings
+        /// </summary>
         public static class AppSettings
         {
             public static int BulkCopyBatchSize
@@ -192,7 +232,9 @@ namespace Migration.Common
                 private set { }
             }
         }
-
+        /// <summary>
+        /// Common Queries
+        /// </summary>
         public static class Queries
         {
             public static string ReportInsertOrUpdate

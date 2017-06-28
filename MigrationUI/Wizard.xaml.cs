@@ -181,12 +181,12 @@ namespace MigrationTool
             if (ValidateConnectionString(e.ConnectionString))
             {
                 Wiz.CurrentPage.CanSelectNextPage = true;
-                ConnectionStrings.AuthConnectionString = e.ConnectionString;
+                ConnectionStrings.SetConnectionString(GroupType.AUTH, e.ConnectionString);
                 Logger.Instance.LogInfo("Auth Database Connection Completed");
             }
             else
             {
-                ConnectionStrings.AuthConnectionString = string.Empty;
+                ConnectionStrings.SetConnectionString(GroupType.AUTH, string.Empty);
                 Wiz.CurrentPage.CanSelectNextPage = false;
             }
         }
@@ -195,12 +195,12 @@ namespace MigrationTool
             if (ValidateConnectionString(e.ConnectionString))
             {
                 Wiz.CurrentPage.CanSelectNextPage = true;
-                ConnectionStrings.AssetConnectionString = e.ConnectionString;
+                ConnectionStrings.SetConnectionString(GroupType.ASSET, e.ConnectionString);
                 Logger.Instance.LogInfo("Asset Database Connection Completed");
             }
             else
             {
-                ConnectionStrings.AssetConnectionString = string.Empty;
+                ConnectionStrings.SetConnectionString(GroupType.ASSET, string.Empty);
                 Wiz.CurrentPage.CanSelectNextPage = false;
             }
         }
@@ -231,13 +231,13 @@ namespace MigrationTool
         {
             if (ValidateConnectionString(e.ConnectionString))
             {
-                ConnectionStrings.ReportConnectionString = e.ConnectionString;
+                ConnectionStrings.SetConnectionString(GroupType.REPORT, e.ConnectionString);
                 Logger.Instance.LogInfo("Report Database Connection Completed");
                 NavigateToReportsProcess();
             }
             else
             {
-                ConnectionStrings.ReportConnectionString = string.Empty;
+                ConnectionStrings.SetConnectionString(GroupType.REPORT, string.Empty);
                 Wiz.CurrentPage.CanSelectNextPage = false;
             }
         }
@@ -325,7 +325,7 @@ namespace MigrationTool
             DatabaseConfigSubWindow win = new DatabaseConfigSubWindow();
             win.Owner = Application.Current.MainWindow;
             win.Closed += authDBSelect_Closed;
-            win.ConnectionString = ConnectionStrings.AuthConnectionString;
+            win.ConnectionString = ConnectionStrings.GetConnectionString(GroupType.AUTH);
             win.Type = GroupType.AUTH.ToString();
             win.InitializeData();
             win.ShowDialog();
@@ -334,7 +334,7 @@ namespace MigrationTool
         private void authDBSelect_Closed(object sender, EventArgs e)
         {
             var conString = (sender as DatabaseConfigSubWindow).GetConnectionString();
-            ConnectionStrings.AuthConnectionString = string.IsNullOrWhiteSpace(conString) ? ConnectionStrings.AuthConnectionString : conString;
+            ConnectionStrings.SetConnectionString(GroupType.AUTH, string.IsNullOrWhiteSpace(conString) ? ConnectionStrings.GetConnectionString(GroupType.AUTH) : conString);
             UpdateDbConnectStatus();
         }
 
@@ -343,7 +343,7 @@ namespace MigrationTool
             DatabaseConfigSubWindow win = new DatabaseConfigSubWindow();
             win.Owner = Application.Current.MainWindow;
             win.Closed += assetDBSelect_Closed;
-            win.ConnectionString = ConnectionStrings.AssetConnectionString;
+            win.ConnectionString = ConnectionStrings.GetConnectionString(GroupType.ASSET);
             win.Type = GroupType.ASSET.ToString();
             win.InitializeData();
             win.ShowDialog();
@@ -352,15 +352,15 @@ namespace MigrationTool
         private void assetDBSelect_Closed(object sender, EventArgs e)
         {
             var conString = (sender as DatabaseConfigSubWindow).GetConnectionString();
-            ConnectionStrings.AssetConnectionString = string.IsNullOrWhiteSpace(conString) ? ConnectionStrings.AssetConnectionString : conString;
+            ConnectionStrings.SetConnectionString(GroupType.ASSET, string.IsNullOrWhiteSpace(conString) ? ConnectionStrings.GetConnectionString(GroupType.ASSET) : conString);
             UpdateDbConnectStatus();
         }
         private void UpdateDbConnectStatus()
         {
             try
             {
-                assetDBStatusIcon.Source = GetDBStatusImage(ConnectionStrings.AssetConnectionString);
-                authDBStatusIcon.Source = GetDBStatusImage(ConnectionStrings.AuthConnectionString);
+                assetDBStatusIcon.Source = GetDBStatusImage(ConnectionStrings.GetConnectionString(GroupType.ASSET));
+                authDBStatusIcon.Source = GetDBStatusImage(ConnectionStrings.GetConnectionString(GroupType.AUTH));
                 NavigateToReportsProcess();
             }
             catch (Exception)
@@ -371,8 +371,8 @@ namespace MigrationTool
 
         private void NavigateToReportsProcess()
         {
-            if (!string.IsNullOrEmpty(ConnectionStrings.AssetConnectionString)
-                    && !string.IsNullOrEmpty(ConnectionStrings.AuthConnectionString) && !string.IsNullOrEmpty(ConnectionStrings.ReportConnectionString))
+            if (!string.IsNullOrEmpty(ConnectionStrings.GetConnectionString(GroupType.ASSET))
+                    && !string.IsNullOrEmpty(ConnectionStrings.GetConnectionString(GroupType.AUTH)) && !string.IsNullOrEmpty(ConnectionStrings.GetConnectionString(GroupType.REPORT)))
                 ReportConnectionPage.CanSelectNextPage = true;
             else
                 ReportConnectionPage.CanSelectNextPage = false;

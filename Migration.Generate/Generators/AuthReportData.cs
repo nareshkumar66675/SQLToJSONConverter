@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Migration.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,16 @@ using static Migration.Common.Common;
 
 namespace Migration.Generate.Generators
 {
+    /// <summary>
+    /// Generates Auth Report Data
+    /// </summary>
     public class AuthReportData : GenerateData
     {
-        public override string GetConnectionString() => ConnectionStrings.AuthConnectionString;
+        /// <summary>
+        /// To Retrieve Connection String
+        /// </summary>
+        /// <returns>Auth Connection String</returns>
+        public override string GetConnectionString() => ConnectionStrings.GetConnectionString(GroupType.AUTH);
 
     }
 }

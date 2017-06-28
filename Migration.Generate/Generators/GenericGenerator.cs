@@ -11,6 +11,9 @@ using Migration.Common;
 
 namespace Migration.Generate.Generators
 {
+    /// <summary>
+    /// Generic Generator - Default type
+    /// </summary>
     public class GenericGenerator : IGenerator
     {
         /// <summary>

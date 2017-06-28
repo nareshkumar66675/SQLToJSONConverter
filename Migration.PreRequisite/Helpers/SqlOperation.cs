@@ -410,11 +410,11 @@ namespace Migration.PreRequisite.Helpers
                 case FacadeType.Legacy:
                     return ConnectionStrings.LegacyConnectionString;
                 case FacadeType.Auth:
-                    return ConnectionStrings.AuthConnectionString;
+                    return ConnectionStrings.GetConnectionString(GroupType.AUTH);
                 case FacadeType.Asset:
-                    return ConnectionStrings.AssetConnectionString;
+                    return ConnectionStrings.GetConnectionString(GroupType.ASSET);
                 case FacadeType.Report:
-                    return ConnectionStrings.ReportConnectionString;
+                    return ConnectionStrings.GetConnectionString(GroupType.REPORT);
                 default:
                     return "";
             }

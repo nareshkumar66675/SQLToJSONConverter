@@ -14,7 +14,7 @@ namespace Migration.PreRequisite.Facades
     public class AuthFacade : AbstractPreRequisite
     {
         private List<IPreRequisite> _authPreRequisites = new List<IPreRequisite>();
-        private string _connectionString = ConnectionStrings.AuthConnectionString;
+        private string _connectionString = ConnectionStrings.GetConnectionString(Common.GroupType.AUTH);
         public AuthFacade()
         {
             _authPreRequisites.Add(new ExecuteScriptPreRequisite("NewMigrationTables", _connectionString));

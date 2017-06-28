@@ -10,19 +10,41 @@ using static Migration.Common.Common;
 
 namespace Migration.Common
 {
+    /// <summary>
+    /// Logger Interface
+    /// </summary>
     public interface ILogger
     {
+        /// <summary>
+        /// Logs Info
+        /// </summary>
+        /// <param name="logMessage"></param>
         void LogInfo(string logMessage);
+        /// <summary>
+        /// Logs Error with Exception
+        /// </summary>
+        /// <param name="logMessage"></param>
+        /// <param name="ex"></param>
         void LogError(string logMessage,Exception ex);
 
     }
-
+    /// <summary>
+    /// Logger Implementation
+    /// </summary>
     public class Logger : ILogger
     {
+        #region PrivateMembers
         private static readonly object lockObject = new object();
         private static readonly Lazy<ILogger> instance = new Lazy<ILogger>(() => new Logger(), LazyThreadSafetyMode.ExecutionAndPublication);
-        private readonly TextWriter logWriter;
+        private readonly TextWriter logWriter; 
+        #endregion
+        /// <summary>
+        /// Logger Instance
+        /// </summary>
         public static ILogger Instance => instance.Value;
+        /// <summary>
+        /// Log File Name
+        /// </summary>
         public static string LogFileName { get; private set; }
 
         private Logger()
@@ -31,6 +53,10 @@ namespace Migration.Common
             logWriter = TextWriter.Synchronized(File.AppendText(LogFileName));
             WriteToFile("********Start Of Log**********");
         }
+        /// <summary>
+        /// Logs Information
+        /// </summary>
+        /// <param name="logMessage">Log Message</param>
         public void LogInfo(string logMessage)
         {
             try
@@ -42,7 +68,11 @@ namespace Migration.Common
                 logWriter.Close();
             }
         }
-
+        /// <summary>
+        /// Logs Error with Exception
+        /// </summary>
+        /// <param name="logMessage">Log Message</param>
+        /// <param name="ex">Exception Object</param>
         public void LogError(string logMessage, Exception ex)
         {
             try
@@ -66,6 +96,10 @@ namespace Migration.Common
                 logWriter.Close();
             }
         }
+        /// <summary>
+        /// Writes Logs to files
+        /// </summary>
+        /// <param name="logMessage"></param>
         private void WriteToFile(string logMessage)
         {
             lock (lockObject)

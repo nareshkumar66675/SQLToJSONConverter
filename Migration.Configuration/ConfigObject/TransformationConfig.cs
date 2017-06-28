@@ -37,6 +37,9 @@ namespace Migration.Configuration.ConfigObject
     [XmlRoot(ElementName = "ColumnMapping")]
     public class ColumnMapping
     {
+        /// <summary>
+        /// List of all Column maps
+        /// </summary>
         [XmlElement(ElementName = "ColumnMap")]
         public List<ColumnMap> ColumnMap { get; set; }
     }
@@ -57,6 +60,9 @@ namespace Migration.Configuration.ConfigObject
         [XmlAttribute(AttributeName = "Keys")]
         public string Keys { get; set; }
     }
+    /// <summary>
+    /// Trasnformation Config
+    /// </summary>
     [XmlRoot(ElementName = "Transformation")]
     public class Transformation
     {
@@ -105,15 +111,26 @@ namespace Migration.Configuration.ConfigObject
     [XmlRoot(ElementName = "UniqueColumn")]
     public class UniqueColumn
     {
+        /// <summary>
+        /// Column Name
+        /// </summary>
         [XmlElement(ElementName = "Column")]
         public List<string> Column { get; set; }
+        /// <summary>
+        /// Full Class Type
+        /// </summary>
         [XmlAttribute(AttributeName = "type")]
         public string Type { get; set; }
     }
-
+    /// <summary>
+    /// Custom Unique Members
+    /// </summary>
     [XmlRoot(ElementName = "UniqueMembers")]
     public class UniqueMembers
     {
+        /// <summary>
+        /// List of Custom Unique Columns
+        /// </summary>
         [XmlElement(ElementName = "UniqueColumn")]
         public List<UniqueColumn> UniqueColumn { get; set; }
     }

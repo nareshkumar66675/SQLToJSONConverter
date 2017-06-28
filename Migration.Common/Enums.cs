@@ -50,7 +50,9 @@ namespace Migration.Common
         public string Description { get; set; }
         public T EnumName { get; set; }
     }
-
+    /// <summary>
+    /// Custom Enum Extensions
+    /// </summary>
     public static class EnumExtensions
     {
         /// <summary>

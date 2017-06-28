@@ -72,7 +72,7 @@ namespace Migration.Test
             string file = Path.Combine(Directory.GetCurrentDirectory() , "TestDatabase.mdf");
 
             Common.Common.ConnectionStrings.LegacyConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = """ + file + @"""; Integrated Security = True;";
-            Common.Common.ConnectionStrings.AuthConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = """ + file + @"""; Integrated Security = True;";
+            Common.Common.ConnectionStrings.SetConnectionString(Common.GroupType.AUTH, @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = """ + file + @"""; Integrated Security = True;");
             #endregion
 
             #region GenerateData
@@ -105,20 +105,20 @@ namespace Migration.Test
             int srcCount = data.Items.Count;
             int destCount=0;
             per.Insert(data);
-            
-            using (SqlConnection con = new SqlConnection(Common.Common.ConnectionStrings.AuthConnectionString))
+
+            using (SqlConnection con = new SqlConnection(Common.Common.ConnectionStrings.GetConnectionString(Common.GroupType.AUTH)))
             {
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand("Select * from dbo.GOTv2", con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
                     {
-                        int i=0;
+                        int i = 0;
                         while (dr.Read())
                         {
-                            var src = (GOT) data.Items[i];
-                            var rowJSON=dr.GetString(1);
-                            var temp=JsonConvert.DeserializeObject<GOT>(rowJSON);
+                            var src = (GOT)data.Items[i];
+                            var rowJSON = dr.GetString(1);
+                            var temp = JsonConvert.DeserializeObject<GOT>(rowJSON);
                             Assert.IsInstanceOf<GOT>(temp);
                             var result = (GOT)temp;
 
@@ -142,7 +142,7 @@ namespace Migration.Test
         [TearDown]
         public void Clear()
         {
-            using (SqlConnection con = new SqlConnection(Common.Common.ConnectionStrings.AuthConnectionString))
+            using (SqlConnection con = new SqlConnection(Common.Common.ConnectionStrings.GetConnectionString(Common.GroupType.AUTH)))
             {
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand(@"IF EXISTS(SELECT * FROM  dbo.GOTv2) Truncate Table dbo.GOTv2", con))

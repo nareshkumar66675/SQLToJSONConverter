@@ -14,7 +14,7 @@ namespace Migration.PreRequisite.Facades
     public class ReportFacade:AbstractPreRequisite
     {
         private List<IPreRequisite> _reportPreRequisites = new List<IPreRequisite>();
-        private string _connectionString = ConnectionStrings.ReportConnectionString;
+        private string _connectionString = ConnectionStrings.GetConnectionString(Common.GroupType.REPORT);
         public ReportFacade()
         {
             _reportPreRequisites.Add(new ExecuteScriptPreRequisite("NewMigrationTables", _connectionString));

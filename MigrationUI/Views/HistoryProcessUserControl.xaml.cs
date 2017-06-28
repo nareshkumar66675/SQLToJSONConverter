@@ -38,7 +38,7 @@ namespace MigrationTool.Views
         DateTime overallStartTime;
 
         private bool terminate = false;
-        private int selctedSiteCount;
+        private int selectedSiteCount;
         private string siteCompletedText = "{0} of {1} Completed";
         public event EventHandler ProcessStarted;
         public event EventHandler ProcessCompleted;
@@ -72,13 +72,9 @@ namespace MigrationTool.Views
             FailedSites = new Dictionary<string, string>();
             MigratedSites = new Dictionary<string, string>();
             CurrentSite = new KeyValuePair<string, string>();
-            //SelectedSites = new Dictionary<string, string>();
-            //NotMigratedSites = new Dictionary<string, string>();
-            //SelectedSites = DatabaseHelper.GetAllSitesFromLegacy();//.Where(t=> t.Key=="233").ToDictionary(u=>u.Key,v=>v.Value);
-            selctedSiteCount= SelectedSites.Count();
-            OverallProgress.Maximum = selctedSiteCount;
+            selectedSiteCount= SelectedSites.Count();
+            OverallProgress.Maximum = selectedSiteCount;
 
-            //NotMigratedSites = GetNotMigratedSites(GroupType.HISTORY, SelectedSites);
             CompletedListBox.ItemsSource = MigratedSites;
             NotCompletedListBox.ItemsSource = SelectedSites;//.ToDictionary(t=>t.Key,t=>t.Value);
             FailedSitesListBox.ItemsSource = FailedSites;
@@ -87,7 +83,7 @@ namespace MigrationTool.Views
             FailedSitesListBox.DisplayMemberPath = "Value";
             OverallProgress.Value = 0;//SelectedSites.Count() - NotMigratedSites.Count();
 
-            OverallStatusText.Text = string.Format(siteCompletedText, 0, selctedSiteCount);
+            OverallStatusText.Text = string.Format(siteCompletedText, 0, selectedSiteCount);
 
         }
 
@@ -189,13 +185,13 @@ namespace MigrationTool.Views
                     SiteProgress.Value = 100;
                     SiteProgress.Foreground = Brushes.Red;
                     OverallProgress.Value++;
-                    OverallStatusText.Text = string.Format(siteCompletedText, OverallProgress.Value, selctedSiteCount);
+                    OverallStatusText.Text = string.Format(siteCompletedText, OverallProgress.Value, selectedSiteCount);
                     UpdateFailedSiteList();
                 }
                 else if (processStatus.Status == Status.Success)
                 {
                     OverallProgress.Value++;
-                    OverallStatusText.Text = string.Format(siteCompletedText, OverallProgress.Value, selctedSiteCount);
+                    OverallStatusText.Text = string.Format(siteCompletedText, OverallProgress.Value, selectedSiteCount);
                     UpdateCompletedSiteList();
                 }
             });
@@ -264,7 +260,6 @@ namespace MigrationTool.Views
             }
             catch (Exception ex)
             {
-
                 Logger.Instance.LogError("Update completed SiteList Failed", ex);
             }
         }
@@ -283,7 +278,6 @@ namespace MigrationTool.Views
             catch (Exception ex)
             {
                 Logger.Instance.LogError("Update failed SiteList Failed", ex);
-                //ErrorHandler.ShowFatalErrorMsgWtLog(Window.GetWindow(this),""
             }
         }
         private void stopButton_Click(object sender, RoutedEventArgs e)

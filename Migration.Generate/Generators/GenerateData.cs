@@ -12,9 +12,21 @@ using Migration.Common;
 
 namespace Migration.Generate.Generators
 {
+    /// <summary>
+    /// Generates Object from Sql Tables
+    /// </summary>
     public abstract class GenerateData:GenericGenerator
     {
+        /// <summary>
+        /// Connection String
+        /// </summary>
+        /// <returns> Connection String</returns>
         public abstract string GetConnectionString();
+        /// <summary>
+        /// Generates object from Sql Table JSON Data
+        /// </summary>
+        /// <param name="component"></param>
+        /// <returns></returns>
         public override bool Generate(Component component)
         {
             DateTime startTime = DateTime.Now;
@@ -29,7 +41,7 @@ namespace Migration.Generate.Generators
                 NotifyGenerateStatus(resultSet, resultSet, component, startTime, Status.Running.GetDescription());
 
                 //Add to Process Queue for Persisting
-                ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultSet));
+                ProcessQueue.ProcessQueue.Processes.TryAdd(new ProcessItem(component, resultSet),1000);
 
                 return true;
             }

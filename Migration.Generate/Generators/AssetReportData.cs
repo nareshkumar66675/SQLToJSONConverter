@@ -7,9 +7,16 @@ using static Migration.Common.Common;
 
 namespace Migration.Generate.Generators
 {
+    /// <summary>
+    /// Asset Report Generate
+    /// </summary>
     public class AssetReportData : GenerateData
     {
-        public override string GetConnectionString() => ConnectionStrings.AssetConnectionString;
+        /// <summary>
+        /// Connection String
+        /// </summary>
+        /// <returns>Returns Asset Connection String</returns>
+        public override string GetConnectionString() => ConnectionStrings.GetConnectionString(Common.GroupType.ASSET);
 
     }
 }

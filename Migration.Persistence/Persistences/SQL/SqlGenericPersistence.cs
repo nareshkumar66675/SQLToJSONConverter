@@ -45,7 +45,7 @@ namespace Migration.Persistence.Persistences.SQL
             }
         }
         /// <summary>
-        /// Serializes Object and Converts to Datatbale
+        /// Serializes Object and Converts to Datatable
         /// Key - Value Format
         /// </summary>
         /// <param name="items">Data</param>
