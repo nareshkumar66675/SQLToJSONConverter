@@ -208,9 +208,18 @@ namespace MigrationTool
         {
             if (ValidateConnectionString(e.ConnectionString))
             {
-                Wiz.CurrentPage.CanSelectNextPage = true;
                 ConnectionStrings.LegacyConnectionString = e.ConnectionString;
-                Logger.Instance.LogInfo("Source Database Connection Completed");
+                if (CheckPreRunCompleted())
+                {
+                    Wiz.CurrentPage.CanSelectNextPage = true;
+                    Logger.Instance.LogInfo("Source Database Connection Completed");
+                }
+                else
+                {
+                    ConnectionStrings.LegacyConnectionString = string.Empty;
+                    Logger.Instance.LogInfo("PreRun Scripts Not Executed.Exiting Application");
+                    Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), "PreRun Scripts not Executed.\nCannot Proceed.","Error",MessageBoxButton.OK,MessageBoxImage.Exclamation);
+                }
             }
             else
             {
@@ -458,6 +467,11 @@ namespace MigrationTool
             var completedList = DatabaseHelper.GetCompletedComponents(GroupType.REPORT, new List<string>());
 
             return allComp.Remove(completedList);
+        }
+        private bool CheckPreRunCompleted()
+        {
+            Logger.Instance.LogInfo("Checking if PreRun Scripts has been executed");
+            return DatabaseHelper.CheckIfSPExists(ConnectionStrings.LegacyConnectionString, Helpers.Queries.SPPRERUNCHECK);
         }
         #endregion
     }

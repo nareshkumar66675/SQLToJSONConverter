@@ -18,9 +18,11 @@ namespace MigrationTool.Helpers
     public static class Queries
     {
         public const string SITEGRPTABNAME = @"Migration.SiteGroup";
+        public const string SPPRERUNCHECK = @"P_ASSET_CHANGELIST_HISTORY_POPULATION";
         public const string GETALLACTIVEDBS = @"SELECT NAME FROM sys.databases WHERE state_desc<>'OFFLINE'";
         public const string GETALLACTIVESITES = @"SELECT SITE_NUMBER, Site_Long_Name FROM [MIGRATION].[VIEW_SITE_INFO] ORDER BY Site_Long_Name";
         public const string CHECKTABLEEXISTS = @"SELECT CASE WHEN EXISTS((SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=@Schema AND TABLE_NAME = @TableName)) THEN 1 ELSE 0 END";
+        public const string CHECKSPEXISTS = @"SELECT CASE WHEN EXISTS((SELECT 1 FROM sys.objects WHERE type = 'P' AND name = @ProcedureName)) THEN 1 ELSE 0 END";
         public const string GETCOMPITEMSWITHOUTSITE = @"SELECT DISTINCT Component_Name from Migration.Report where Status = 'Success'";
         public const string GETMIGRATEDSITES = @"SELECT Distinct SiteID FROM [Migration].[SiteGroup] grp 
                                                  LEFT JOIN[Migration].[Report] rpt on grp.SiteGroupID = rpt.SiteGroupID WHERE rpt.[Status] = 'Success'";

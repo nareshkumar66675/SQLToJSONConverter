@@ -323,5 +323,26 @@ namespace MigrationTool.Helpers
             }
             return exists;
         }
+        /// <summary>
+        /// To Check if SP exists in a given Database
+        /// </summary>
+        /// <param name="connectionString">Connection String</param>
+        /// <param name="procedureName">Procedure Name</param>
+        /// <returns></returns>
+        public static bool CheckIfSPExists(string connectionString, string procedureName)
+        {
+            bool exists;
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                using (SqlCommand cmd = new SqlCommand(Queries.CHECKSPEXISTS, con))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@ProcedureName", procedureName));
+
+                    exists = (int)cmd.ExecuteScalar() == 1;
+                }
+            }
+            return exists;
+        }
     }
 }

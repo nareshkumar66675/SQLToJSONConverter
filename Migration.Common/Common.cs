@@ -13,12 +13,12 @@ namespace Migration.Common
         public static class ConnectionStrings
         {
             //public static string AuthConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Auth_Migration";
-            public static string AssetConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM_B11_v1_Asset";
-            public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=Prod_ALH_AssetMatrix14";
+            //public static string AssetConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM_B11_v1_Asset";
+            //public static string LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=Prod_ALH_AssetMatrix14";
             //public static string ReportConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AssetMatrix_Report_Migration";
             public static string AuthConnectionString = string.Empty;
-            //public static string AssetConnectionString = string.Empty;
-            //public static string LegacyConnectionString = string.Empty;
+            public static string AssetConnectionString = string.Empty;
+            public static string LegacyConnectionString = string.Empty;
             public static string ReportConnectionString = string.Empty;
             /// <summary>
             /// Retrieves Connection String based on Group Type
