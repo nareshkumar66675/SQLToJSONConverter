@@ -853,7 +853,7 @@ namespace MigrationTool.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Help.
+        ///   Looks up a localized string similar to About.
         /// </summary>
         public static string Wizard_Help_Button {
             get {

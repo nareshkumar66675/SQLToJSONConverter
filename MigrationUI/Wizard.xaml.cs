@@ -157,7 +157,16 @@ namespace MigrationTool
         }
         private void Wiz_Help(object sender, RoutedEventArgs e)
         {
-            Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), Properties.Resources.Wizard_Help_Message, Properties.Resources.Help_Text, MessageBoxButton.OK, MessageBoxImage.Information);
+            //System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+
+            //Version version = assembly.GetName().Version;
+            //Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), version.ToString(), "", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            AboutWindow about = new AboutWindow();
+            about.Owner = Window.GetWindow(this);
+            about.ShowDialog();
+
+            //Xceed.Wpf.Toolkit.MessageBox.Show(GetWindow(this), Properties.Resources.Wizard_Help_Message, Properties.Resources.Help_Text, MessageBoxButton.OK, MessageBoxImage.Information);
         }
         private void LogAppClose(object sender, RoutedEventArgs e)
         {

@@ -168,6 +168,8 @@ set @UnEnrolled = @TotalSlots - @Enrolled
 
 set @NotConnected = @TotalSlots - @Connected
 
+set @Offline = @TotalSlots - @Online
+
 set @JSON = (select [value] from Common.DASHBOARDDATA)
 
 set @JSON =JSON_MODIFY(@JSON, '$.SlotDataEntity.TotalSlots',@TotalSlots)

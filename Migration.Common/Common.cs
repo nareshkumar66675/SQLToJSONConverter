@@ -231,6 +231,22 @@ namespace Migration.Common
                 }
                 private set { }
             }
+            public static string LegacyAMVersion
+            {
+                get
+                {
+                    return string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("LegacyAMVersion")) ? "--" : ConfigurationManager.AppSettings.Get("LegacyAMVersion");
+                }
+                private set { }
+            }
+            public static string NewAMVersion
+            {
+                get
+                {
+                    return string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get("NewAMVersion")) ? "--" : ConfigurationManager.AppSettings.Get("NewAMVersion");
+                }
+                private set { }
+            }
         }
         /// <summary>
         /// Common Queries

@@ -29,7 +29,6 @@
                      FinishButtonContent="{x:Static res:Resources.Wizard_Finish_Button}"
                      Help="Wiz_Help"
                      HelpButtonContent="{x:Static res:Resources.Wizard_Help_Button}"
-                     HelpButtonVisibility="Hidden"
                      Next="Wiz_Next"
                      NextButtonContent="{x:Static res:Resources.Wizard_Next_Button}">
             <xctk:Wizard.Resources>

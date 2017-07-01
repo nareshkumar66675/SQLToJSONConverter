@@ -374,7 +374,7 @@
     <value>Finish</value>
   </data>
   <data name="Wizard_Help_Button" xml:space="preserve">
-    <value>Help</value>
+    <value>About</value>
   </data>
   <data name="Wizard_Next_Button" xml:space="preserve">
     <value>Next &gt;</value>
