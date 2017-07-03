@@ -83,7 +83,7 @@ GO
 	  Inline_Asset_SeqId,
 	  Asset_optn_val_seqId,
 	  ASD_AM_UID
-	  	INTO MIGRATION.DATAMANAGEMENT_ASSET_DATA
+	  INTO MIGRATION.DATAMANAGEMENT_ASSET_DATA
       FROM (SELECT isnull(gSltMap.ASD_STD_NEW_ID, Ast_Optn.ASD_STD_NEW_ID)  as  Id,
       ---ASSET ID -----
       isnull(gSltMap.ASD_STD_NEW_ID, Ast_Optn.ASD_STD_NEW_ID)  as AssetId_Id,
@@ -168,7 +168,7 @@ GO
       SITE_NEW_ID, SITE_NUMBER, SITE_SHORT_NAME,
       PROP_NEW_ID, PROP_LONG_NAME, ASST_OPTN_ORDER,
       TypeCode_Id, TypeCode_Name,
-      row_number() over (partition by asd_std_id order by asd_std_id, ASST_OPTN_ORDER) as Asset_optn_val_seqId,
+      ROW_NUMBER() over (partition by asd_std_id order by asd_std_id, ASST_OPTN_ORDER) as Asset_optn_val_seqId,
       ASD_AM_UID 
       from (  SELECT ASD.ASD_STD_ID, ASD.ASD_NUMBER, ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
       fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],

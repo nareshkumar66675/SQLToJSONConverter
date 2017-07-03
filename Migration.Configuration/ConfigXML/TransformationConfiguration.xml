@@ -1477,7 +1477,7 @@
       LinkedAssets_ChangedLinkes_DeLinked_DisplayValue,
       IsLastest,
       cg, og,  CLST_EXECTUED_DATE, CURRENT_ID, Game_AssetId, OPTION_ORDER
-      from MIGRATION.GAM_History_Asset_Data
+      from MIGRATION.GAM_HISTORY_ASSET_DATA
       where 1=1
       And all_Updated = 1
       AND Site_SiteNumber in ({0})

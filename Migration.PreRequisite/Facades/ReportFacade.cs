@@ -19,6 +19,7 @@ namespace Migration.PreRequisite.Facades
         {
             _reportPreRequisites.Add(new ExecuteScriptPreRequisite("NewMigrationTables", _connectionString));
             _reportPreRequisites.Add(new ExecuteScriptPreRequisite("ReportTruncateTables", _connectionString));
+            _reportPreRequisites.Add(new ExecuteScriptPreRequisite("HistoryPrePopulate", ConnectionStrings.LegacyConnectionString));
         }
         public override FacadeType Type => FacadeType.Report;
 
