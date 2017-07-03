@@ -1196,8 +1196,7 @@
       Id,
       0 as DataRowVersion,
       ---ASSET ID -----
-      --asd.ASD_AM_UID as AssetId_Id,
-	  AssetId_Id,
+      AssetId_Id,
       AssetId_AssetTypeDefinitionId,
       ---------SITE----------
       Site_SiteId,
@@ -1232,8 +1231,7 @@
       --------TypeCode--------
       TypeCode_TypeCodeId,
       TypeCode_TypeCodeName
-      from migration.Datamanagement_asset_data (nolock) as mnt
-	  left join gam.asset_standard_details (nolock) as asd on asd.asd_std_id = mnt.Ast_std_Id
+      from migration.Datamanagement_asset_data (nolock)
       where Site_SiteNumber in ({0})
       --where Site_SiteNumber = 201
       ORDER BY ID, Asset_optn_val_seqId, asset_comp_seqId, Inline_asset_seqId
@@ -1401,13 +1399,11 @@
       tt.[Action] as [Action],
       clst_name as MasterListName,
       clst_name as ChangeListName,
-      case 
-		when clst_scheduled_date is not null then 'SCHEDULED' 
-		when tt.astl_data_source in ('IMPORT_DATA', 'CHANGELIST_DATA', 'CHANGELIST_VC_DATA'  ) then 'IMMEDIATE'
-		when tt.astl_data_source in ('RECOVERY_AM', 'RECOVERY_INSITE'  ) then 'RECOVERY'
-        when clst_name like 'Data Sync%' then 'SYNCH'
-		when clst_name like 'Batch%' then 'IMMEDIATE'
-      else 'IMMEDIATE' end as DataTriggerSource,
+      case when tt.astl_data_source = 'IMPORT_DATA' then 'Import'
+      when tt.astl_data_source = 'CHANGELIST_DATA' then 'Changelist'
+      when clst_name like 'Data Sync%' then 'Data Sync'
+      else '' end as DataTriggerSource,
+      --tt.astl_data_source  as DataTriggerSource,
       ------- CreatedBy-------
       0 as CreatedBy_UserId,
       tt.created_user as CreatedBy_LoginName,

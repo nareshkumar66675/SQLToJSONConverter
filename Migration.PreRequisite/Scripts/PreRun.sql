@@ -4,13 +4,21 @@
 	
 	*********************************************************
 	*														*
-	*  PreRequisite Name - LegacyAssetHistoryDataPopulation *
+	*       PreRequisite Name - Migration PreRun		    *
 	*														*
 	*********************************************************
    
-   Purpose : To Populating data for historical data migration
+   Purpose : PreunScripts - needs to be run before migration
 
  */
+
+UPDATE GAM.ASSET_DETAIL
+SET AST_OPTN_VALUE = 'Bright Lights'
+WHERE AST_OPTN_VALUE = '\Bright Lights'
+
+GO
+ 
+
 
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'GAM.TMP_CURRENT_ASSET_UID') AND type in (N'U'))
 BEGIN

@@ -750,8 +750,8 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 --Multi Denom--
 '22092' as ComponentId,
 cast('Multi Denom' as nvarchar) as ComponentName,
-cast(GTC.MultiDenom as nvarchar)  as ComponentValue,
-'0_'+cast(MultiDenom_Id as nvarchar) +'_22092' as ComponentKey,
+cast(GTC.MultiGame as nvarchar)  as ComponentValue,
+'0_'+cast(MultiGame_Id as nvarchar) +'_22092' as ComponentKey,
 'ASSETMULTIDENOM' as ComponentInstanceId,
 'ASSET.MULTI.DENOM' as ComponentCode
 
@@ -787,8 +787,8 @@ gpt.PROP_NEW_ID as OrgId, pt.PROP_LONG_NAME as OrgName, mdl.Mdl_long_name as Mod
 --VarHoldPercentage--
 '22093' as ComponentId,
 cast('Var Hold Percentage' as nvarchar) as ComponentName,
-cast(GTC.VarHoldPC as nvarchar)  as ComponentValue,
-'0_'+cast(VarHoldPC_Id as nvarchar) +'_22093' as ComponentKey,
+cast(GTC.MultiGame as nvarchar)  as ComponentValue,
+'0_'+cast(MultiGame_Id as nvarchar) +'_22093' as ComponentKey,
 'ASSETVARHOLDPERCENT' as ComponentInstanceId,
 'ASSET.VAR.HOLD.PERCENT' as ComponentCode
 
