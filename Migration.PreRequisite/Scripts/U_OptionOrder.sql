@@ -38,7 +38,7 @@ GO
 -------------------------------
 --- populating historical   ---
 -------------------------------
-            SELECT
+      SELECT
       Id,
 	  0 as DataRowVersion,
       ---ASSET ID -----
@@ -81,7 +81,8 @@ GO
 	  Asset_Options_SeqId,
 	  Asset_Comp_SeqId, 
 	  Inline_Asset_SeqId,
-	  Asset_optn_val_seqId
+	  Asset_optn_val_seqId,
+	  ASD_AM_UID
 	  	INTO MIGRATION.DATAMANAGEMENT_ASSET_DATA
       FROM (SELECT isnull(gSltMap.ASD_STD_NEW_ID, Ast_Optn.ASD_STD_NEW_ID)  as  Id,
       ---ASSET ID -----
@@ -129,7 +130,7 @@ GO
 	  ASST_OPTN_ORDER as Asset_Options_SeqId,
 	  AST_COMP.Seq_id as Asset_Comp_SeqId,
 	  gSltMap.Ast_Gme_Seq as Inline_Asset_SeqId,
-	  Asset_optn_val_seqId
+	  Asset_optn_val_seqId, ASD_AM_UID
 	   FROM   ( select  ASD_STD_ID, ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
       [OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
    
@@ -167,14 +168,14 @@ GO
       SITE_NEW_ID, SITE_NUMBER, SITE_SHORT_NAME,
       PROP_NEW_ID, PROP_LONG_NAME, ASST_OPTN_ORDER,
       TypeCode_Id, TypeCode_Name,
-	  row_number() over (partition by asd_std_id order by asd_std_id, ASST_OPTN_ORDER) as Asset_optn_val_seqId
-	  
-	  from (  SELECT ASD.ASD_STD_ID, ASD.ASD_NUMBER, ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
+      row_number() over (partition by asd_std_id order by asd_std_id, ASST_OPTN_ORDER) as Asset_optn_val_seqId,
+      ASD_AM_UID 
+      from (  SELECT ASD.ASD_STD_ID, ASD.ASD_NUMBER, ASD_STD_NEW_ID, [AST_OPTION_ID], [OPTION_ID],[OPTN_NAME],
       fastDefn.[OPTION_NAME], [OPTION_CODE], [ASTDFN_OPTN_ORDER],
 	  AST_OPTN_VALUE,
       GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_SHORT_NAME,
       gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
-      tycod_number as TypeCode_Id, tycod_name as TypeCode_Name
+      tycod_number as TypeCode_Id, tycod_name as TypeCode_Name, ASD.ASD_AM_UID
       FROM GAM.ASSET_STANDARD_DETAILS (nolock) AS ASD
       JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
       JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
@@ -201,7 +202,7 @@ GO
 	  TYCV_OPTN_VALUE,
       GST.SITE_NEW_ID, st.SITE_NUMBER, st.SITE_SHORT_NAME,
       gpt.PROP_NEW_ID, pt.PROP_LONG_NAME, ASST_OPTN_ORDER,
-      tycod_number as TypeCode_Id, tycod_name as TypeCode_Name
+      tycod_number as TypeCode_Id, tycod_name as TypeCode_Name, ASD.ASD_AM_UID
 
 	  FROM GAM.ASSET_STANDARD_DETAILS (nolock) AS ASD
       JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS GSD ON ASD.ASD_STD_ID = GSD.ASD_STD_LEGACY_ID
@@ -281,14 +282,125 @@ GO
 
 
 GO
-CREATE NONCLUSTERED INDEX [<DATAMANAGEMENT_ASSET_DATA>]
-ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA] ([Site_SiteNumber])
-INCLUDE ([Id],[AssetId_Id],[AssetId_AssetTypeDefinitionId],[Site_SiteId],[Site_SiteName],[Site_OrganizationId],[Site_OrganizationName],[Options_Id],[Options_Code],[Options_Value],[Components_ComponentId],[Components_ComponentInstanceId],[Components_ComponentName],[Components_ComponentKey],[Components_ComponentValue],[Components_ComponentCode],[InlineAssets_Id],[InlineAssets_AssetId_AssetTypeDefinitionId],[InlineAssets_AssetId_Id],[InlineAssets_Components_ComponentId],[InlineAssets_Components_ComponentName],[InlineAssets_Components_ComponentValue],[InlineAssets_Components_ComponentKey],[InlineAssets_Components_ComponentInstanceId],[InlineAssets_Components_ComponentCode],[InlineAssets_Options_Id],[InlineAssets_Options_Value],[InlineAssets_Options_Code],[TypeCode_TypeCodeId],[TypeCode_TypeCodeName],[Asset_Comp_SeqId],[Inline_Asset_SeqId],[Asset_optn_val_seqId])
-GO
 
+
+CREATE NONCLUSTERED INDEX IDX_DATAMANAGEMENT_ASSET_DATA_Site_SiteNumber_Id_ASD_AM_UID
+ON [MIGRATION].[DATAMANAGEMENT_ASSET_DATA] ([Site_SiteNumber],[Id],[ASD_AM_UID])
+INCLUDE ([AssetId_AssetTypeDefinitionId],[Site_OrganizationId],[Site_OrganizationName],[Options_Id],[Options_Code],[Options_Value],[Components_ComponentId],[Components_ComponentInstanceId],[Components_ComponentName],[Components_ComponentKey],[Components_ComponentValue],[Components_ComponentCode],[InlineAssets_Id],[InlineAssets_AssetId_AssetTypeDefinitionId],[InlineAssets_AssetId_Id],[InlineAssets_Components_ComponentId],[InlineAssets_Components_ComponentName],[InlineAssets_Components_ComponentValue],[InlineAssets_Components_ComponentKey],[InlineAssets_Components_ComponentInstanceId],[InlineAssets_Components_ComponentCode],[InlineAssets_Options_Id],[InlineAssets_Options_Value],[InlineAssets_Options_Code],[TypeCode_TypeCodeId],[TypeCode_TypeCodeName],[Asset_Comp_SeqId],[Inline_Asset_SeqId],[Asset_optn_val_seqId])
+GO
 
 
 UPDATE GAM.ASSET_DETAIL
 SET AST_OPTN_VALUE = 'Bright Lights'
 WHERE AST_OPTN_VALUE = '\Bright Lights'
 
+GO
+
+
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'P_Get_Dashboard_Count')
+DROP PROCEDURE Migration.P_Get_Dashboard_Count
+GO
+-- EXEC Migration.P_Get_Dashboard_Count
+CREATE PROCEDURE Migration.P_Get_Dashboard_Count
+AS
+DECLARE @TotalSlots BIGINT
+DECLARE @Online BIGINT
+DECLARE @Enrolled BIGINT
+DECLARE @ProgressiveSlots BIGINT
+DECLARE @Connected BIGINT
+
+DECLARE @Manufacturer VARCHAR(500)
+DECLARE @Denom VARCHAR(500)
+DECLARE @Progressive VARCHAR(500)
+
+	  /*        Total Asset Count           */
+	  SELECT
+      @TotalSlots = count(distinct Id)
+      FROM migration.Datamanagement_asset_data (nolock)
+
+	  /*        Total Online Asset Count           */
+	  SELECT
+      @Online = count(distinct Id)
+      FROM migration.Datamanagement_asset_data (nolock)
+	  WHERE Options_Code ='ASSET.MASTER.CONFIGURATION.STATUS' and Options_Value='Online'
+
+	  /*        Total Enrolled Asset Count           */
+	  SELECT
+      @Enrolled = count(distinct Id)
+      FROM migration.Datamanagement_asset_data (nolock)
+	  WHERE Options_Code ='OPTION.CODE.ENROLMENT.STATUS' and Options_Value='Y'
+
+	  /*        Total Connected Asset Count           */
+	  SELECT
+      @Connected = count(distinct MSLOT.[ASD_STD_NEW_ID])
+      FROM [PROGRESSIVE].[SLOT_POOL_MAPPING] (nolock) AS PM
+      JOIN [PROGRESSIVE].[SLOT] (nolock) AS SLT ON SLT.SLOT_ID = PM.SLOT_ID
+      JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS MSLOT ON MSLOT.ASD_STD_LEGACY_ID = SLT.ASD_STD_ID
+      JOIN GAM.ASSET_STANDARD_DETAILS (nolock) AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
+      JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
+      JOIN MIGRATION.PROGRESSIVE_POOL (nolock) AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
+      JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
+      JOIN GAM.SITE (nolock) AS ST ON ST.SITE_ID = ISM.INSM_SITE_ID
+      WHERE PM.[IS_DELETED] = 0 AND ISNULL(ASST_ANCESTOR_ID, ASST_ID)=1
+
+	  /*        Total 3 Manufacturer Count           */
+	  SELECT @Manufacturer =  '[{' +  CASE dat WHEN null THEN null ELSE (CASE LEN(dat) WHEN 0 THEN dat ELSE LEFT(dat, LEN(dat) - 1) END 
+      ) END +']' FROM (
+	  SELECT STUFF((
+      SELECT '{"Key":"' + cast([key] as VARCHAR(MAX))+'","Value":'+cast(Value as VARCHAR(MAX))+'},' 
+      FROM (
+	  SELECT
+      top 3 Components_ComponentValue as [Key],count(distinct Id) as [Value]
+      FROM migration.Datamanagement_asset_data (nolock) 
+	  WHERE Components_ComponentCode ='MANUFACTURER' 
+	  group by Components_ComponentValue
+	  order by count(distinct Id) desc )as t
+	  FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, '') dat) as gds
+
+	  /*        Total 3 Denom Count           */
+	  SELECT @Denom =  '[{' +  CASE dat WHEN null THEN null ELSE (CASE LEN(dat) WHEN 0 THEN dat ELSE LEFT(dat, LEN(dat) - 1) END 
+      ) END +']'  FROM (
+	  SELECT STUFF((
+      SELECT '{"Key":"' + cast([key] as VARCHAR(MAX))+'","Value":'+cast(Value as VARCHAR(MAX))+'},' 
+      FROM (
+	  SELECT
+      top 3 Components_ComponentValue as [key],count(distinct Id) as Value
+      FROM migration.Datamanagement_asset_data (nolock)
+	  WHERE Components_ComponentCode ='ASSET.DENOMINATION' 
+	  group by Components_ComponentValue
+	  order by count(distinct Id) desc) as t
+	  FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, '') dat) as gds
+
+	  /*        Total 3 Progressive Count           */
+	  SELECT @Progressive = '[{' +  CASE dat WHEN null THEN null ELSE (CASE LEN(dat) WHEN 0 THEN dat ELSE LEFT(dat, LEN(dat) - 1) END 
+      ) END +']' FROM (
+	  SELECT STUFF((
+      SELECT '{"Key":"' + cast(PRGP_POOL_ID as VARCHAR(MAX))+'","Value":'+cast(cnt as VARCHAR(MAX))+'},' 
+      FROM (
+	  SELECT top 3 POOL_NEW_ID, pl.PRGP_POOL_ID ,count(distinct MSLOT.[ASD_STD_NEW_ID]) as cnt
+      FROM [PROGRESSIVE].[SLOT_POOL_MAPPING] (nolock) AS PM
+      JOIN [PROGRESSIVE].[SLOT] (nolock) AS SLT ON SLT.SLOT_ID = PM.SLOT_ID
+      JOIN MIGRATION.GAM_ASSET_STANDARD_DETAILS (nolock) AS MSLOT ON MSLOT.ASD_STD_LEGACY_ID = SLT.ASD_STD_ID
+      JOIN GAM.ASSET_STANDARD_DETAILS (nolock) AS ONLNE ON ONLNE.ASD_STD_ID = MSLOT.ASD_STD_LEGACY_ID
+      JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ONLNE.ASD_ASST_ID
+      JOIN MIGRATION.PROGRESSIVE_POOL (nolock) AS MPOOL ON MPOOL.[POOL_LEGCY_ID] = PRGP_ID
+      JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS ISM ON ISM.INSM_ID = ONLNE.ASD_INSMAP_ID
+      JOIN GAM.SITE (nolock) AS ST ON ST.SITE_ID = ISM.INSM_SITE_ID
+	  JOIN PROGRESSIVE.POOL (nolock) AS pl ON pl.PRGP_ID = PM.PRGP_ID
+      WHERE PM.[IS_DELETED] = 0 AND ISNULL(ASST_ANCESTOR_ID, ASST_ID)=1
+	  group by POOL_NEW_ID, PRGP_POOL_ID	  
+      ORDER BY count(distinct MSLOT.[ASD_STD_NEW_ID]) desc
+	  ) as t
+	  FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 1, '') dat) as gds
+
+
+	  select  @TotalSlots as TotalSlot,
+	          @Online as [Online], 
+			  @Enrolled as [Enrolled],
+			  @Connected  as Connected,
+			  @Manufacturer as Manufacturer,
+			  @Denom as Denom,
+			  @Progressive as Progressive
+
+GO

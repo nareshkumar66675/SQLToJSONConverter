@@ -179,7 +179,7 @@
   <Transformation Name="COMPDATA_MODEL_TYPE">
     <Source>
       ----------- MODEL TYPE----------
-      SELECT 22003 as Id,
+     SELECT 22003 as Id,
 	    0 as DataRowVersion,
       22003 as cc_1,
       --COMPONENTS---
@@ -196,7 +196,8 @@
       DisplayName AS cc_Components_ComponentValues_ChildComponents_DisplayName,
       'MODEL.TYPE' AS cc_Components_ComponentValues_ChildComponents_Code,
       ----- OPTIONS ------
-      ROW_NUMBER() OVER (PARTITION BY MDLTYP_ID ORDER BY MDLTYP_ID desc ) AS cc_Components_ComponentValues_ChildComponents_Options_Id,
+	  CASE WHEN VALUE_DESC = 'MDLTYP_SHORT_NAME' then 2
+      WHEN VALUE_DESC = 'MDLTYP_LONG_NAME' then 1       END AS cc_Components_ComponentValues_ChildComponents_Options_Id,
       CASE  WHEN VALUE_DESC = 'MDLTYP_SHORT_NAME' then 'Model Type Short Name'
       WHEN VALUE_DESC = 'MDLTYP_LONG_NAME' then 'Model Type Long Name'
       END AS cc_Components_ComponentValues_ChildComponents_Options_Name,
@@ -423,7 +424,7 @@
       DENM_AMOUNT as Component_Components_ComponentValues_ChildComponents_Options_Value,
       'DENOM.AMOUNT' as Component_Components_ComponentValues_ChildComponents_Options_Code
       from [MIGRATION].[GAM_DENOMINATION] as den
-		order by DENM_AMOUNT_Cents
+	  order by DENM_AMOUNT_Cents
       -------- EOF Denoms -----------
     </Source>   
     <Destination>[COMPONENTS].[ComponentData]</Destination>
@@ -860,10 +861,13 @@
   </Transformation>
   <Transformation Name="AST">
     <Source>
-      SELECT MG.ASD_STD_NEW_ID as  Id,
+      SELECT 
+	  --MG.ASD_STD_NEW_ID as  Id,
+	  asd.ASD_AM_UID as Id,
       0 as DataRowVersion,
       ---ASSET ID -----
-      MG.ASD_STD_NEW_ID as AssetId_Id,
+      --MG.ASD_STD_NEW_ID as AssetId_Id,
+	  asd.ASD_AM_UID as AssetId_Id,
       CASE WHEN AST.ASST_ID = 1 THEN 10
       WHEN AST.ASST_ID = 2 THEN 3
       WHEN AST.ASST_ID = 3 THEN 4
@@ -880,9 +884,9 @@
       WHEN AST.ASST_ID = 14 THEN 1
       END as AssetId_AssetTypeDefinitionId,
       ----SITE----------
-      SITE_NUMBER as Site_SiteId,
-      SITE_LONG_NAME as Site_SiteName,
-      SITE_NUMBER as Site_SiteNumber,
+      UM.SITE_NUMBER as Site_SiteId,
+      UM.SITE_LONG_NAME as Site_SiteName,
+      UM.SITE_NUMBER as Site_SiteNumber,
       st.IS_DELETED as Site_IsDeleted,
       PROP_NEW_ID as Site_OrganizationId,
       pt.prop_long_name as Site_OrganizationName,
@@ -927,6 +931,7 @@
       JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
       JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
       JOIN GAM.[SITE] (nolock) AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+	  LEFT JOIN [MIGRATION].[UM_SITE_INFO] AS UM ON UM.SITE_NUMBER = ST.SITE_NUMBER
       JOIN GAM.PROPERTY (nolock) AS pt ON pt.PROP_ID = ST.SITE_PROP_ID
       LEFT JOIN MIGRATION.GAM_PROPERTY (nolock) AS Mpt ON Mpt.PROP_LEGCY_ID = pt.PROP_ID
       JOIN GAM.ASSET_DETAIL (nolock) AS AD ON AD.ASD_STD_ID = ASD.ASD_STD_ID
@@ -946,7 +951,7 @@
       LEFT JOIN [GAM].MODEL_TYPE (nolock) AS MTYP ON COL.[COLLECTION_ID] = ASD.ASD_COLLECTION_ID
       WHERE ASD.IS_DELETED = 0 AND ASD_CLST_STAT_ID = 5
       AND AST.ASST_ID not in ( 1 ) AND OPTN.OPTN_ID NOT IN (127, 124)
-      AND SITE_NUMBER in ({0})
+      AND ST.SITE_NUMBER in ({0})
       ORDER BY MG.ASD_STD_NEW_ID, moptn.OPTION_ID
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
@@ -956,14 +961,16 @@
     <Source>
       SELECT
       -----Id--------
-      ASD_STD_NEW_ID as Id,
+      --ASD_STD_NEW_ID as Id,
+	  ASD_AM_UID as Id,
       -----AssetId--------
       305 as AssetId_AssetTypeDefinitionId,
-      ASD_STD_NEW_ID as AssetId_Id,
+	  ASD_AM_UID as AssetId_Id,
+      --ASD_STD_NEW_ID as AssetId_Id,
       -------Site-----
-      ST.SITE_NUMBER as Site_SiteId,
-      ST.SITE_LONG_NAME as Site_SiteName,
-      ST.SITE_NUMBER as Site_SiteNumber,
+      UM.SITE_NUMBER as Site_SiteId,
+      UM.SITE_SHORT_NAME as Site_SiteName,
+      UM.SITE_NUMBER as Site_SiteNumber,
       GPT.prop_new_id as Site_OrganizationId,
       PT.PROP_LONG_NAME as Site_OrganizationName,
       --AST.ASST_NAME, ASD.ASD_NUMBER as SlotNumber, ASD.ASD_AM_UID,
@@ -1001,6 +1008,7 @@
       JOIN GAM.ASSET (nolock) AS AST ON AST.ASST_ID = ASD.ASD_ASST_ID
       JOIN GAM.INSTALLED_SYSTEM_MAP (nolock) AS MAP ON MAP.INSM_ID = ASD.ASD_INSMAP_ID
       JOIN GAM.[SITE] (nolock) AS ST ON ST.SITE_ID = MAP.INSM_SITE_ID
+	  LEFT JOIN [MIGRATION].[UM_SITE_INFO] AS UM ON UM.SITE_NUMBER = ST.SITE_NUMBER
       JOIN MIGRATION.GAM_SITE (nolock) AS GST ON GST.[SITE_LEGCY_ID] = ST.SITE_ID
       JOIN GAM.PROPERTY (nolock) AS PT ON PT.PROP_ID = ST.SITE_PROP_ID
       JOIN [MIGRATION].[GAM_PROPERTY] (nolock) AS GPT ON GPT.[PROP_LEGCY_ID] = PT.PROP_ID
@@ -1031,12 +1039,12 @@
       0 as DataRowVersion,
       ---ASSET ID -----
       --1 as AssetId_Id,
-      mtr.POOL_NEW_ID  as AssetId_Id,
+      mtr.POOL_NEW_ID as AssetId_Id,
       11 as AssetId_AssetTypeDefinitionId,
       ----SITE----------
-      Site_SiteId,
-      Site_SiteName,
-      Site_SiteNumber,
+      UM.SITE_NUMBER AS Site_SiteId,
+      UM.SITE_SHORT_NAME AS Site_SiteName,
+      UM.SITE_NUMBER AS Site_SiteNumber,
       Site_IsDeleted,
       Site_OrganizationId, -- mapping needed
       Site_OrganizationName,
@@ -1057,7 +1065,8 @@
       InlineAssets as InlineAssets_Options_Value
       --select *
       from MIGRATION.VIEW_PROGRESSIVE_METERS (nolock) as mtr
-      left join MIGRATION.VIEW_POOL (nolock) AS P on p.prgp_id = mtr.PRGP_ID and mtr.InlineAssets_Id = Options_Id
+      LEFT JOIN MIGRATION.VIEW_POOL (nolock) AS P on p.prgp_id = mtr.PRGP_ID and mtr.InlineAssets_Id = Options_Id
+	  LEFT JOIN [MIGRATION].[UM_SITE_INFO] AS UM ON UM.SITE_NUMBER = Site_SiteNumber
       where Mtr_Deleted = 0
       and  Site_SiteNumber in ({0})
       order by mtr.PRGP_ID, mtr.InlineAssets_Id
@@ -1192,49 +1201,52 @@
   </Transformation>
   <Transformation Name="AST_SLOT">
     <Source>
-      SELECT
-      Id,
-      0 as DataRowVersion,
-      ---ASSET ID -----
-      AssetId_Id,
-      AssetId_AssetTypeDefinitionId,
-      ---------SITE----------
-      Site_SiteId,
-      Site_SiteName,
-      Site_SiteNumber,
-      Site_OrganizationId,
-      Site_OrganizationName,
-      --------- OPTIONS ----------
-      Options_Id,
-      Options_Code,
-      Options_Value,
-      --------Components --------
-      Components_ComponentId,
-      Components_ComponentInstanceId,
-      Components_ComponentName,
-      Components_ComponentKey,
-      Components_ComponentValue,
-      Components_ComponentCode,
-      ------------InlineAssets------------
-      InlineAssets_Id,
-      InlineAssets_AssetId_AssetTypeDefinitionId,
-      InlineAssets_AssetId_Id,
-      InlineAssets_Components_ComponentId,
-      InlineAssets_Components_ComponentName,
-      InlineAssets_Components_ComponentValue,
-      InlineAssets_Components_ComponentKey,
-      InlineAssets_Components_ComponentInstanceId,
-      InlineAssets_Components_ComponentCode,
-      InlineAssets_Options_Id,
-      InlineAssets_Options_Value,
-      InlineAssets_Options_Code,
-      --------TypeCode--------
-      TypeCode_TypeCodeId,
-      TypeCode_TypeCodeName
-      from migration.Datamanagement_asset_data (nolock)
-      where Site_SiteNumber in ({0})
-      --where Site_SiteNumber = 201
-      ORDER BY ID, Asset_optn_val_seqId, asset_comp_seqId, Inline_asset_seqId
+		  SELECT
+		  ASD_AM_UID as Id,
+		  0 as DataRowVersion,
+		  ---ASSET ID -----
+		  ASD_AM_UID as AssetId_Id,
+		  --AssetId_Id,
+		  AssetId_AssetTypeDefinitionId,
+		  ---------SITE----------
+		  UM.SITE_NUMBER AS Site_SiteId,
+		  UM.SITE_SHORT_NAME AS Site_SiteName,
+		  UM.SITE_NUMBER AS Site_SiteNumber,
+		  Site_OrganizationId,
+		  Site_OrganizationName,
+		  --------- OPTIONS ----------
+		  Options_Id,
+		  Options_Code,
+		  Options_Value,
+		  --------Components --------
+		  Components_ComponentId,
+		  Components_ComponentInstanceId,
+		  Components_ComponentName,
+		  Components_ComponentKey,
+		  Components_ComponentValue,
+		  Components_ComponentCode,
+		  ------------InlineAssets------------
+		  InlineAssets_Id,
+		  InlineAssets_AssetId_AssetTypeDefinitionId,
+		  InlineAssets_AssetId_Id,
+		  InlineAssets_Components_ComponentId,
+		  InlineAssets_Components_ComponentName,
+		  InlineAssets_Components_ComponentValue,
+		  InlineAssets_Components_ComponentKey,
+		  InlineAssets_Components_ComponentInstanceId,
+		  InlineAssets_Components_ComponentCode,
+		  InlineAssets_Options_Id,
+		  InlineAssets_Options_Value,
+		  InlineAssets_Options_Code,
+		  --------TypeCode--------
+		  TypeCode_TypeCodeId,
+		  TypeCode_TypeCodeName
+		  from migration.Datamanagement_asset_data (nolock) as mnt
+		  --left join gam.asset_standard_details as asd on asd.asd_std_id = mnt.Ast_std_Id
+		  LEFT JOIN [MIGRATION].[UM_SITE_INFO] AS UM ON UM.SITE_NUMBER = Site_SiteNumber
+		  where ASD_AM_UID is not null and Id is not null
+		     and Site_SiteNumber in ({0})
+		  ORDER BY ID, Asset_optn_val_seqId, asset_comp_seqId, Inline_asset_seqId
     </Source>
     <Destination>[DataManagement].[Asset]</Destination>
     <KeyFormat Format="59_{0}_{1}" Keys="AssetId.AssetTypeDefinitionId,Id"  />
@@ -1244,9 +1256,10 @@
       SELECT
       --'59_10_'+cast(MSLOT.[ASD_STD_NEW_ID] as nvarchar) as [Key],
       ------Id---------
-      MSLOT.[ASD_STD_NEW_ID] as AssetId,
+      --MSLOT.[ASD_STD_NEW_ID] as AssetId,
+	  ONLNE.[ASD_AM_UID] as AssetId,
       10 as Id_AssetTypeDefinitionId,
-      MSLOT.[ASD_STD_NEW_ID] as Id_Id,
+      ONLNE.[ASD_AM_UID] as Id_Id,
       -------ActiveAssetLink-------
       11 as ActiveAssetLink_AssetTypeDefinitionId,
       MPOOL.[POOL_NEW_ID] as ActiveAssetLink_Id,
@@ -1262,7 +1275,7 @@
       JOIN GAM.SITE (nolock) AS ST ON ST.SITE_ID = ISM.INSM_SITE_ID
       WHERE PM.[IS_DELETED] = 0 AND ISNULL(ASST_ANCESTOR_ID, ASST_ID)=1
       AND SITE_NUMBER in ( {0} )
-      ORDER BY MSLOT.[ASD_STD_NEW_ID], [POOL_NEW_ID]
+      ORDER BY ONLNE.[ASD_AM_UID], [POOL_NEW_ID]
     </Source>
     <Destination>[DataManagement].[AssetLink]</Destination>
     <KeyFormat Format="59_10_{0}" Keys="Id.Id"  />
@@ -1287,7 +1300,8 @@
       FROM (
       /* pool to slot */
       SELECT MPOOL.[POOL_NEW_ID] as PoolId,
-      MSLOT.[ASD_STD_NEW_ID] as AssetId,
+	  ONLNE.[ASD_AM_UID] as AssetId,
+      --MSLOT.[ASD_STD_NEW_ID] as AssetId,
       --row_number() over (partition by [POOL_NEW_ID] order by [POOL_NEW_ID]) as rNumber,
       10 as AssetTypeId, SITE_NUMBER
       FROM [PROGRESSIVE].[SLOT_POOL_MAPPING] (nolock) AS PM
@@ -1302,7 +1316,8 @@
       UNION ALL
       /*pool to controller*/
       SELECT MPOOL.[POOL_NEW_ID] as PoolId,
-      MSLOT.[ASD_STD_NEW_ID] as AssetId,
+      ONLNE.[ASD_AM_UID] as AssetId,
+	  --MSLOT.[ASD_STD_NEW_ID] as AssetId,
       --row_number() over (partition by [POOL_NEW_ID] order by [POOL_NEW_ID]) as rNumber,
       15 as AssetTypeId, SITE_NUMBER
       FROM [PROGRESSIVE].[pool] (nolock) as p
@@ -1330,9 +1345,11 @@
       SELECT
       --'59_15_'+cast([ASD_STD_NEW_ID] as nvarchar) as [Key],
       --Id--
-      [ASD_STD_NEW_ID] as AssetId,
+	  ONLNE.[ASD_AM_UID] as AssetId,
+      --[ASD_STD_NEW_ID] as AssetId,
       15 as Id_AssetTypeDefinitionId,
-      [ASD_STD_NEW_ID] as Id_Id,
+	  ONLNE.[ASD_AM_UID] as Id_Id,
+      --[ASD_STD_NEW_ID] as Id_Id,
       --ActiveAssetLink--
       11 as ActiveAssetLink_AssetTypeDefinitionId,
       [POOL_NEW_ID] as ActiveAssetLink_Id,
@@ -1393,135 +1410,78 @@
 
   <Transformation Name="AST_HISTORY">
     <Source>
-      SELECT --top 1000
-         ------ Id -------
-      Asst_Histry_Id as Id,
-      tt.[Action] as [Action],
-      clst_name as MasterListName,
-      clst_name as ChangeListName,
-      case when tt.astl_data_source = 'IMPORT_DATA' then 'Import'
-      when tt.astl_data_source = 'CHANGELIST_DATA' then 'Changelist'
-      when clst_name like 'Data Sync%' then 'Data Sync'
-      else '' end as DataTriggerSource,
-      --tt.astl_data_source  as DataTriggerSource,
+      SELECT Id,
+      [Action],
+      MasterListName,
+      ChangeListName,
+      DataTriggerSource,
       ------- CreatedBy-------
-      0 as CreatedBy_UserId,
-      tt.created_user as CreatedBy_LoginName,
-      tt.created_user as CreatedBy_FirstName,
-      tt.created_user as CreatedBy_MiddleName,
-      tt.created_user as CreatedBy_LastName,
+      CreatedBy_UserId,
+      CreatedBy_LoginName,
+      CreatedBy_FirstName,
+      CreatedBy_MiddleName,
+      CreatedBy_LastName
       --------ApprovedBy--------
-      0 as ApprovedBy_UserId,
-      tt.CLST_AUTH_USER as ApprovedBy_LoginName,
-      tt.CLST_AUTH_USER as ApprovedBy_FirstName,
-      tt.CLST_AUTH_USER as ApprovedBy_MiddleName,
-      tt.CLST_AUTH_USER as ApprovedBy_LastName,
-
-      cast(tt.clst_exectued_date as Varchar(50)) as ExecutedAt,
-      -----Asset----
-      10 as Asset_AssetTypeDefinitionId,
-      asset_type as Asset_AssetType,
-      tt.ASD_AM_UID as Asset_Id,
-
-      ----Site---
-      tt.SiteId as Site_SiteId,
-      SOURCE_SITE as Site_SiteName,
-      tt.SiteNumber as Site_SiteNumber,
-      tt.Site_OrganizationId as Site_OrganizationId,
-      tt.Site_OrganizationName as Site_OrganizationName,
+      ApprovedBy_UserId,
+      ApprovedBy_LoginName,
+      ApprovedBy_FirstName,
+      ApprovedBy_MiddleName,
+      ApprovedBy_LastName,
+      ExecutedAt,
+      --------Asset-------
+      Asset_AssetTypeDefinitionId,
+      Asset_AssetType,
+      Asset_Id,
+      ---------Site-------
+      Site_SiteId,
+      Site_SiteName,
+      Site_SiteNumber,
+      Site_OrganizationId,
+      Site_OrganizationName,
       ----- OPTIONS --------
-      isnull(P_ASD_OPTN_VALUE, '{{}}') as Options,
-      --OPTN.IS_UPDATED,
-
+      Options,
       -----ChangedOptions----
-      CASE WHEN tt.IS_UPDATED = 1 THEN OPTION_ORDER ELSE NULL END AS ChangedOptions_Id,
-      CASE WHEN tt.IS_UPDATED = 1 THEN tt.OPTN_NAME ELSE NULL END AS ChangedOptions_Name,
-      CASE WHEN tt.IS_UPDATED = 1 THEN tt.OLD_VALUE ELSE NULL END AS ChangedOptions_Value_OldValue,
-      CASE WHEN tt.IS_UPDATED = 1 THEN tt.CURRENT_VALUE ELSE NULL END AS ChangedOptions_Value_NewValue,
-      CASE WHEN tt.IS_UPDATED = 1 THEN tt.OPTN_CODE ELSE NULL END AS ChangedOptions_Code,
-
+      ChangedOptions_Id,
+      ChangedOptions_Name,
+      ChangedOptions_Value_OldValue,
+      ChangedOptions_Value_NewValue,
+      ChangedOptions_Code,
       -----------InlineAssets-------
-      CASE WHEN C_G.Seq is null and O_G.Seq is null THEN NULL  ELSE C_G.Game_AssetId  END as InlineAssets_Id,
-      ------ Asset ------
-      CASE WHEN C_G.Seq is null and O_G.Seq is null THEN NULL  ELSE 260 END AS  InlineAssets_Assets_AssetTypeDefinitionId,
-      CASE WHEN C_G.Seq is null and O_G.Seq is null THEN NULL  ELSE 'Game' END as InlineAssets_Assets_AssetType,
-      CASE WHEN C_G.Seq is null and O_G.Seq is null THEN NULL  ELSE C_G.Game_AssetId  END as InlineAssets_Assets_Id,
-      -------Options------
-      P_GM_VALUE AS InlineAssets_Options,
-
-         -----Games Changed Options---
-         C_G.game_id as cg,
-         o_G.game_id as og,
-         isnull(C_G.GmOptionValue,'no_data') as GmOptionValue_Current ,
-         isnull(O_G.GmOptionValue,'no_data') as GmOptionValue_old,
-
-      CASE WHEN isnull(C_G.GmOptionValue,'no_data') = isnull(O_G.GmOptionValue,'no_data')
-      THEN NULL ELSE isnull(C_G.Seq, O_G.Seq) END AS InlineAssets_ChangedOptions_Id,
-
-      CASE WHEN isnull(C_G.GmOptionValue,'no_data') = isnull(O_G.GmOptionValue,'no_data')
-      THEN NULL ELSE isnull(C_G.GmOptionName, O_G.GmOptionName) END AS InlineAssets_ChangedOptions_Name,
-
-      CASE WHEN isnull(C_G.GmOptionValue,'no_data') = isnull(O_G.GmOptionValue,'no_data')
-      THEN NULL ELSE isnull(O_G.GmOptionValue, '') END AS InlineAssets_ChangedOptions_Value_OldValue,
-
-      CASE WHEN isnull(C_G.GmOptionValue,'no_data') = isnull(O_G.GmOptionValue,'no_data')
-      THEN NULL ELSE isnull(C_G.GmOptionValue, '') END AS InlineAssets_ChangedOptions_Value_NewValue,
-
-      CASE WHEN isnull(C_G.Code,'no_data') = isnull(O_G.Code,'no_data')
-      THEN NULL ELSE isnull(C_G.Code, O_G.Code)  END AS InlineAssets_ChangedOptions_Code,
-
-      ----LinkedAssets--Progressive---
-      ---- i.ActiveLinks
-      case when [PoolName_Current] is null then null else 11 end as LinkedAssets_ActiveLinks_AssetTypeDefinitionId,
-      case when [PoolName_Current] is null then null else 'Progressive Pool' end as LinkedAssets_ActiveLinks_AssetType,
-      case when [PoolName_Current] is null then null else 0 end as LinkedAssets_ActiveLinks_Id,
-      case when [PoolName_Current] is null then null else 'Pool Id' end as LinkedAssets_ActiveLinks_DisplayName,
-      case when [PoolName_Current] is null then null else [PoolName_Current] end as LinkedAssets_ActiveLinks_DisplayValue,
-      --- ii.ChangedLinkes
-      -----Linked
-      case when [PoolName_Current] is null then null else 11 end as LinkedAssets_ChangedLinkes_Linked_AssetTypeDefinitionId,
-      case when [PoolName_Current] is null then null else 'Progressive Pool' end as LinkedAssets_ChangedLinkes_Linked_AssetType,
-      case when [PoolName_Current] is null then null else 0 end as LinkedAssets_ChangedLinkes_Linked_Id,
-      case when [PoolName_Current] is null then null else 'Pool Id' end as LinkedAssets_ChangedLinkes_Linked_DisplayName,
-      case when [PoolName_Current] is null then null else [PoolName_Current] end as LinkedAssets_ChangedLinkes_Linked_DisplayValue,
-      -----DeLinked
-      case when [PoolName_Old] is null then null else 11 end as LinkedAssets_ChangedLinkes_DeLinked_AssetTypeDefinitionId,
-      case when [PoolName_Old] is null then null else 'Progressive Pool' end as LinkedAssets_ChangedLinkes_DeLinked_AssetType,
-      case when [PoolName_Old] is null then null else 0 end as LinkedAssets_ChangedLinkes_DeLinked_Id,
-      case when [PoolName_Old] is null then null else 'Pool Id' end as LinkedAssets_ChangedLinkes_DeLinked_DisplayName,
-      case when [PoolName_Old] is null then null else PoolName_Old  end as LinkedAssets_ChangedLinkes_DeLinked_DisplayValue,
-
-      case when ASD_DELETED = 0 then 1 else 0 end as IsLastest
-       --  OPTION_ORDER,
-      --        C_G.Gmap_Id_Seq,
-      --   case when tt.IS_UPDATED = 1 then 1
-      --           when isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data') then 1
-      --           when isnull([PoolName_Current],'no_data') &lt;&gt; isnull([PoolName_Old],'no_data') then 1
-      --else 0 end as all_Updated
-         --select *
-      FROM ( select * from MIGRATION.GAM_CHK_ASSET_SLOT_HISTORY_SUMMARY (nolock) AS SMY --WHERE SMY.ASD_NUMBER = '180'
-      JOIN (select row_number() over(partition by changelist_id, clst_asd_id, asd_am_uid order by changelist_id, clst_asd_id, asd_am_uid, OPTION_ORDER) as optn_seq,
-                --1 as optn_seq,
-                GH_OPTN_ID , CHANGELIST_NAME , CHANGELIST_ID , CLST_ASD_ID , ASD_AM_UID as ASSET_UNQ_ID , ASD_NUMBER as Asset_Number, 
-                ASD_LOCATION , OLD_ASD_NUMBER , OLD_ASD_LOCATION , OPTN_CODE , OPTN_NAME , CURRENT_VALUE , 
-                OLD_VALUE , OPTION_ORDER , IS_UPDATED , CUR_ASD_STD_ID , PRE_ASD_STD_ID , EXECUTED_DATETIME 
-                from  MIGRATION.GAM_CHK_ASSET_SLOT_HISTORY_OPTIONS (nolock) ) AS OPTN ON OPTN.CLST_ASD_ID = SMY.CLST_DET_ID
-      JOIN MIGRATION.GAM_CHK_ASSET_SLOT_OPTIONS_VALUE (nolock) AS OTP_VAL ON P_ASD_ID = smy.CURRENT_ID ) as tt
-      full outer JOIN MIGRATION.GAM_CHK_HISTORY_SLOT_GAMES_MAPPING (nolock) AS C_G ON cur_asd_std_id = C_G.gm_asd_std_id and c_g.seq = tt.optn_seq 
-      FULL OUTER JOIN MIGRATION.GAM_CHK_HISTORY_SLOT_GAMES_MAPPING (nolock) AS O_G ON tt.Pre_Id = O_G.gm_asd_std_id 
-                     and C_G.GmOptionName = O_G.GmOptionName and O_G.game_id = C_G.game_id and C_G.seq = O_G.seq
-      LEFT JOIN MIGRATION.GAM_ASSET_GAMES_OPTIONS_VALUE (nolock) AS GM ON GM.P_GM_ID = C_G.Game_Id
-      LEFT JOIN MIGRATION.GAM_CHK_ASSET_SLOT_HISTORY_PROGRESSIVE (nolock) AS PROG ON PROG.CLST_DET_ID = tt.CLST_DET_ID
-      WHERE 1=1  and Asst_Histry_Id is not null
-         and (case when tt.[Action] = 'ADD' then 1
-                   when tt.IS_UPDATED = 1 then 1
-                   when isnull(C_G.GmOptionValue,'no_data') &lt;&gt; isnull(O_G.GmOptionValue,'no_data') then 1
-                   when isnull([PoolName_Current],'no_data') &lt;&gt; isnull([PoolName_Old],'no_data') then 1 
-                              else 0 end ) = 1
-      --and SMY.ASD_AM_UID =7337
-         --and Asst_Histry_Id = 1084920
-      AND tt.SiteNumber in ({0})
-      ORDER BY tt.CLST_EXECTUED_DATE, tt.CURRENT_ID, C_G.Game_AssetId, OPTION_ORDER
+      InlineAssets_Id,
+      InlineAssets_Assets_AssetTypeDefinitionId,
+      InlineAssets_Assets_AssetType,
+      InlineAssets_Assets_Id,
+      InlineAssets_Options,
+      -----Games Changed Options---
+      GmOptionValue_Current,
+      GmOptionValue_old,
+      InlineAssets_ChangedOptions_Id,
+      InlineAssets_ChangedOptions_Name,
+      InlineAssets_ChangedOptions_Value_OldValue,
+      InlineAssets_ChangedOptions_Value_NewValue,
+      InlineAssets_ChangedOptions_Code,
+      LinkedAssets_ActiveLinks_AssetTypeDefinitionId,
+      LinkedAssets_ActiveLinks_AssetType,
+      LinkedAssets_ActiveLinks_Id,
+      LinkedAssets_ActiveLinks_DisplayName,
+      LinkedAssets_ActiveLinks_DisplayValue,
+      LinkedAssets_ChangedLinkes_Linked_AssetTypeDefinitionId,
+      LinkedAssets_ChangedLinkes_Linked_AssetType,
+      LinkedAssets_ChangedLinkes_Linked_Id,
+      LinkedAssets_ChangedLinkes_Linked_DisplayName,
+      LinkedAssets_ChangedLinkes_Linked_DisplayValue,
+      LinkedAssets_ChangedLinkes_DeLinked_AssetTypeDefinitionId,
+      LinkedAssets_ChangedLinkes_DeLinked_AssetType,
+      LinkedAssets_ChangedLinkes_DeLinked_Id,
+      LinkedAssets_ChangedLinkes_DeLinked_DisplayName,
+      LinkedAssets_ChangedLinkes_DeLinked_DisplayValue,
+      IsLastest,
+      cg, og,  CLST_EXECTUED_DATE, CURRENT_ID, Game_AssetId, OPTION_ORDER
+      from MIGRATION.GAM_History_Asset_Data
+      where 1=1
+      And all_Updated = 1
+      AND Site_SiteNumber in ({0})
+      ORDER BY CLST_EXECTUED_DATE, CURRENT_ID, Game_AssetId, OPTION_ORDER
     </Source>
     <Destination>[Asset_History].[AssetsHistory]</Destination>
     <KeyFormat Format="68_{0}" Keys="Id"  />
