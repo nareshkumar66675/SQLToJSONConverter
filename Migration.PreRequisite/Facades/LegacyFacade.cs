@@ -23,7 +23,6 @@ namespace Migration.PreRequisite.Facades
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("DataCorrection", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyAssetSlotTables", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("LegacyAssetHistoryDataPopulation", _connectionString));
-            _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("AssetDefinitionParseSP", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("AssetHistoryInsertSP", _connectionString));
             _legacyPreRequisites.Add(new ExecuteScriptPreRequisite("HistoryData", _connectionString));
             _legacyPreRequisites.Add(new UMDataRetrievalPreRequisite()); 

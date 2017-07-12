@@ -10,7 +10,7 @@ namespace Migration.PreRequisite.Helpers
     {
         public const string GETALLACTIVESITENO = @"SELECT SITE_NUMBER FROM [MIGRATION].[VIEW_SITE_INFO]";
         public const string SPUPDATEGEODATA = @"COMMON.P_GETDASHBOARDSITEINFO";
-        public const string GETASSETDFN = @"SELECT Value FROM[ASSET_DEF].[ASSETS]";
+        public const string TBLASSETDFN = @"[MIGRATION].[ASSET_TYPE_DEFN]";
         public const string SPASSETDFN = @"MIGRATION.P_ASSET_DEFINITION";
         public const string TBLCUSTOMID = @"[IDGEN].[CustomID_VALUES]";
         public const string SPDASHBAORDCOUNT = @"MIGRATION.P_GET_DASHBOARD_COUNT";

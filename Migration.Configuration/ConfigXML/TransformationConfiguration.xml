@@ -1416,13 +1416,13 @@
       ChangeListName,
       DataTriggerSource,
       ------- CreatedBy-------
-      CreatedBy_UserId,
+      cast(CreatedBy_UserId as INT) as CreatedBy_UserId,
       CreatedBy_LoginName,
       CreatedBy_FirstName,
       CreatedBy_MiddleName,
-      CreatedBy_LastName
+      CreatedBy_LastName,
       --------ApprovedBy--------
-      ApprovedBy_UserId,
+      cast(ApprovedBy_UserId as INT) ApprovedBy_UserId,
       ApprovedBy_LoginName,
       ApprovedBy_FirstName,
       ApprovedBy_MiddleName,

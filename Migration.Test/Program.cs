@@ -199,14 +199,19 @@ namespace Migration.Test
             //Migration.Generate.Generate generate = new Migration.Generate.Generate();
             //Persist persist = new Persist();
 
-
+            Common.Common.ConnectionStrings.LegacyConnectionString = @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=Lab_AssetMatrixNov14";
+            //Common.Common.ConnectionStrings.SetConnectionString(GroupType.HISTORY, @"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM_Lab_Report_Test");
             ////Starting Generate and Persist Parallely
             //Task genTask = generate.Start(Configurator.GetComponentsByGroup(GroupType.HISTORY), null);
             //Task persisTask = persist.Start(null);
 
             //genTask.Wait();
             //persisTask.Wait();
-            PreRequisiteFactory.GetPreRequistes(GroupType.ASSET).Start(null);
+            //PreRequisiteFactory.GetPreRequistes(GroupType.ASSET).Start(null);
+
+            IPreRequisite preq = new PreRequisite.PreRequisites.InsertAssetDefinitionPreRequisite(@"Data Source=10.2.143.100;Integrated Security=False;User ID=sa;Password=abc@123;Initial Catalog=AM141_1_b1_v2_Asset");
+
+            preq.Execute();
         }
     }
 }

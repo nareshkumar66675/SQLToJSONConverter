@@ -40,6 +40,10 @@ max(Id)+1 as Id,
 'No' as MultiGame, 
 'No' as MultiDenom, 
 'No' as VarHoldPC,
+'No' as MultiGame, 
+'No' as MultiDenom, 
+'No' as VarHoldPC,
+
 max(TypeDescription_Id)+1 as TypeDescription_Id,
 max(Manufacturer_Id)+1 as Manufacturer_Id,
 max(ModelType_Id)+1 as ModelType_Id,
@@ -52,7 +56,6 @@ max(GameCategory_Id)+1 as GameCategory_Id,
 max(MultiGame_Id)+1 as MultiGame_Id,
 max(MultiDenom_Id)+1 as MultiDenom_Id,
 max(VarHoldPC_Id)+1 as VarHoldPC_Id
-
 from [MIGRATION].[GAM_TYPE_DESCRIPTION] (nolock)
 
 

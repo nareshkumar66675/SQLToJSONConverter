@@ -248,83 +248,49 @@ namespace Migration.PreRequisite.Helpers
             }
             return true;
         }
-        internal static bool InsertComponentDefinition(string connectionString)
+        internal static bool InsertAssetDefinition(string connectionString,string query)
         {
+            //Insert Asset Definitions to Legacy Database
             try
             {
-                //Insert Asset Definitions to Legacy Database
+                DataTable AssetDefinitionTable = new DataTable();
+                int rslt;
+                /*  Check If table Exits and Empty 
+                    1 - Table Exists and Empty - Records will be Inserted
+                    0 - Table Exists and Not Empty - Records will not be Inserted
+                   -1 - Table Not Exists - Error will be thrown
+                */
                 using (var legConn = new SqlConnection(ConnectionStrings.LegacyConnectionString))
                 {
                     legConn.Open();
                     SqlCommand command = legConn.CreateCommand();
-                    SqlTransaction transaction;
-                    transaction = legConn.BeginTransaction("InsertDefiniton");
                     command.Connection = legConn;
-                    command.Transaction = transaction;
-                    try
+                    command.CommandText = Queries.CHECKASSETDFN;
+                    command.CommandType = CommandType.Text;
+
+                    rslt = (int)command.ExecuteScalar();
+                }
+                if (rslt == 1)
+                {
+                    //Get Asset Definitions - to Map New Options to Legacy
+                    using (var astConn = new SqlConnection(connectionString))
                     {
-
-                        /* Check If table Exits and Empty 
-                            1 - Table Exists and Empty - Records will be Inserted
-                            0 - Table Exists and Not Empty - Records will not be Inserted
-                           -1 - Table Not Exists - Error will be thrown
-                        */
-                        command.CommandText = Queries.CHECKASSETDFN;
-                        command.CommandType = CommandType.Text;
-
-                        var rslt = (int)command.ExecuteScalar();
-
-                        if (rslt == 1)
+                        astConn.Open();
+                        using (SqlCommand cmd = new SqlCommand(query, astConn))
                         {
-                            List<string> astDefinitions = new List<string>();
-
-                            //Get Asset Definitions - to Map New Options to Legacy
-                            using (var astConn = new SqlConnection(connectionString))
+                            using (IDataReader dr = cmd.ExecuteReader())
                             {
-                                astConn.Open();
-                                using (SqlCommand cmd = new SqlCommand(Queries.GETASSETDFN, astConn))
-                                {
-                                    using (IDataReader dr = cmd.ExecuteReader())
-                                    {
-                                        while (dr.Read())
-                                        {
-                                            astDefinitions.Add(dr.GetString(0));
-                                        }
-                                    }
-                                }
-                            }
-
-                            //Insert Records to MIGRATION.ASSET_TYPE_DEFN
-                            command.CommandText = Queries.SPASSETDFN;
-                            command.CommandType = CommandType.StoredProcedure;
-                            var sqp = new SqlParameter("@pValue", SqlDbType.VarChar);
-                            command.Parameters.Add(sqp);
-
-                            foreach (var item in astDefinitions)
-                            {
-                                sqp.Value = item;
-                                command.ExecuteNonQuery();
+                                AssetDefinitionTable.Load(dr);
                             }
                         }
-                        else if (rslt == -1)
-                        {
-                            throw new Exception("Table MIGRATION.ASSET_TYPE_DEFN not Found in Legacy Database");
-                        }
+                    }
+                    //Insert Records to MIGRATION.ASSET_TYPE_DEFN
+                    ExecuteBulkCopy(AssetDefinitionTable, ConnectionStrings.LegacyConnectionString, Queries.TBLASSETDFN);
 
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        try
-                        {
-                            transaction.Rollback();
-                            throw new Exception("Error Ocurred - Rollbacked", ex);
-                        }
-                        catch (Exception ex1)
-                        {
-                            throw new Exception("Rollback Failed.", ex1);
-                        }
-                    }
+                }
+                else if (rslt == -1)
+                {
+                    throw new Exception("Table MIGRATION.ASSET_TYPE_DEFN not Found in Legacy Database");
                 }
                 return true;
             }
